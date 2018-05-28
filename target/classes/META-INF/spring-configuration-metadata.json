@@ -30,6 +30,33 @@
   ],
   "properties": [
     {
+      "sourceType": "com.microdev.param.ContactProperties$SmsProperties",
+      "name": "custom.contact.sms.access-key-id",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.microdev.param.ContactProperties$SmsProperties",
+      "name": "custom.contact.sms.access-key-secret",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.microdev.param.ContactProperties$SmsProperties",
+      "name": "custom.contact.sms.default-connect-timeout",
+      "type": "java.lang.Integer"
+    },
+    {
+      "sourceType": "com.microdev.param.ContactProperties$SmsProperties",
+      "name": "custom.contact.sms.default-read-timeout",
+      "type": "java.lang.Integer"
+    },
+    {
+      "sourceType": "com.microdev.param.ContactProperties$SmsProperties",
+      "defaultValue": 6,
+      "name": "custom.contact.sms.sms-code-length",
+      "description": "短信验证码长度，默认6位",
+      "type": "java.lang.Integer"
+    },
+    {
       "sourceType": "com.microdev.common.oss.ObjectStoreConfig",
       "name": "custom.objectstore.platform",
       "type": "java.lang.String"

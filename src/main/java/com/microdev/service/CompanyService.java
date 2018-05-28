@@ -27,7 +27,7 @@ public interface CompanyService extends IService<Company> {
     /**
      * 酒店绑定添加合作的人力资源公司
      */
-    ResultDO hotelAddHrCompanyById(HotelHrIdBindDTO hotelHrDTO);
+    ResultDO hotelAddHrCompanyById(String hotelId, String hrCompanyId, String messageId, Integer type);
     /**
      * 添加人力资源公司
      */

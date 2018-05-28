@@ -53,6 +53,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     private TaskHrCompanyService taskHrCompanyService;
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private DictMapper dictMapper;
 
     @Override
     public User create(User user) throws Exception{

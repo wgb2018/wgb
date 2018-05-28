@@ -13,6 +13,7 @@ import com.microdev.converter.WorkLogConverter;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
 import com.microdev.param.*;
+import com.microdev.param.AreaAndServiceRequest;
 import com.microdev.param.api.response.GetBalanceResponse;
 import com.microdev.param.api.response.GetCurrentTaskResponse;
 import com.microdev.service.DictService;
@@ -60,6 +61,12 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     private AreaRelationMapper areaRelationMapper;
     @Autowired
     private DictService dictService;
+    @Autowired
+    DictMapper dictMapper;
+    @Autowired
+    WorkerMapper workerMapper;
+    @Autowired
+    TaskTypeRelationMapper taskTypeRelationMapper;
 
     @Override
     public GetCurrentTaskResponse getCurrentTask(String workerId) {
@@ -826,6 +833,43 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             response.setAreaList(new ArrayList<>());
         }
         return response;
+    }
+
+    @Override
+    public void mpdifyAreaAndService(AreaAndServiceRequest request) {
+        //添加区域
+        Map<String,Integer> areaList = request.getAreaCode();
+        Iterator<Map.Entry<String, Integer>> entries = areaList.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry<String, Integer> entry = entries.next();
+            companyMapper.insertAreaRelation(request.getWorkerID(),entry.getKey(),entry.getValue());
+            if(entry.getValue()==1){
+                Map<String,String> list = dictMapper.findCity(entry.getKey());
+                for (String key : list.keySet()) {
+                    Map<String,String> list2= dictMapper.findArea(key);
+                    for (String key1 : list2.keySet()) {
+                        companyMapper.insertCompanyArea(request.getWorkerID(),key1,0);
+                    }
+                }
+            }else if(entry.getValue()==2){
+                Map<String,String> list2= dictMapper.findArea(entry.getKey());
+                for (String key1 : list2.keySet()) {
+                    companyMapper.insertCompanyArea(request.getWorkerID(),key1,0);
+                }
+            }else{
+                companyMapper.insertCompanyArea(request.getWorkerID(),entry.getKey(),0);
+            }
+        }
+        //添加服务类型
+        List<String> serviceType = request.getServiceType();
+        for(int i = 0;i<serviceType.size();i++){
+            taskTypeRelationMapper.insertTaskTypeRelation(request.getWorkerID(),serviceType.get(i),0);
+        }
+    }
+
+    @Override
+    public Map<String, Object> queryWorker(String id) {
+        return workerMapper.queryWorker(id);
     }
 
     /**

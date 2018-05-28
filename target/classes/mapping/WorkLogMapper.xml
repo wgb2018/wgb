@@ -1,27 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.microdev.mapper.WorkerLogMapper" >
-    <sql id="WorkLog_Column_List" >
+<mapper namespace="com.microdev.mapper.WorkerLogMapper">
+    <sql id="WorkLog_Column_List">
         id as pid, create_time, deleted, modify_time,
         from_date, minutes, punch_date, repast_times, task_worker_id,
-        to_date, task_id,status
+        to_date, task_id,status,employer_confirm_status
     </sql>
     <resultMap type="com.microdev.param.PunchDTO" id="countPunchMap">
-        <result column="startTime" jdbcType="TIMESTAMP" property="startTime" />
-        <result column="endTime" jdbcType="TIMESTAMP" property="endTime" />
+        <result column="startTime" jdbcType="TIMESTAMP" property="startTime"/>
+        <result column="endTime" jdbcType="TIMESTAMP" property="endTime"/>
         <association property="log" javaType="com.microdev.model.WorkLog">
-            <id column="id" jdbcType="VARCHAR" property="pid" />
-            <result column="fromDate" jdbcType="TIMESTAMP" property="fromDate" />
-            <result column="toDate" jdbcType="TIMESTAMP" property="toDate" />
-			<result column="taskWorkerId" jdbcType="VARCHAR" property="taskWorkerId" />
+            <id column="id" jdbcType="VARCHAR" property="pid"/>
+            <result column="fromDate" jdbcType="TIMESTAMP" property="fromDate"/>
+            <result column="toDate" jdbcType="TIMESTAMP" property="toDate"/>
+            <result column="taskWorkerId" jdbcType="VARCHAR" property="taskWorkerId"/>
         </association>
     </resultMap>
     <select id="findFirstByTaskWorkerId" parameterType="java.lang.String" resultType="com.microdev.model.WorkLog">
-        SELECT <include refid="WorkLog_Column_List"/> FROM work_log WHERE task_worker_id = #{taskWorkerId} and deleted = FALSE
+        SELECT
+        <include refid="WorkLog_Column_List"/>
+        FROM work_log WHERE task_worker_id = #{taskWorkerId} and deleted = FALSE
         order by punch_date desc limit 1
     </select>
     <select id="findByTaskWorkId" parameterType="java.lang.String" resultType="com.microdev.model.WorkLog">
-        SELECT <include refid="WorkLog_Column_List"/> FROM work_log WHERE task_worker_id = #{taskWorkerId} and deleted = FALSE
+        SELECT
+        <include refid="WorkLog_Column_List"/>
+        FROM work_log WHERE task_worker_id = #{taskWorkerId} and deleted = FALSE
         order by punch_date desc
     </select>
 
@@ -54,6 +58,7 @@
 		ON wl.`task_worker_id` = tw.`id`
 		WHERE DATE_SUB(CURDATE(),INTERVAL 1 DAY) = DATE(wl.create_time) and
 		wl.deleted = FALSE
+		group by wl.task_worker_id
     </select>
     <select id="countPunchInfo" resultMap="countPunchMap" parameterType="java.util.Map">
         SELECT tw.`day_start_time` AS startTime,
@@ -75,12 +80,12 @@
         set status =
         <foreach collection="list" item="item" open="case id " close="end"
                  separator=" ">
-            when #{item.id} then #{item.status}
+            when #{item.pid} then #{item.status}
         </foreach>
         where id in
         <foreach collection="list" item="item" open="(" separator=","
                  close=")">
-            #{item.id}
+            #{item.pid}
         </foreach>
     </update>
 
@@ -99,26 +104,17 @@
 		hotelName,DATE_FORMAT(tw.from_date,'%Y.%m.%d')
 		AS
 		workFromDate,DATE_FORMAT(tw.to_date,'%Y.%m.%d') AS workToDate,
-		DATE_FORMAT(tw.day_start_time,'%h:%m') AS dayStartTime,
-		DATE_FORMAT(tw.day_end_time,'%h:%m') AS dayEndTime,th.task_type_text
-		AS taskTypeText,GROUP_CONCAT(DATE_FORMAT(wl.`from_date`,'%h:%m')) AS fromDate,
-		GROUP_CONCAT(DATE_FORMAT(wl.`to_date`,'%h:%m')) AS toDate,wl.id AS workLogId,
-		th.`hotel_id` AS hotelId,
+		DATE_FORMAT(tw.day_start_time,'%H:%m') AS dayStartTime,
+		DATE_FORMAT(tw.day_end_time,'%H:%m') AS dayEndTime,th.task_type_text
+		AS taskTypeText,GROUP_CONCAT(DATE_FORMAT(wl.`from_date`,'%H:%m')) AS fromDate,
+		GROUP_CONCAT(DATE_FORMAT(wl.`to_date`,'%H:%m')) AS toDate,wl.id AS workLogId,
+		th.`hotel_id` AS hotelId,tw.id AS taskWorkerId,
 		DATE_FORMAT(wl.`create_time`,'%Y/%m/%d') AS current
-		FROM (SELECT * FROM work_log WHERE to_date IS NULL) wl
+		FROM (SELECT * FROM work_log WHERE to_date IS NULL AND DATE_SUB(CURDATE(), INTERVAL 17 DAY) <![CDATA[<=]]> create_time) wl
 		INNER JOIN
-		(
-		SELECT *
-		FROM task_worker
-		WHERE
-		worker_id =
-		#{workerId}
-		AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <![CDATA[<=]]>
-		modify_time
-		) tw
+		(SELECT * FROM task_worker WHERE worker_id = #{workerId}) tw
 		ON wl.`task_worker_id` = tw.id
-		INNER JOIN
-		task_hr_company th
+		INNER JOIN task_hr_company th
 		ON th.id = tw.task_hr_id
 		GROUP BY DATE_FORMAT(wl.create_time,'%Y.%m.%d')
 		ORDER BY wl.create_time DESC
@@ -127,11 +123,11 @@
             resultType="com.microdev.param.SupplementResponse">
         SELECT DATE_FORMAT(tw.from_date,'%Y.%m.%d') AS
 		workFromDate,DATE_FORMAT(tw.to_date,'%Y.%m.%d') AS workToDate,
-		DATE_FORMAT(tw.day_start_time,'%h:%m') AS
+		DATE_FORMAT(tw.day_start_time,'%H:%m') AS
 		dayStartTime,DATE_FORMAT(wl.`from_date`,'%h:%m') AS fromDate,
-		DATE_FORMAT(wl.`to_date`,'%h:%m') AS
+		DATE_FORMAT(wl.`to_date`,'%H:%m') AS
 		toDate,DATE_FORMAT(wl.`create_time`,'%Y/%m/%d') AS current,
-		DATE_FORMAT(tw.day_end_time,'%h:%m') AS dayEndTime,tw.hourly_pay AS
+		DATE_FORMAT(tw.day_end_time,'%H:%m') AS dayEndTime,tw.hourly_pay AS
 		hourlyPay, th.task_type_text AS taskTypeText, th.`task_content` AS
 		taskContent,
 		c.name AS hotelName, c.address AS address,c.leader AS
@@ -151,9 +147,13 @@
 		ON c.id = th.`hotel_id`
     </select>
     <select id="selectUserPunchDetail" parameterType="java.lang.String"
-            resultType="com.microdev.model.WorkLog">
-		SELECT from_date,to_date, SUM(IFNULL(STATUS,0)) AS status,id
+            resultType="com.microdev.param.WorkerOneDayInfo">
+		SELECT group_concat(from_date) as fromDate,group_concat(to_date) as toDate,GROUP_CONCAT(IFNULL(STATUS,0)) AS status,id, GROUP_CONCAT(IFNULL(employer_confirm_status,0)) AS employerConfirmStatus,create_time as createTime
 		FROM work_log WHERE task_worker_id = #{taskWorkerId}
-		GROUP BY DATE_FORMAT(create_time, '%y-%m-%d') order by create_time asc
+		GROUP BY DATE_FORMAT(create_time, '%y-%m-%d') order by create_time ASC
+	</select>
+    <select id="selectPunchDetails" parameterType="java.lang.String" resultType="com.microdev.model.WorkLog">
+		select from_date,to_date,status,employer_confirm_status from work_log where task_worker_id = #{taskWorkerId}
+		order by create_time ASC
 	</select>
 </mapper>

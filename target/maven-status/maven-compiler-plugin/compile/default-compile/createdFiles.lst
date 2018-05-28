@@ -69,6 +69,7 @@ com\microdev\common\paging\Sort.class
 com\microdev\mapper\SmsMapper.class
 com\microdev\param\SmsTemplateDTO.class
 com\microdev\param\TaskDTO.class
+com\microdev\param\WorkerDetail.class
 com\microdev\Constant$1.class
 com\microdev\mapper\TaskHrCompanyMapper.class
 com\microdev\Controller\BillController.class
@@ -132,6 +133,7 @@ com\microdev\Controller\WorkerCompanyController.class
 com\microdev\param\PermissionDTO.class
 com\microdev\service\SocialService.class
 com\microdev\common\exception\UnhandledException.class
+com\microdev\param\MessageResponse.class
 com\microdev\model\User.class
 com\microdev\param\CompanyBindDTO.class
 com\microdev\converter\SmsConverter.class
@@ -146,6 +148,7 @@ com\microdev\param\TaskWorkerQuery.class
 com\microdev\param\Gender.class
 com\microdev\service\impl\UserServiceImpl.class
 com\microdev\model\Worker.class
+com\microdev\param\MessageShowDTO.class
 com\microdev\Controller\MessageController.class
 com\microdev\mapper\UserCompanyMapper.class
 com\microdev\param\api\request\UpdateIDCardNumberRequest.class
@@ -155,6 +158,7 @@ com\microdev\service\impl\TaskWorkerServiceImpl.class
 com\microdev\common\PagingDO.class
 com\microdev\service\impl\DictServiceImpl.class
 com\microdev\model\HotelPayHrDetails.class
+com\microdev\param\PunchInfo.class
 com\microdev\param\CreateMsgTemplateRequest.class
 com\microdev\converter\TaskConverter.class
 com\microdev\param\TaskHrCompanyViewDTO.class
@@ -203,6 +207,7 @@ com\microdev\common\exception\AuthenticationException.class
 com\microdev\model\Role.class
 com\microdev\service\DictService.class
 com\microdev\param\HrTaskDistributeRequest.class
+com\microdev\param\WorkerOneDayInfo.class
 com\microdev\mapper\SuggestionMapper.class
 com\microdev\param\DictDTO.class
 com\microdev\Controller\WorkerController.class

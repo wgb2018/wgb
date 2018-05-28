@@ -1,25 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.microdev.mapper.HotelHrCompanyMapper" >
-    <sql id="update_Column_List" >
+<mapper namespace="com.microdev.mapper.HotelHrCompanyMapper">
+    <sql id="update_Column_List">
         set
         deleted = #{deleted},modify_time = #{modifyTime},bind_time = #{bindTime},
         bind_type = #{bindType},relieve_time = #{relieveTime},relieve_type = #{relieveType},
         status = #{status}
     </sql>
-    <sql id="query_Column_List" >
+    <sql id="query_Column_List">
         id as pid,create_time ,deleted ,modify_time ,bind_time ,bind_type ,relieve_time ,relieve_type ,
         status ,hr_id ,hotel_id
     </sql>
-    <select id="save" parameterType="com.microdev.model.HotelHrCompany" >
+    <select id="save" parameterType="com.microdev.model.HotelHrCompany">
         insert into hotel_hr_company values (#{id},#{createTime},#{deleted},#{modifyTime},#{bindTime},
         #{bindType},#{relieveTime},#{relieveType},#{status},#{hrId},#{hotelId})
     </select>
     <select id="findOneHotelHr" resultType="com.microdev.model.HotelHrCompany">
-        SELECT <include refid="query_Column_List"/> FROM hotel_hr_company Where hotel_id = #{hotelId} and hr_id = #{hrId} LIMIT 1
+        SELECT
+        <include refid="query_Column_List"/>
+        FROM hotel_hr_company Where hotel_id = #{hotelId} and hr_id = #{hrId} LIMIT 1
     </select>
     <update id="update" parameterType="com.microdev.model.HotelHrCompany">
-        update hotel_hr_company <include refid="query_Column_List"/> where id = #{hotelHr.id}
+        update hotel_hr_company
+        <include refid="query_Column_List"/>
+        where id = #{hotelHr.id}
     </update>
 
 </mapper>

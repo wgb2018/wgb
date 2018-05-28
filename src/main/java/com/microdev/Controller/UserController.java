@@ -154,7 +154,7 @@ public class UserController {
      * 客户端 token 到期时，在不打扰用户的情况下重新获取 token
      */
     @GetMapping("/oauth/refresh-token/{refreshToken}")
-    public ResultDO refreshTokenPost((@PathVariable String refreshToken) {
+    public ResultDO refreshTokenPost(@PathVariable String refreshToken) {
         return ResultDO.buildSuccess(tokenService.refreshToken(refreshToken));
     }
     /**

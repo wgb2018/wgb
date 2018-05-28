@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.microdev.mapper.CompanyMapper" >
-    <sql id="Company_Column_List" >
+<mapper namespace="com.microdev.mapper.CompanyMapper">
+    <sql id="Company_Column_List">
         id as pid, create_time, deleted, modify_time,address,
         business_license, company_type, confirmed_time, latitude, leader, leader_mobile,
         logo, longitude, name, status
@@ -19,7 +19,9 @@
     </sql>
     <!-- 分页查询人力资源公司 -->
     <select id="queryCompanys" parameterType="com.microdev.param.CompanyQueryDTO" resultType="com.microdev.model.Company">
-        select <include refid="Company_Column_List"/> from company where company_type = 1
+        select
+        <include refid="Company_Column_List"/>
+        from company
         <!--<where>
             <include refid="Company_Query_Param"/>
             <if test="observertype != null">
@@ -67,51 +69,47 @@
         </where>-->
     </select>
     <!-- 获取已添加该人力公司的所有酒店 -->
-    <select id="queryHotelsByHrId" parameterType="com.microdev.param.CompanyQueryDTO" resultType="com.microdev.model.Company">
-        select <include refid="Company_Column_List"/> from company where id IN
-        (select hotel_id from hotel_hr_company where hr_id = #{id} and status = 0)
-        <if test="name != null and name !=''">
-            and name like '%${name}%'
-        </if>
-        <if test="leader != null and leader !=''">
-            and leader like '%${leader}%'
-        </if>
-        order by create_time desc
+    <select id="queryHotelsByHrId" parameterType="java.lang.String" resultType="com.microdev.model.Company">
+        select
+        <include refid="Company_Column_List"/>
+        from company where id IN
+        (select hotel_id from hotel_hr_company where hr_id = #{HrId} and status = 0)
     </select>
     <!-- 获取已添加该酒店的所有人力公司 -->
-    <select id="queryCompanysByHotelId" parameterType="com.microdev.param.CompanyQueryDTO" resultType="com.microdev.model.Company">
-        select <include refid="Company_Column_List"/> from company where id IN
-        (select hr_id from hotel_hr_company where hotel_id = #{id} and status = 0)
-        <if test="name != null and name !=''">
-            and name like '%${name}%'
-        </if>
-        <if test="leader != null and leader !=''">
-            and leader like '%${leader}%'
-        </if>
-        order by create_time desc
+    <select id="queryCompanysByHotelId" parameterType="java.lang.String" resultType="com.microdev.model.Company">
+        select
+        <include refid="Company_Column_List"/>
+        from company where id IN
+        (select hr_id from hotel_hr_company where hotel_id = #{HotelId} and status = 0)
     </select>
     <!-- 获取酒店可以添加的人力公司 -->
     <select id="queryNotCompanysByHotelId" parameterType="java.lang.String" resultType="com.microdev.model.Company">
-        select <include refid="Company_Column_List"/> from company where id not IN
+        select
+        <include refid="Company_Column_List"/>
+        from company where id not IN
         (select hr_id from hotel_hr_company where hotel_id = #{HotelId} and status = 0) and company_type = 2
     </select>
     <!-- 获得人力公司可以添加的酒店 -->
     <select id="queryNotHotelsByHrId" parameterType="java.lang.String" resultType="com.microdev.model.Company">
-        select <include refid="Company_Column_List"/> from company where id not IN
+        select
+        <include refid="Company_Column_List"/>
+        from company where id not IN
         (select hotel_id from hotel_hr_company where hr_id = #{HrId} and status = 0) and company_type = 1
     </select>
     <!-- 根据ID查找查找公司信息 -->
     <select id="findCompanyById" parameterType="java.lang.String" resultType="com.microdev.model.Company">
-        select <include refid="Company_Column_List"/> from company where id = #{Id}
+        select
+        <include refid="Company_Column_List"/>
+        from company where id = #{Id}
     </select>
     <!-- 添加人力公司 -->
     <insert id="save" parameterType="com.microdev.model.Company">
-        insert into company values (#{id},#{create_time},#{deleted},#{modify_time},
+        insert into company values (#{pid},#{create_time},#{deleted},#{modify_time},
         #{address},#{business_license},#{company_type},#{confirmed_time},#{latitude},#{leader},
         #{leader_mobile},#{logo},#{longitude},#{name},#{status})
     </insert>
-    <insert id="insertAreaRelation">
-        insert into user_area values(#{id},#{code},#{level})
+	<insert id="insertAreaRelation">
+        insert into user_area values(#{pid},#{code},#{level})
     </insert>
     <!-- 修改人力公司 -->
     <update id="update" parameterType="com.microdev.model.Company">
@@ -120,14 +118,15 @@
         logo = #{logo},longitude = #{longitude},name = #{name},status = #{status} where id = #{id}
     </update>
     <select id="queryByworkerId" resultType="com.microdev.model.Company">
-        select <include refid="Company_Column_List"/> from company where id IN
-        (select DISTINCT company_id from user_company where user_id = #{userId}
+        select
+        <include refid="Company_Column_List"/>
+        from company where id IN
+        (select DISTINCT company_id from user_company where user_id = #{userId})
     </select>
     <select id="findFirstByLeaderMobile" resultType="com.microdev.model.Company">
-        select <include refid="Company_Column_List"/> from company where leader_mobile = #{mobile} limit 1
+        select
+        <include refid="Company_Column_List"/>
+        from company where leader_mobile = #{mobile} limit 1
     </select>
-    <insert id="insertCompanyArea">
-        insert into area_relation values()
-    </insert>
 
 </mapper>

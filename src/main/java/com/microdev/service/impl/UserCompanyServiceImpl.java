@@ -3,14 +3,19 @@ package com.microdev.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.microdev.common.ResultDO;
 import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
+import com.microdev.common.utils.DateUtil;
+import com.microdev.converter.TaskConverter;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
 import com.microdev.param.DictDTO;
 import com.microdev.param.HrQueryWorkerDTO;
+import com.microdev.param.HrTaskWorkersResponse;
 import com.microdev.param.WokerQueryHrDTO;
 import com.microdev.service.MessageService;
 import com.microdev.service.UserCompanyService;
@@ -20,8 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Transactional
 @Service
@@ -126,6 +130,24 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         return    ResultDO.buildSuccess("解绑已提交");
     }
 
+    @Override
+    public ResultDO getHrwWorkers(Paginator paginator, HrQueryWorkerDTO queryDTO) {
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize());
+        List<TaskWorker> list1 = userCompanyMapper.getUnSelectableWorker(queryDTO);
+        PageInfo<TaskWorker> pageInfo = new PageInfo<TaskWorker>(list1);
+        List<HrTaskWorkersResponse> list = new ArrayList<>();
+        for (TaskWorker taskWorker:pageInfo.getList()) {
+            list.add(taskConverter.toWorkerReponse(taskWorker));
+        }
+        HashMap<String, Object> result = new HashMap<>();
+        //设置获取到的总记录数total：
+        result.put("total", pageInfo.getTotal());
+        //设置数据集合rows：
+        result.put("result", list);
+        result.put("page", paginator.getPage());
+        return ResultDO.buildSuccess(result);
+    }
+
     /**
      * 根据人力公司获取小时工
      */
@@ -133,7 +155,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
     public ResultDO getHrWorkers(Paginator paginator, HrQueryWorkerDTO queryDTO) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         //查询数据集合
-        Map map = new HashMap<String,Object>();
+        Map<String,Object> map = new HashMap<>();
         map.put("company_id",queryDTO.getHrId());
         map.put("status",1);
         List<User> list = null;
@@ -166,23 +188,6 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         return ResultDO.buildSuccess(result);
     }
 
-    @Override
-    public ResultDO getHrwWorkers(Paginator paginator, HrQueryWorkerDTO queryDTO) {
-        PageHelper.startPage(paginator.getPage(), paginator.getPageSize());
-        List<TaskWorker> list1 = userCompanyMapper.getUnSelectableWorker(queryDTO);
-        PageInfo<TaskWorker> pageInfo = new PageInfo<TaskWorker>(list1);
-        List<HrTaskWorkersResponse> list = new ArrayList<>();
-        for (TaskWorker taskWorker:pageInfo.getList()) {
-            list.add(taskConverter.toWorkerReponse(taskWorker));
-        }
-        HashMap<String, Object> result = new HashMap<>();
-        //设置获取到的总记录数total：
-        result.put("total", pageInfo.getTotal());
-        //设置数据集合rows：
-        result.put("result", list);
-        result.put("page", paginator.getPage());
-        return ResultDO.buildSuccess(result);
-    }
 
     /**
      * 根据小时工获取人力公司

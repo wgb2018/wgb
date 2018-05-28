@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.microdev.mapper.MessageMapper" >
-    <sql id="Message_Column_List" >
+<mapper namespace="com.microdev.mapper.MessageMapper">
+    <sql id="Message_Column_List">
         id as pid, create_time, deleted, modify_time,
         message_code, message_content, message_link, message_title, msg_link, status, worker_id, worker_task_id, hotel_id,
-        hr_company_id, apply_type, content, minutes, supplement_time_end, supplement_time, request_id
+        hr_company_id, applicant_type, apply_type, content, minutes, supplement_time_end, supplement_time, request_id,check_sign
     </sql>
 
     <update id="updateByMapId" parameterType="java.util.Map">
@@ -44,14 +44,16 @@
                 worker_task_id = #{workerTaskId,jdbcType=VARCHAR},
             </if>
         </set>
-        where id = #{id,jdbcType=VARCHAR}
+        where id = #{pid,jdbcType=VARCHAR}
     </update>
 
-    <update id="updateStatus" parameterType="java.lang.String" >
+    <update id="updateStatus" parameterType="java.lang.String">
         update message set status = 1 where id = #{id}
     </update>
     <select id="findAll" parameterType="com.microdev.param.MessageQuery" resultType="com.microdev.model.Message">
-        select <include refid="Message_Column_List" /> from message
+        select
+        <include refid="Message_Column_List"/>
+        from message
         <where>
             <if test="workerId !=null and workerId != ''">
                 worker_id = #{workerId}
@@ -68,7 +70,7 @@
         </where>
     </select>
 
-    <select id="selectMessageDetails" parameterType="java.lang.String"
+	<select id="selectMessageDetails" parameterType="java.lang.String"
             resultType="java.util.Map">
 		SELECT u.`username` AS username, CASE u.`sex` WHEN 'MALE'
 		THEN '男' WHEN
@@ -87,9 +89,8 @@
 		INNER JOIN task t
 		ON m.worker_task_id = t.id
 	</select>
-
     <select id="selectPunchMessage" parameterType="java.lang.String"
-            resultType="java.util.Map">
+            resultType="com.microdev.param.PunchMessageDTO">
         SELECT m.`supplement_time` AS supplement, wl.`from_date`
         AS
         fromDate, wl.`to_date` AS toDate,
@@ -109,7 +110,7 @@
     <select id="selectHrCooperateInfo" parameterType="java.lang.String"
             resultType="com.microdev.param.HrApply">
         SELECT m.message_title AS messageTitle,
-        DATE_FORMAT(m.create_time,'%Y-%m-%d %h:%i:%s') AS createTime,
+        DATE_FORMAT(m.create_time,'%Y-%m-%d %H:%m:%s') AS createTime,
         c.`name`  AS name, c.`leader` AS leader, c.`address` AS
         address,c.`leader_mobile` AS leaderMobile
         FROM (
@@ -196,7 +197,7 @@
     <select id="selectHrDeployInfo" parameterType="java.util.Map"
             resultType="com.microdev.param.HrDeployApply">
         SELECT m.`content` AS reason,m.message_title AS
-        messageTitle,DATE_FORMAT(m.create_time,'%Y-%m-%d %h:%i:%s') AS
+        messageTitle,DATE_FORMAT(m.create_time,'%Y-%m-%d %H:%m:%s') AS
         createTime,c.`name` AS NAME, c.`leader` AS leader, c.`address` AS
         address,c.`leader_mobile` AS leaderMobile,
         th.need_workers AS
@@ -215,17 +216,15 @@
     </select>
     <insert id="saveBatch" parameterType="java.util.List">
         insert into message(id,create_time,deleted,modify_time,status,
-        worker_task_id, worker_id, message_code, message_title,
-        message_content,content,minutes,supplement_time_end,supplement_time
-        ,request_id) values
+        worker_task_id, worker_id, message_code, message_title,message_content,content,minutes,    supplement_time_end,supplement_time ,request_id, hotel_id, hr_company_id, applicant_type,apply_type,message_link,msg_link, check_sign) values
         <foreach collection="list" item="item" separator=",">
-            (#{item.id},#{item.createTime},#{item.deleted},#{item.modifyTime},#{item.status},
+            (#{item.pid},#{item.createTime},#{item.deleted},#{item.modifyTime},#{item.status},
             #{item.workerTaskId},#{item.workerId},#{item.messageCode},#{item.messageTitle},#{item.messageContent}
             ,#{item.content},#{item.minutes},#{item.supplementTime},#{item.supplementTimeEnd},
-            #{item.requestId})
+            #{item.requestId},#{item.hotelId},#{item.hrCompanyId},#{item.applicantType},#{item.applyType},#{item.messageLink}, #{item.msgLink}, #{item.checkSign})
         </foreach>
     </insert>
-    <select id="selectAllMessage" parameterType="java.util.Map" resultType="com.microdev.param.HrDeployApply">
+    <select id="selectAllMessage" parameterType="java.util.Map" resultType="com.microdev.param.MessageResponse">
         SELECT
         message_title AS messageTitle,CASE WHEN
         DATE_FORMAT(create_time,'%Y-%m-%d') = CURDATE() THEN '今天' WHEN
@@ -245,5 +244,84 @@
             </if>
         </where>
         ORDER BY STATUS ASC ,create_time DESC
+    </select>
+
+    <select id="selectUnReadMessage" resultType="com.microdev.model.Message" parameterType="java.util.Map">
+        SELECT CASE message_code WHEN 'applySupplementMessage' THEN '补签申请' WHEN 'applyExtraMessage' THEN '加时申请' WHEN 'applyLeaveMessage' THEN '请假申请'
+        WHEN 'applyChangeMessage' THEN '调配申请' WHEN 'applyBindMessage' THEN '绑定申请' WHEN 'workTaskMessage' THEN '任务推荐' END AS messageCode,create_time,message_content FROM message
+        WHERE STATUS = 0 AND deleted = 0
+        <if test="workerId != null">
+            and worker_id = #{workerId}
+        </if>
+        <if test="hotelId != null">
+            and hotel_id = #{hotelId}
+        </if>
+        <if test="hrCompanyId != null">
+            and hr_company_id = #{hrCompanyId}
+        </if>
+        <if test="applyType != null">
+            <if test="applyType == 1 ">
+                and apply_type in (0, 1)
+            </if>
+            <if test="applyType != 1 ">
+                and apply_type = #{applyType}
+            </if>
+        </if>
+    </select>
+
+    <select id="selectUnReadCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+      SELECT COUNT(1) FROM message WHERE deleted = 0
+        <if test="status != null">
+            and status = #{status}
+        </if>
+        <if test="workerId != null">
+            and worker_id = #{workerId}
+        </if>
+        <if test="hotelId != null">
+            and hotel_id = #{hotelId}
+        </if>
+        <if test="hrCompanyId != null">
+            and hr_company_id = #{hrCompanyId}
+        </if>
+        <if test="applyType != null">
+            <if test="applyType == 1 ">
+                and apply_type in (0, 1)
+            </if>
+            <if test="applyType != 1 ">
+                and apply_type = #{applyType}
+            </if>
+        </if>
+      <if test="messageCode != null">
+        and message_code = #{messageCode}
+      </if>
+      <if test="applicantType != null">
+        and applicant_type = #{applicantType}
+      </if>
+      <if test="checkSign != null">
+          and check_sign = #{checkSign}
+      </if>
+    </select>
+
+    <select id = "selectByParam" parameterType="java.util.Map" resultType="com.microdev.model.Message">
+        select message_code, message_content, message_link, message_title, msg_link, content from
+        message
+        <where>
+            <if test="workerId != null">
+                and worker_id = #{workerId}
+            </if>
+            <if test="hotelId != null">
+                and hotel_id = #{hotelId}
+            </if>
+            <if test="hrCompanyId != null">
+                and hr_company_id = #{hrCompanyId}
+            </if>
+            <if test="applicantType != null">
+                and applicant_type = #{applicantType}
+            </if>
+            <if test="applyType != null">
+                and apply_type = #{applyType}
+            </if>
+            order by check_sign asc, create_time desc
+        </where>
     </select>
 </mapper>

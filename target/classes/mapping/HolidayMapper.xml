@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.microdev.mapper.HolidayMapper">
+    <sql id="Base_Column_List">
+    id, create_time, deleted, modify_time, from_date, to_date, task_worker_id
+  </sql>
+
+    <select id="selectByTaskWorkId" parameterType="java.lang.String" resultType="com.microdev.model.Holiday">
+  	select from_date,to_date from holiday 
+  	where task_worker_id = #{taskWorkerId} AND DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 2 DAY),'%y-%m-%d') = DATE_FORMAT(create_time, '%y-%m-%d')
+  </select>
+
+    <select id="selectUserHolidayByTaskWorkId" parameterType="java.lang.String" resultType="java.util.Map">
+  	SELECT GROUP_CONCAT(from_date) AS fromDate, GROUP_CONCAT(to_date) AS toDate,create_time FROM holiday
+  	where task_worker_id = #{taskWorkerId}
+	GROUP BY DATE_FORMAT(create_time,'%y-%m-%d') order by create_time ASC
+  </select>
+
+    <select id="selectHolidayByTaskWorkId" parameterType="java.lang.String" resultType="com.microdev.model.Holiday">
+      select create_time, modify_time, from_date, to_date
+       from holiday where task_worker_id = #{taskWorkerId}
+       order by create_time ASC
+
+  </select>
+</mapper>

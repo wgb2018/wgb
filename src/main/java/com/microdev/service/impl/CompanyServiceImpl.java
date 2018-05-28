@@ -8,6 +8,7 @@ import com.microdev.common.ResultDO;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.StringKit;
+import com.microdev.converter.TaskConverter;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
 import com.microdev.param.*;
@@ -52,6 +53,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     DictMapper dictMapper;
     @Autowired
     TaskTypeRelationMapper taskTypeRelationMapper;
+
     @Override
     public ResultDO pagingCompanys(Paginator paginator, CompanyQueryDTO queryDTO) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
@@ -129,6 +131,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
         return ResultDO.buildSuccess("添加成功");
     }
+
 
     @Override
     public ResultDO createCompany(Company companyDTO) {
@@ -238,17 +241,10 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             throw new ParamsException("参数错误");
         }
         Message mg = new Message();
-        if ("0".equals(status)) {
-            mg.setPid(id);
-            mg.setStatus(1);
-            messageMapper.updateById(mg);
-        } else if ("1".equals(status)) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", id);
-            map.put("status", 1);
-            map.put("modifyTime", OffsetDateTime.now(Clock.system(ZoneId.of("Asia/Shanghai"))));
-
-            messageMapper.updateByMapId(map);
+        mg.setPid(id);
+        mg.setStatus(1);
+        messageMapper.updateByMapId(mg);
+        if ("1".equals(status)) {
             PunchMessageDTO punch = messageMapper.selectPunchMessage(id);
             if (punch == null) {
                 throw new ParamsException("数据异常");
@@ -289,8 +285,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 taskWorkerMapper.addMinutes(punch.getTaskWorkerId(),minutes,shouldPayMoney_hrtoworker);
                 taskHrCompanyMapper.addMinutes(punch.getTaskHrId(),minutes,shouldPayMoney_hrtoworker,shouldPayMoney_hoteltohr);
                 taskMapper.addMinutes(punch.getTaskId(),minutes,shouldPayMoney_hoteltohr);
-            } else {
-            throw new ParamsException("参数错误");
+            }
         }
         return true;
     }

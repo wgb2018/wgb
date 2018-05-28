@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.microdev.mapper.UserCompanyMapper" >
-    <sql id="UserCompany_Query_List" >
+<mapper namespace="com.microdev.mapper.UserCompanyMapper">
+    <sql id="UserCompany_Query_List">
         id as pid, create_time, deleted, modify_time,
         all_tasks, company_type, confirmed_date, confirmed_tasks, no_promise_tasks,
         refused_reason, refused_tasks, relieve_time, status, user_type, company_id, user_id
     </sql>
-    <sql id="TaskWorker_Query_List" >
+	<sql id="TaskWorker_Query_List" >
         id as pid, create_time, deleted, modify_time,
         confirmed_date, from_date, have_pay_money, minutes, no_promise, refused_reason, repast_times,
         settled, settled_date, should_pay_money, status, to_date, worker_id, task_hr_id, user_id, day_start_time, day_end_time, user_name,hourly_pay,hr_company_name,hotel_name
@@ -18,10 +18,12 @@
     <update id="addNoPromiseTasks">
         UPDATE user_company SET no_Promise_Tasks = no_Promise_Tasks + 1 Where user_id = #{userId} and company_id=#{companyId}
     </update>
-    <select id="findOneUserCompany" resultType="com.microdev.model.UserCompany" >
-        SELECT <include refid="UserCompany_Query_List"/> FROM user_company as a Where a.company_id=#{companyId} and user_id=#{userId} LIMIT 1
+    <select id="findOneUserCompany" resultType="com.microdev.model.UserCompany">
+        SELECT
+        <include refid="UserCompany_Query_List"/>
+        FROM user_company as a Where a.company_id=#{companyId} and a.user_id=#{userId} LIMIT 1
     </select>
-    <select id="getSelectableWorker" resultType="com.microdev.model.User" parameterType="com.microdev.param.HrQueryWorkerDTO">
+	<select id="getSelectableWorker" resultType="com.microdev.model.User" parameterType="com.microdev.param.HrQueryWorkerDTO">
         select <include refid="User_Query_List"/> FROM user where id in (select user_id
         from  user_company where status = 1 and
         company_id = #{hrId} and user_id not in (select
