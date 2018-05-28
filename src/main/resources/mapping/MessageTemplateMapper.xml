@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.microdev.mapper.MessageTemplateMapper" >
+    <sql id="MessageTemplate_Column_List" >
+        id as pid, create_time, deleted, modify_time, code,
+        content, msg_link, title
+    </sql>
+    <select id="findFirstByCode" parameterType="java.lang.String" resultType="com.microdev.model.MessageTemplate">
+        SELECT <include refid="MessageTemplate_Column_List"/> FROM message_template where code = #{code}
+    </select>
+    <insert id="save" parameterType="com.microdev.model.MessageTemplate">
+        insert into message_template values(#{id},#{createTime},#{deleted},
+        #{modifyTime},#{code},#{msgLink},#{title})
+    </insert>
+    <update id="update" parameterType="com.microdev.model.MessageTemplate">
+        update message_template set create_time = #{createTime},deleted = #{deleted},
+        modify_time = #{modifyTime},code = #{code},
+        content = #{content},msg_link = #{msgLink},title = #{title}
+        where id = #{pid}
+    </update>
+    <select id="findAll" resultType="com.microdev.model.MessageTemplate">
+        select <include refid="MessageTemplate_Column_List"/> from message_template
+    </select>
+
+</mapper>

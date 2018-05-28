@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.microdev.mapper.BillMapper" >
+    <sql id="Bill_Column_List" >
+        id as pid, create_time, deleted, modify_time,
+        pay_money, task_id, hr_company_id, hr_company_name, hotel_id,
+        hotel_name, worker_id, worker_name, pay_type
+    </sql>
+    <select id="selectHotelPayBill" resultType="com.microdev.model.Bill" parameterType="com.microdev.param.HotelPayHrCompanyRequest">
+        select <include refid="Bill_Column_List"/> FROM  bill WHERE
+        task_id = #{hotelTaskID} and hr_company_id = #{hrCompanyId} and hotel_id = #{hotelId}
+        order by create_time desc
+    </select>
+    <select id="selectHrCompanyPayBill" resultType="com.microdev.model.Bill" parameterType="com.microdev.param.HrCompanyPayWorkerRequest">
+        select <include refid="Bill_Column_List"/> FROM  bill WHERE
+        task_id = #{HrCompanyTaskID} and hr_company_id = #{hrCompanyId} and worker_id = #{WorkerId}
+        order by create_time desc
+    </select>
+
+
+</mapper>

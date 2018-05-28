@@ -1,0 +1,86 @@
+server:
+  port: 8095
+
+spring:
+
+    redis:
+        database: 0
+        host: 139.196.115.177
+        port: 6379
+        password: Yituiyun2018
+    timeout: 0
+    pool:
+        max-active: 50
+        max-wait: -1
+        max-idle: 25
+        min-idle: 5
+    datasource:
+        name: test
+        url: jdbc:mysql://microworker.mysql.rds.aliyuncs.com:3306/microworkeronline?useUnicode=true&amp;charaterEncoding=utf-8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&&useSSL=false
+        username: ytydb
+        password: Yituiyun2018
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        filters: stat
+        maxActive: 20
+        initialSize: 1
+        maxWait: 60000
+        minIdle: 1
+        timeBetweenEvictionRunsMillis: 60000
+        minEvictableIdleTimeMillis: 300000
+        validationQuery: select 'x'
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+        poolPreparedStatements: true
+        maxOpenPreparedStatements: 20
+#mybatis
+mybatis-plus:
+  mapper-locations: classpath:mapping/*.xml
+  type-aliases-package: com.microdev.model
+  configuration:
+      mapUnderscoreToCamelCase: true
+  global-config:
+      #刷新mapper 调试神器
+      refresh-mapper: true
+      #自定义填充策略接口实现
+      meta-object-handler: com.microdev.model.MyMetaObjectHandler
+
+
+pagehelper:
+    helperDialect: mysql
+    reasonable: true
+    supportMethodsArguments: true
+    params: count=countSql
+custom:
+  objectstore:
+    platform: aliyunOSS
+    settings:
+      accessKeyId: LTAIVIk0xvsKN7r7
+      accessKeySecret: JKAczFvCHnkpo8oE9k52bVEncgIrER
+      bucket: weigongbao
+      endpoint: oss-cn-shanghai.aliyuncs.com
+      domain: http://weigongbao.oss-cn-shanghai.aliyuncs.com/
+  contact:
+    sms:
+      accessKeyId: LTAIVIk0xvsKN7r7
+      accessKeySecret: JKAczFvCHnkpo8oE9k52bVEncgIrER
+      defaultConnectTimeout: 10000
+      defaultReadTimeout: 10000
+      smsCodeLength: 6
+  security:
+    social:
+      qq:
+        appId: changeme
+        appSecret: changeme
+        callback: changeme
+      weixin:
+        appId: "wx8f86d3ae3ca012f3"
+        appSecret: "f1d1bcefc174d963724b07f86e481ba7"
+        callback: "http://www.microdev.cn/qqLogin/weixin"
+    oauth:
+      token:
+        storeType: jwt
+        jwtSecret: microdev
+        accessTokenLifetimeSeconds: 7200000
+        refreshTokenLifetimeSeconds: 2592000

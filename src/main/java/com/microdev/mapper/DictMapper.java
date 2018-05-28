@@ -1,0 +1,39 @@
+package com.microdev.mapper;
+
+import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.microdev.model.Dict;
+import com.microdev.param.DictDTO;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Map;
+
+@Repository
+public interface DictMapper extends BaseMapper<Dict> {
+    DictDTO findByNameAndCode(@Param("name")String name, @Param("code")String code);
+
+    void save(Dict dict);
+
+    Dict findOne(String id);
+
+    void delete(Dict dict);
+
+    void update(Dict dict);
+
+    List<Dict> findByName(String name);
+
+    List<Dict> findAll();
+
+    List<Dict> queryDicts(DictDTO dictDTO);
+
+    Map<String,String> findProvince();
+
+    Map<String,String> findCity(String pid);
+
+    Map<String,String> findArea(String cid);
+
+    List<String> selectTypeByUserId(String id);
+
+    List<Dict> queryTypeByUserId(String id);
+}

@@ -1,0 +1,59 @@
+package com.microdev.service;
+
+import com.baomidou.mybatisplus.service.IService;
+import com.microdev.model.User;
+import com.microdev.param.ChangePwdRequest;
+import com.microdev.param.TokenDTO;
+import com.microdev.param.UserDTO;
+import com.microdev.param.WeixinUserInfo;
+
+import java.util.List;
+
+
+public interface UserService extends IService<User>{
+       User create(User user) throws Exception;
+
+       List<User> query(UserDTO user) throws Exception;
+       //用户名+密码登录
+       TokenDTO login(UserDTO user) throws Exception;
+
+       //用户注册
+       TokenDTO register(UserDTO userDTO) throws Exception;
+       /**
+        * 退出登录
+        */
+       void logout();
+       /**
+        * 修改密码
+        */
+       TokenDTO changePwd(ChangePwdRequest request ) throws Exception;
+       /**
+        * 手机号+短信验证码 登录
+        */
+       TokenDTO smslogin(UserDTO login);
+       /**
+        * 微信小程序用户注册并登录
+        */
+       TokenDTO register_weixin(WeixinUserInfo weixinUserInfo) throws Exception;
+       /**
+        * 重置密码
+        */
+       void resetPwd(UserDTO user) throws Exception;
+       /**
+        * 修改基础信息
+        */
+       void modifyBaseInfo(UserDTO userDTO);
+       /**
+        * 修改手机号
+        *
+        * @param newMobile        新手机号
+        * @param newMobileSmsCode 新手机号短信验证码
+        */
+       void modifyMobile(String newMobile, String newMobileSmsCode);
+       /**
+        * 个人信息
+        *
+        * @return
+        */
+       UserDTO me();
+}

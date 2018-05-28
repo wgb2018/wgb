@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.microdev.mapper.TaskHrCompanyMapper" >
+    <sql id="TaskHrCompany_Query_List" >
+        id as pid, create_time, deleted, modify_time,
+        hourly_pay, confirmed_workers, have_pay_money, minutes, need_workers, refused_workers, repast_times, should_pay_money, status, workers_have_pay, workers_should_pay,
+        hr_company_id, task_id, hotel_id, hr_company_name, hotel_name, task_type_code, task_type_text, task_content, refused_reason, hourly_pay_hotel
+    </sql>
+    <insert id="save" parameterType="com.microdev.model.TaskHrCompany">
+        insert into task_hr_company values(#{pid},#{createTime},#{deleted},#{modifyTime},
+        #{hourlyPay},#{confirmedWorkers},#{havePayMoney},#{minutes},#{needWorkers},#{refusedWorkers},
+        #{repastTimes},#{shouldPayMoney},#{status},#{workersHavePay},#{workersShouldPay},#{hrCompanyId},
+        #{taskId},#{hotelId},#{hrCompanyName},#{hotelName},#{taskTypeCode},#{taskTypeText},#{taskContent}
+        ,#{refusedReason})
+    </insert>
+    <select id="queryByHotelTaskId" resultType="com.microdev.model.TaskHrCompany">
+        select <include refid="TaskHrCompany_Query_List"/> from task_hr_company where task_id = #{id}
+    </select>
+    <select id="queryByTaskId" resultType="com.microdev.model.TaskHrCompany">
+        select <include refid="TaskHrCompany_Query_List"/> from task_hr_company where id = #{id}
+    </select>
+    <update id="update" parameterType="com.microdev.model.TaskHrCompany">
+        update task_hr_company set deleted = #{createTime},modify_time = #{modifyTime},hourly_pay = #{hourlyPay},confirmed_workers = #{confirmedWorkers},
+        have_pay_money = #{havePayMoney},minutes = #{minutes},need_workers = #{needWorkers},refused_workers = #{refusedWorkers},repast_times = #{repastTimes},
+        should_pay_money = #{shouldPayMoney},status = #{status},workers_have_pay = #{workersHavePay},workers_should_pay = #{workersShouldPay},hr_company_id = #{hrCompanyId},
+        task_id = #{taskId},hotel_id = #{hotelId},hr_company_name = #{hrCompanyName},hotel_name = #{hotelName},task_type_code = #{taskTypeCode},task_type_text = #{taskTypeText},
+        task_content = #{taskContent},refused_reason = #{refusedReason}
+        where id = #{pid}
+    </update>
+    <select id="queryHrCompanyTasks" parameterType="com.microdev.param.TaskHrQueryDTO"
+            resultType="com.microdev.model.TaskHrCompany">
+        select <include
+            refid="TaskHrCompany_Query_List"/> from task_hr_company
+        <where>
+            <if test="hrCompanyId != null and hrCompanyId != ''">
+                hr_company_id = #{hrCompanyId}
+            </if>
+            <if test="taskId != null and taskId != ''">
+                task_id = #{taskId}
+            </if>
+            <if test="hotelId != null and hotelId != ''">
+                hotel_id = #{hotelId}
+            </if>
+            <if test="taskTypeText != null and taskTypeText != ''">
+                and task_type_text like '%${taskTypeText}%'
+            </if>
+            <if test="fromDate != null">
+                and to_date &gt;= #{fromDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="payUp != null">
+                and hourly_pay &lt;= #{payUp}
+            </if>
+            <if test="payDown != null">
+                and hourly_pay >= #{payDown}
+            </if>
+            <if test="toDate != null">
+                and from_date &lt;= #{toDate,jdbcType=TIMESTAMP}
+            </if>
+
+            <if test="hrCompanyName != null and hrCompanyName != ''">
+                and hr_company_name like '%${hrCompanyName}%'
+            </if>
+            <if test="payStatus == 1">
+                and have_pay_money = 0
+            </if>
+            <if test="payStatus == 2">
+                and have_pay_money &gt;= 0 and should_pay_money != have_pay_money
+            </if>
+            <if test="payStatus == 3">
+                and have_pay_money &gt;= 0 and should_pay_money = have_pay_money
+            </if>
+            <if test="status !=null and status !=0  and status !=7 ">
+                and status = #{status}
+            </if>
+            <if test="status == 0">
+                and status in (1,2,4,5)
+            </if>
+            <if test="status == 7">
+                and status in (3,6)
+            </if>
+        </where> order by create_time desc
+    </select>
+    <select id="queryHotelBill" resultType="com.microdev.model.TaskHrCompany">
+        select  sum(should_pay_money) as should_pay_money,sum(have_pay_money) as have_pay_money,
+        hr_company_id,hr_company_name from task_hr_company
+        where hotel_id = #{hotelId} group by hr_company_id,hr_company_name
+    </select>
+    <select id="queryHrCompanyBill" resultType="com.microdev.model.TaskHrCompany">
+        select  sum(should_pay_money) as should_pay_money,sum(have_pay_money) as have_pay_money,
+        hotel_id,hotel_name from task_hr_company
+        where hr_company_id = #{hrCompanyId} group by hotel_id,hotel_name
+    </select>
+    <select id="selectPayHrInfo" parameterType="java.lang.String" resultType="java.util.Map">
+        SELECT hr_company_name AS companyName, IFNULL(`should_pay_money`,0) AS shouldPayMoney, IFNULL(have_pay_money,0) AS havePayMoney,
+        IFNULL(should_pay_money - have_pay_money,0) AS waitPayMoney, hr_company_id as hrCompanyId
+        FROM task_hr_company
+        WHERE hotel_id = #{hotelId}
+    </select>
+    <update id="addMinutes" >
+        UPDATE task_hr_company SET minutes = minutes + #{minutes},workers_should_pay = workers_should_pay + #{hrShouldPayMoney},
+        should_pay_money = should_pay_money + #{hotelShouldPayMoney} Where id = #{taskHrCompanyId}
+    </update>
+    <update id="updateStatus">
+        update task_hr_company set status = #{status} where id = #{id}
+    </update>
+    <select id="selectByTaskId" parameterType="java.lang.String" resultType="java.util.Map">
+        SELECT th.hourly_pay_hotel AS hourlyPayHotel,t.hotel_id AS hotelId,t.hotel_name AS
+        hotelName,t.id AS hotelTaskId,t.task_type_text AS taskTypeText,
+        t.task_content AS taskContent, t.`from_date` AS fromDate, t.`to_date` AS toDate
+        , c.`address` AS hotelAddress,IFNULL(t.`hourly_pay`, 0) AS hotelHourlyPay,
+        th.hr_company_id AS hrCompanyId, th.hr_company_name AS hrCompanyName, th.id AS id,IFNULL(th.`hourly_pay`,0) AS hourlyPay,
+        th.need_workers AS needWorkers, th.confirmed_workers AS confirmedWorkers, th.`refused_workers` AS refusedWorkers,
+        th.`status` AS status, th.`repast_times` AS repastTimes, th.`minutes` AS minutes, th.`should_pay_money` AS shouldPayMoney,
+        IFNULL(th.`have_pay_money`,0) AS havePayMoney, (IFNULL(th.`should_pay_money`,0) - IFNULL(th.have_pay_money,0)) AS waitPayMoney,
+        IFNULL(th.`workers_have_pay`,0) AS workersHavePay,
+        IFNULL(th.`workers_should_pay`,0) AS workersShouldPay, (IFNULL(th.workers_should_pay,0) - IFNULL(th.workers_have_pay,0)) AS workersWaitPay
+        FROM task t
+        INNER JOIN task_hr_company th
+        ON t.id = th.task_id
+        INNER JOIN company c
+        ON t.hotel_id = c.id
+        WHERE th.id = #{id}
+    </select>
+</mapper>

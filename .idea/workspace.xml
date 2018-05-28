@@ -1,0 +1,716 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="abcfbc0c-9d58-4ba6-9d04-969f0024c01f" name="Default" comment="111">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microdev/Controller/DictAdminController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microdev/Controller/DictAdminController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/META-INF/spring-configuration-metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/META-INF/spring-configuration-metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/Controller/BillController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/Controller/BillController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/Controller/DictAdminController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/Controller/DictAdminController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/Controller/HotelController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/Controller/HotelController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/Controller/HrCompanyController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/Controller/HrCompanyController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/Controller/MessageController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/Controller/MessageController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/Controller/SuggestionController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/Controller/SuggestionController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/Controller/TaskController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/Controller/TaskController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/Controller/TaskHrCompanyController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/Controller/TaskHrCompanyController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/Controller/TaskWorkerController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/Controller/TaskWorkerController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/Controller/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/Controller/UserController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/Controller/WorkerCompanyController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/Controller/WorkerCompanyController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/Controller/WorkerController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/Controller/WorkerController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/WgbApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/WgbApplication.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/PagingDO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/PagingDO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/PunchCount.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/PunchCount.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/ResultDO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/ResultDO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/WebConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/WebConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/context/CallId.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/context/CallId.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/context/ServiceContext.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/context/ServiceContext.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/context/ServiceContextHeader.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/context/ServiceContextHeader.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/context/ServiceContextHolder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/context/ServiceContextHolder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/context/User.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/context/User.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/exception/AbstractBusinessException.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/exception/AbstractBusinessException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/exception/AuthenticationException.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/exception/AuthenticationException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/exception/AuthorizationException.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/exception/AuthorizationException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/exception/BusinessException.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/exception/BusinessException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/exception/ParamsException.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/exception/ParamsException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/exception/ServiceNotFoundException.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/exception/ServiceNotFoundException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/exception/TaskWorkerNotFoundException.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/exception/TaskWorkerNotFoundException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/filter/ExceptionFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/filter/ExceptionFilter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/filter/GlobalExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/filter/GlobalExceptionHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/filter/SecurityFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/filter/SecurityFilter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/oss/AliOssObjectStoreServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/oss/AliOssObjectStoreServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/oss/ObjectStoreConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/oss/ObjectStoreConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/oss/ObjectStoreService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/oss/ObjectStoreService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/paging/Direction.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/paging/Direction.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/paging/PagedList.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/paging/PagedList.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/paging/Paginator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/paging/Paginator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/paging/Sort.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/paging/Sort.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/utils/CreateUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/utils/CreateUtil.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/utils/DateUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/utils/DateUtil.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/utils/FileSafeCode.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/utils/FileSafeCode.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/utils/FileUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/utils/FileUtil.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/utils/PasswordHash.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/utils/PasswordHash.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/utils/RedisUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/utils/RedisUtil.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/utils/RegExpKit.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/utils/RegExpKit.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/utils/StringKit.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/utils/StringKit.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/common/utils/TokenUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/common/utils/TokenUtil.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/converter/DictConverter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/converter/DictConverter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/converter/SmsConverter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/converter/SmsConverter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/converter/TaskConverter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/converter/TaskConverter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/converter/TaskHrCompanyConverter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/converter/TaskHrCompanyConverter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/converter/TaskWorkerConverter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/converter/TaskWorkerConverter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/converter/UserConverter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/converter/UserConverter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/converter/WorkLogConverter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/converter/WorkLogConverter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/AreaRelationMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/AreaRelationMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/BillMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/BillMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/CompanyMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/CompanyMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/DictMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/DictMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/HolidayMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/HolidayMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/HotelHrCompanyMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/HotelHrCompanyMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/HotelPayDetailsMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/HotelPayDetailsMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/MessageMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/MessageMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/MessageTemplateMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/MessageTemplateMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/RoleMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/RoleMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/SmsMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/SmsMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/SmsTemplateMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/SmsTemplateMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/SocialMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/SocialMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/SuggestionMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/SuggestionMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/TaskHrCompanyMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/TaskHrCompanyMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/TaskMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/TaskMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/TaskTypeRelationMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/TaskTypeRelationMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/TaskWorkerMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/TaskWorkerMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/UserCompanyMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/UserCompanyMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/UserMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/UserMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/WorkerLogMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/WorkerLogMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/mapper/WorkerMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/mapper/WorkerMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/BaseEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/BaseEntity.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/Bill.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/Bill.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/Company.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/Company.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/Dict.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/Dict.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/Holiday.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/Holiday.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/HotelHrCompany.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/HotelHrCompany.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/HotelPayHrDetails.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/HotelPayHrDetails.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/Message.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/Message.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/MessageTemplate.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/MessageTemplate.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/MyMetaObjectHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/MyMetaObjectHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/Resource.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/Resource.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/Role.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/Role.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/Sms.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/Sms.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/SmsTemplate.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/SmsTemplate.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/Social.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/Social.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/Suggestion.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/Suggestion.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/Task.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/Task.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/TaskHrCompany.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/TaskHrCompany.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/TaskWorker.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/TaskWorker.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/User.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/User.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/UserCompany.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/UserCompany.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/WorkLog.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/WorkLog.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/model/Worker.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/model/Worker.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/AreaAndServiceRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/AreaAndServiceRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/BindDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/BindDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/ChangePwdRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/ChangePwdRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/CompanyBindDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/CompanyBindDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/CompanyDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/CompanyDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/CompanyQueryDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/CompanyQueryDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/CompanyViewModelDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/CompanyViewModelDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/ContactProperties$SmsProperties.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/ContactProperties$SmsProperties.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/ContactProperties.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/ContactProperties.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/CreateMsgTemplateRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/CreateMsgTemplateRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/CreateSuggestionRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/CreateSuggestionRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/CreateTaskRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/CreateTaskRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/DictDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/DictDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/Gender.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/Gender.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/HotelDeployInfoRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/HotelDeployInfoRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/HotelHrIdBindDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/HotelHrIdBindDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/HotelInfo.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/HotelInfo.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/HotelPayHrCompanyRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/HotelPayHrCompanyRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/HotelPayHrRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/HotelPayHrRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/HrApply.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/HrApply.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/HrCompanyPayWorkerRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/HrCompanyPayWorkerRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/HrDeployApply.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/HrDeployApply.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/HrPayDetailRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/HrPayDetailRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/HrPayWorkerRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/HrPayWorkerRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/HrQueryWorkerDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/HrQueryWorkerDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/HrTaskDistributeRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/HrTaskDistributeRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/HrTaskWorkersResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/HrTaskWorkersResponse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/LeaveApply.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/LeaveApply.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/MessageQuery.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/MessageQuery.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/MessageRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/MessageRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/PageRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/PageRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/PendRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/PendRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/PermissionDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/PermissionDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/PunchDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/PunchDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/PunchMessageDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/PunchMessageDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/PunchType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/PunchType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/RefusedTaskRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/RefusedTaskRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/SmsDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/SmsDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/SmsSendDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/SmsSendDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/SmsTemplateDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/SmsTemplateDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/SmsType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/SmsType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/SuggestionQuery.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/SuggestionQuery.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/SuggestionResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/SuggestionResponse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/SupplementResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/SupplementResponse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/TaskDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/TaskDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/TaskHrCompanyDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/TaskHrCompanyDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/TaskHrCompanyViewDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/TaskHrCompanyViewDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/TaskHrQueryDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/TaskHrQueryDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/TaskQueryDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/TaskQueryDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/TaskViewDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/TaskViewDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/TaskWorkerQuery.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/TaskWorkerQuery.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/TaskWorkerStatus.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/TaskWorkerStatus.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/TokenDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/TokenDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/TokenProperties.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/TokenProperties.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/UserDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/UserDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/UserTaskResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/UserTaskResponse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/WeixinUserInfo.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/WeixinUserInfo.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/WokerQueryHrDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/WokerQueryHrDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/WorkTaskViewModel.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/WorkTaskViewModel.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/WorkerBalanceDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/WorkerBalanceDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/WorkerBalanceDetailDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/WorkerBalanceDetailDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/WorkerDealTaskDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/WorkerDealTaskDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/WorkerPayDetailRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/WorkerPayDetailRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/WorkerPunchDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/WorkerPunchDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/WorkerSupplementRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/WorkerSupplementRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/api/request/PunchRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/api/request/PunchRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/api/request/UpdateBirthdayRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/api/request/UpdateBirthdayRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/api/request/UpdateGenderRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/api/request/UpdateGenderRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/api/request/UpdateHealthCardRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/api/request/UpdateHealthCardRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/api/request/UpdateIDCardBackRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/api/request/UpdateIDCardBackRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/api/request/UpdateIDCardFrontRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/api/request/UpdateIDCardFrontRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/api/request/UpdateIDCardNumberRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/api/request/UpdateIDCardNumberRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/api/request/UpdateNameRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/api/request/UpdateNameRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/api/response/GetBalanceResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/api/response/GetBalanceResponse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/api/response/GetCurrentPunchResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/api/response/GetCurrentPunchResponse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/api/response/GetCurrentTaskResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/api/response/GetCurrentTaskResponse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/param/api/response/WorkLogResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/param/api/response/WorkLogResponse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/BillService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/BillService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/CompanyService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/CompanyService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/DictService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/DictService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/MessageService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/MessageService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/RoleService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/RoleService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/SmsFacade.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/SmsFacade.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/SmsService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/SmsService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/SuggestionService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/SuggestionService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/TaskHrCompanyService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/TaskHrCompanyService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/TaskService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/TaskService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/TaskWorkerService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/TaskWorkerService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/TokenService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/TokenService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/UserCompanyService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/UserCompanyService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/UserService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/UserService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/WorkerService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/WorkerService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/BillServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/BillServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/CompanyServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/CompanyServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/DictServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/DictServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/JwtTokenServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/JwtTokenServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/MessageServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/MessageServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/RoleServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/RoleServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/SmsFacadeImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/SmsFacadeImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/SmsServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/SmsServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/SuggestionServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/SuggestionServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/TaskHrCompanyServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/TaskHrCompanyServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/TaskServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/TaskServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/TaskWorkerServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/TaskWorkerServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/UserCompanyServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/UserCompanyServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/WorkerServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/service/impl/WorkerServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/type/ActionType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/type/ActionType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/type/PlatformType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/type/PlatformType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/type/ResourceType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/type/ResourceType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/type/SocialType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/type/SocialType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/type/UserSex.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/type/UserSex.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microdev/type/UserType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microdev/type/UserType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+    </list>
+    <ignored path="$PROJECT_DIR$/out/" />
+    <ignored path="$PROJECT_DIR$/target/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
+      <file leaf-file-name="WgbApplication.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/WgbApplication.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="459">
+              <caret line="30" column="27" selection-start-line="30" selection-start-column="27" selection-end-line="30" selection-end-column="27" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DictAdminController.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/DictAdminController.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2538">
+              <caret line="101" column="16" selection-start-line="101" selection-start-column="16" selection-end-line="101" selection-end-column="16" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="application.yml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/application.yml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="243">
+              <caret line="9" column="30" lean-forward="true" selection-start-line="9" selection-start-column="30" selection-end-line="9" selection-end-column="30" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Constant.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Constant.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="278">
+              <caret line="33" column="33" lean-forward="true" selection-start-line="33" selection-start-column="13" selection-end-line="33" selection-end-column="33" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="UserController.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/UserController.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="459">
+              <caret line="160" column="5" lean-forward="true" selection-start-line="153" selection-start-column="4" selection-end-line="160" selection-end-column="5" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="JwtTokenServiceImpl.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/JwtTokenServiceImpl.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="521">
+              <caret line="105" column="41" lean-forward="true" selection-start-line="105" selection-start-column="41" selection-end-line="105" selection-end-column="41" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="UserServiceImpl.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/UserServiceImpl.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="8802">
+              <caret line="350" column="90" selection-start-line="350" selection-start-column="90" selection-end-line="350" selection-end-column="90" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1809">
+              <caret line="67" column="16" selection-start-line="67" selection-start-column="16" selection-end-line="67" selection-end-column="16" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>StaticLoggerBinder</find>
+      <find>slf4g</find>
+      <find>8085</find>
+      <find>刷新</find>
+      <find>/oauth/refreshToken/</find>
+    </findStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/UserServiceImpl.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/Controller/DictAdminController.java" />
+      </list>
+    </option>
+  </component>
+  <component name="MavenProjectNavigator">
+    <treeState>
+      <expand>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="wgb" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="wgb" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+          <item name="Run Configurations" type="21c1f71a:MavenProjectsStructure$RunConfigurationsNode" />
+        </path>
+      </expand>
+      <select />
+    </treeState>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="7">
+    <option name="x" value="158" />
+    <option name="y" value="78" />
+    <option name="width" value="1312" />
+    <option name="height" value="665" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="wgb" type="b2602c69:ProjectViewProjectNode" />
+              <item name="wgb" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="wgb" type="b2602c69:ProjectViewProjectNode" />
+              <item name="wgb" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="wgb" type="b2602c69:ProjectViewProjectNode" />
+              <item name="wgb" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="wgb" type="b2602c69:ProjectViewProjectNode" />
+              <item name="wgb" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="wgb" type="b2602c69:ProjectViewProjectNode" />
+              <item name="wgb" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="com" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="wgb" type="b2602c69:ProjectViewProjectNode" />
+              <item name="wgb" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="com" type="462c0819:PsiDirectoryNode" />
+              <item name="microdev" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="wgb" type="b2602c69:ProjectViewProjectNode" />
+              <item name="wgb" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="com" type="462c0819:PsiDirectoryNode" />
+              <item name="microdev" type="462c0819:PsiDirectoryNode" />
+              <item name="Controller" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="wgb" type="b2602c69:ProjectViewProjectNode" />
+              <item name="wgb" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="resources" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="wgb" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
+      <pane id="AndroidView" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../svn/wgb" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Application.WgbApplication">
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+    </configuration>
+    <configuration name="WgbApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.microdev.WgbApplication" />
+      <module name="wgb" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.microdev.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <patterns />
+    </configuration>
+    <configuration name="wgb" type="MavenRunConfiguration" factoryName="Maven">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="clean" />
+                <option value="package" />
+                <option value="-P" />
+                <option value="test" />
+              </list>
+            </option>
+            <option name="pomFileName" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+    </configuration>
+    <configuration default="true" type="TestNG" factoryName="TestNG">
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SUITE_NAME" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="GROUP_NAME" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="OUTPUT_DIRECTORY" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <option name="USE_DEFAULT_REPORTERS" value="false" />
+      <option name="PROPERTIES_FILE" />
+      <properties />
+      <listeners />
+    </configuration>
+    <list>
+      <item itemvalue="Maven.wgb" />
+      <item itemvalue="Application.WgbApplication" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.WgbApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="abcfbc0c-9d58-4ba6-9d04-969f0024c01f" name="Default" comment="" />
+      <created>1527488335370</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1527488335370</updated>
+    </task>
+    <task id="LOCAL-00001" summary="111">
+      <created>1527488782774</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1527488782774</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="right" id="Palette&#9;" order="3" />
+      <window_info id="Image Layers" order="2" />
+      <window_info anchor="right" id="Capture Analysis" order="3" />
+      <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
+      <window_info anchor="right" id="Maven Projects" order="3" weight="0.3299356" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.5219907" />
+      <window_info anchor="bottom" id="Terminal" order="7" />
+      <window_info id="Capture Tool" order="2" />
+      <window_info id="Designer" order="2" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25751072" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info id="UI Designer" order="2" />
+      <window_info anchor="right" id="Theme Preview" order="3" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Messages" order="7" weight="0.8888889" />
+    </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="111" />
+    <option name="LAST_COMMIT_MESSAGE" value="111" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/WgbApplication.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="30" column="27" selection-start-line="30" selection-start-column="27" selection-end-line="30" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/DictAdminController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2538">
+          <caret line="101" column="16" lean-forward="true" selection-start-line="101" selection-start-column="16" selection-end-line="101" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/UserServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="8802">
+          <caret line="350" column="90" selection-start-line="350" selection-start-column="90" selection-end-line="350" selection-end-column="90" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1809">
+          <caret line="67" column="16" lean-forward="true" selection-start-line="67" selection-start-column="16" selection-end-line="67" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/application.yml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/WgbApplication.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="783">
+          <caret line="29" column="25" lean-forward="true" selection-start-line="29" selection-start-column="25" selection-end-line="29" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/UserServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="9477">
+          <caret line="351" column="20" selection-start-line="351" selection-start-column="16" selection-end-line="351" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/UserServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="8802">
+          <caret line="350" column="90" selection-start-line="350" selection-start-column="90" selection-end-line="350" selection-end-column="90" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1809">
+          <caret line="67" column="16" selection-start-line="67" selection-start-column="16" selection-end-line="67" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/WgbApplication.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="30" column="27" selection-start-line="30" selection-start-column="27" selection-end-line="30" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/DictAdminController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2538">
+          <caret line="101" column="16" selection-start-line="101" selection-start-column="16" selection-end-line="101" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/application.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="243">
+          <caret line="9" column="30" lean-forward="true" selection-start-line="9" selection-start-column="30" selection-end-line="9" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Constant.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="278">
+          <caret line="33" column="33" lean-forward="true" selection-start-line="33" selection-start-column="13" selection-end-line="33" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/JwtTokenServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="521">
+          <caret line="105" column="41" lean-forward="true" selection-start-line="105" selection-start-column="41" selection-end-line="105" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/UserController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="160" column="5" lean-forward="true" selection-start-line="153" selection-start-column="4" selection-end-line="160" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>1.7</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>

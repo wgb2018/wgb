@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.microdev.mapper.RoleMapper" >
+    <sql id="Role_Column_List" >
+        id as pid, create_time, deleted, modify_time, code, name
+    </sql>
+    <select id="queryAllRolesByUserId" parameterType="java.lang.String" resultType="com.microdev.model.Role">
+        SELECT <include refid="Role_Column_List"/> FROM ROlE WHERE id IN (SELECT role_id FROM user_role WHERE user_id = #{userId})
+    </select>
+    <insert id="insertRoleAndUserRelation">
+        insert into user_role values(#{userId},#{roleId})
+    </insert>
+    <select id="findByCode" parameterType="java.lang.String" resultType="com.microdev.model.Role">
+        select <include refid="Role_Column_List"/> from role where code = #{code} limit 1
+    </select>
+
+</mapper>

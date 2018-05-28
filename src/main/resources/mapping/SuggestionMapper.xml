@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.microdev.mapper.SuggestionMapper" >
+    <sql id="Role_Column_List" >
+        id as pid, create_time, deleted, modify_time, code, name
+    </sql>
+    <select id="querySuggestions" parameterType="com.microdev.param.SuggestionQuery" resultType="com.microdev.param.SuggestionResponse">
+        select
+        u.user_name,u.sex,u.user_type,s.suggestionContent,
+        s.create_time from suggestion s left join user u
+        on s.user_id = u.id
+        <where>
+            <if test="userName !=null and userName !=''">
+                user_name  like '%${userName,jdbcType='VARCHAR'}%'
+            </if>
+            <if test="userType !=null and userType !=''">
+                user_type = userType
+            </if>
+        </where>
+        order by s.create_time DESC
+    </select>
+
+
+</mapper>
