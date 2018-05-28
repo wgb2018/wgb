@@ -80,7 +80,7 @@
         where id in
         <foreach collection="list" item="item" open="(" separator=","
                  close=")">
-            #{item.id}
+            #{item.pid}
         </foreach>
     </update>
 
