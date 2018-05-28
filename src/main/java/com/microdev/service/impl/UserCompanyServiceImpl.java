@@ -1,36 +1,27 @@
 package com.microdev.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.microdev.common.ResultDO;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
-import com.microdev.mapper.CompanyMapper;
-import com.microdev.mapper.DictMapper;
-import com.microdev.mapper.UserCompanyMapper;
-import com.microdev.mapper.UserMapper;
-import com.microdev.model.Company;
-import com.microdev.model.Dict;
-import com.microdev.model.User;
-import com.microdev.model.UserCompany;
+import com.microdev.mapper.*;
+import com.microdev.model.*;
 import com.microdev.param.DictDTO;
 import com.microdev.param.HrQueryWorkerDTO;
 import com.microdev.param.WokerQueryHrDTO;
+import com.microdev.service.MessageService;
 import com.microdev.service.UserCompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.microdev.model.*;
-import com.microdev.param.*;
-import com.microdev.common.utils.DateUtil;
-import com.microdev.converter.TaskConverter;
+import org.springframework.util.StringUtils;
 
 import java.time.OffsetDateTime;
-import java.time.OffsetTime;
-import java.util.UUID;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Transactional
 @Service
@@ -43,6 +34,10 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
     CompanyMapper companyMapper;
     @Autowired
     DictMapper dictMapper;
+    @Autowired
+    private MessageService messageService;
+    @Autowired
+    private MessageMapper messageMapper;
 	@Autowired
     TaskConverter taskConverter;
     @Autowired
@@ -51,7 +46,17 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
      * 小时工绑定人力公司
      */
     @Override
-    public ResultDO workerBindHr(String workerId, String hrId) {
+    public ResultDO workerBindHr(String workerId, String hrId, String messageId) {
+        if (StringUtils.isEmpty(messageId)) {
+            throw new ParamsException("参数messageId不能为空");
+        }
+        Message message = messageMapper.selectById(messageId);
+        if (message == null || message.getStatus() == 1) {
+            throw new ParamsException("消息已被处理");
+        }
+        message.setStatus(1);
+        messageMapper.updateAllColumnById(message);
+        boolean flag = true;
         UserCompany userCompany= userCompanyMapper.findOneUserCompany(hrId,workerId);
         if(userCompany==null){
             userCompany=new UserCompany();
@@ -67,11 +72,32 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             userCompany.setCompanyType(company.getCompanyType());
             userCompany.setUserId(user.getPid());
             userCompany.setUserType(user.getUserType());
+            flag = false;
         }
         //TODO 绑定上限设置
+        DictDTO dict = dictMapper.findByNameAndCode("WorkerBindHrMaxNum","1");
+        Integer maxNum = Integer.parseInt(dict.getText());
+        Wrapper<UserCompany>  wrapper = new EntityWrapper<>();
+        wrapper.and("user_id", workerId);
+        wrapper.and("company_id", hrId);
+        wrapper.in("status", new Integer[]{0, 1, 3});
+        Integer hasBindNum = userCompanyMapper.selectCount(wrapper);
+        if (hasBindNum >= maxNum) {
+            throw new BusinessException("已达到可绑定人力公司的个数上限");
+        }
         //TODO 已绑定是否返回重复绑定提示
         userCompany.setStatus(1);
-        userCompanyMapper.insert(userCompany);
+        if (flag) {
+            // 修改
+            userCompany.setStatus(1);
+            userCompanyMapper.updateAllColumnById(userCompany);
+
+        } else {
+            // 新增
+            userCompany.setStatus(1);
+            userCompany.setDeleted(false);
+            userCompanyMapper.insert(userCompany);
+        }
         return    ResultDO.buildSuccess("添加成功");
     }
     /**
@@ -90,10 +116,17 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         OffsetDateTime releaseTime=OffsetDateTime.now().plusDays(days);
         userCompany.setRelieveTime(releaseTime);
         userCompanyMapper.updateById(userCompany);
+        User user = userMapper.selectById(workerId);
+        if (user == null) {
+            throw new ParamsException("用户不存在");
+        }
+        Set<String> set = new HashSet<>();
+        set.add(hrId);
+        messageService.bindHrCompany(user.getWorkerId(), set, user.getUsername(), "applyUnbindHrCompanyMessage");
         return    ResultDO.buildSuccess("解绑已提交");
     }
 
-     /**
+    /**
      * 根据人力公司获取小时工
      */
     @Override

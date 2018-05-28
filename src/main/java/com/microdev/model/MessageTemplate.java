@@ -31,28 +31,8 @@ public class MessageTemplate extends BaseEntity {
      */
     private String msgLink;
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
+    /**
+     * 消息类型
+     */
+    private Integer type;
 }

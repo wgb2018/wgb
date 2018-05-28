@@ -11,13 +11,12 @@ public interface UserCompanyService extends IService<UserCompany> {
     /**
      * 小时工绑定人力公司
      */
-    ResultDO workerBindHr(String workerId, String hrId);
+    ResultDO workerBindHr(String workerId, String hrId, String messageId);
     ResultDO workerUnbindHr(String workerId,String hrId);
     /**
      * 根据人力公司获取小时工
      */
     ResultDO getHrWorkers(Paginator paginator, HrQueryWorkerDTO queryDTO);
-	ResultDO getHrwWorkers(Paginator paginator, HrQueryWorkerDTO queryDTO);
     /**
      * 根据小时工获取人力公司
      */

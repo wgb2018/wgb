@@ -43,16 +43,16 @@ public class HotelController {
      */
     @PostMapping("/Companys")
     public ResultDO createCompany(@RequestBody Company companyDTO) {
-        //companyDTO.setCompanyType(1);
+        companyDTO.setCompanyType(1);
         return companyService.createCompany(companyDTO);
     }
     /**
      * 酒店添加合作的人力资源公司
      */
     @PostMapping("/hotels/{hotelId}/add/{hrCompanyId}")
-    public ResultDO addHrCompany(@PathVariable String hotelId,@PathVariable String hrCompanyId) {
-        HotelHrIdBindDTO hotelHr=new HotelHrIdBindDTO(hotelId,hrCompanyId,1);
-        return companyService.hotelAddHrCompanyById(hotelHr);
+    public ResultDO addHrCompany(@PathVariable String hotelId,@PathVariable String hrCompanyId, String messageId) {
+
+        return companyService.hotelAddHrCompanyById(hotelId, hrCompanyId, messageId, 1);
     }
     /**
      * 分页查询酒店信息

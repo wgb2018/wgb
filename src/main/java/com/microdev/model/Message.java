@@ -49,6 +49,10 @@ public class Message extends BaseEntity {
      */
     private String hrCompanyId;
     /**
+     *消息发送者类型1小时工2人力公司3酒店4系统
+     */
+    private int applicantType;
+    /**
      * 申请类型
      */
     private int applyType;
@@ -75,6 +79,10 @@ public class Message extends BaseEntity {
     private OffsetDateTime supplementTime;
 
     private String requestId;
+    /**
+     * 是否已查看0未查看1已查看
+     */
+    private Integer checkSign = 0;
 
     public Integer getStatus() {
         return status;

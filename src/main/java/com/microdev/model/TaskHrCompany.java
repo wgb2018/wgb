@@ -41,13 +41,12 @@ public class TaskHrCompany extends BaseEntity {
     private Integer refusedWorkers=0;
     /**
      * 任务状态
-     * 0：新任务等待确认
-     * 1: 接受任务
-     * 2: 拒绝任务
-     * 3：派发中
-     * 4: 申请调配
-     * 5: 等待做
-	 * 6: 等待做
+     * 1：新任务等待确认
+     * 2: 接受任务
+     * 3: 拒绝任务
+     * 4：派发中
+     * 5: 申请调配
+     * 6: 等待做
      */
     private Integer status;
     /**
@@ -107,6 +106,11 @@ public class TaskHrCompany extends BaseEntity {
      *  人力公司已付小时工金额 (这个字段不清楚何时赋值,因为系统暂时是线下支付)
      */
     private String taskContent;
+
+    /**
+     * 是否已查看0未查看1已查看
+     */
+    private Integer checkSign = 0;
 
 
     public Integer getStatus() {

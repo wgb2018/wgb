@@ -19,7 +19,7 @@ public interface TaskWorkerService extends IService<TaskWorker> {
     /**
      * 接受任务
      */
-    ResultDO receivedTask(String workerId, String workerTaskId);
+    ResultDO receivedTask(String workerId, String workerTaskId, String messageId);
     /**
      * 拒绝任务
      */
@@ -28,4 +28,18 @@ public interface TaskWorkerService extends IService<TaskWorker> {
      * 根据小时工获取任务详情列表
      */
     ResultDO pagesTaskWorkers(Paginator paginator, TaskWorkerQuery query);
+
+    /**
+     * 统计未读当前任务数量
+     * @param userId
+     * @return
+     */
+    int selectUnreadCount(String userId);
+
+    /**
+     * 统计未读已完成任务数量
+     * @param userId
+     * @return
+     */
+    int selectCompleteCount(String userId);
 }

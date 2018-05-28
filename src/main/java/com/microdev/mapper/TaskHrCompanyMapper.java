@@ -14,9 +14,9 @@ import java.util.Map;
 public interface TaskHrCompanyMapper extends BaseMapper<TaskHrCompany> {
     void save(TaskHrCompany taskHrCompany);
 
-    List<TaskHrCompany> queryByHotelTaskId(String id);
+    List<TaskHrCompany> queryByHotelTaskId(@Param("id") String id);
 
-    TaskHrCompany queryByTaskId(String id);
+    TaskHrCompany queryByTaskId(@Param("id") String id);
 
     void update(TaskHrCompany taskHrCompany);
 
@@ -34,5 +34,9 @@ public interface TaskHrCompanyMapper extends BaseMapper<TaskHrCompany> {
     List<Map<String, Object>> selectPayHrInfo(String hotelId);
 
     Map<String, Object> selectByTaskId(String hrCompanyId);
+
+    int selectUnreadCount(String hrCompanyId);
+
+    int selectCompleteCount(String hrCompanyId);
 }
 

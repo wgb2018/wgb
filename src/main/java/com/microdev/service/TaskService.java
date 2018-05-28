@@ -25,4 +25,18 @@ public interface TaskService extends IService<Task> {
      * 酒店支付人力公司
      */
     ResultDO hotelPayHr(HotelPayHrRequest payHrRequest);
+
+    /**
+     * 查询酒店未读任务
+     * @param hotelId
+     * @return
+     */
+    int selectUnReadAmount(String hotelId);
+
+    /**
+     * 查询已完成任务数量
+     * @param hotelId
+     * @return
+     */
+    int selectCompleteAmount(String hotelId);
 }

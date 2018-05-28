@@ -58,4 +58,28 @@ public class MessageController {
     public ResultDO editMessageStatus(@PathVariable String id) {
         return messageService.updateMsgStatus(id);
     }
+
+    /**
+     * 未读消息数量
+     * @param id
+     * @param applyType
+     * @return
+     */
+    @GetMapping("/messages/unread/amount")
+    public ResultDO getMessageAmount(String id, String applyType) {
+
+        return ResultDO.buildSuccess(messageService.selectUnReadCount(id, applyType));
+    }
+
+    /**
+     * 用户查询未读消息
+     * @param id
+     * @param applyType
+     * @return
+     */
+    @GetMapping("/messages/unread/messsageInfo")
+    public ResultDO getUnReadMessageInfo(String id, String applyType) {
+
+        return ResultDO.buildSuccess(messageService.selectUnReadMessage(id, applyType));
+    }
 }

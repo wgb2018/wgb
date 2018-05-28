@@ -17,6 +17,8 @@ import com.microdev.param.api.response.GetBalanceResponse;
 import com.microdev.param.api.response.GetCurrentTaskResponse;
 import com.microdev.service.DictService;
 import com.microdev.service.WorkerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +34,8 @@ import java.util.*;
 @Transactional
 @Service
 public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> implements WorkerService {
+
+    private static final Logger log = LoggerFactory.getLogger(WorkerServiceImpl.class);
     @Autowired
     UserMapper userMapper;
     @Autowired
@@ -56,21 +60,15 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     private AreaRelationMapper areaRelationMapper;
     @Autowired
     private DictService dictService;
-	@Autowired
-    DictMapper dictMapper;
-    @Autowired
-    WorkerMapper workerMapper;
-    @Autowired
-    TaskTypeRelationMapper taskTypeRelationMapper;
 
     @Override
     public GetCurrentTaskResponse getCurrentTask(String workerId) {
         User user = userMapper.queryByWorkerId(workerId);
-        String userId = user.getPid();
+
         if (user == null) {
             throw new ParamsException("参数userId输入有误");
         }
-
+        String userId = user.getPid();
         //com.microdev.common.context.User user = ServiceContextHolder.getServiceContext().getUser();
 
         //if(user.用户类型为小时工)
@@ -167,6 +165,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             log.setToDate(null);
             log.setMinutes(0);
             log.setRepastTimes(0);
+            log.setPunchDate(OffsetDateTime.now());
+            log.setTaskId(taskMapper.selectTaskIdByTaskWorkerId(taskWorkerId));
+            workLogMapper.insert(log);
         } else {
             log = workLogMapper.findFirstByTaskWorkerId(taskWorkerId);
             if (log != null) {
@@ -178,7 +179,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     //求时间差
                     Duration duration = Duration.between(log.getFromDate(), log.getToDate());
                     Long seconds_span = duration.getSeconds();
-                    Long minutes = seconds_span / 60;
+                    Long minutes = (seconds_span / 60);
 
                     //不再进行就餐打卡
                     //minutes = minutes - taskWorker.getRepastTimes() * 30;//减去用餐时间
@@ -204,13 +205,15 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                                 shouldPayMoney_hrtoworker, shouldPayMoney_hoteltohr);
                         taskMapper.addMinutes(task.getPid(), minutes, shouldPayMoney_hoteltohr);
                     }
+                    log.setMinutes(minutes.intValue());
                 }
             } else {
                 throw new WorkLogNotFoundException("无相应工作记录");
             }
+            log.setPunchDate(OffsetDateTime.now());
+            workLogMapper.updateById(log);
         }
-        log.setPunchDate(OffsetDateTime.now());
-        workLogMapper.updateById(log);
+
         return true;
     }
 
@@ -223,6 +226,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     @Override
     public List<Company> getHrCompanyPartners(String userId) {
         List<Company> result = companyMapper.queryByworkerId(userId);
+        if (result == null) {
+            return new ArrayList<>();
+        }
         return result;
     }
 
@@ -277,15 +283,16 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setSupplementTime(info.getTime());
         m.setSupplementTimeEnd(info.getEndTime());
         m.setContent(info.getReason());
-        Map<String, Object> tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
+        Map<String, String> tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
 
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applyLeaveMessage");
         m.setMessageCode(mess.getCode());
         m.setMessageTitle(mess.getTitle());
-        m.setWorkerId((String) tp.get("workerId"));
+        m.setWorkerId(tp.get("workerId"));
         m.setWorkerTaskId(info.getTaskWorkerId());
+        m.setHotelId(tp.get("hotelId"));
         Map<String, String> param = new HashMap<>();
-        param.put("userName", (String) tp.get("username"));
+        param.put("userName", tp.get("username"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         param.put("startTime", info.getTime().format(formatter));
         param.put("taskContent", info.getReason());
@@ -316,21 +323,24 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         if (info.getTime() == null) {
             throw new ParamsException("开始时间不能为空");
         }
-
+        if (info.getMinutes() == null || info.getMinutes() <= 0) {
+            throw new ParamsException("加时时间不能小于0");
+        }
         Message m = new Message();
         m.setContent(info.getReason());
         m.setSupplementTime(info.getTime());
         m.setMinutes(info.getMinutes());
-        Map<String, Object> tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
+        Map<String, String> tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
 
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applyOvertimeMessage");
         m.setMessageCode(mess.getCode());
         m.setMessageTitle(mess.getTitle());
-        m.setWorkerId((String) tp.get("workerId"));
+        m.setWorkerId(tp.get("workerId"));
         m.setWorkerTaskId(info.getTaskWorkerId());
+        m.setHotelId(tp.get("hotelId"));
         Map<String, String> param = new HashMap<>();
-        param.put("userName", (String) tp.get("username"));
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        param.put("userName", tp.get("username"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         param.put("startTime", info.getTime().format(formatter));
         param.put("taskContent", info.getReason());
         param.put("minutes", info.getMinutes().toString());
@@ -359,16 +369,16 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
 
         Message m = new Message();
-        Map<String, Object> tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
+        Map<String, String> tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
         m.setContent(info.getReason());
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applyCancelTaskMessage");
         m.setMessageCode(mess.getCode());
         m.setMessageTitle(mess.getTitle());
-        m.setWorkerId((String) tp.get("workerId"));
+        m.setWorkerId(tp.get("workerId"));
         m.setWorkerTaskId(info.getTaskWorkerId());
-        m.setHrCompanyId(info.getApplicateId());
+        m.setHrCompanyId(tp.get("hrId"));
         Map<String, String> param = new HashMap<>();
-        param.put("userName", (String) tp.get("username"));
+        param.put("userName",  tp.get("username"));
         param.put("taskContent", info.getReason());
         String c = StringKit.templateReplace(mess.getContent(), param);
         m.setMessageContent(c);
@@ -443,15 +453,16 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         Message m = new Message();
         m.setSupplementTime(info.getTime());
         m.setContent(info.getReason());
-        Map<String, Object> tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
+        Map<String, String> tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
 
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applySupplementMessage");
         m.setMessageCode(mess.getCode());
         m.setMessageTitle(mess.getTitle());
-        m.setWorkerId((String) tp.get("workerId"));
+        m.setWorkerId( tp.get("workerId"));
         m.setWorkerTaskId(info.getTaskWorkerId());
+        m.setHotelId(tp.get("hotelId"));
         Map<String, String> param = new HashMap<>();
-        param.put("userName", (String) tp.get("username"));
+        param.put("userName",  tp.get("username"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         param.put("time", info.getTime().format(formatter));
         param.put("taskContent", info.getReason());
@@ -469,8 +480,330 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
      */
     @Override
     public UserTaskResponse selectUserTaskInfo(String taskWorkerId, String userId) {
-        if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(userId)) {
+        if (StringUtils.isEmpty(taskWorkerId) || StringUtils.isEmpty(userId)) {
             throw new ParamsException("参数不能为空");
+        }
+        UserTaskResponse response = selectWorkerInfo(userId);
+
+        // 查询用户工作记录
+        TaskWorker taskWorker = taskWorkerMapper.selectById(taskWorkerId);
+        if (taskWorker == null) {
+            throw new ParamsException("查询不到用户工作任务");
+        }
+        OffsetDateTime startDay = taskWorker.getFromDate();
+        OffsetDateTime endDay = taskWorker.getToDate();
+        OffsetDateTime nowDate = OffsetDateTime.now();
+        if (nowDate.compareTo(startDay) < 0) {
+            log.info("任务还没有开始");
+            return response;
+        }
+        if (nowDate.compareTo(endDay) < 0) {
+            endDay = nowDate;
+        }
+        OffsetTime dayStart = taskWorker.getDayStartTime();
+        OffsetTime dayEnd = taskWorker.getDayEndTime();
+        startDay = OffsetDateTime.of(startDay.getYear(), startDay.getMonthValue(), startDay.getDayOfMonth(), dayStart.getHour(), dayStart.getMinute(), dayStart.getSecond(),0, ZoneOffset.UTC);
+        endDay = OffsetDateTime.of(endDay.getYear(), endDay.getMonthValue(), endDay.getDayOfMonth(), dayEnd.getHour(), dayEnd.getMinute(), dayEnd.getSecond(),0, ZoneOffset.UTC);
+        long start = dayStart.getLong(ChronoField.MINUTE_OF_DAY);
+        long end = dayEnd.getLong(ChronoField.MINUTE_OF_DAY);
+        int expire = nowDate.getDayOfYear() - startDay.getDayOfYear() > 7 ? 1 : 0;
+        long workDay = endDay.getLong(ChronoField.EPOCH_DAY) - startDay.getLong(ChronoField.EPOCH_DAY);
+        // 查询打卡记录
+        DateTimeFormatter d = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        List<WorkerDetail> detailList = new ArrayList<>();
+        List<WorkerOneDayInfo> list = workLogMapper.selectUserPunchDetail(taskWorkerId);
+        List<Holiday> holidayList = holidayMapper.selectHolidayByTaskWorkId(taskWorkerId);
+        PunchInfo workLog = null;
+        WorkerDetail detail = null;
+        List<PunchInfo> workList = null;
+        if (list == null || list.size() == 0) {
+            if (holidayList == null || holidayList.size() == 0) {
+                while (startDay.compareTo(nowDate) > 0) {
+                    detail = new WorkerDetail();
+                    workList = new ArrayList<>();
+                    workLog = new PunchInfo();
+                    workLog.setStatus("3");
+                    workLog.setEmployerConfirmStatus(0);
+                    if (nowDate.getDayOfYear() - startDay.getDayOfYear() > 7) {
+                        workLog.setExpire(1);
+                    }
+                    workList.add(workLog);
+                    detail.setTime(startDay.format(d));
+                    detailList.add(detail);
+                    startDay = startDay.plusDays(1);
+                }
+
+            } else {
+                while (true) {
+                    if (startDay.compareTo(nowDate) > 0) break;
+                    detail = new WorkerDetail();
+                    workList = new ArrayList<>();
+                    workLog = new PunchInfo();
+                    long time = 0L;
+                    boolean flag = false;
+                    int num = 0;
+                    for (Holiday holiday : holidayList) {
+                        if (holiday.getFromDate().getDayOfYear() == startDay.getDayOfYear()) {
+                            if (holiday.getToDate().getDayOfYear() > startDay.getDayOfYear()) {
+
+                                if (startDay.getLong(ChronoField.MINUTE_OF_DAY) >= holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY)) {
+
+                                    workLog.setStatus("5");
+                                    workLog.setEmployerConfirmStatus(0);
+                                    workLog.setStartTime(startDay.toOffsetTime());
+                                    workLog.setEndTime(endDay.toOffsetTime());
+                                    if (nowDate.getDayOfYear() - startDay.getDayOfYear() > 7) {
+                                        workLog.setExpire(1);
+                                    }
+                                    workList.add(workLog);
+                                    detail.setTime(startDay.format(d));
+                                    detailList.add(detail);
+                                    break;
+
+                                } else {
+                                    if (!flag) {
+                                        workLog.setStatus("5");
+                                        workLog.setEmployerConfirmStatus(0);
+                                        workLog.setStartTime(startDay.toOffsetTime());
+                                        workLog.setEndTime(holiday.getFromDate().toOffsetTime());
+                                        if (nowDate.getDayOfYear() - startDay.getDayOfYear() > 7) {
+                                            workLog.setExpire(1);
+                                        }
+                                        workList.add(workLog);
+                                        detail.setTime(startDay.format(d));
+                                    }
+                                    num++;
+                                    time += endDay.getLong(ChronoField.MINUTE_OF_DAY) - holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY);
+                                }
+
+                            } else {
+                                //当天请假
+                                if (!flag) {
+                                    workLog.setStatus("5");
+                                    workLog.setEmployerConfirmStatus(0);
+                                    workLog.setStartTime(holiday.getFromDate().toOffsetTime());
+                                    workLog.setEndTime(holiday.getToDate().toOffsetTime());
+                                    if (nowDate.getDayOfYear() - startDay.getDayOfYear() > 7) {
+                                        workLog.setExpire(1);
+                                    }
+                                    workList.add(workLog);
+                                    detail.setTime(startDay.format(d));
+                                }
+                                num++;
+                                time += endDay.getLong(ChronoField.MINUTE_OF_DAY) - holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY);
+                            }
+                        } else if (holiday.getFromDate().getDayOfYear() < startDay.getDayOfYear()){
+                            //请假是从当天之前开始计算
+                            if (holiday.getToDate().getDayOfYear() == startDay.getDayOfYear()) {
+                                if (holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) >= endDay.getLong(ChronoField.MINUTE_OF_DAY)) {
+                                    workLog.setStatus("5");
+                                    workLog.setEmployerConfirmStatus(0);
+                                    workLog.setStartTime(startDay.toOffsetTime());
+                                    workLog.setEndTime(endDay.toOffsetTime());
+                                    if (nowDate.getDayOfYear() - startDay.getDayOfYear() > 7) {
+                                        workLog.setExpire(1);
+                                    }
+                                    workList.add(workLog);
+                                    detail.setTime(startDay.format(d));
+                                    detailList.add(detail);
+                                    break;
+                                } else {
+                                    if (!flag) {
+                                        workLog.setStatus("5");
+                                        workLog.setEmployerConfirmStatus(0);
+                                        workLog.setStartTime(startDay.toOffsetTime());
+                                        workLog.setEndTime(endDay.toOffsetTime());
+                                        if (nowDate.getDayOfYear() - startDay.getDayOfYear() > 7) {
+                                            workLog.setExpire(1);
+                                        }
+                                        workList.add(workLog);
+                                        detail.setTime(startDay.format(d));
+                                        detailList.add(detail);
+                                    }
+                                    num++;
+                                    time += holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) - startDay.getLong(ChronoField.MINUTE_OF_DAY);
+                                }
+                            } else if (holiday.getToDate().getDayOfYear() > startDay.getDayOfYear()) {
+                                workLog.setStatus("5");
+                                workLog.setEmployerConfirmStatus(0);
+                                workLog.setStartTime(startDay.toOffsetTime());
+                                workLog.setEndTime(endDay.toOffsetTime());
+                                if (nowDate.getDayOfYear() - startDay.getDayOfYear() > 7) {
+                                    workLog.setExpire(1);
+                                }
+                                workList.add(workLog);
+                                detail.setTime(startDay.format(d));
+                                detailList.add(detail);
+                                break;
+                            }
+
+                        }
+                    }
+                    if (num > 0  && time < (end - start)) {
+                        workLog = new PunchInfo();
+                        if (nowDate.getDayOfYear() - startDay.getDayOfYear() > 7) {
+                            workLog.setExpire(1);
+                        }
+                        workLog.setStatus("3");
+                        workList.add(workLog);
+                        detail.setTime(startDay.format(d));
+                        detailList.add(detail);
+                    }
+
+                    startDay = startDay.plusDays(1);
+                }
+            }
+        } else {
+            int size = list.size();
+
+            for (WorkerOneDayInfo param : list) {
+                int totalTime = 0;
+                detail = new WorkerDetail();
+                workList = new ArrayList<>();
+                OffsetDateTime time = param.getTime();
+                String[] currentStartTime = param.getFromDate().split(",");
+                String[] currentEndTime = param.getToDate().split(",");
+                String[] confirmStatus = param.getEmployerConfirmStatus().split(",");
+
+                //如果当天没有打卡记录
+                if (startDay.getDayOfYear() != time.getDayOfYear()) {
+                    int minutes = containsTime(startDay, endDay,  holidayList);
+                    if (minutes == 0) {
+                        workLog = new PunchInfo();
+                        workLog.setStatus("3");
+                        workLog.setEmployerConfirmStatus(0);
+                        workList.add(workLog);
+                    } else {
+                        if (minutes < (end - start)) {
+                            workLog = new PunchInfo();
+                            workLog.setStatus("5");
+                            workLog.setEmployerConfirmStatus(0);
+                            workList.add(workLog);
+                            workLog = new PunchInfo();
+                            workLog.setStatus("3");
+                            workLog.setEmployerConfirmStatus(0);
+                            workList.add(workLog);
+                        } else {
+                            workLog = new PunchInfo();
+                            workLog.setStatus("5");
+                            workLog.setEmployerConfirmStatus(0);
+                            workList.add(workLog);
+                        }
+                    }
+                    startDay = startDay.plusDays(1);
+                    continue;
+                }
+                //有打卡记录
+                OffsetDateTime t = OffsetDateTime.parse(currentStartTime[0]);
+                workLog = new PunchInfo();
+                workLog.setEmployerConfirmStatus(Integer.valueOf(confirmStatus[0]));
+                if (startDay.compareTo(t) < 0) {
+                    int minutes = containsTime(t, startDay,  holidayList);
+                    if (minutes == 0) {
+                        workLog.setStatus("5");
+                    } else {
+                        workLog.setStatus("1");
+                    }
+                }
+                workLog.setStartTime(t.toOffsetTime());
+                if (currentEndTime != null && currentEndTime.length > 0) {
+                    workLog.setEndTime(OffsetTime.parse(currentEndTime[0]));
+                    workLog.setExpire(expire);
+                    workList.add(workLog);
+                    if (currentStartTime.length > 1) {
+                        int i;
+                        for (i = 1; i < currentStartTime.length - 1; i++) {
+                            workLog = new PunchInfo();
+                            workLog.setExpire(expire);
+                            workLog.setEmployerConfirmStatus(Integer.valueOf(confirmStatus[i - 1]));
+                            workLog.setStartTime(OffsetTime.parse(currentStartTime[i]));
+                            workLog.setEndTime(OffsetTime.parse(currentEndTime[i]));
+                            if (OffsetDateTime.parse(currentStartTime[i]).compareTo(OffsetDateTime.parse(currentEndTime[i - 1])) <= 0) {
+
+                                workLog.setStatus("0");
+                            } else {
+                                int minutes = containsTime(OffsetDateTime.parse(currentEndTime[i - 1]), OffsetDateTime.parse(currentStartTime[i]),  holidayList);
+                                if (minutes == 0) {
+                                    workLog.setStatus("5");
+                                } else {
+                                    workLog.setStatus("1");
+                                }
+                            }
+                            workList.add(workLog);
+                        }
+                        workLog = new PunchInfo();
+                        workLog.setExpire(expire);
+                        workLog.setEmployerConfirmStatus(Integer.valueOf(confirmStatus[i - 1]));
+                        workLog.setStartTime(OffsetTime.parse(currentStartTime[i]));
+                        if (currentEndTime.length == i + 1) {
+
+                            workLog.setEndTime(OffsetTime.parse(currentEndTime[i]));
+                            if (OffsetDateTime.parse(currentStartTime[i]).compareTo(OffsetDateTime.parse(currentEndTime[i - 1])) <= 0) {
+                                if (OffsetDateTime.parse(currentEndTime[i]).getLong(ChronoField.MINUTE_OF_DAY) >= endDay.getLong(ChronoField.MINUTE_OF_DAY)) {
+                                    workLog.setStatus("0");
+                                } else {
+                                    workLog.setStatus("2");
+                                }
+                            } else {
+                                workLog.setStatus("1");
+                                workList.add(workLog);
+                                int minutes = containsTime(OffsetDateTime.parse(currentEndTime[i - 1]), OffsetDateTime.parse(currentStartTime[i]),  holidayList);
+                                workLog = new PunchInfo();
+                                workLog.setExpire(expire);
+                                workLog.setEmployerConfirmStatus(0);
+                                workLog.setStatus("5");
+                                workList.add(workLog);
+                            }
+                        } else {
+                            workLog.setStatus("4");
+                            workList.add(workLog);
+                            int minutes = containsTime(OffsetDateTime.parse(currentEndTime[i]), endDay,  holidayList);
+                            if (minutes > 0) {
+                                workLog = new PunchInfo();
+                                workLog.setExpire(expire);
+                                workLog.setEmployerConfirmStatus(0);
+                                workLog.setStatus("5");
+                                workList.add(workLog);
+                            }
+                        }
+                    }
+                } else {
+                    //忘打卡
+                    workLog.setExpire(expire);
+                    workList.add(workLog);
+                    workLog = new PunchInfo();
+                    workLog.setStatus("4");
+                    workLog.setExpire(expire);
+                    workLog.setEmployerConfirmStatus(0);
+                    workList.add(workLog);
+                    int minutes = containsTime(startDay, endDay,  holidayList);
+                    //查询是否有请假
+                    if (minutes > 0) {
+                        workLog = new PunchInfo();
+                        workLog.setStatus("5");
+                        workLog.setEmployerConfirmStatus(0);
+                        workLog.setExpire(expire);
+                        workList.add(workLog);
+                    }
+                }
+                detail.setWorkList(workList);
+                detail.setTime(startDay.format(d));
+                detailList.add(detail);
+            }
+        }
+        response.setList(detailList);
+        return response;
+    }
+
+    /**
+     * 查詢工作者信息
+     * @param userId
+     * @return
+     */
+    @Override
+    public UserTaskResponse selectWorkerInfo(String userId) {
+        if (StringUtils.isEmpty(userId)) {
+            throw new ParamsException("參數userId不能为空");
         }
         UserTaskResponse response = userMapper.selectUserInfo(userId);
         if (response == null) {
@@ -480,326 +813,74 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         response.setBirthday(null);
         //查询服务区域
         List<String> areaList = areaRelationMapper.selectAreaByUserId(userId);
-        if (areaList == null) {
+        if (areaList != null) {
             response.setAreaList(areaList);
         } else {
             response.setAreaList(new ArrayList<>());
         }
         //查询服务类型
         List<String> serviceList = dictService.selectServiceTypeByUserId(userId);
-        if (serviceList == null) {
+        if (serviceList != null) {
             response.setServiceList(serviceList);
         } else {
             response.setAreaList(new ArrayList<>());
         }
-        Set<WorkLog> set = new HashSet<>();
-        // 查询用户工作记录
-        TaskWorker taskWorker = taskWorkerMapper.selectById(taskWorkerId);
-        if (taskWorker == null) {
-            throw new ParamsException("查询不到用户工作任务");
-        }
-        OffsetDateTime startDay = taskWorker.getFromDate();
-        OffsetDateTime endDay = taskWorker.getToDate();
-        OffsetDateTime dayStart = taskWorker.getDayStartTime();
-        OffsetDateTime dayEnd = taskWorker.getDayEndTime();
+        return response;
+    }
 
-        long start = dayStart.getLong(ChronoField.SECOND_OF_DAY);
-        long end = dayEnd.getLong(ChronoField.SECOND_OF_DAY);
-
-        long workDay = endDay.getLong(ChronoField.EPOCH_DAY) - startDay.getLong(ChronoField.EPOCH_DAY);
-        // 查询打卡记录
-        DateTimeFormatter d = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        List<WorkLog> list = workLogMapper.selectUserPunchDetail(taskWorkerId);
-        if (list == null || list.size() == 0) {
-
-            List<Map<String, Object>> holidayList = holidayMapper.selectUserHolidayByTaskWorkId(taskWorkerId);
-            WorkLog log = null;
-            if (holidayList == null) {
-
-                for (int i = 0; i < workDay; i++) {
-                    log = new WorkLog();
-                    log.setCreateTime(startDay.plusDays(1));
-                    startDay = startDay.plusDays(1);
-                    log.setStatus(3);
-                    set.add(log);
-                }
-            } else {
-                for (; ; ) {
-                    int day = startDay.getDayOfYear();
-                    boolean flag = true;
-                    log = new WorkLog();
-                    for (Map<String, Object> holiday : holidayList) {
-                        String hStart = (String) holiday.get("fromDate");
-                        String[] str = hStart.split(",");
-                        TemporalAccessor temp = d.parse(str[str.length - 1]);
-                        if (day == temp.getLong(ChronoField.DAY_OF_YEAR)) {
-                            flag = false;
-                            String hEnd = (String) holiday.get("toDate");
-                            String[] str2 = hEnd.split(",");
-                            TemporalAccessor temp2 = d.parse(str2[str2.length - 1]);
-                            if (day < temp2.getLong(ChronoField.DAY_OF_YEAR)) {
-                                if (temp.getLong(ChronoField.MINUTE_OF_DAY) > start) {
-                                    log.setStatus(9);
-                                } else {
-                                    if (isLeave(d, start, end, str, str2)) {
-                                        log.setStatus(8);
-                                    } else {
-                                        log.setStatus(9);
-                                    }
-                                }
-
-                            } else {
-                                if (temp2.getLong(ChronoField.MINUTE_OF_DAY) >= end) {
-                                    if (isLeave(d, start, end, str, str2)) {
-                                        log.setStatus(8);
-                                    } else {
-                                        log.setStatus(9);
-                                    }
-                                } else {
-                                    log.setStatus(9);
-                                }
-
-                            }
-                            log.setCreateTime(startDay);
-                            startDay = startDay.plusDays(1);
-                            set.add(log);
-                            break;
-                        }
+    /**
+     * 统计请假时间
+     * @param startTime     上班时间
+     * @param endTime       上班打卡时间
+     * @param holidayList   请假数据
+     * @return
+     */
+    private int containsTime(OffsetDateTime startTime, OffsetDateTime endTime, List<Holiday> holidayList) {
+        int num = 0;
+        for (Holiday holiday : holidayList) {
+            long hStart = holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY);
+            long hEnd = holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY);
+            long startMinute = startTime.getLong(ChronoField.MINUTE_OF_DAY);
+            long endMinute = endTime.getLong(ChronoField.MINUTE_OF_DAY);
+            if (holiday.getFromDate().compareTo(startTime) > 0) continue;
+            if (holiday.getFromDate().compareTo(startTime) <= 0) {
+                //请假开始日期小于当前日期
+                if (holiday.getToDate().compareTo(startTime) >= 0) {
+                    if (holiday.getToDate().compareTo(endTime) < 0) {
+                        num += hEnd - startMinute;
+                    } else  {
+                        num += endMinute - startMinute;
                     }
-                    if (flag) {
-                        log.setCreateTime(startDay);
-                        startDay = startDay.plusDays(1);
-                        log.setStatus(3);
-                        set.add(log);
-                    }
-                    workDay--;
-                    if (workDay == 0)
-                        break;
                 }
-            }
-        } else {
-            int size = list.size();
-            if (workDay > size) {
-                List<Map<String, Object>> holidayList = holidayMapper.selectUserHolidayByTaskWorkId(taskWorkerId);
-                Iterator<WorkLog> it = list.iterator();
-                WorkLog w = null;
-                while (it.hasNext()) {
-                    WorkLog log = it.next();
-                    if (log.getCreateTime().getDayOfYear() == startDay.getDayOfYear()) {
-                        if (holidayList == null || holidayList.size() == 0) {
-                            set.add(log);
-                        } else {
-                            // 工作打卡时间
-                            long s1 = log.getFromDate().getLong(ChronoField.SECOND_OF_DAY);
-                            long s2 = log.getToDate().getLong(ChronoField.SECOND_OF_DAY);
-                            if (s1 <= start && s2 >= end) {
-                                set.add(log);
+            } else if (holiday.getFromDate().getDayOfYear() == startTime.getDayOfYear()) {
+                //请假日期和当前日期一致
+                if (holiday.getToDate().getDayOfYear() == startTime.getDayOfYear()) {
+                    if (hStart <= startMinute) {
+                        if (holiday.getToDate().compareTo(startTime) > 0) {
+                            if (holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) >= endTime.getLong(ChronoField.MINUTE_OF_DAY)) {
+                                num += endTime.getLong(ChronoField.MINUTE_OF_DAY) - startTime.getLong(ChronoField.MINUTE_OF_DAY);
                             } else {
-                                w = new WorkLog();
-                                boolean f = true;
-
-                                for (Map<String, Object> holiday : holidayList) {
-                                    String hStart = (String) holiday.get("fromDate");
-                                    String[] str = hStart.split(",");
-                                    TemporalAccessor temp = d.parse(str[0]);
-
-                                    String hEnd = (String) holiday.get("toDate");
-                                    String[] str2 = hEnd.split(",");
-                                    TemporalAccessor temp2 = d.parse(str2[str2.length - 1]);
-                                    if (temp.getLong(ChronoField.DAY_OF_YEAR) <= startDay.getDayOfYear()
-                                            && temp2.getLong(ChronoField.DAY_OF_YEAR) > startDay.getDayOfYear()) {
-                                        if (temp.getLong(ChronoField.DAY_OF_YEAR) == startDay.getDayOfYear()) {
-                                            if (temp.getLong(ChronoField.MINUTE_OF_DAY) > start) {
-                                                w.setStatus(9);
-                                            } else {
-                                                if (isLeave(d, start, end, str, str2)) {
-                                                    w.setStatus(8);
-                                                } else {
-                                                    w.setStatus(9);
-                                                }
-                                            }
-                                        } else {
-                                            if (isLeave(d, start, end, str, str2)) {
-                                                w.setStatus(8);
-                                            } else {
-                                                w.setStatus(9);
-                                            }
-
-                                        }
-                                    } else if (temp.getLong(ChronoField.DAY_OF_YEAR) <= startDay.getDayOfYear()
-                                            && temp2.getLong(ChronoField.DAY_OF_YEAR) == startDay.getDayOfYear()) {
-                                        if (temp.getLong(ChronoField.DAY_OF_YEAR) < startDay.getDayOfYear()) {
-                                            if (temp2.getLong(ChronoField.MINUTE_OF_DAY) >= end) {
-                                                if (isLeave(d, start, end, str, str2)) {
-                                                    w.setStatus(8);
-                                                } else {
-                                                    w.setStatus(9);
-                                                }
-                                            } else {
-                                                w.setStatus(9);
-                                            }
-                                        } else if (temp.getLong(ChronoField.DAY_OF_YEAR) == startDay.getDayOfYear()) {
-                                            if (temp.getLong(ChronoField.MINUTE_OF_DAY) > start || temp2.getLong(ChronoField.MINUTE_OF_DAY) < end) {
-                                                w.setStatus(9);
-                                            } else {
-                                                if (isLeave(d, start, end, str, str2)) {
-                                                    w.setStatus(8);
-                                                } else {
-                                                    w.setStatus(9);
-                                                }
-                                            }
-                                        }
-                                        w.setCreateTime(startDay);
-                                        startDay = startDay.plusDays(1);
-                                        f = false;
-                                        set.add(w);
-                                        break;
-                                    }
-                                }
-                                if (f) {
-                                    w.setCreateTime(startDay);
-                                    w.setStatus(3);
-                                    set.add(w);
-                                    startDay = startDay.plusDays(1);
-                                    if (log.getCreateTime().getDayOfYear() == endDay.getDayOfYear())
-                                        break;
-                                }
+                                num += holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) - startTime.getLong(ChronoField.MINUTE_OF_DAY);
                             }
                         }
                     } else {
-                        if (holidayList == null || holidayList.size() == 0) {
-                            while (true) {
-                                w = new WorkLog();
-                                w.setCreateTime(startDay);
-                                w.setStatus(3);
-                                set.add(w);
-                                startDay = startDay.plusDays(1);
-                                if (log.getCreateTime().getDayOfYear() == endDay.getDayOfYear())
-                                    break;
-                            }
+                        if (holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) >= endTime.getLong(ChronoField.MINUTE_OF_DAY)) {
+                            num += endTime.getLong(ChronoField.MINUTE_OF_DAY) - holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY);
                         } else {
-                            w = new WorkLog();
-                            boolean f = true;
-
-                            for (Map<String, Object> holiday : holidayList) {
-                                String hStart = (String) holiday.get("fromDate");
-                                String[] str = hStart.split(",");
-                                TemporalAccessor temp = d.parse(str[0]);
-
-                                String hEnd = (String) holiday.get("toDate");
-                                String[] str2 = hEnd.split(",");
-                                TemporalAccessor temp2 = d.parse(str2[str2.length - 1]);
-                                if (temp.getLong(ChronoField.DAY_OF_YEAR) <= startDay.getDayOfYear()
-                                        && temp2.getLong(ChronoField.DAY_OF_YEAR) > startDay.getDayOfYear()) {
-                                    if (temp.getLong(ChronoField.DAY_OF_YEAR) == startDay.getDayOfYear()) {
-                                        if (temp.getLong(ChronoField.MINUTE_OF_DAY) > start) {
-                                            w.setStatus(9);
-                                        } else {
-                                            if (isLeave(d, start, end, str, str2)) {
-                                                w.setStatus(8);
-                                            } else {
-                                                w.setStatus(9);
-                                            }
-                                        }
-                                    } else {
-                                        if (isLeave(d, start, end, str, str2)) {
-                                            w.setStatus(8);
-                                        } else {
-                                            w.setStatus(9);
-                                        }
-                                    }
-                                } else if (temp.getLong(ChronoField.DAY_OF_YEAR) <= startDay.getDayOfYear()
-                                        && temp2.getLong(ChronoField.DAY_OF_YEAR) == startDay.getDayOfYear()) {
-                                    if (temp.getLong(ChronoField.DAY_OF_YEAR) == startDay.getDayOfYear()) {
-                                        if (temp2.getLong(ChronoField.MINUTE_OF_DAY) < end) {
-                                            w.setStatus(9);
-                                        } else {
-                                            if (temp.getLong(ChronoField.MINUTE_OF_DAY) <= start) {
-                                                if (isLeave(d, start, end, str, str2)) {
-                                                    w.setStatus(8);
-                                                } else {
-                                                    w.setStatus(9);
-                                                }
-                                            } else {
-                                                w.setStatus(9);
-                                            }
-                                        }
-                                    } else {
-                                        if (temp2.getLong(ChronoField.MINUTE_OF_DAY) < end) {
-                                            w.setStatus(9);
-                                        } else {
-                                            if (isLeave(d, start, end, str, str2)) {
-                                                w.setStatus(8);
-                                            } else {
-                                                w.setStatus(9);
-                                            }
-                                        }
-                                    }
-                                }
-                                w.setCreateTime(startDay);
-                                startDay = startDay.plusDays(1);
-                                f = false;
-                                set.add(w);
-                                break;
-                            }
-                            if (f) {
-                                w.setCreateTime(startDay);
-                                w.setStatus(3);
-                                set.add(w);
-                                startDay = startDay.plusDays(1);
-                                if (log.getCreateTime().getDayOfYear() == endDay.getDayOfYear())
-                                    break;
-                            }
+                            num += holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) - holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY);
                         }
                     }
-                }
-            } else {
-                set.addAll(list);
-            }
-        }
-        response.setList(list);
-        return response;
-    }
-	/**
-     *  修改小时工服务类型及服务地区
-     */
-    @Override
-    public void mpdifyAreaAndService(AreaAndServiceRequest request) {
-        //添加区域
-        Map<String,Integer> areaList = request.getAreaCode();
-            Iterator<Map.Entry<String, Integer>> entries = areaList.entrySet().iterator();
-            while (entries.hasNext()) {
-                Map.Entry<String, Integer> entry = entries.next();
-                companyMapper.insertAreaRelation(request.getWorkerID(),entry.getKey(),entry.getValue());
-                if(entry.getValue()==1){
-                    Map<String,String> list = dictMapper.findCity(entry.getKey());
-                    for (String key : list.keySet()) {
-                        Map<String,String> list2= dictMapper.findArea(key);
-                        for (String key1 : list2.keySet()) {
-                            companyMapper.insertCompanyArea(request.getWorkerID(),key1,0);
-                        }
+                } else if (holiday.getToDate().getDayOfYear() > startTime.getDayOfYear()) {
+                    if (holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY) <= startTime.getLong(ChronoField.MINUTE_OF_DAY)) {
+                        num += endTime.getLong(ChronoField.MINUTE_OF_DAY) - startTime.getLong(ChronoField.MINUTE_OF_DAY);
+                    } else if (holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY) <= endTime.getLong(ChronoField.MINUTE_OF_DAY)){
+                        num += endTime.getLong(ChronoField.MINUTE_OF_DAY) - holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY);
                     }
-                }else if(entry.getValue()==2){
-                    Map<String,String> list2= dictMapper.findArea(entry.getKey());
-                    for (String key1 : list2.keySet()) {
-                        companyMapper.insertCompanyArea(request.getWorkerID(),key1,0);
-                    }
-                }else{
-                    companyMapper.insertCompanyArea(request.getWorkerID(),entry.getKey(),0);
                 }
             }
-        //添加服务类型
-        List<String> serviceType = request.getServiceType();
-        for(int i = 0;i<serviceType.size();i++){
-            taskTypeRelationMapper.insertTaskTypeRelation(request.getWorkerID(),serviceType.get(i),0);
         }
+        return num;
     }
-
-    @Override
-    public Map<String, Object> queryWorker(String id) {
-        return workerMapper.queryWorker(id);
-    }
-
     /**
      * 判断是否请假
      *

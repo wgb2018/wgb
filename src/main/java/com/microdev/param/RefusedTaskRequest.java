@@ -21,4 +21,8 @@ public class RefusedTaskRequest {
      * 拒绝理由
      */
     private String refusedReason;
+    /**
+     * 消息id
+     */
+    private String messageId;
 }

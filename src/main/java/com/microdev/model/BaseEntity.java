@@ -58,7 +58,7 @@ public abstract class BaseEntity implements Serializable {
     public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
     }
-	 @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     public OffsetDateTime getCreateTime() {
         return createTime;
     }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.microdev.mapper.DictMapper" >
-    <cache  eviction="FIFO"  flushInterval="60000"  size="512"  readOnly="true"/>
-    <sql id="Dict_Column_List" >
+<mapper namespace="com.microdev.mapper.DictMapper">
+    <cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true"/>
+    <sql id="Dict_Column_List">
         id as pid, create_time, deleted, modify_time, code,
         extend, name, ordinal, remark, text
     </sql>
@@ -10,7 +10,7 @@
         insert into dict values(#{id},#{createTime},#{deleted},#{modifyTime},#{code},
         #{extend},#{name},#{ordinal},#{remark},#{text})
     </insert>
-    <update id="delete" parameterType="com.microdev.model.Dict" >
+    <update id="delete" parameterType="com.microdev.model.Dict">
         update dict set delete = 1 where id = #{id}
     </update>
     <update id="update" parameterType="com.microdev.model.Dict">
@@ -18,43 +18,51 @@
         name = #{name},ordinal = #{ordinal},remark = #{remark},text = #{text}
         where id = #{id}
     </update>
-    <select id="findByNameAndCode"  resultType="com.microdev.param.DictDTO">
+    <select id="findByNameAndCode" resultType="com.microdev.param.DictDTO">
         SELECT id as pid,name,code,text,ordinal,remark,extend
         FROM dict WHERE name = #{name} and code = #{code}
     </select>
-    <select id="findOne" resultType="com.microdev.model.Dict">
-        select <include refid="Dict_Column_List"/> from dict where id = #{id} and delete = 0;
+    <select id="findOne" resultType="com.microdev.model.Dict" parameterType="java.lang.String">
+        select
+        <include refid="Dict_Column_List"/>
+        from dict where id = #{id} and deleted = 0;
     </select>
-    <select id="findByName" resultType="com.microdev.model.Dict" >
-        select <include refid="Dict_Column_List"/> from dict where name = #{name}
+    <select id="findByName" resultType="com.microdev.model.Dict" parameterType="java.lang.String">
+        select
+        <include refid="Dict_Column_List"/>
+        from dict where name = #{name}
     </select>
-    <select id="findAll" resultType="com.microdev.model.Dict" >
-        select <include refid="Dict_Column_List"/> from dict
+    <select id="findAll" resultType="com.microdev.model.Dict">
+        select
+        <include refid="Dict_Column_List"/>
+        from dict
     </select>
     <select id="queryDicts" resultType="com.microdev.model.Dict" parameterType="com.microdev.param.DictDTO">
-        select <include refid="Dict_Column_List"/> from dict
+        select
+        <include refid="Dict_Column_List"/>
+        from dict
         <where>
-            <if test="id != null || id != ''">
+            <if test="id != null and id != ''">
                 id = #{id}
             </if>
-            <if test="name != null || name != ''">
+            <if test="name != null and name != ''">
                 and name = #{name}
             </if>
-            <if test="code != null || code != ''">
+            <if test="code != null and code != ''">
                 and code = #{code}
             </if>
-            <if test="text != null || text != ''">
+            <if test="text != null and text != ''">
                 and text like '%${text}%'
             </if>
-            <if test="remark != null || remark != ''">
+            <if test="remark != null and remark != ''">
                 and remark like '%${remark}%'
             </if>
-            <if test="extend != null || extend != ''">
+            <if test="extend != null and extend != ''">
                 and extend like '%${extend}%'
             </if>
         </where>
     </select>
-    <select  id="findProvince" resultType="java.util.Map">
+    <select id="findProvince" resultType="java.util.Map">
         select provinceID as provinceID,province as
         province from province
     </select>
@@ -72,7 +80,7 @@
         INNER JOIN dict d ON tr.`task_type_id` = d.`id`
         WHERE tr.`id` = #{id}
     </select>
-	<select id="queryTypeByUserId" parameterType="com.microdev.model.Dict" resultType="java.lang.String">
+	 <select id="queryTypeByUserId" parameterType="com.microdev.model.Dict" resultType="java.lang.String">
         SELECT d.*  FROM task_type_relation tr
         INNER JOIN dict d ON tr.`task_type_id` = d.`id`
         WHERE tr.`id` = #{id}

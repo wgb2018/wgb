@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface AreaRelationMapper {
-    void insertAreaRelation(@Param("id")String id, @Param("areaCode")String area_code, @Param("idType")Integer id_type);
+    void insertAreaRelation(@Param("id") String id, @Param("areaCode")String area_code, @Param("idType")Integer id_type);
 
     List<String> selectAreaByUserId(String id);
 }

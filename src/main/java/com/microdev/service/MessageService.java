@@ -5,9 +5,13 @@ import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.model.Company;
 import com.microdev.model.Message;
+import com.microdev.model.TaskHrCompany;
 import com.microdev.param.CreateMsgTemplateRequest;
+import com.microdev.param.CreateTaskRequest;
 import com.microdev.param.MessageQuery;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface MessageService extends IService<Message> {
@@ -44,4 +48,79 @@ public interface MessageService extends IService<Message> {
      * @return
      */
     boolean hotelBindHrCompany(Set<String> bindCompany, Company applyCompany, String pattern, Integer type);
+
+    /**
+     * 小时工绑定或解绑人力公司
+     *
+     * @param workerId
+     * @param hrCompanyId
+     * @param userName
+     * @param pattern
+     *            采用解绑的或绑定的模板
+     * @return
+     */
+    void bindHrCompany(String workerId, Set<String> hrCompanyId, String userName, String pattern);
+
+    /**
+     * 酒店向人力公司派发任务
+     * @param request
+     * @param hotel
+     * @param pattern
+     * @return
+     */
+    void hotelDistributeTask(CreateTaskRequest request, Company hotel, String pattern);
+
+    /**
+     * 人力派发给小时工任务
+     * @param list
+     * @param hrId
+     * @param hrName
+     * @param pattern
+     */
+    void hrDistributeTask(List<Map<String, String>> list, String hrId, String hrName, String pattern);
+
+    /**
+     * 人力申请调配消息
+     * @param c
+     * @param reason
+     * @param number
+     * @param pattern
+     */
+    void sendMessage(TaskHrCompany c, String reason, String number, String pattern);
+
+    /**
+     * 查询未读消息
+     * @param id
+     * @param applyType
+     * @return
+     */
+    List<Message> selectUnReadMessage(String id, String applyType);
+
+    /**
+     * 查询未读消息数量及各个类型的数量
+     * @param id
+     * @param applyType
+     * @return
+     */
+    Map<String, Integer> selectUnReadCount(String id, String applyType);
+
+    /**
+     * 查询未读消息数量
+     * @param id
+     * @param applyType
+     * @param type
+     * @return
+     */
+    int selectMessageCount(String id, String applyType, int type);
+
+    /**
+     * 查询未处理的消息数量
+     * @param id
+     * @param applyType
+     * @param status
+     * @return
+     */
+    int selectUnHandleMessageAmount(String id, String applyType, int status);
+
+
 }

@@ -15,7 +15,7 @@ public class UserTaskResponse {
 	private String mobile;
 	private OffsetDateTime birthday;
 	private String healthCard;
-	private List<String> areaList;
-	private List<String> serviceList;
-	private List<WorkLog> list = new ArrayList<>();
+	private List<String> areaList = new ArrayList<>();;
+	private List<String> serviceList = new ArrayList<>();;
+	private List<WorkerDetail> list = new ArrayList<>();
 }

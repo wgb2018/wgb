@@ -34,11 +34,17 @@ public interface TaskWorkerMapper extends BaseMapper<TaskWorker> {
 
     List<TaskWorker> queryHrCompanyBill(String hrCompanyId);
 
-    List<TaskWorker> queryWorkerBill(String workerId);
+    List<TaskWorker> queryWorkerBill(@Param("userId") String workerId);
 
     Map<String, Object> selectHrId(String taskWorkerId);
 
-    Map<String, Object> selectUserAndWorkerId(String id);
+    Map<String, String> selectUserAndWorkerId(String id);
 
     List<Map<String, Object>> selectTaskWorkById(String taskHrId);
+
+    int updateByPrimaryKey(Map<String, Object> map);
+
+    int selectUnreadCount(String userId);
+
+    int selectCompleteCount(String userId);
 }

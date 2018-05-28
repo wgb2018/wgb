@@ -13,7 +13,9 @@ import com.microdev.converter.TaskHrCompanyConverter;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
 import com.microdev.param.*;
+import com.microdev.service.MessageService;
 import com.microdev.service.TaskHrCompanyService;
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +50,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
     MessageTemplateMapper messageTemplateMapper;
     @Autowired
     MessageMapper messageMapper;
+    @Autowired
+    private MessageService messageService;
     /**
      * 查看人力资源公司的任务
      */
@@ -106,7 +110,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         if(hrTask==null){
             throw new ParamsException("人力公司参数有误");
         }
-		taskMapper.updateStatus(hrTask.getTaskId(),3);
+        //Company hrCompany=companyMapper.findCompanyById(hrTask.getHrCompanyId());
+        taskMapper.updateStatus(hrTask.getTaskId(),3);
         Company hrCompany=companyMapper.findCompanyById(hrTask.getHrCompanyId());
         hrTask.setStatus(4);
         hrTask.setHourlyPay(hrTaskDis.getHourlyPay());
@@ -114,13 +119,16 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         if(hotelTask==null){
             throw new BusinessException("任务派发失败：未获取酒店到任务");
         }
-        Company hotel=companyMapper.findCompanyById(hrTask.getHotelId());
-
+       // Company hotel=companyMapper.findCompanyById(hrTask.getHotelId());
+        List<Map<String, String>> list = new ArrayList<>();
+        Map<String, String> m = null;
         for (String id:hrTaskDis.getWorkerIds()){
-
+            m = new HashMap<>();
             TaskWorker taskWorker=new TaskWorker();
+            String pid = UUID.randomUUID().toString();
+            taskWorker.setPid(pid);
             taskWorker.setTaskHrId(hrTask.getPid());;
-            
+            userMapper.queryByWorkerId(id);
             User user = userMapper.queryByWorkerId(id);
             taskWorker.setUserId(user.getPid());
             taskWorker.setUserName(user.getUsername());
@@ -135,8 +143,12 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             taskWorker.setDayStartTime(hotelTask.getDayStartTime());
             taskWorker.setDayEndTime(hotelTask.getDayEndTime());
             taskWorkerMapper.insert(taskWorker);
+            m.put("workerId", id);
+            m.put("workerTaskId", pid);
+            list.add(m);
         }
         taskHrCompanyMapper.updateById(hrTask);
+        messageService.hrDistributeTask(list, hrTask.getHrCompanyId(), hrTask.getHrCompanyName(), "workTaskMessage");
         //短信发送
         /*CreateMessageDTO createMessageDTO =new CreateMessageDTO();
         createMessageDTO.setHotelName(hotel.getName());
@@ -240,24 +252,50 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
      * 人力公司接受任务
      */
     @Override
-    public void TaskHraccept(String id) {
-        TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId(id);
-        taskMapper.updateStatus(taskHrCompany.getTaskId(),2);
-        taskHrCompanyMapper.updateStatus(id,2);
+    public void TaskHraccept(String id, String messageId) {
+        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(messageId)) {
+            throw new ParamsException("参数不能为空");
+        }
+        Message message = messageMapper.selectById(messageId);
+        if (message == null || message.getStatus() == 1) {
+            throw new BusinessException("消息已处理");
+        }
+        message.setStatus(1);
+        messageMapper.updateById(message);
+        taskHrCompanyMapper.updateStatus(id,1);
     }
     /**
      * 人力公司拒绝任务
      */
     @Override
-    public void TaskHrrefuse(String id) {
-        taskHrCompanyMapper.updateStatus(id,3);
+    public void TaskHrrefuse(String id, String messageId) {
+        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(messageId)) {
+            throw new ParamsException("参数不能为空");
+        }
+        Message message = messageMapper.selectById(messageId);
+        if (message == null || message.getStatus() == 1) {
+            throw new BusinessException("消息已处理");
+        }
+        message.setStatus(1);
+        messageMapper.updateById(message);
+        taskHrCompanyMapper.updateStatus(id,2);
     }
     /**
      * 人力公司任务调配
      */
     @Override
-    public void TaskHrallocate(String id) {
-        taskHrCompanyMapper.updateStatus(id,5);
+    public void TaskHrallocate(String id, String reason, Integer number) {
+        if (number == null || number < 1 || StringUtils.isEmpty(id)) {
+            throw new ParamsException("参数错误");
+        }
+        TaskHrCompany t = taskHrCompanyMapper.selectById(id);
+        if (t == null) {
+            throw new BusinessException("查找不到人力资源任务");
+        }
+        t.setStatus(5);
+        taskHrCompanyMapper.update(t);
+        messageService.sendMessage(t, reason, String.valueOf(number), "applyChangeMessage");
+
     }
     /**
      * 酒店查询账目
@@ -349,7 +387,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         Message m = new Message();
         m.setContent((String)map.get("reason"));
         Company company = companyMapper.selectById(map.get("hrCompanyId").toString());
-        MessageTemplate mess = messageTemplateMapper.findFirstByCode("applySwapMessage");
+        MessageTemplate mess = messageTemplateMapper.findFirstByCode("applyChangeMessage");
         m.setMessageCode(mess.getCode());
         m.setMessageTitle(mess.getTitle());
         Map<String, String> param = new HashMap<>();
@@ -363,6 +401,33 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
 
         messageMapper.insert(m);
         return ResultDO.buildSuccess(true);
+    }
+
+    /**
+     * 统计人力公司待处理未读数据
+     * @param hrCompanyId
+     * @return
+     */
+    @Override
+    public int selectUnreadCount(String hrCompanyId) {
+        if (StringUtils.isEmpty(hrCompanyId)) {
+            throw new ParamsException("参数不能为空");
+        }
+        return taskHrCompanyMapper.selectUnreadCount(hrCompanyId);
+    }
+
+    /**
+     * 统计人力已完成未读数据
+     * @param hrCompanyId
+     * @return
+     */
+    @Override
+    public int selectCompleteCount(String hrCompanyId) {
+        if (StringUtils.isEmpty(hrCompanyId)) {
+            throw new ParamsException("参数不能为空");
+        }
+
+        return taskHrCompanyMapper.selectCompleteCount(hrCompanyId);
     }
 
 }

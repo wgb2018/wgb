@@ -5,8 +5,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Map;
+
 /**
  * 公司
  *
@@ -133,9 +132,5 @@ public class Company extends BaseEntity {
         this.longitude = longitude;
     }
 
-//    @ManyToMany(fetch = FetchType.LAZY)
-//    @JoinTable(name = "hotel_hrCompanies", joinColumns = @JoinColumn(name = "hotel_id", referencedColumnName = "id"),
-//            inverseJoinColumns = @JoinColumn(name = "hr_id", referencedColumnName = "id"))
-//    private Set<Company> hotelHrCompanies = new HashSet<Company>();
 
 }

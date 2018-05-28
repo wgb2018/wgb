@@ -1,6 +1,6 @@
 package com.microdev.service;
 
-import com.baomidou.mybatisplus.mapper.Wrapper;import com.baomidou.mybatisplus.service.IService;
+import com.baomidou.mybatisplus.service.IService;
 import com.github.pagehelper.PageInfo;
 import com.microdev.model.Company;
 import com.microdev.model.Worker;
@@ -85,6 +85,13 @@ public interface WorkerService extends IService<Worker> {
      * @return
      */
     UserTaskResponse selectUserTaskInfo(String taskWorkerId, String userId);
+
+    /**
+     * 查詢工作者信息
+     * @param userId
+     * @return
+     */
+    UserTaskResponse selectWorkerInfo(String userId);
 
 	void mpdifyAreaAndService(AreaAndServiceRequest request);
 

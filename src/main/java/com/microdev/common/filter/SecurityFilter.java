@@ -45,7 +45,7 @@ public class SecurityFilter implements Filter {
         String path = request.getRequestURI();// 获取用户访问的路径 /xxx/yyy
         String method = request.getMethod().toUpperCase();// 获取用户请求的方法,POST/GET/PUT/DELETE
 
-//        chain.doFilter(request, response);
+//       chain.doFilter(request, response);
 
         //OPTIONS请求直接放行
         if ("OPTIONS".equals(method)) {

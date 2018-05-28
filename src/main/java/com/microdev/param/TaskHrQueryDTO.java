@@ -52,6 +52,5 @@ public class TaskHrQueryDTO {
     private Double payDown;
 
     private String ofDate;
-
 	private String taskId;
 }

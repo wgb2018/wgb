@@ -36,7 +36,7 @@ public class WorkTaskViewModel {
     /**
      * 每小时薪资
      */
-    private double hourlyPay;
+    private Double hourlyPay;
     //任务状态
     private Integer status;
     /**

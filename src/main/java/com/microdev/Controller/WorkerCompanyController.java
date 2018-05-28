@@ -7,8 +7,8 @@ import com.microdev.param.HrTaskDistributeRequest;import com.microdev.param.Woke
 import com.microdev.service.UserCompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.Set;
+
+import java.util.List;import java.util.Set;
 
 /**
  * 小时工和人力公司关系
@@ -21,8 +21,8 @@ public class WorkerCompanyController {
      * 小时工绑定人力公司
      */
     @PostMapping("/workers/{workId}/bind/{hrId}")
-    public ResultDO bindHr(@PathVariable String workId, @PathVariable String hrId) {
-        return userCompanyService.workerBindHr(workId,hrId);
+    public ResultDO bindHr(@PathVariable String workId, @PathVariable String hrId, String messageId) {
+        return userCompanyService.workerBindHr(workId, hrId, messageId);
     }
     /**
      * 小时工申请绑定人力公司

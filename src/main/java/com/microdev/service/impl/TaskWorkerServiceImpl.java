@@ -8,16 +8,13 @@ import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
 import com.microdev.converter.TaskWorkerConverter;
-import com.microdev.mapper.TaskHrCompanyMapper;
-import com.microdev.mapper.TaskMapper;
-import com.microdev.mapper.TaskWorkerMapper;
-import com.microdev.mapper.UserCompanyMapper;
+import com.microdev.mapper.*;
+import com.microdev.model.Message;
 import com.microdev.model.Task;
 import com.microdev.model.TaskHrCompany;
 import com.microdev.model.TaskWorker;
 import com.microdev.param.RefusedTaskRequest;
 import com.microdev.param.TaskWorkerQuery;
-import com.microdev.service.TaskHrCompanyService;
 import com.microdev.service.TaskWorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -43,6 +39,8 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
     TaskHrCompanyMapper taskHrCompanyMapper;
     @Autowired
     TaskMapper  taskMapper;
+    @Autowired
+    private MessageMapper messageMapper;
     /**
      * 设置违约的任务
      */
@@ -70,7 +68,16 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
      * 领取任务
      */
     @Override
-    public ResultDO receivedTask(String workerId, String workerTaskId) {
+    public ResultDO receivedTask(String workerId, String workerTaskId, String messageId) {
+        if (StringUtils.isEmpty(messageId)) {
+            throw new ParamsException("参数messageId不能为空");
+        }
+        Message message = messageMapper.selectById(messageId);
+        if (message == null || message.getStatus() == 1) {
+            throw new BusinessException("消息已处理");
+        }
+        message.setStatus(1);
+        messageMapper.updateAllColumnById(message);
         TaskWorker taskWorker = taskWorkerMapper.findFirstById(workerTaskId);
         if (taskWorker.getStatus() > 0) {
             throw new BusinessException("任务状态不是新派发,无法接受任务");
@@ -130,6 +137,15 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         if (!StringUtils.hasLength(refusedTaskReq.getWorkerTaskId())) {
             throw new ParamsException("任务不能为空");
         }
+        if (StringUtils.isEmpty(refusedTaskReq.getMessageId())) {
+            throw new ParamsException("消息id不能为空");
+        }
+        Message message = messageMapper.selectById(refusedTaskReq.getMessageId());
+        if (message == null || message.getStatus() == 1) {
+            throw new BusinessException("消息已处理");
+        }
+        message.setStatus(1);
+        messageMapper.updateAllColumnById(message);
         TaskWorker taskWorker = taskWorkerMapper.findFirstById(refusedTaskReq.getWorkerTaskId());
         if(taskWorker.getStatus()>0){
             throw new BusinessException("任务状态不是新派发,无法接受任务");
@@ -172,5 +188,31 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         result.put("result",pageInfo.getList());
         result.put("page",paginator.getPage());
         return ResultDO.buildSuccess(result);
+    }
+
+    /**
+     * 统计未读当前任务数量
+     * @param userId
+     * @return
+     */
+    @Override
+    public int selectUnreadCount(String userId) {
+        if (StringUtils.isEmpty(userId)) {
+            throw new ParamsException("参数不能为空");
+        }
+        return taskWorkerMapper.selectUnreadCount(userId);
+    }
+
+    /**
+     * 统计未读已完成任务数量
+     * @param userId
+     * @return
+     */
+    @Override
+    public int selectCompleteCount(String userId) {
+        if (StringUtils.isEmpty(userId)) {
+            throw new ParamsException("参数不能为空");
+        }
+        return taskWorkerMapper.selectCompleteCount(userId);
     }
 }

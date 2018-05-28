@@ -45,8 +45,11 @@ mybatis-plus:
       refresh-mapper: true
       #自定义填充策略接口实现
       meta-object-handler: com.microdev.model.MyMetaObjectHandler
-
-
+logging:
+  level:
+    com:
+      microdev:
+        mapper: debug
 pagehelper:
     helperDialect: mysql
     reasonable: true

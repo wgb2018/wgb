@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.microdev.mapper.TaskHrCompanyMapper" >
-    <sql id="TaskHrCompany_Query_List" >
+<mapper namespace="com.microdev.mapper.TaskHrCompanyMapper">
+    <sql id="TaskHrCompany_Query_List">
         id as pid, create_time, deleted, modify_time,
         hourly_pay, confirmed_workers, have_pay_money, minutes, need_workers, refused_workers, repast_times, should_pay_money, status, workers_have_pay, workers_should_pay,
-        hr_company_id, task_id, hotel_id, hr_company_name, hotel_name, task_type_code, task_type_text, task_content, refused_reason, hourly_pay_hotel,check_sign
+        hr_company_id, task_id, hotel_id, hr_company_name, hotel_name, task_type_code, task_type_text, task_content, refused_reason,check_sign
     </sql>
     <insert id="save" parameterType="com.microdev.model.TaskHrCompany">
         insert into task_hr_company values(#{pid},#{createTime},#{deleted},#{modifyTime},
         #{hourlyPay},#{confirmedWorkers},#{havePayMoney},#{minutes},#{needWorkers},#{refusedWorkers},
         #{repastTimes},#{shouldPayMoney},#{status},#{workersHavePay},#{workersShouldPay},#{hrCompanyId},
         #{taskId},#{hotelId},#{hrCompanyName},#{hotelName},#{taskTypeCode},#{taskTypeText},#{taskContent}
-        ,#{refusedReason})
+        ,#{refusedReason},,#{checkSign})
     </insert>
     <select id="queryByHotelTaskId" resultType="com.microdev.model.TaskHrCompany">
-        select <include refid="TaskHrCompany_Query_List"/> from task_hr_company where task_id = #{id}
+        select
+        <include refid="TaskHrCompany_Query_List"/>
+        from task_hr_company where task_id = #{id}
     </select>
     <select id="queryByTaskId" resultType="com.microdev.model.TaskHrCompany">
-        select <include refid="TaskHrCompany_Query_List"/> from task_hr_company where id = #{id}
+        select
+        <include refid="TaskHrCompany_Query_List"/>
+        from task_hr_company where id = #{id}
     </select>
     <update id="update" parameterType="com.microdev.model.TaskHrCompany">
         update task_hr_company set deleted = #{createTime},modify_time = #{modifyTime},hourly_pay = #{hourlyPay},confirmed_workers = #{confirmedWorkers},
@@ -29,8 +33,10 @@
     </update>
     <select id="queryHrCompanyTasks" parameterType="com.microdev.param.TaskHrQueryDTO"
             resultType="com.microdev.model.TaskHrCompany">
-        select <include
-            refid="TaskHrCompany_Query_List"/> from task_hr_company
+        select
+        <include
+                refid="TaskHrCompany_Query_List"/>
+        from task_hr_company
         <where>
             <if test="hrCompanyId != null and hrCompanyId != ''">
                 hr_company_id = #{hrCompanyId}
@@ -78,14 +84,15 @@
             <if test="status == 7">
                 and status in (3,6)
             </if>
-        </where> order by create_time desc
+        </where>
+        order by create_time desc
     </select>
-    <select id="queryHotelBill" resultType="com.microdev.model.TaskHrCompany">
+    <select id="queryHotelBill" resultType="com.microdev.model.TaskHrCompany" parameterType="java.lang.String">
         select  sum(should_pay_money) as should_pay_money,sum(have_pay_money) as have_pay_money,
         hr_company_id,hr_company_name from task_hr_company
         where hotel_id = #{hotelId} group by hr_company_id,hr_company_name
     </select>
-    <select id="queryHrCompanyBill" resultType="com.microdev.model.TaskHrCompany">
+    <select id="queryHrCompanyBill" resultType="com.microdev.model.TaskHrCompany" parameterType="java.lang.String">
         select  sum(should_pay_money) as should_pay_money,sum(have_pay_money) as have_pay_money,
         hotel_id,hotel_name from task_hr_company
         where hr_company_id = #{hrCompanyId} group by hotel_id,hotel_name
@@ -96,7 +103,7 @@
         FROM task_hr_company
         WHERE hotel_id = #{hotelId}
     </select>
-    <update id="addMinutes" >
+    <update id="addMinutes">
         UPDATE task_hr_company SET minutes = minutes + #{minutes},workers_should_pay = workers_should_pay + #{hrShouldPayMoney},
         should_pay_money = should_pay_money + #{hotelShouldPayMoney} Where id = #{taskHrCompanyId}
     </update>
@@ -119,6 +126,17 @@
         ON t.id = th.task_id
         INNER JOIN company c
         ON t.hotel_id = c.id
-        WHERE th.id = #{id}
+        WHERE th.id = #{hrCompanyId}
+    </select>
+
+    <select id="selectUnreadCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM task_hr_company WHERE hr_company_id= #{hrCompanyId} AND check_sign = 0
+    </select>
+
+    <select id="selectCompleteCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM
+        (SELECT * FROM task_hr_company WHERE hr_company_id= #{hrCompanyId})th
+        INNER JOIN task t
+        ON th.task_id = t.id AND CURDATE() > t.to_date
     </select>
 </mapper>

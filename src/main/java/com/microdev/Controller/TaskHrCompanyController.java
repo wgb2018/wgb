@@ -29,16 +29,16 @@ public class TaskHrCompanyController {
      * 接受任务
      */
     @PostMapping("/hr-tasks/accept/{id}")
-    public ResultDO accept(@PathVariable String id) {
-        taskHrCompanyService.TaskHraccept(id);
+    public ResultDO accept(@PathVariable String id, String messageId) {
+        taskHrCompanyService.TaskHraccept(id, messageId);
         return ResultDO.buildSuccess("接受任务成功");
     }
     /**
      * 拒绝任务
      */
     @PostMapping("/hr-tasks/refuse/{id}")
-    public ResultDO refuse(@PathVariable String id) {
-        taskHrCompanyService.TaskHrrefuse(id);
+    public ResultDO refuse(@PathVariable String id, String messageId) {
+        taskHrCompanyService.TaskHrrefuse(id, messageId);
         return ResultDO.buildSuccess("拒绝任务成功");
     }
     /**
@@ -52,8 +52,8 @@ public class TaskHrCompanyController {
      * 申请调配
      */
     @PostMapping("/hr-tasks/allocate/{id}")
-    public ResultDO allocate(@PathVariable String id) {
-        taskHrCompanyService.TaskHrallocate(id);
+    public ResultDO allocate(@PathVariable String id, String reason, Integer number) {
+        taskHrCompanyService.TaskHrallocate(id, reason, number);
         return ResultDO.buildSuccess("申请任务调配成功");
     }
     /**

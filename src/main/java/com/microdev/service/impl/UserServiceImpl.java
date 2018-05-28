@@ -45,8 +45,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     private UserConverter userConverter;
     @Autowired
     private CompanyMapper companyMapper;
-	@Autowired
-    private DictMapper dictMapper;
+    @Autowired
+    private TaskService taskService;
+    @Autowired
+    private TaskWorkerService taskWorkerService;
+    @Autowired
+    private TaskHrCompanyService taskHrCompanyService;
+    @Autowired
+    private MessageService messageService;
+
     @Override
     public User create(User user) throws Exception{
         try{
@@ -123,7 +130,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         //存入用户
         userMapper.insert(newUser);
         //存入用户角色关系
-        roleMapper.insertRoleAndUserRelation(newUser.getPid(),newUser.getUserCode());
+        roleMapper.insertRoleAndUserRelation(newUser
+                .getPid(),newUser.getUserCode());
         List<Role> roleList = roleMapper.queryAllRolesByUserId(newUser.getPid());
         UserDTO userDTO = new UserDTO();
         userDTO.setId(newUser.getPid());
@@ -339,6 +347,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         userDTO.setUserType(userType);
         userDTO.setRoleList((ArrayList<Role>) user.get("roles"));
         //如果当前的是酒店或者人力公司，那么就查询出他们的公司审核状态
+        Map<String, Integer> totalMap = new HashMap<>();
         if (userType == UserType.hr || userType == UserType.hotel) {
             Company company = companyMapper.findFirstByLeaderMobile(mobile);
             if (company != null) {
@@ -349,6 +358,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                 companyDTO.setStatus(company.getStatus());
                 userDTO.setCompany(companyDTO);
 				userDTO.setServiceType (dictMapper.queryTypeByUserId (company.getPid ()));
+                //如果是酒店
+
+                if (company.getCompanyType() == 1) {
+                    totalMap.put("curTask", taskService.selectUnReadAmount(company.getPid()));
+                    totalMap.put("completeTask", taskService.selectCompleteAmount(company.getPid()));
+                    totalMap.put("pendingTask", messageService.selectUnHandleMessageAmount(company.getPid(), "3", 0));
+                    totalMap.put("message", messageService.selectMessageCount(company.getPid(), "3", 0));
+                } else {
+                    totalMap.put("pendingTask", messageService.selectUnHandleMessageAmount(company.getPid(), "2", 0));
+                    totalMap.put("message", messageService.selectMessageCount(company.getPid(), "2", 0));
+                    totalMap.put("curTask", taskHrCompanyService.selectUnreadCount(company.getPid()));
+                    totalMap.put("completeTask", taskHrCompanyService.selectCompleteCount(company.getPid()));
+                }
             }
         } else if (userType == UserType.worker) {
             String workerId = user.getString("workerId");
@@ -358,6 +380,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             userDTO.setHealthCard(worker.getHealthCard());
             userDTO.setIdCardFront(worker.getIdcardFront());
             userDTO.setIdCardBack(worker.getIdcardBack());
+            totalMap.put("pendingTask", messageService.selectUnHandleMessageAmount(workerId, "1", 0));
+            totalMap.put("message", messageService.selectMessageCount(workerId, "1", 0));
+            totalMap.put("curTask", taskWorkerService.selectUnreadCount(workerId));
+            totalMap.put("completeTask", taskWorkerService.selectCompleteCount(workerId));
         }
         return userDTO;
     }

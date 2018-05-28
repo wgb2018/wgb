@@ -100,6 +100,11 @@ public class Task extends BaseEntity {
      */
     private Double havePayMoney=0.0;
 
+    /**
+     * 是否已查看0未查看1已查看
+     */
+    private Integer checkSign = 0;
+
     public Integer getStatus() {
         return status;
     }

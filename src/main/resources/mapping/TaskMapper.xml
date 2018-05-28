@@ -1,42 +1,46 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.microdev.mapper.TaskMapper" >
-    <sql id="Task_Query_Param" >
+<mapper namespace="com.microdev.mapper.TaskMapper">
+    <sql id="Task_Query_Param">
         id as pid, create_time, deleted, modify_time,
         confirmed_workers, from_date, have_pay_money, hourly_pay, minutes, need_workers, refused_workers, repast_times, should_pay_money,
         status, task_content, task_type_code, task_type_text, to_date, hotel_id, day_start_time, day_end_time, hotel_name,check_sign
     </sql>
     <resultMap type="com.microdev.param.TaskViewDTO" id="dotMap">
-        <id column="id" jdbcType="VARCHAR" property="id" />
-        <result column="minutes" jdbcType="INTEGER" property="minutes" />
-        <result column="confirmedWorkers" jdbcType="INTEGER" property="confirmedWorkers" />
-        <result column="toDate" jdbcType="TIMESTAMP" property="toDate" />
-        <result column="havePayMoney" jdbcType="DOUBLE" property="havePayMoney" />
-        <result column="shouldPayMoney" jdbcType="DOUBLE" property="shouldPayMoney" />
-        <result column="repastTimes" jdbcType="INTEGER" property="repastTimes" />
-        <result column="refusedWorkers" jdbcType="INTEGER" property="refusedWorkers" />
-        <result column="hourlyPay" jdbcType="DOUBLE" property="hourlyPay" />
-        <result column="HotelName" jdbcType="VARCHAR" property="hotelName" />
-        <result column="address" jdbcType="VARCHAR" property="address" />
-        <result column="taskTypeText" jdbcType="VARCHAR" property="taskTypeText" />
-        <result column="taskContent" jdbcType="VARCHAR" property="taskContent" />
-        <result column="fromDate" jdbcType="TIMESTAMP" property="fromDate" />
-        <result column="needWorkers" jdbcType="INTEGER" property="needWorkers" />
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="minutes" jdbcType="INTEGER" property="minutes"/>
+        <result column="confirmedWorkers" jdbcType="INTEGER" property="confirmedWorkers"/>
+        <result column="toDate" jdbcType="TIMESTAMP" property="toDate"/>
+        <result column="havePayMoney" jdbcType="DOUBLE" property="havePayMoney"/>
+        <result column="shouldPayMoney" jdbcType="DOUBLE" property="shouldPayMoney"/>
+        <result column="repastTimes" jdbcType="INTEGER" property="repastTimes"/>
+        <result column="refusedWorkers" jdbcType="INTEGER" property="refusedWorkers"/>
+        <result column="hourlyPay" jdbcType="DOUBLE" property="hourlyPay"/>
+        <result column="HotelName" jdbcType="VARCHAR" property="hotelName"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="taskTypeText" jdbcType="VARCHAR" property="taskTypeText"/>
+        <result column="taskContent" jdbcType="VARCHAR" property="taskContent"/>
+        <result column="fromDate" jdbcType="TIMESTAMP" property="fromDate"/>
+        <result column="needWorkers" jdbcType="INTEGER" property="needWorkers"/>
         <collection property="listTaskHr" column="id"
                     ofType="com.microdev.param.TaskHrCompanyViewDTO" select="selectTaskHrCompany"
-                    javaType="java.util.List" />
+                    javaType="java.util.List"/>
 
     </resultMap>
     <insert id="save" parameterType="com.microdev.model.Task">
-        insert into task values (#{id},#{create_time},#{deleted},#{modify_time},#{confirmed_workers},#{from_date},
+        insert into task values (#{pid},#{create_time},#{deleted},#{modify_time},#{confirmed_workers},#{from_date},
         #{have_pay_money},#{hourly_pay},#{minutes},#{need_workers},#{refused_workers},#{repast_times},#{should_pay_money},#{status},
-        #{task_content},#{task_type_code},#{task_type_text},#{to_date},#{hotel_id},#{day_start_time},#{day_end_time},#{hotel_name})
+        #{task_content},#{task_type_code},#{task_type_text},#{to_date},#{hotel_id},#{day_start_time},#{day_end_time},#{hotel_name}, #{checkSign})
     </insert>
-    <select id="getFirstById" parameterType="com.microdev.model.Task" resultType="com.microdev.model.Task">
-        select <include refid="Task_Query_Param"/> from task where id = #{id}
+    <select id="getFirstById" resultType="com.microdev.model.Task">
+        select
+        <include refid="Task_Query_Param"/>
+        from task where id = #{id}
     </select>
     <select id="queryTasks" parameterType="com.microdev.param.TaskQueryDTO" resultType="com.microdev.model.Task">
-        select <include refid="Task_Query_Param"/> from task
+        select
+        <include refid="Task_Query_Param"/>
+        from task
         <where>
             <if test="taskTypeText != null and taskTypeText != ''">
                 task_type_text = #{taskTypeText}
@@ -87,7 +91,8 @@
             <if test="status == 6">
                 and to_date &lt;= now()
             </if>
-        </where> order by create_time desc
+        </where>
+        order by create_time desc
     </select>
     <select id="selectHrAndTaskHourPay" parameterType="java.lang.String"
             resultType="java.util.Map">
@@ -104,15 +109,15 @@
         waitPayMoney
         FROM task where hotel_id = #{hotelId}
     </select>
-    <update id="update" parameterType="com.microdev.model.Task" >
+    <update id="update" parameterType="com.microdev.model.Task">
         update task set deleted = #{task.deleted},modify_time = #{task.modify_time},confirmed_workers = #{task.confirmed_workers},from_date = #{task.from_date},
         have_pay_money = #{task.have_pay_money},hourly_pay = #{task.hourly_pay},minutes = #{task.minutes},need_workers = #{task.need_workers},refused_workers =#{task.refused_workers},
         repast_times = #{task.repast_times},should_pay_money = #{task.should_pay_money},status = #{task.status},task_content = #{task.task_content},task_type_code = #{task.task_type_code},
         task_type_text = #{task.task_type_text},to_date = #{task.to_date},hotel_id = #{task.hotel_id},day_start_time = #{task.day_start_time},day_end_time = #{task.day_end_time},
         hotel_name = #{task.hotel_name} where id = #{task.id}
     </update>
-    <update id="addMinutes" >
-        UPDATE task SET minutes = minutes + #{1}, should_pay_money = should_pay_money + #{2} Where id = #{0}
+    <update id="addMinutes">
+        UPDATE task SET minutes = minutes + #{minutes}, should_pay_money = should_pay_money + #{shouldPayMoney} Where id = #{taskId}
     </update>
     <update id="updateStatus">
         update task set status = #{status} where id = #{taskId}
@@ -157,8 +162,15 @@
         waitPayMoney,tc.hr_company_name AS hrCompanyName, tc.hr_company_id AS
         hrCompanyId
         FROM task_hr_company tc
-        WHERE tc.task_id = #{id}
+        WHERE tc.task_id = #{taskId}
     </select>
 
+    <select id="selectUnReadCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+         select count(1) from task where hotel_id = #{hotelId} and check_sign = 0
+    </select>
 
+    <select id="selectCompleteCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+      SELECT COUNT(1) FROM task
+      WHERE hotel_id = #{hotelId} AND CURDATE() > to_date
+    </select>
 </mapper>

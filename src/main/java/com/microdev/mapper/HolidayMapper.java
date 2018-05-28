@@ -10,7 +10,9 @@ import java.util.Map;
 @Repository
 public interface HolidayMapper extends BaseMapper<Holiday> {
 
-    List<Holiday> selectByTaskWorkId(String taskWorkId);
+    List<Holiday> selectByTaskWorkId(String taskWorkerId);
 
-    List<Map<String, Object>> selectUserHolidayByTaskWorkId(String taskWorkId);
+    List<Map<String, Object>> selectUserHolidayByTaskWorkId(String taskWorkerId);
+
+    List<Holiday> selectHolidayByTaskWorkId(String taskWorkerId);
 }

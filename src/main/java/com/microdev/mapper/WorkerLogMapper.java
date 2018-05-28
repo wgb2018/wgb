@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.microdev.model.WorkLog;
 import com.microdev.param.PunchDTO;
 import com.microdev.param.SupplementResponse;
+import com.microdev.param.WorkerOneDayInfo;
 
 public interface WorkerLogMapper extends BaseMapper<WorkLog> {
 
@@ -28,5 +29,7 @@ public interface WorkerLogMapper extends BaseMapper<WorkLog> {
 	
 	SupplementResponse selectNoPunchDetail(Map<String, Object> map);
 	
-	List<WorkLog> selectUserPunchDetail(String taskWorkerId);
+	List<WorkerOneDayInfo> selectUserPunchDetail(String taskWorkerId);
+
+	List<WorkLog> selectPunchDetails(String taskWorkerId);
 }

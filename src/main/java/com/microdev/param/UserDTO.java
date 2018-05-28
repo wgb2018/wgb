@@ -10,10 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author liutf
@@ -106,15 +103,15 @@ public class UserDTO {
 
     private Set<PermissionDTO> permissions = new HashSet<>();
     private List<Role> roleList = new ArrayList<>();
-
-	 /**
+	/**
      * 服务类型
      */
     private List<Dict> serviceType;
     /**
      * 服务地区
      */
-    private Map<String,Integer> areaCode;    /**
+    private Map<String,Integer> areaCode;
+    /**
      * 所属公司
      */
     private CompanyDTO company;
@@ -128,8 +125,9 @@ public class UserDTO {
     private String idCardFront;
 
     private String idCardBack;
-
 	private OffsetDateTime birthday;
+    private Map<String, Integer> totalMap = new HashMap<>();
+
     public String getId() {
         return id;
     }

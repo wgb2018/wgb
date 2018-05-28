@@ -12,17 +12,22 @@ import com.microdev.mapper.MessageTemplateMapper;
 import com.microdev.model.Company;
 import com.microdev.model.Message;
 import com.microdev.model.MessageTemplate;
+import com.microdev.model.TaskHrCompany;
 import com.microdev.param.CreateMsgTemplateRequest;
+import com.microdev.param.CreateTaskRequest;
 import com.microdev.param.MessageQuery;
+import com.microdev.param.TaskHrCompanyDTO;
 import com.microdev.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Transactional
@@ -144,4 +149,286 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         messageMapper.saveBatch(list);
         return true;
     }
+
+    /**
+     * 小时工绑定或解绑人力公司
+     * @param workerId
+     * @param hrCompanyId
+     * @param userName
+     * @param pattern
+     *            采用解绑的或绑定的模板
+     * @return
+     */
+    @Override
+    public void bindHrCompany(String workerId, Set<String> hrCompanyId, String userName, String pattern) {
+        if (StringUtils.isEmpty(workerId) || hrCompanyId == null || hrCompanyId.size() == 0
+                || StringUtils.isEmpty(userName) || StringUtils.isEmpty(pattern)) {
+            throw new ParamsException("参数不能为空");
+        }
+
+        MessageTemplate mess = messageTemplateMapper.findFirstByCode(pattern);
+        Iterator<String> it = hrCompanyId.iterator();
+        Message m = null;
+        List<Message> list = new ArrayList<>();
+        while (it.hasNext()) {
+            m = new Message();
+            m.setDeleted(false);
+            m.setMessageCode(mess.getCode());
+            m.setMessageTitle(mess.getTitle());
+            m.setStatus(0);
+            m.setWorkerId(workerId);
+            Map<String, String> param = new HashMap<>();
+            param.put("userName", userName);
+            String c = StringKit.templateReplace(mess.getContent(), param);
+            m.setMessageContent(c);
+            m.setHrCompanyId(it.next());
+            m.setApplyType(2);
+            list.add(m);
+        }
+        messageMapper.saveBatch(list);
+    }
+
+    /**
+     * 酒店向人力公司派发任务
+     * @param request
+     * @param hotel
+     * @param pattern
+     * @return
+     */
+    @Override
+    public void hotelDistributeTask(CreateTaskRequest request, Company hotel, String pattern) {
+        if (request == null || hotel == null || StringUtils.isEmpty(pattern)) {
+            throw new ParamsException("参数不能为空");
+        }
+        MessageTemplate mess = messageTemplateMapper.findFirstByCode(pattern);
+        if (mess == null) {
+            throw new ParamsException("模板查询不到");
+        }
+        Message m = null;
+        List<Message> list = new ArrayList<>();
+        //DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY-MM-dd");
+        //DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        for (TaskHrCompanyDTO dto : request.getHrCompanySet()) {
+            m = new Message();
+            m.setDeleted(false);
+            m.setMessageCode(mess.getCode());
+            m.setMessageTitle(mess.getTitle());
+            m.setStatus(0);
+            m.setApplyType(2);
+            m.setHrCompanyId(dto.getHrCompanyId());
+            m.setHotelId(hotel.getPid());
+            Map<String, String> param = new HashMap<>();
+            param.put("hotelName", hotel.getName());
+            param.put("taskContent", request.getTaskContent());
+
+            String c = StringKit.templateReplace(mess.getContent(), param);
+            m.setMessageContent(c);
+            list.add(m);
+        }
+        messageMapper.saveBatch(list);
+    }
+
+    /**
+     * 人力派发给小时工任务
+     * @param list          小时工集合
+     * @param hrId
+     * @param hrName
+     * @param pattern
+     */
+    @Override
+    public void hrDistributeTask(List<Map<String, String>> list, String hrId, String hrName, String pattern) {
+        if (list == null || list.size() == 0 || StringUtils.isEmpty(hrId) || StringUtils.isEmpty(pattern)) {
+            throw new ParamsException("参数不能为空");
+        }
+        MessageTemplate mess = messageTemplateMapper.findFirstByCode(pattern);
+        if (mess == null) {
+            throw new ParamsException("模板查询不到");
+        }
+        Message m = null;
+        List<Message> messageList = new ArrayList<>();
+        for (Map<String, String> param : list) {
+            m = new Message();
+            m.setDeleted(false);
+            m.setMessageCode(mess.getCode());
+            m.setMessageTitle(mess.getTitle());
+            m.setStatus(0);
+            m.setApplyType(0);
+            m.setHrCompanyId(hrId);
+            m.setWorkerId(param.get("workerId"));
+            m.setWorkerTaskId(param.get("workerTaskId"));
+            Map<String, String> map = new HashMap<>();
+            map.put("hrCompanyName", hrName);
+            String c = StringKit.templateReplace(mess.getContent(), map);
+            m.setMessageContent(c);
+            messageList.add(m);
+        }
+        messageMapper.saveBatch(messageList);
+    }
+
+    /**
+     * 人力申请调配消息
+     * @param c
+     * @param reason
+     * @param number
+     * @param pattern
+     */
+    @Override
+    public void sendMessage(TaskHrCompany c, String reason, String number, String pattern) {
+        if (c == null || StringUtils.isEmpty(reason) || StringUtils.isEmpty(number) || StringUtils.isEmpty(pattern)) {
+            throw new ParamsException("参数不能为空");
+        }
+        MessageTemplate mess = messageTemplateMapper.findFirstByCode(pattern);
+        if (mess == null) {
+            throw new ParamsException("模板查询不到");
+        }
+        Message m = new Message();
+        m.setDeleted(false);
+        m.setMessageCode(mess.getCode());
+        m.setMessageTitle(mess.getTitle());
+        m.setStatus(0);
+        m.setApplyType(0);
+        m.setHrCompanyId(c.getHrCompanyId());
+        m.setHotelId(c.getHotelId());
+        Map<String, String> map = new HashMap<>();
+        map.put("hrCompanyName", c.getHrCompanyName());
+        map.put("reason", reason);
+        map.put("number", number);
+        String str = StringKit.templateReplace(mess.getContent(), map);
+        m.setMessageContent(str);
+        messageMapper.insert(m);
+    }
+
+    /**
+     * 查询未读消息
+     * @param id
+     * @param applyType
+     * @return
+     */
+    @Override
+    public List<Message> selectUnReadMessage(String id, String applyType) {
+
+        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(applyType)) {
+            throw new ParamsException("参数不能为空");
+        }
+        Map<String, Object> param = new HashMap<>();
+        param.put("applyType", applyType);
+        if ("1".equals(applyType)) {
+            param.put("workerId", id);
+        } else if ("2".equals(applyType)) {
+            param.put("hrCompanyId", id);
+        } else if ("3".equals(applyType)) {
+            param.put("hotelId", id);
+        } else {
+            throw new ParamsException("参数applyType类型错误");
+        }
+        List<Message> list = messageMapper.selectUnReadMessage(param);
+        if (list == null || list.size() == 0) {
+            return new ArrayList<>();
+        }
+        return list;
+    }
+
+    /**
+     * 查询未读消息数量及各个类型的数量
+     * @param id
+     * @param applyType
+     * @return
+     */
+    @Override
+    public Map<String, Integer> selectUnReadCount(String id, String applyType) {
+        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(applyType)) {
+            throw new ParamsException("参数不能为空");
+        }
+        Map<String, Object> param = new HashMap<>();
+        param.put("applyType", applyType);
+        if ("1".equals(applyType)) {
+            param.put("workerId", id);
+        } else if ("2".equals(applyType)) {
+            param.put("hrCompanyId", id);
+        } else if ("3".equals(applyType)) {
+            param.put("hotelId", id);
+        } else {
+            throw new ParamsException("参数applyType类型错误");
+        }
+        int total = messageMapper.selectUnReadCount(param);
+        Map<String, Integer> result = new HashMap<>();
+        result.put("total", total);
+        //查询补签申请数量
+        param.put("messageCode", "applySupplementMessage");
+        int supplementCount = messageMapper.selectUnReadCount(param);
+        result.put("supplementCount", supplementCount);
+        //查询加时申请
+        param.put("messageCode", "applyExtraMessage");
+        int extraCount = messageMapper.selectUnReadCount(param);
+        result.put("extraCount", extraCount);
+        //请假申请
+        param.put("messageCode", "applyLeaveMessage");
+        int leaveCount = messageMapper.selectUnReadCount(param);
+        result.put("leaveCount", leaveCount);
+        //调配申请
+        param.put("messageCode", "applyChangeMessage");
+        int changeCount = messageMapper.selectUnReadCount(param);
+        result.put("changeCount", changeCount);
+        //绑定申请
+        param.put("messageCode", "applyBindMessage");
+        int bindCount = messageMapper.selectUnReadCount(param);
+        result.put("bindCount", bindCount);
+
+        return result;
+    }
+
+    /**
+     * 查询未读消息数量
+     * @param id
+     * @param applyType
+     * @param type  type=1时
+     * @return
+     */
+    @Override
+    public int selectMessageCount(String id, String applyType, int type) {
+        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(applyType)) {
+            throw new ParamsException("参数不能为空");
+        }
+        Map<String, Object> param = new HashMap<>();
+        param.put("applyType", applyType);
+        if ("1".equals(applyType)) {
+            param.put("workerId", id);
+        } else if ("2".equals(applyType)) {
+            param.put("hrCompanyId", id);
+        } else if ("3".equals(applyType)) {
+            param.put("hotelId", id);
+        } else {
+            throw new ParamsException("参数applyType类型错误");
+        }
+        param.put("checkSign", type);
+        return messageMapper.selectUnReadCount(param);
+    }
+
+    /**
+     * 查询未处理的消息数量
+     * @param id
+     * @param applyType
+     * @param status
+     * @return
+     */
+    @Override
+    public int selectUnHandleMessageAmount(String id, String applyType, int status) {
+        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(applyType)) {
+            throw new ParamsException("参数不能为空");
+        }
+        Map<String, Object> param = new HashMap<>();
+        if ("1".equals(applyType)) {
+            param.put("workerId", id);
+        } else if ("2".equals(applyType)) {
+            param.put("hrCompanyId", id);
+        } else if ("3".equals(applyType)) {
+            param.put("hotelId", id);
+        } else {
+            throw new ParamsException("参数applyType类型错误");
+        }
+        param.put("applyType", applyType);
+        param.put("status", status);
+        return messageMapper.selectUnReadCount(param);
+    }
+
 }

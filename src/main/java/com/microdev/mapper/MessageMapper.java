@@ -26,5 +26,11 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     List<Map<String, Object>> selectHrWaitInfo(String hrCompanyId);
 
-    int updateByMapId(Map<String, Object> map);
+    int updateByMapId(Message mess);
+
+    List<MessageResponse> selectAllMessage(Map<String, Object> map);
+
+    List<Message> selectUnReadMessage(Map<String, Object> param);
+
+    int selectUnReadCount(Map<String, Object> param);
 }

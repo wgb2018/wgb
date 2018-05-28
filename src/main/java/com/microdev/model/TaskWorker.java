@@ -1,12 +1,12 @@
 package com.microdev.model;
 
 
-import com.baomidou.mybatisplus.annotations.TableField;import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.annotations.TableName;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
-import java.util.Map;
+
 /**
  * 小时工任务
  *
@@ -114,7 +114,10 @@ public class TaskWorker extends BaseEntity {
 
     private OffsetTime dayEndTime;
 
-
+    /**
+     * 是否已查看0未查看1已查看
+     */
+    private Integer checkSign = 0;
     public Integer getStatus() {
         return status;
     }

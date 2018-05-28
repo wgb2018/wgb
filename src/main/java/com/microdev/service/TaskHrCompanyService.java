@@ -30,15 +30,15 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
     /**
      * 人力公司接受任务
      */
-    void TaskHraccept(String id);
+    void TaskHraccept(String id, String messageId);
     /**
      * 人力公司拒绝任务
      */
-    void TaskHrrefuse(String id);
+    void TaskHrrefuse(String id, String messageId);
     /**
      * 人力公司申请调配
      */
-    void TaskHrallocate(String id);
+    void TaskHrallocate(String id, String reason, Integer number);
     /**
      * 酒店查询账目
      */
@@ -62,5 +62,19 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
      * @return
      */
     ResultDO hrApplyChangeWorker(Map<String, Object> map);
+
+    /**
+     * 统计人力公司待处理未读数据
+     * @param hrCompanyId
+     * @return
+     */
+    int selectUnreadCount(String hrCompanyId);
+
+    /**
+     * 统计人力已完成未读数据
+     * @param hrCompanyId
+     * @return
+     */
+    int selectCompleteCount(String hrCompanyId);
 
 }

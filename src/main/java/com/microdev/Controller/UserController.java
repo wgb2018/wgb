@@ -20,10 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.util.HashMap;
+import java.time.ZoneOffset;import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -154,7 +154,7 @@ public class UserController {
      * 客户端 token 到期时，在不打扰用户的情况下重新获取 token
      */
     @GetMapping("/oauth/refresh-token/{refreshToken}")
-    public ResultDO refreshTokenPost(@PathVariable String refreshToken) {
+    public ResultDO refreshTokenPost((@PathVariable String refreshToken) {
         return ResultDO.buildSuccess(tokenService.refreshToken(refreshToken));
     }
     /**

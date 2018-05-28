@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.jayway.jsonpath.Criteria;
+import com.microdev.mapper.AreaRelationMapper;
 import com.microdev.param.CompanyQueryDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +32,8 @@ public class CompanyTest {
 	private CompanyService companyService;
 	@Autowired
     private CompanyMapper companyMapper;
+	@Autowired
+	private AreaRelationMapper areaRelationMapper;
 
 	@Test
 	public void pageTest() {
@@ -124,5 +127,21 @@ public class CompanyTest {
 		hrCompany.add(m);
 		request.setHrCompany(hrCompany);
 		companyService.hotelPublish(request);
+	}
+
+	@Test
+	public void nineTest() {
+		String messageId = "1191dbb1-3777-4527-970a-4b21f0618d1d";
+		Integer type = 1;
+		companyService.hotelAddHrCompanyById("","",messageId, type);
+	}
+
+	@Test
+	public void tenTest() {
+		String id = "71fd5dd0-b4c6-475e-91e3-b977b525fcc7";
+		ResultDO r = companyService.hrCompanyHotels(id);
+		if (r != null) {
+			System.out.println(r.toString());
+		}
 	}
 }

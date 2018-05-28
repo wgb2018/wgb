@@ -67,7 +67,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         return ResultDO.buildSuccess(result);
     }
 
-     @Override
+    @Override
     public ResultDO hrCompanyHotels(Paginator paginator, CompanyQueryDTO request) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         List<Company> list = companyMapper.queryHotelsByHrId(request);
@@ -81,7 +81,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         return ResultDO.buildSuccess(result);
     }
 
-
     @Override
     public ResultDO getCompanyById(String id) {
         Company company = companyMapper.findCompanyById(id);
@@ -94,27 +93,44 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
      * 人力资源公司和酒店关系绑定 根据ID绑定
      */
     @Override
-    public ResultDO hotelAddHrCompanyById(HotelHrIdBindDTO hotelHrDTO) {
-        Company hotel=companyMapper.findCompanyById(hotelHrDTO.getHotelId());
-        if(hotel==null || hotel.getCompanyType()!=1){
-            throw new ParamsException("参数hotelId输入有误");
+    public ResultDO hotelAddHrCompanyById(String hotelId, String hrCompanyId, String messageId, Integer type) {
+        if (StringUtils.isEmpty(messageId) || (type != 1 && type != 2)) {
+            throw new ParamsException("参数不能为空");
         }
-        Company hrCompany=companyMapper.findCompanyById(hotelHrDTO.getHrId());
-        if(hrCompany==null || hrCompany.getCompanyType()!=2){
-            throw new ParamsException("参数hrCompanyId输入有误");
+        Message message = messageMapper.selectById(messageId);
+        if (message == null || message.getStatus() == 1) {
+            throw new ParamsException("消息已经被处理");
         }
-        HotelHrCompany hotelHr = new HotelHrCompany();
-            hotelHr.setHotelId(hotel.getPid());
-            hotelHr.setHrId(hrCompany.getPid());
-            hotelHr.setBindType(hotelHrDTO.getBindType());
-            hotelHr.setBindTime(OffsetDateTime.now());
-        hotelHr.setStatus(0);
-        hotelHr.setDeleted(false);
-        hotelHrCompanyMapper.insert(hotelHr);
-        return  ResultDO.buildSuccess("添加成功");
+        message.setStatus(1);
+        messageMapper.updateAllColumnById(message);
+        Map<String, Object> columnMap = new HashMap<>();
+        columnMap.put("hotel_id", message.getHotelId());
+        columnMap.put("hr_id", message.getHrCompanyId());
+        List<HotelHrCompany> list = hotelHrCompanyMapper.selectByMap(columnMap);
+        if (list == null || list.size() == 0) {
+            HotelHrCompany h = new HotelHrCompany();
+            h.setDeleted(false);
+            h.setStatus(0);
+            h.setBindType(type);
+            h.setBindTime(OffsetDateTime.now());
+            h.setHrId(message.getHrCompanyId());
+            h.setHotelId(message.getHotelId());
+            hotelHrCompanyMapper.insert(h);
+        } else {
+            HotelHrCompany h = list.get(0);
+            if (h.getStatus() == 1) {
+                h.setDeleted(false);
+                h.setStatus(0);
+                h.setBindType(type);
+                h.setBindTime(OffsetDateTime.now());
+                hotelHrCompanyMapper.updateAllColumnById(h);
+            }
+        }
+
+        return ResultDO.buildSuccess("添加成功");
     }
 
-     @Override
+    @Override
     public ResultDO createCompany(Company companyDTO) {
         Company company = companyMapper.findFirstByLeaderMobile(companyDTO.getLeaderMobile());
         //添加区域
@@ -209,11 +225,18 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         List<Company> list = companyMapper.queryNotHotelsByHrId(id);
         return ResultDO.buildSuccess(list);
     }
+
     /**
      * 酒店反馈小时工补签申请
+     * @param id        消息id
+     * @param status    0拒绝1同意
+     * @return
      */
     @Override
     public boolean supplementResponse(String id, String status) {
+        if (!"0".equals(status) && !"1".equals(status)) {
+            throw new ParamsException("参数错误");
+        }
         Message mg = new Message();
         if ("0".equals(status)) {
             mg.setPid(id);
@@ -226,7 +249,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             map.put("modifyTime", OffsetDateTime.now(Clock.system(ZoneId.of("Asia/Shanghai"))));
 
             messageMapper.updateByMapId(map);
-
             PunchMessageDTO punch = messageMapper.selectPunchMessage(id);
             if (punch == null) {
                 throw new ParamsException("数据异常");
@@ -267,8 +289,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 taskWorkerMapper.addMinutes(punch.getTaskWorkerId(),minutes,shouldPayMoney_hrtoworker);
                 taskHrCompanyMapper.addMinutes(punch.getTaskHrId(),minutes,shouldPayMoney_hrtoworker,shouldPayMoney_hoteltohr);
                 taskMapper.addMinutes(punch.getTaskId(),minutes,shouldPayMoney_hoteltohr);
-            }
-        } else {
+            } else {
             throw new ParamsException("参数错误");
         }
         return true;
@@ -452,8 +473,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             map = new HashMap<>();
             map.put("hotelName", request.getName());
             map.put("taskContent", request.getTaskContent());
-
-            map.put("fromDate", request.getFromDate().format(format));
+			map.put("fromDate", request.getFromDate().format(format));
             map.put("toDate", request.getToDate().format(format));
             map.put("price", Double.toString(request.getHourlyPay()));
             map.put("number", String.valueOf(param.get("number")));
@@ -464,8 +484,12 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         messageMapper.saveBatch(list);
         return true;
     }
+
     /**
      * 酒店处理小时工加时
+     * @param id            消息id
+     * @param status        0拒绝1同意
+     * @return
      */
     @Override
     public boolean workExpand(String id, String status) {
@@ -474,7 +498,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }
         Message m = messageMapper.selectById(id);
         m.setStatus(1);
-        m.setModifyTime(OffsetDateTime.now(Clock.system(ZoneId.of("Asia/Shanghai"))));
         messageMapper.updateById(m);
 
         if ("1".equals(status)) {
@@ -519,13 +542,13 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 throw new ParamsException("参数hotelId为空");
             }
             Company company = companyMapper.selectById(dto.getHotelId());
-            messageService.hotelBindHrCompany(dto.getHrSet(), company, "hotelBindHrMessage", type);
+            messageService.hotelBindHrCompany(dto.getHrSet(), company, "applyBindMessage", type);
         } else if (type == 2) {
             if (StringUtils.isEmpty(dto.getHrId())) {
                 throw new ParamsException("参数hrId为空");
             }
             Company company = companyMapper.selectById(dto.getHrId());
-            messageService.hotelBindHrCompany(dto.getHrSet(), company, "hrBindHotelMessage", type);
+            messageService.hotelBindHrCompany(dto.getHrSet(), company, "applyBindMessage", type);
         }
         return ResultDO.buildSuccess("成功");
     }

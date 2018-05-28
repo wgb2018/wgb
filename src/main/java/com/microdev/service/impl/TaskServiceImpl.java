@@ -11,6 +11,7 @@ import com.microdev.mapper.*;
 import com.microdev.model.*;
 import com.microdev.param.*;
 import com.microdev.converter.TaskConverter;
+import com.microdev.service.MessageService;
 import com.microdev.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,15 +40,14 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
     BillMapper billMapper;
     @Autowired
     TaskWorkerMapper taskWorkerMapper;
+    @Autowired
+    private MessageService messageService;
     /**
      * 创建酒店任务
      */
     @Override
     public ResultDO createTask(CreateTaskRequest request) {
-        System.out.println("request:"+request);
-        System.out.println("id:"+request.getHotelId());
         Company hotel=companyMapper.findCompanyById(request.getHotelId());
-        System.out.println("hotel:"+hotel);
         if (hotel == null || !StringUtils.hasLength(hotel.getPid()) ) {
             throw new ParamsException("酒店不存在");
         }
@@ -74,6 +74,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
 
         AddHrTask(task,request);
         taskMapper.insert(task);
+        messageService.hotelDistributeTask(request, hotel, "workTaskMessage");
         TaskViewDTO taskDto= taskConverter.toViewDTOWithOutSet(task);
         return ResultDO.buildSuccess("任务发布成功",taskDto);
     }
@@ -176,20 +177,20 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
      */
     @Override
     public ResultDO hotelPayHr(HotelPayHrRequest payHrRequest) {
-        Task task=  taskMapper.getFirstById(payHrRequest.getTaskId());
         Set<HrPayDetailRequest>  paySet= payHrRequest.getPayHrSet();
         if(paySet.size()==0){
             throw new ParamsException("支付的人力公司列表不能为空");
         }
+        Task task=  taskMapper.getFirstById(payHrRequest.getTaskId());
+
         //List<TaskHrCompany> listHrTask = taskHrCompanyMapper.queryByHotelTaskId(payHrRequest.getTaskId());
             double thisPayMoney=0.0;
-            HotelPayHrDetails hotelPayHrDetails = null;
             for (HrPayDetailRequest payHr:paySet){
+                thisPayMoney=payHr.getThisPayMoney();
+                if(thisPayMoney<=0){
+                    throw new ParamsException("付款金额不能小于0");
+                }
                 TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId(payHr.getTaskHrId());
-                    thisPayMoney=payHr.getThisPayMoney();
-                    if(thisPayMoney<=0){
-                        throw new ParamsException("付款金额不能小于0");
-                    }
                 taskHrCompany.setHavePayMoney(taskHrCompany.getHavePayMoney()+thisPayMoney);
                 task.setHavePayMoney(task.getHavePayMoney()+ thisPayMoney);
                 //记录详情
@@ -213,10 +214,35 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
                 bill.setDeleted(false);
                 bill.setPayType(1);
                 billMapper.insert(bill);
-				taskHrCompanyMapper.updateById(taskHrCompany);
             }
         taskMapper.updateById(task);
         return ResultDO.buildSuccess("结算成功");
+    }
+
+    /**
+     * 查询酒店未读任务
+     * @param hotelId
+     * @return
+     */
+    @Override
+    public int selectUnReadAmount(String hotelId) {
+        if (StringUtils.isEmpty(hotelId)) {
+            throw new ParamsException("参数不能为空");
+        }
+        return taskMapper.selectUnReadCount(hotelId);
+    }
+
+    /**
+     * 查询已完成任务数量
+     * @param hotelId
+     * @return
+     */
+    @Override
+    public int selectCompleteAmount(String hotelId) {
+        if (StringUtils.isEmpty(hotelId)) {
+            throw new ParamsException("参数不能为空");
+        }
+        return taskMapper.selectCompleteCount(hotelId);
     }
 
     //循环添加人力资源任务
