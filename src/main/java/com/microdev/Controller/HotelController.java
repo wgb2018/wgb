@@ -43,6 +43,7 @@ public class HotelController {
      */
     @PostMapping("/Companys")
     public ResultDO createCompany(@RequestBody Company companyDTO) {
+        //companyDTO.setCompanyType(1);
         return companyService.createCompany(companyDTO);
     }
     /**

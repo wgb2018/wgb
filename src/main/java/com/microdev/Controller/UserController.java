@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -88,7 +87,6 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")
     public ResultDO register(@RequestBody UserDTO userDTO) throws Exception {
-        System.out.println("userDTO:"+userDTO);
         return ResultDO.buildSuccess(userService.register(userDTO));
     }
     /**
@@ -202,11 +200,6 @@ public class UserController {
 //        test.setUsername("TestNew");
 //        userMapper.update(test);
 //        test = userMapper.selectById("f1f33e09884c4b06b8fbe77465bd208d");
-        ZoneOffset z = ZoneOffset.of("Z");
-
-        //OffsetDateTime.of("","", z);
-
-
         User test = userMapper.findByMobile("15601173951");
         test.setDeleted(false);
         userMapper.updateById(test);

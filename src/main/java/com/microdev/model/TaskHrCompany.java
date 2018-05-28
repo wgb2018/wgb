@@ -41,12 +41,13 @@ public class TaskHrCompany extends BaseEntity {
     private Integer refusedWorkers=0;
     /**
      * 任务状态
-     * 1：新任务等待确认
-     * 2: 接受任务
-     * 3: 拒绝任务
-     * 4：派发中
-     * 5: 申请调配
-     * 6: 等待做
+     * 0：新任务等待确认
+     * 1: 接受任务
+     * 2: 拒绝任务
+     * 3：派发中
+     * 4: 申请调配
+     * 5: 等待做
+	 * 6: 等待做
      */
     private Integer status;
     /**
@@ -64,8 +65,7 @@ public class TaskHrCompany extends BaseEntity {
     private String hrCompanyId;
 
     private String hrCompanyName;
-
-    @TableField(exist = false)
+	@TableField(exist = false)
     private Company hrCompany;
     /**
      * 酒店
@@ -73,8 +73,7 @@ public class TaskHrCompany extends BaseEntity {
     private String hotelId;
 
     private String hotelName;
-
-    private Double hourlyPayHotel;
+	private Double hourlyPayHotel;
     /**
      * 人力资源公司对应多个TaskWorker
      */

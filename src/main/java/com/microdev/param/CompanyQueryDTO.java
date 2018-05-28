@@ -45,4 +45,5 @@ public class CompanyQueryDTO {
      * 0:小时工(用户ID) 1:人力公司 2:酒店
      */
     private Integer observertype;
+
 }

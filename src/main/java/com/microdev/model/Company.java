@@ -7,7 +7,6 @@ import lombok.Data;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
-
 /**
  * 公司
  *
@@ -70,12 +69,11 @@ public class Company extends BaseEntity {
     @TableField(exist = false)
     private Integer activeWorkers;
 
-    @TableField(exist = false)
+	@TableField(exist = false)
     private Map<String,Integer> areaCode;
 
     @TableField(exist = false)
     private List<String> serviceType;
-
     public String getName() {
         return name;
     }
@@ -135,5 +133,9 @@ public class Company extends BaseEntity {
         this.longitude = longitude;
     }
 
+//    @ManyToMany(fetch = FetchType.LAZY)
+//    @JoinTable(name = "hotel_hrCompanies", joinColumns = @JoinColumn(name = "hotel_id", referencedColumnName = "id"),
+//            inverseJoinColumns = @JoinColumn(name = "hr_id", referencedColumnName = "id"))
+//    private Set<Company> hotelHrCompanies = new HashSet<Company>();
 
 }

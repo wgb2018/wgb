@@ -48,7 +48,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     MessageTemplateMapper messageTemplateMapper;
     @Autowired
     MessageService messageService;
-    @Autowired
+	@Autowired
     DictMapper dictMapper;
     @Autowired
     TaskTypeRelationMapper taskTypeRelationMapper;
@@ -67,7 +67,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         return ResultDO.buildSuccess(result);
     }
 
-    @Override
+     @Override
     public ResultDO hrCompanyHotels(Paginator paginator, CompanyQueryDTO request) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         List<Company> list = companyMapper.queryHotelsByHrId(request);
@@ -80,6 +80,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         result.put("page",paginator.getPage());
         return ResultDO.buildSuccess(result);
     }
+
 
     @Override
     public ResultDO getCompanyById(String id) {
@@ -113,7 +114,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         return  ResultDO.buildSuccess("添加成功");
     }
 
-    @Override
+     @Override
     public ResultDO createCompany(Company companyDTO) {
         Company company = companyMapper.findFirstByLeaderMobile(companyDTO.getLeaderMobile());
         //添加区域

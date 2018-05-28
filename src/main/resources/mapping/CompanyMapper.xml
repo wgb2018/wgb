@@ -70,25 +70,11 @@
     <select id="queryHotelsByHrId" parameterType="com.microdev.param.CompanyQueryDTO" resultType="com.microdev.model.Company">
         select <include refid="Company_Column_List"/> from company where id IN
         (select hotel_id from hotel_hr_company where hr_id = #{id} and status = 0)
-        <if test="name != null and name !=''">
-            and name like '%${name}%'
-        </if>
-        <if test="leader != null and leader !=''">
-            and leader like '%${leader}%'
-        </if>
-        order by create_time desc
     </select>
     <!-- 获取已添加该酒店的所有人力公司 -->
     <select id="queryCompanysByHotelId" parameterType="com.microdev.param.CompanyQueryDTO" resultType="com.microdev.model.Company">
         select <include refid="Company_Column_List"/> from company where id IN
         (select hr_id from hotel_hr_company where hotel_id = #{id} and status = 0)
-        <if test="name != null and name !=''">
-            and name like '%${name}%'
-        </if>
-        <if test="leader != null and leader !=''">
-            and leader like '%${leader}%'
-        </if>
-        order by create_time desc
     </select>
     <!-- 获取酒店可以添加的人力公司 -->
     <select id="queryNotCompanysByHotelId" parameterType="java.lang.String" resultType="com.microdev.model.Company">
@@ -110,7 +96,7 @@
         #{address},#{business_license},#{company_type},#{confirmed_time},#{latitude},#{leader},
         #{leader_mobile},#{logo},#{longitude},#{name},#{status})
     </insert>
-    <insert id="insertAreaRelation">
+	<insert id="insertAreaRelation">
         insert into user_area values(#{id},#{code},#{level})
     </insert>
     <!-- 修改人力公司 -->
@@ -126,8 +112,5 @@
     <select id="findFirstByLeaderMobile" resultType="com.microdev.model.Company">
         select <include refid="Company_Column_List"/> from company where leader_mobile = #{mobile} limit 1
     </select>
-    <insert id="insertCompanyArea">
-        insert into area_relation values()
-    </insert>
 
 </mapper>

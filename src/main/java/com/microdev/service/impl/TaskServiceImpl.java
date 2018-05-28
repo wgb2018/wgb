@@ -44,7 +44,10 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
      */
     @Override
     public ResultDO createTask(CreateTaskRequest request) {
+        System.out.println("request:"+request);
+        System.out.println("id:"+request.getHotelId());
         Company hotel=companyMapper.findCompanyById(request.getHotelId());
+        System.out.println("hotel:"+hotel);
         if (hotel == null || !StringUtils.hasLength(hotel.getPid()) ) {
             throw new ParamsException("酒店不存在");
         }
@@ -68,8 +71,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         task.setTaskTypeCode(request.getTaskTypeCode());
         task.setTaskContent(request.getTaskContent());
         task.setHourlyPay(request.getHourlyPay());
-        taskMapper.insert(task);
+
         AddHrTask(task,request);
+        taskMapper.insert(task);
         TaskViewDTO taskDto= taskConverter.toViewDTOWithOutSet(task);
         return ResultDO.buildSuccess("任务发布成功",taskDto);
     }
@@ -209,10 +213,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
                 bill.setDeleted(false);
                 bill.setPayType(1);
                 billMapper.insert(bill);
-                taskHrCompanyMapper.updateById(taskHrCompany);
+				taskHrCompanyMapper.updateById(taskHrCompany);
             }
         taskMapper.updateById(task);
-
         return ResultDO.buildSuccess("结算成功");
     }
 
@@ -242,10 +245,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
             taskHrCompany.setRefusedWorkers(0);
             taskHrCompany.setConfirmedWorkers(0);
             taskHrCompany.setNeedWorkers(hrCompanyDTO.getNeedWorkers());
+            taskHrCompany.setDeleted(false);
             taskHrCompany.setTaskTypeText(createTaskRequest.getTaskTypeText());
             taskHrCompany.setTaskTypeCode(createTaskRequest.getTaskTypeCode());
             taskHrCompany.setTaskContent(createTaskRequest.getTaskContent());
-            taskHrCompany.setHourlyPayHotel(task.getHourlyPay());
+			taskHrCompany.setHourlyPayHotel(task.getHourlyPay());
             taskHrCompanyMapper.insert(taskHrCompany);
             setHrTask.add(taskHrCompany);
         }

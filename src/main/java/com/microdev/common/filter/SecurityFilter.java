@@ -19,7 +19,6 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Enumeration;
 
 /**
  * @author liutf
@@ -95,25 +94,6 @@ public class SecurityFilter implements Filter {
 
             //通过的放行，不通过的阻止访问
             if (hasPermission) {
-               /* System.out.println("Method:"+request.getMethod());
-                System.out.println("URI:"+request.getRequestURI());
-                System.out.println("ContextPath:"+request.getContextPath());
-                System.out.println("ServletPath:"+request.getServletPath());
-                System.out.println("mobile:"+request.getParameter(""));
-                System.out.println("password:"+request.getParameter("password"));
-                System.out.println("userType:"+request.getParameter("userType"));
-                System.out.println("userDTO:"+request.getParameter("userDTO"));
-                System.out.println("map:"+request.getParameterMap().keySet());
-                Enumeration<String> enums = request.getAttributeNames();
-                System.out.println("Attribute:");
-                while(enums.hasMoreElements());
-                {
-                    String v=(String)enums.nextElement();
-                    System.out.println(v);
-                }*/
-                /*UserDTO u = new UserDTO();
-                //u.set
-                request.setAttribute("userDTO",u);*/
                 chain.doFilter(request, response);
             } else {
                 throw new AuthorizationException("无权限访问");

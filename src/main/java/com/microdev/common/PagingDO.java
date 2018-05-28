@@ -10,7 +10,7 @@ import lombok.Data;
 public class PagingDO<T> {
     private Paginator paginator = new Paginator();
     private T selector;
-///////
+
 //    private Paginator paged = new Paginator();
 //    private T query;
 }

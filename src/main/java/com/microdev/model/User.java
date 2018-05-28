@@ -61,8 +61,7 @@ public class User extends BaseEntity{
      * 用户编码
      */
     private String userCode;
-
-    private Integer age;
+	private Integer age;
     /**
      * 用户所属角色集合
      */

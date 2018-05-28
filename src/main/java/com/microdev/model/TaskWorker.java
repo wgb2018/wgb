@@ -1,14 +1,12 @@
 package com.microdev.model;
 
 
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.annotations.TableField;import com.baomidou.mybatisplus.annotations.TableName;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.util.Map;
-
 /**
  * 小时工任务
  *
@@ -23,9 +21,8 @@ public class TaskWorker extends BaseEntity {
      */
     private String workerId;
 
-    @TableField(exist = false)
+	@TableField(exist = false)
     private User user;
-
     /**
      * ybx 小时工信息，关联出人员的信息
      */

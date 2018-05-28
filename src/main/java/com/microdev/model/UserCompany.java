@@ -1,8 +1,7 @@
 package com.microdev.model;
 
 
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.annotations.TableField;import com.baomidou.mybatisplus.annotations.TableName;
 import com.microdev.type.UserType;
 import lombok.Data;
 
@@ -59,9 +58,8 @@ public class UserCompany extends BaseEntity {
      */
     private String userId;
 
-    @TableField(exist = false)
+	@TableField(exist = false)
     private User user;
-
     private UserType userType;
 
     /**

@@ -56,7 +56,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     private AreaRelationMapper areaRelationMapper;
     @Autowired
     private DictService dictService;
-    @Autowired
+	@Autowired
     DictMapper dictMapper;
     @Autowired
     WorkerMapper workerMapper;
@@ -500,8 +500,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         OffsetDateTime startDay = taskWorker.getFromDate();
         OffsetDateTime endDay = taskWorker.getToDate();
-        OffsetTime dayStart = taskWorker.getDayStartTime();
-        OffsetTime dayEnd = taskWorker.getDayEndTime();
+        OffsetDateTime dayStart = taskWorker.getDayStartTime();
+        OffsetDateTime dayEnd = taskWorker.getDayEndTime();
 
         long start = dayStart.getLong(ChronoField.SECOND_OF_DAY);
         long end = dayEnd.getLong(ChronoField.SECOND_OF_DAY);
@@ -760,7 +760,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         response.setList(list);
         return response;
     }
-    /**
+	/**
      *  修改小时工服务类型及服务地区
      */
     @Override

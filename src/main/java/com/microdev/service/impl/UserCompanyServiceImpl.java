@@ -1,24 +1,35 @@
 package com.microdev.service.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.microdev.common.ResultDO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.microdev.common.ResultDO;
 import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
-import com.microdev.common.utils.DateUtil;
-import com.microdev.converter.TaskConverter;
-import com.microdev.mapper.*;
-import com.microdev.model.*;
-import com.microdev.param.*;
+import com.microdev.mapper.CompanyMapper;
+import com.microdev.mapper.DictMapper;
+import com.microdev.mapper.UserCompanyMapper;
+import com.microdev.mapper.UserMapper;
+import com.microdev.model.Company;
+import com.microdev.model.Dict;
+import com.microdev.model.User;
+import com.microdev.model.UserCompany;
+import com.microdev.param.DictDTO;
+import com.microdev.param.HrQueryWorkerDTO;
+import com.microdev.param.WokerQueryHrDTO;
 import com.microdev.service.UserCompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.microdev.model.*;
+import com.microdev.param.*;
+import com.microdev.common.utils.DateUtil;
+import com.microdev.converter.TaskConverter;
 
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.util.UUID;
 import java.util.*;
 
 @Transactional
@@ -32,7 +43,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
     CompanyMapper companyMapper;
     @Autowired
     DictMapper dictMapper;
-    @Autowired
+	@Autowired
     TaskConverter taskConverter;
     @Autowired
     TaskWorkerMapper taskWorkerMapper;
@@ -82,7 +93,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         return    ResultDO.buildSuccess("解绑已提交");
     }
 
-    /**
+     /**
      * 根据人力公司获取小时工
      */
     @Override

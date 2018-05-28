@@ -106,7 +106,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         if(hrTask==null){
             throw new ParamsException("人力公司参数有误");
         }
-        taskMapper.updateStatus(hrTask.getTaskId(),3);
+		taskMapper.updateStatus(hrTask.getTaskId(),3);
         Company hrCompany=companyMapper.findCompanyById(hrTask.getHrCompanyId());
         hrTask.setStatus(4);
         hrTask.setHourlyPay(hrTaskDis.getHourlyPay());
@@ -120,6 +120,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
 
             TaskWorker taskWorker=new TaskWorker();
             taskWorker.setTaskHrId(hrTask.getPid());;
+            
             User user = userMapper.queryByWorkerId(id);
             taskWorker.setUserId(user.getPid());
             taskWorker.setUserName(user.getUsername());
@@ -186,7 +187,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         Double workersShouldPay=0.0;
         Double workersHavePay=0.0;
         for (TaskHrCompany task:list) {
-            task.setHrCompany(companyMapper.findCompanyById(task.getHrCompanyId()));
+			task.setHrCompany(companyMapper.findCompanyById(task.getHrCompanyId()));
             shouldPayMoney += task.getShouldPayMoney();
             havePayMoney += task.getHavePayMoney();
             workersShouldPay += task.getWorkersShouldPay();

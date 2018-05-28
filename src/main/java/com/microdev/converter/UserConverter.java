@@ -1,8 +1,7 @@
 package com.microdev.converter;
 
 import com.microdev.common.exception.ParamsException;
-import com.microdev.common.utils.DateUtil;
-import com.microdev.common.utils.PasswordHash;
+import com.microdev.common.utils.DateUtil;import com.microdev.common.utils.PasswordHash;
 import com.microdev.model.User;
 import com.microdev.param.UserDTO;
 import org.springframework.beans.BeanUtils;
@@ -63,10 +62,9 @@ public class UserConverter {
                 .setUserType(userDTO.getUserType());
         if (userDTO.getActivated() != null) user.setActivated(userDTO.getActivated());
         if (userDTO.getSex() != null) user.setSex(userDTO.getSex());
-        if (userDTO.getBirthday() != null){
+		if (userDTO.getBirthday() != null){
             user.setBirthday(userDTO.getBirthday());
             user.setAge(DateUtil.CaculateAge(userDTO.getBirthday()));
         }
-
     }
 }

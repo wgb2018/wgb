@@ -9,7 +9,6 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
 @Repository
 public interface UserCompanyMapper extends BaseMapper<UserCompany> {
 
@@ -22,10 +21,9 @@ public interface UserCompanyMapper extends BaseMapper<UserCompany> {
 
     void update(UserCompany userCompany);
 
-    List<User> getSelectableWorker(HrQueryWorkerDTO queryDTO);
+	List<User> getSelectableWorker(HrQueryWorkerDTO queryDTO);
 
     List<TaskWorker> getUnSelectableWorker(HrQueryWorkerDTO queryDTO);
-
 
 
 }

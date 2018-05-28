@@ -53,6 +53,5 @@ public class TaskHrQueryDTO {
 
     private String ofDate;
 
-    private String taskId;
-
+	private String taskId;
 }

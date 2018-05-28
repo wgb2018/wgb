@@ -30,7 +30,7 @@ public class HrCompanyController {
     /**
      * 获取已添加该人力公司的所有酒店
      */
-    @PostMapping("/hrcompanies/hotels")
+   @PostMapping("/hrcompanies/hotels")
     public ResultDO getHrCompaniesHotels(@RequestBody PagingDO<CompanyQueryDTO> paging) {
         return companyService.hrCompanyHotels(paging.getPaginator(),paging.getSelector());
     }

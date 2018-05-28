@@ -65,7 +65,6 @@ public class ExceptionFilter implements Filter {
         response.setStatus(statusCode);
         response.setContentLength(-1);
         response.setContentType("application/json;UTF-8");
-        //response.setContentType("application/x-www-form-urlencoded");
         response.setDateHeader("expires", -1);
         response.setHeader("cache-control", "no-cach");
         response.setHeader("pragram", "no-cach");

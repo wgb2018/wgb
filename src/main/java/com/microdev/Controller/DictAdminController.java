@@ -98,13 +98,12 @@ public class DictAdminController {
     public ResultDO getArea(@PathVariable String cityId) {
         return  ResultDO.buildSuccess(dictMapper.findArea(cityId));
     }
-    /**
+	/**
      * 获取用户的服务地区
      */
     @GetMapping("/findarea/{userId}")
     public ResultDO getUserArea(@PathVariable String userId) {
         return  ResultDO.buildSuccess(dictMapper.findArea(userId));
     }
-
 
 }

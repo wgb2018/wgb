@@ -2,8 +2,7 @@ package com.microdev.Controller;
 
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
-import com.microdev.param.AreaAndServiceRequest;
-import com.microdev.param.PageRequest;
+import com.microdev.param.AreaAndServiceRequest;import com.microdev.param.PageRequest;
 import com.microdev.param.TaskWorkerQuery;
 import com.microdev.param.WorkerSupplementRequest;
 import com.microdev.param.api.request.PunchRequest;
@@ -118,7 +117,7 @@ public class WorkerController {
     public ResultDO getWorkerDetails(String taskWorkerId, String userId) {
         return ResultDO.buildSuccess(workerService.selectUserTaskInfo(taskWorkerId, userId));
     }
-    /**
+	/**
      * 修改小时工服务类型及地区
      */
     @PostMapping("/workers/AreaAndService")
@@ -133,5 +132,4 @@ public class WorkerController {
     public ResultDO queryWorker(@PathVariable String id) {
         return ResultDO.buildSuccess(workerService.queryWorker(id));
     }
-
 }

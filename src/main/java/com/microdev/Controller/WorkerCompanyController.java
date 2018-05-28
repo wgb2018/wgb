@@ -3,12 +3,10 @@ package com.microdev.Controller;
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
 import com.microdev.param.HrQueryWorkerDTO;
-import com.microdev.param.HrTaskDistributeRequest;
-import com.microdev.param.WokerQueryHrDTO;
+import com.microdev.param.HrTaskDistributeRequest;import com.microdev.param.WokerQueryHrDTO;
 import com.microdev.service.UserCompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Set;
 
@@ -38,8 +36,7 @@ public class WorkerCompanyController {
      */
     @PostMapping("/hr-workers/search")
     public ResultDO getHrWorkers(@RequestBody PagingDO<HrQueryWorkerDTO> paging) {
-        return userCompanyService.getHrWorkers(paging.getPaginator(),paging.getSelector()
-        );
+        return userCompanyService.getHrWorkers(paging.getPaginator(),paging.getSelector());
     }
     /**
      * 获取员工下所有人力公司
@@ -55,7 +52,7 @@ public class WorkerCompanyController {
     public ResultDO unbindHr(@PathVariable String workId,@PathVariable String hrId) {
         return userCompanyService.workerUnbindHr(workId,hrId);
     }
-    /**
+	/**
      * 获取人力公司下已绑定任务的小时工
      */
     @PostMapping("/hrw-workers/search")
@@ -70,5 +67,4 @@ public class WorkerCompanyController {
     public ResultDO removeHrWorkers(@RequestBody List<String> workerTaskdelete) {
         return userCompanyService.removeHrWorkers(workerTaskdelete);
     }
-
 }

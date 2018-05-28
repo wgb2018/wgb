@@ -3,8 +3,7 @@ package com.microdev.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.microdev.model.Company;
 import com.microdev.param.CompanyQueryDTO;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Repository;
+import org.apache.ibatis.annotations.Param;import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -30,7 +29,7 @@ public interface CompanyMapper extends BaseMapper<Company> {
 
     Company findFirstByLeaderMobile(String mobile);
 
-    void insertAreaRelation(@Param("id") String id, @Param("code,") String code,@Param("level") Integer level);
+	void insertAreaRelation(@Param("id") String id, @Param("code,") String code,@Param("level") Integer level);
 
     void insertCompanyArea(@Param("id") String id, @Param("areaId,") String area_id,@Param("idType") Integer idType);
 

@@ -1,6 +1,5 @@
 package com.microdev.param;
 
-import com.microdev.model.Dict;
 import com.microdev.model.Role;
 import com.microdev.type.PlatformType;
 import com.microdev.type.SocialType;
@@ -11,7 +10,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author liutf
@@ -105,15 +107,14 @@ public class UserDTO {
     private Set<PermissionDTO> permissions = new HashSet<>();
     private List<Role> roleList = new ArrayList<>();
 
-    /**
+	 /**
      * 服务类型
      */
     private List<Dict> serviceType;
     /**
      * 服务地区
      */
-    private Map<String,Integer> areaCode;
-    /**
+    private Map<String,Integer> areaCode;    /**
      * 所属公司
      */
     private CompanyDTO company;
@@ -128,8 +129,7 @@ public class UserDTO {
 
     private String idCardBack;
 
-    private OffsetDateTime birthday;
-
+	private OffsetDateTime birthday;
     public String getId() {
         return id;
     }

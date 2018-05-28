@@ -4,14 +4,11 @@ import com.microdev.common.ResultDO;
 import com.microdev.mapper.TaskWorkerMapper;
 import com.microdev.mapper.UserMapper;
 import com.microdev.mapper.WorkerMapper;
-import com.microdev.model.TaskWorker;
-import com.microdev.param.RefusedTaskRequest;
+import com.microdev.model.TaskWorker;import com.microdev.param.RefusedTaskRequest;
 import com.microdev.service.TaskWorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-
 /**
  * 小时工任务相关的Api
  */
@@ -19,7 +16,7 @@ import java.util.List;
 public class TaskWorkerController {
     @Autowired
     TaskWorkerService taskWorkerService;
-    @Autowired
+	@Autowired
     TaskWorkerMapper taskWorkerMapper;
     @Autowired
     WorkerMapper workerMapper;
@@ -46,7 +43,7 @@ public class TaskWorkerController {
     public ResultDO getById(@RequestBody RefusedTaskRequest refusedReq) {
         return taskWorkerService.refusedTask(refusedReq);
     }
-    /**
+	/**
      * 根据人力公司任务ID查询小时工任务
      */
     @GetMapping("/worker-tasks/byHrTask/{id}")

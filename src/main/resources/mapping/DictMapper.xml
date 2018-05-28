@@ -72,7 +72,7 @@
         INNER JOIN dict d ON tr.`task_type_id` = d.`id`
         WHERE tr.`id` = #{id}
     </select>
-    <select id="queryTypeByUserId" parameterType="com.microdev.model.Dict" resultType="java.lang.String">
+	<select id="queryTypeByUserId" parameterType="com.microdev.model.Dict" resultType="java.lang.String">
         SELECT d.*  FROM task_type_relation tr
         INNER JOIN dict d ON tr.`task_type_id` = d.`id`
         WHERE tr.`id` = #{id}

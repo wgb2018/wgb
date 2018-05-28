@@ -45,7 +45,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     private UserConverter userConverter;
     @Autowired
     private CompanyMapper companyMapper;
-    @Autowired
+	@Autowired
     private DictMapper dictMapper;
     @Override
     public User create(User user) throws Exception{
@@ -107,7 +107,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             Worker worker = new Worker();
             workerMapper.insert(worker);
             newUser.setWorkerId(worker.getPid());
-        }else if(newUser.getUserType().name().equals("hotel")){
+        } else if(newUser.getUserType().name().equals("hotel")){
             Company company = new Company();
             company.setStatus(0);
             company.setLeaderMobile(register.getMobile());
@@ -348,9 +348,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                 companyDTO.setCompanyType(company.getCompanyType());
                 companyDTO.setStatus(company.getStatus());
                 userDTO.setCompany(companyDTO);
-                userDTO.setServiceType (dictMapper.queryTypeByUserId (company.getPid ()));
-                //1111
-
+				userDTO.setServiceType (dictMapper.queryTypeByUserId (company.getPid ()));
             }
         } else if (userType == UserType.worker) {
             String workerId = user.getString("workerId");
