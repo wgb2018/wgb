@@ -57,4 +57,9 @@ public class WorkLog extends BaseEntity {
      * 0未确认1确认
      */
     private Integer employerConfirmStatus;
+
+    /**
+     * 是否已查看0未查看1已查看
+     */
+    private Integer checkSign = 0;
 }

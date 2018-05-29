@@ -55,6 +55,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     private MessageService messageService;
     @Autowired
     private DictMapper dictMapper;
+    @Autowired
+    private WorkerLogMapper workerLogMapper;
 
     @Override
     public User create(User user) throws Exception{
@@ -349,7 +351,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         userDTO.setUserType(userType);
         userDTO.setRoleList((ArrayList<Role>) user.get("roles"));
         //如果当前的是酒店或者人力公司，那么就查询出他们的公司审核状态
-        Map<String, Integer> totalMap = new HashMap<>();
+
         if (userType == UserType.hr || userType == UserType.hotel) {
             Company company = companyMapper.findFirstByLeaderMobile(mobile);
             if (company != null) {
@@ -360,19 +362,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                 companyDTO.setStatus(company.getStatus());
                 userDTO.setCompany(companyDTO);
 				userDTO.setServiceType (dictMapper.queryTypeByUserId (company.getPid ()));
-                //如果是酒店
 
-                if (company.getCompanyType() == 1) {
-                    totalMap.put("curTask", taskService.selectUnReadAmount(company.getPid()));
-                    totalMap.put("completeTask", taskService.selectCompleteAmount(company.getPid()));
-                    totalMap.put("pendingTask", messageService.selectUnHandleMessageAmount(company.getPid(), "3", 0));
-                    totalMap.put("message", messageService.selectMessageCount(company.getPid(), "3", 0));
-                } else {
-                    totalMap.put("pendingTask", messageService.selectUnHandleMessageAmount(company.getPid(), "2", 0));
-                    totalMap.put("message", messageService.selectMessageCount(company.getPid(), "2", 0));
-                    totalMap.put("curTask", taskHrCompanyService.selectUnreadCount(company.getPid()));
-                    totalMap.put("completeTask", taskHrCompanyService.selectCompleteCount(company.getPid()));
-                }
             }
         } else if (userType == UserType.worker) {
             String workerId = user.getString("workerId");
@@ -382,12 +372,50 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             userDTO.setHealthCard(worker.getHealthCard());
             userDTO.setIdCardFront(worker.getIdcardFront());
             userDTO.setIdCardBack(worker.getIdcardBack());
-            totalMap.put("pendingTask", messageService.selectUnHandleMessageAmount(workerId, "1", 0));
-            totalMap.put("message", messageService.selectMessageCount(workerId, "1", 0));
-            totalMap.put("curTask", taskWorkerService.selectUnreadCount(workerId));
-            totalMap.put("completeTask", taskWorkerService.selectCompleteCount(workerId));
+
         }
+
         return userDTO;
+    }
+
+    /**
+     * 查询未读的数量
+     * @param id         用户id
+     * @param type       用户类型worker，hotel，hr
+     * @return
+     */
+    @Override
+    public Map<String, Object> selectUnreadAmount(String id, String type) {
+        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(type)) {
+            throw new ParamsException("参数错误");
+        }
+        Map<String, Object> totalMap = new HashMap<>();
+        if ("hotel".equals(type)) {
+            totalMap.put("curTask", taskService.selectUnReadAmount(id));
+            totalMap.put("completeTask", taskService.selectCompleteAmount(id));
+            totalMap.put("pendingTask", messageService.selectUnHandleMessageAmount(id, "3", 0));
+            totalMap.put("message", messageService.selectMessageCount(id, "3", 0));
+        } else if ("hr".equals(type)) {
+            totalMap.put("pendingTask", messageService.selectUnHandleMessageAmount(id, "2", 0));
+            totalMap.put("message", messageService.selectMessageCount(id, "2", 0));
+            totalMap.put("curTask", taskHrCompanyService.selectUnreadCount(id));
+            totalMap.put("completeTask", taskHrCompanyService.selectCompleteCount(id));
+        } else if ("worker".equals(type)) {
+            totalMap.put("pendingTask", messageService.selectUnHandleMessageAmount(id, "1", 0));
+            totalMap.put("message", messageService.selectMessageCount(id, "1", 0));
+            totalMap.put("curTask", taskWorkerService.selectUnreadCount(id));
+            totalMap.put("completeTask", taskWorkerService.selectCompleteCount(id));
+            List<Integer> list = workerLogMapper.selectUnreadPunchCount();
+            if (list == null) {
+                totalMap.put("supplement", 0);
+            } else {
+                totalMap.put("supplement", list.size());
+            }
+
+        } else {
+            throw new ParamsException("用户类型错误");
+        }
+        return totalMap;
     }
 
 }

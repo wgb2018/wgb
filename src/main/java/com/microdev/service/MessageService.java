@@ -133,4 +133,5 @@ public interface MessageService extends IService<Message> {
      * @return
      */
     MessageShowDTO selectMessage(String id, int role, int type, int page, int pageNum);
+
 }

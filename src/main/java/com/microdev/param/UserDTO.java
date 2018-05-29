@@ -127,7 +127,6 @@ public class UserDTO {
 
     private String idCardBack;
 	private OffsetDateTime birthday;
-    private Map<String, Integer> totalMap = new HashMap<>();
 
     public String getId() {
         return id;

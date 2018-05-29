@@ -243,4 +243,15 @@ public class UserController {
         out.close();
 
     }
+
+    /**
+     * 查询未读的数量
+     * @param id
+     * @param type
+     * @return
+     */
+    @GetMapping("/user/selectUnread/amount")
+    public ResultDO selectUnreadAmount(String id, String type) {
+        return ResultDO.buildSuccess(userService.selectUnreadAmount(id, type));
+    }
 }
