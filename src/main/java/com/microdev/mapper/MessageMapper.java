@@ -33,4 +33,8 @@ public interface MessageMapper extends BaseMapper<Message> {
     List<Message> selectUnReadMessage(Map<String, Object> param);
 
     int selectUnReadCount(Map<String, Object> param);
+
+    List<Map<String, Object>> selectMessageDetails(String id);
+
+    List<Message> selectByParam(Map<String, Object> param);
 }

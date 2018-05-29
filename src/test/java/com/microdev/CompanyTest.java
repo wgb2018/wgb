@@ -65,11 +65,7 @@ public class CompanyTest {
 		map.put("status", 0);
 
 		List<Company> list = companyMapper.selectByMap(map);
-		if (list != null && list.size() > 0) {
-			String id = list.get(0).getPid();
-			ResultDO r = companyService.hotelHrCompanies(id);
-			System.out.println(r.toString());
-		}
+
 	}
 	
 	@Test
@@ -78,11 +74,7 @@ public class CompanyTest {
 		map.put("status", 1);
 
 		List<Company> list = companyMapper.selectByMap(map);
-		if (list != null && list.size() > 0) {
-			String id = list.get(0).getPid();
-			ResultDO r = companyService.hotelHrCompanies(id);
-			System.out.println(r.toString());
-		}
+
 	}
 	
 	@Test
@@ -139,9 +131,6 @@ public class CompanyTest {
 	@Test
 	public void tenTest() {
 		String id = "71fd5dd0-b4c6-475e-91e3-b977b525fcc7";
-		ResultDO r = companyService.hrCompanyHotels(id);
-		if (r != null) {
-			System.out.println(r.toString());
-		}
+
 	}
 }

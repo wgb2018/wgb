@@ -124,7 +124,7 @@
         SELECT DATE_FORMAT(tw.from_date,'%Y.%m.%d') AS
 		workFromDate,DATE_FORMAT(tw.to_date,'%Y.%m.%d') AS workToDate,
 		DATE_FORMAT(tw.day_start_time,'%H:%m') AS
-		dayStartTime,DATE_FORMAT(wl.`from_date`,'%h:%m') AS fromDate,
+		dayStartTime,DATE_FORMAT(wl.`from_date`,'%H:%m') AS fromDate,
 		DATE_FORMAT(wl.`to_date`,'%H:%m') AS
 		toDate,DATE_FORMAT(wl.`create_time`,'%Y/%m/%d') AS current,
 		DATE_FORMAT(tw.day_end_time,'%H:%m') AS dayEndTime,tw.hourly_pay AS

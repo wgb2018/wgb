@@ -13,10 +13,7 @@ import com.microdev.model.Company;
 import com.microdev.model.Message;
 import com.microdev.model.MessageTemplate;
 import com.microdev.model.TaskHrCompany;
-import com.microdev.param.CreateMsgTemplateRequest;
-import com.microdev.param.CreateTaskRequest;
-import com.microdev.param.MessageQuery;
-import com.microdev.param.TaskHrCompanyDTO;
+import com.microdev.param.*;
 import com.microdev.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -429,6 +426,62 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         param.put("applyType", applyType);
         param.put("status", status);
         return messageMapper.selectUnReadCount(param);
+    }
+
+    /**
+     * 查询用户的消息
+     * @param id           用户id
+     * @param role         角色类型 1小时工2人力公司3酒店
+     * @param type         显示消息类型1小时工2人力公司3酒店4系统
+     * @param page         页码
+     * @param pageNum      页数
+     * @return
+     */
+    @Override
+    public MessageShowDTO selectMessage(String id, int role, int type, int page, int pageNum) {
+        if (StringUtils.isEmpty(id)) {
+            throw new ParamsException("参数不能为空");
+        }
+        if (page <= 0) page = 1;
+        if (pageNum <= 0) pageNum = 10;
+        MessageShowDTO message = new MessageShowDTO();
+        Map<String, Object> param = new HashMap<>();
+        if (role == 1) {
+            param.put("workerId", id);
+            param.put("applicantType", 3);
+            param.put("applyType", 1);
+            message.setCompanyNum(messageMapper.selectUnReadCount(param));
+            param.put("applicantType", 2);
+            message.setHrNum(messageMapper.selectUnReadCount(param));
+            param.put("applicantType", 4);
+            message.setSystemNum(messageMapper.selectUnReadCount(param));
+            PageHelper.startPage(page, pageNum, true);
+            if (type == 2) {
+                param.put("applicantType", 2);
+            } else if (type == 3) {
+                param.put("applicantType", 3);
+            } else if (type == 4) {
+                param.put("applicantType", 4);
+            } else {
+                throw new ParamsException("参数值错误");
+            }
+            message.setCompanyList(messageMapper.selectByParam(param));
+        } else if (role == 2) {
+            param.put("hrCompanyId", id);
+            param.put("applicantType", 1);
+            param.put("applyType", 2);
+            message.setWorkerNum(messageMapper.selectUnReadCount(param));
+            param.put("applicantType", 3);
+            message.setCompanyNum(messageMapper.selectUnReadCount(param));
+            param.put("applicantType", 4);
+            message.setSystemNum(messageMapper.selectUnReadCount(param));
+            PageHelper.startPage(page, pageNum, true);
+        } else if (role == 3) {
+
+        } else {
+            throw new ParamsException("参数值错误");
+        }
+        return message;
     }
 
 }

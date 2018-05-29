@@ -50,6 +50,7 @@ logging:
     com:
       microdev:
         mapper: debug
+
 pagehelper:
     helperDialect: mysql
     reasonable: true

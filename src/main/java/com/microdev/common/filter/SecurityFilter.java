@@ -45,60 +45,60 @@ public class SecurityFilter implements Filter {
         String path = request.getRequestURI();// 获取用户访问的路径 /xxx/yyy
         String method = request.getMethod().toUpperCase();// 获取用户请求的方法,POST/GET/PUT/DELETE
 
-//       chain.doFilter(request, response);
+       chain.doFilter(request, response);
 
         //OPTIONS请求直接放行
-        if ("OPTIONS".equals(method)) {
-            chain.doFilter(request, response);
-        } else {
-            //忽略验证的 url 可以直接放行
-            for (String url : Constant.ignoreUrl) {
-                if (pathMatcher.match(url, path)) {
-                    hasPermission = true;
-                    break;
-                }
-            }
-            //没有被忽略的需要登录之后使用 token 访问
-            if (!hasPermission) {
-                String accessToken = TokenUtil.parseBearerToken(request);
-                UserDTO userDTO = tokenService.getUserByAccessToken(accessToken);
-                ServiceContextHolder.getServiceContext().setUser(
-                        User.me().set("id", userDTO.getId())
-                                .set("username", userDTO.getUsername())
-                                .set("mobile", userDTO.getMobile())
-                                .set("roles", userDTO.getRoleList())
-                                .set("userType", userDTO.getUserType())
-                                .set("workerId",userDTO.getWorkerId())
-                                .set("nickName",userDTO.getNickname())
-                                .set("sex",userDTO.getSex()==null?"UNKNOW":userDTO.getSex().toString())
-                );
-                //admin 用户直接放行
-                if (userDTO.getUserType().equals("platform") || true) {
-                    hasPermission = true;
-                } else {
-                    for (PermissionDTO permissionDTO : userDTO.getPermissions()) {
-                        if (permissionDTO.getAction() != null) {
-                            if (method.equals(permissionDTO.getAction().name()) && pathMatcher.match(permissionDTO.getUri(), path)) {
-                                hasPermission = true;
-                                break;
-                            }
-                        } else {
-                            if (pathMatcher.match(permissionDTO.getUri(), path)) {
-                                hasPermission = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            //通过的放行，不通过的阻止访问
-            if (hasPermission) {
-                chain.doFilter(request, response);
-            } else {
-                throw new AuthorizationException("无权限访问");
-            }
-        }
+//        if ("OPTIONS".equals(method)) {
+//            chain.doFilter(request, response);
+//        } else {
+//            //忽略验证的 url 可以直接放行
+//            for (String url : Constant.ignoreUrl) {
+//                if (pathMatcher.match(url, path)) {
+//                    hasPermission = true;
+//                    break;
+//                }
+//            }
+//            //没有被忽略的需要登录之后使用 token 访问
+//            if (!hasPermission) {
+//                String accessToken = TokenUtil.parseBearerToken(request);
+//                UserDTO userDTO = tokenService.getUserByAccessToken(accessToken);
+//                ServiceContextHolder.getServiceContext().setUser(
+//                        User.me().set("id", userDTO.getId())
+//                                .set("username", userDTO.getUsername())
+//                                .set("mobile", userDTO.getMobile())
+//                                .set("roles", userDTO.getRoleList())
+//                                .set("userType", userDTO.getUserType())
+//                                .set("workerId",userDTO.getWorkerId())
+//                                .set("nickName",userDTO.getNickname())
+//                                .set("sex",userDTO.getSex()==null?"UNKNOW":userDTO.getSex().toString())
+//                );
+//                //admin 用户直接放行
+//                if (userDTO.getUserType().equals("platform") || true) {
+//                    hasPermission = true;
+//                } else {
+//                    for (PermissionDTO permissionDTO : userDTO.getPermissions()) {
+//                        if (permissionDTO.getAction() != null) {
+//                            if (method.equals(permissionDTO.getAction().name()) && pathMatcher.match(permissionDTO.getUri(), path)) {
+//                                hasPermission = true;
+//                                break;
+//                            }
+//                        } else {
+//                            if (pathMatcher.match(permissionDTO.getUri(), path)) {
+//                                hasPermission = true;
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//
+//            //通过的放行，不通过的阻止访问
+//            if (hasPermission) {
+//                chain.doFilter(request, response);
+//            } else {
+//                throw new AuthorizationException("无权限访问");
+//            }
+//        }
     }
 
     private void initContext(HttpServletRequest request, HttpServletResponse response) {

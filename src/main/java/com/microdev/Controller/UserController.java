@@ -21,11 +21,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.ZoneOffset;
+import java.util.*;
 
 /**
  * 用户前台相关Api
@@ -207,6 +210,37 @@ public class UserController {
     }
 
 
+    /**
+     * 文件下载
+     */
+    @GetMapping("/protocoldownload")
+    public void fileDownload(String param, HttpServletResponse response) throws IOException {
+        OutputStream out = response.getOutputStream();
+        int num = Math.abs(param.hashCode());
+        String  path = getClass().getResource("/").getFile();
+        File f = null;
+        if (num % 4 == 0) {
+            f = new File( path, File.separator + "static" + File.separator +  "company.txt");
+        } else if (num % 4 == 1) {
+            f = new File(path, File.separator + "static" + File.separator + "hrcompany.txt");
+        } else if (num % 4 == 2) {
+            f = new File(path + File.separator + "static" + File.separator + "system.txt");
+        } else if (num % 4 == 3) {
+            f = new File(path + File.separator + "static" + File.separator + "worker.txt");
+        } else {
+            return;
+        }
+        FileInputStream file = new FileInputStream(f);
+        response.setContentType("text/html;charset=utf-8");
+        response.setCharacterEncoding("utf-8");
+        byte[] b = new byte[1024];
+        int len = 0;
+        while ((len = file.read(b)) != -1) {
+            out.write(b);
+            out.flush();
+        }
+        file.close();
+        out.close();
 
-
+    }
 }

@@ -9,6 +9,7 @@ import com.microdev.model.TaskHrCompany;
 import com.microdev.param.CreateMsgTemplateRequest;
 import com.microdev.param.CreateTaskRequest;
 import com.microdev.param.MessageQuery;
+import com.microdev.param.MessageShowDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -122,5 +123,14 @@ public interface MessageService extends IService<Message> {
      */
     int selectUnHandleMessageAmount(String id, String applyType, int status);
 
-
+    /**
+     * 查询用户的消息
+     * @param id           用户id
+     * @param role         角色类型
+     * @param type         显示消息类型
+     * @param page         页码
+     * @param pageNum      页数
+     * @return
+     */
+    MessageShowDTO selectMessage(String id, int role, int type, int page, int pageNum);
 }

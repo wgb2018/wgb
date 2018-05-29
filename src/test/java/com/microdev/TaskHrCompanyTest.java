@@ -51,7 +51,7 @@ public class TaskHrCompanyTest {
 	public void threeTest() {
 		HrTaskDistributeRequest hrTaskDis = new HrTaskDistributeRequest();
 		hrTaskDis.setId("0a8054c4-408c-4090-b6e3-357c31c4196f");
-		hrTaskDis.setHourlyPay(22);
+		hrTaskDis.setHourlyPay(22d);
 		Set<String> set = new HashSet<>();
 		set.add("6642fb92-4e89-4d12-828a-8f42f9223b9b");
 		set.add("4c2a2f69-1008-4c23-aa6d-e9c493e8ce31");
