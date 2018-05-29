@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.microdev.mapper.MessageMapper">
     <sql id="Message_Column_List">
-        id as pid, create_time, deleted, modify_time,
+        id as pid, create_time, deleted, modify_time,message_type,
         message_code, message_content, message_link, message_title, msg_link, status, worker_id, worker_task_id, hotel_id,
         hr_company_id, applicant_type, apply_type, content, minutes, supplement_time_end, supplement_time, request_id,check_sign
     </sql>
@@ -215,10 +215,10 @@
         ON th.hr_company_id = m.hr_company_id
     </select>
     <insert id="saveBatch" parameterType="java.util.List">
-        insert into message(id,create_time,deleted,modify_time,status,
+        insert into message(id,create_time,deleted,modify_time,message_type,status,
         worker_task_id, worker_id, message_code, message_title,message_content,content,minutes,    supplement_time_end,supplement_time ,request_id, hotel_id, hr_company_id, applicant_type,apply_type,message_link,msg_link, check_sign) values
         <foreach collection="list" item="item" separator=",">
-            (#{item.pid},#{item.createTime},#{item.deleted},#{item.modifyTime},#{item.status},
+            (#{item.pid},#{item.createTime},#{item.deleted},#{item.modifyTime},#{item.messageType},#{item.status},
             #{item.workerTaskId},#{item.workerId},#{item.messageCode},#{item.messageTitle},#{item.messageContent}
             ,#{item.content},#{item.minutes},#{item.supplementTime},#{item.supplementTimeEnd},
             #{item.requestId},#{item.hotelId},#{item.hrCompanyId},#{item.applicantType},#{item.applyType},#{item.messageLink}, #{item.msgLink}, #{item.checkSign})
@@ -299,6 +299,9 @@
       </if>
       <if test="checkSign != null">
           and check_sign = #{checkSign}
+      </if>
+      <if test="messageType != null">
+          and message_type = #{messageType}
       </if>
     </select>
 

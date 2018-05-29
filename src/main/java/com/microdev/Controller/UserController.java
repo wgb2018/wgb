@@ -48,6 +48,9 @@ public class UserController {
     public UserMapper userMapper;
     @Autowired
     DictMapper dictMapper;
+    @Autowired
+    SmsFacade smsFacade;
+
     /**
      * 创建用户
      */

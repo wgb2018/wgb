@@ -33,7 +33,7 @@
             <if test="observertype != null">
 
                 <if test="observertype == 0">
-                    and id <!--IN(select a.id from
+                    and id IN(select a.id from
                     (select DISTINCT id from task_type_relation where task_type_id In
                     (select task_type_id from task_type_relation where id = #{observerId}) and id_type = 2
                     )a
@@ -41,12 +41,12 @@
                     (select DISTINCT id from area_relation where area_id In
                     (select area_id from area_relation where id = #{observerId}) and id_type = 2
                     )b on a.id = b.id
-                    where a.id--> not IN
+                    where a.id not IN
                     (select company_id from user_company where user_id = #{observerId} and status IN (0,1,3))
-                    <!--)-->
+                    )
                 </if>
                 <if test="observertype == 1">
-                    and id <!--IN(select a.id from
+                    and id IN(select a.id from
                     (select DISTINCT id from task_type_relation where task_type_id In
                     (select task_type_id from task_type_relation where id = #{observerId}) and id_type = 2
                     )a
@@ -54,12 +54,12 @@
                     (select DISTINCT id from area_relation where area_id In
                     (select area_id from area_relation where id = #{observerId}) and id_type = 2
                     )b on a.id = b.id
-                    where a.id--> not IN
+                    where a.id not IN
                     (select company_id from hotel_hr_company where hotel_id = #{observerId} and status IN (0))
-                    <!--)-->
+                    )
                 </if>
                 <if test="observertype == 2">
-                    and id <!--IN(select a.id from
+                    and id IN(select a.id from
                     (select DISTINCT id from task_type_relation where task_type_id In
                     (select task_type_id from task_type_relation where id = #{observerId}) and id_type = 1
                     )a
@@ -67,9 +67,9 @@
                     (select DISTINCT id from area_relation where area_id In
                     (select area_id from area_relation where id = #{observerId}) and id_type = 1
                     )b on a.id = b.id
-                    where a.id -->not IN
+                    where a.id not IN
                     (select hotel_id from hotel_hr_company where company_id = #{observerId} and status IN (0))
-                    <!--)-->
+                    )
                 </if>
             </if>
         </where>-->

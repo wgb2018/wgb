@@ -846,29 +846,34 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         return response;
     }
 
+    /**
+     *  修改小时工服务类型及服务地区
+     */
     @Override
     public void mpdifyAreaAndService(AreaAndServiceRequest request) {
+        //删除旧数据
+        companyMapper.deleteAreaRelation(request.getWorkerID());
+        companyMapper.deleteCompanyArea(request.getWorkerID());
+        taskTypeRelationMapper.deleteTaskTypeRelation(request.getWorkerID());
         //添加区域
-        Map<String,Integer> areaList = request.getAreaCode();
-        Iterator<Map.Entry<String, Integer>> entries = areaList.entrySet().iterator();
-        while (entries.hasNext()) {
-            Map.Entry<String, Integer> entry = entries.next();
-            companyMapper.insertAreaRelation(request.getWorkerID(),entry.getKey(),entry.getValue());
-            if(entry.getValue()==1){
-                Map<String,String> list = dictMapper.findCity(entry.getKey());
+        List<UserArea> areaList = request.getAreaCode();
+        for (UserArea ua:areaList) {
+            companyMapper.insertAreaRelation(request.getWorkerID(),ua.getAreaId (),ua.getAreaLevel (),ua.getAreaName ());
+            if(ua.getAreaLevel ()==1){
+                Map<String,String> list = dictMapper.findCity(ua.getAreaId ());
                 for (String key : list.keySet()) {
                     Map<String,String> list2= dictMapper.findArea(key);
                     for (String key1 : list2.keySet()) {
                         companyMapper.insertCompanyArea(request.getWorkerID(),key1,0);
                     }
                 }
-            }else if(entry.getValue()==2){
-                Map<String,String> list2= dictMapper.findArea(entry.getKey());
+            }else if(ua.getAreaLevel ()==2){
+                Map<String,String> list2= dictMapper.findArea(ua.getAreaId ());
                 for (String key1 : list2.keySet()) {
                     companyMapper.insertCompanyArea(request.getWorkerID(),key1,0);
                 }
             }else{
-                companyMapper.insertCompanyArea(request.getWorkerID(),entry.getKey(),0);
+                companyMapper.insertCompanyArea(request.getWorkerID(),ua.getAreaId (),0);
             }
         }
         //添加服务类型

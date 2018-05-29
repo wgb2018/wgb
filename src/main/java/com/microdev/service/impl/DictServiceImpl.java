@@ -9,6 +9,7 @@ import com.microdev.common.paging.Paginator;
 import com.microdev.converter.DictConverter;
 import com.microdev.mapper.DictMapper;
 import com.microdev.model.Dict;
+import com.microdev.model.UserArea;
 import com.microdev.param.DictDTO;
 import com.microdev.service.DictService;
 import org.springframework.beans.factory.annotation.Autowired;
