@@ -4,7 +4,7 @@
     <sql id="WorkLog_Column_List">
         id as pid, create_time, deleted, modify_time,
         from_date, minutes, punch_date, repast_times, task_worker_id,
-        to_date, task_id,status,employer_confirm_status
+        to_date, task_id,status,employer_confirm_status,check_sign
     </sql>
     <resultMap type="com.microdev.param.PunchDTO" id="countPunchMap">
         <result column="startTime" jdbcType="TIMESTAMP" property="startTime"/>
@@ -107,17 +107,17 @@
 		DATE_FORMAT(tw.day_start_time,'%H:%m') AS dayStartTime,
 		DATE_FORMAT(tw.day_end_time,'%H:%m') AS dayEndTime,th.task_type_text
 		AS taskTypeText,GROUP_CONCAT(DATE_FORMAT(wl.`from_date`,'%H:%m')) AS fromDate,
-		GROUP_CONCAT(DATE_FORMAT(wl.`to_date`,'%H:%m')) AS toDate,wl.id AS workLogId,
-		th.`hotel_id` AS hotelId,tw.id AS taskWorkerId,
+		GROUP_CONCAT(DATE_FORMAT(wl.`to_date`,'%H:%m')) AS toDate,
+		th.`hotel_id` AS hotelId,tw.id AS taskWorkerId,SUM(IFNULL(wl.check_sign,0)) AS checkSign,
 		DATE_FORMAT(wl.`create_time`,'%Y/%m/%d') AS current
-		FROM (SELECT * FROM work_log WHERE to_date IS NULL AND DATE_SUB(CURDATE(), INTERVAL 17 DAY) <![CDATA[<=]]> create_time) wl
+		FROM (SELECT * FROM work_log WHERE to_date IS NULL AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <![CDATA[>=]]> date(create_time)) wl
 		INNER JOIN
 		(SELECT * FROM task_worker WHERE worker_id = #{workerId}) tw
 		ON wl.`task_worker_id` = tw.id
 		INNER JOIN task_hr_company th
 		ON th.id = tw.task_hr_id
 		GROUP BY DATE_FORMAT(wl.create_time,'%Y.%m.%d')
-		ORDER BY wl.create_time DESC
+		ORDER BY checkSign ASC, wl.create_time DESC
     </select>
     <select id="selectNoPunchDetail" parameterType="java.util.Map"
             resultType="com.microdev.param.SupplementResponse">
@@ -135,15 +135,14 @@
 		leaderMobile,th.`hotel_id` AS hotelId,tw.id
 		AS taskWorkerId
 		FROM
-		(SELECT * FROM work_log WHERE id = #{workLogId}) wl
+		(SELECT * FROM work_log WHERE task_worker_id = #{taskWorkerId} AND DATE_FORMAT(create_time, '%Y/%m/%d') = #{date}) wl
 		INNER JOIN task_worker tw
 		ON wl.`task_worker_id` = tw.id
 		INNER JOIN
 		task_hr_company th
 		ON th.`id` = tw.task_hr_id
 		INNER JOIN
-		(SELECT * FROM
-		company WHERE id = #{companyId}) c
+		company c
 		ON c.id = th.`hotel_id`
     </select>
     <select id="selectUserPunchDetail" parameterType="java.lang.String"
@@ -156,4 +155,9 @@
 		select from_date,to_date,status,employer_confirm_status from work_log where task_worker_id = #{taskWorkerId}
 		order by create_time ASC
 	</select>
+
+    <select id = "selectUnreadPunchCount" resultType="java.lang.Integer">
+        SELECT SUM(IFNULL(wl.check_sign,0)) AS checkSign
+        FROM (SELECT * FROM work_log WHERE to_date IS NULL AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <![CDATA[>=]]> DATE(create_time)) wl GROUP BY DATE_FORMAT(wl.create_time,'%Y.%m.%d') HAVING checkSign <![CDATA[<]]> 1
+    </select>
 </mapper>

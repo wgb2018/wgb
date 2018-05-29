@@ -141,7 +141,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             Iterator<Map.Entry<String, Integer>> entries = areaList.entrySet().iterator();
             while (entries.hasNext()) {
                 Map.Entry<String, Integer> entry = entries.next();
-                companyMapper.insertAreaRelation(company.getPid(),entry.getKey(),entry.getValue());
+                //companyMapper.insertAreaRelation(company.getPid(),entry.getKey(),entry.getValue());
                 if(entry.getValue()==1){
                     Map<String,String> list = dictMapper.findCity(entry.getKey());
                     for (String key : list.keySet()) {

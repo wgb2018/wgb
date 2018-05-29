@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.model.Dict;
+import com.microdev.model.UserArea;
 import com.microdev.param.DictDTO;
 
 import java.util.List;
@@ -24,4 +25,6 @@ public interface DictService extends IService<Dict> {
     List<DictDTO> list();
 
     List<String> selectServiceTypeByUserId(String id);
+
+    List <UserArea> findServiceArea(String id);
 }

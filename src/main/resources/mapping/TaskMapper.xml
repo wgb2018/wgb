@@ -79,11 +79,8 @@
             <if test="status == 1 || status == 2 || status == 3">
                 and to_date &gt; now() and status = #{status}
             </if>
-            <if test="status == 3">
-                and from_date &gt; now() and status = 3
-            </if>
             <if test="status == 4">
-                and status = 3 and now() between from_date and to_date
+                and from_date &gt; now() and status = 4
             </if>
             <if test="status == 5">
                 and status = 4 and now() between from_date and to_date

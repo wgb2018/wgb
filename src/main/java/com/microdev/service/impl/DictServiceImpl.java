@@ -157,4 +157,22 @@ public class DictServiceImpl extends ServiceImpl<DictMapper,Dict> implements Dic
     public List<String> selectServiceTypeByUserId(String id) {
         return dictMapper.selectTypeByUserId(id);
     }
+
+    @Override
+    public List <UserArea> findServiceArea(String id) {
+        List<UserArea> list = dictMapper.findServiceArea (id);
+        List<UserArea> result = null;
+        for (UserArea ua : list) {
+           if(ua.getAreaLevel ()==1){
+               result.add (ua);
+           }else if(ua.getAreaLevel ()==2){
+               ua.setAreaName (dictMapper.findSeriveAreaSecond (ua.getAreaId ()).getAreaName ()+"-"+ua.getAreaName ());
+               result.add (ua);
+           }else if(ua.getAreaLevel ()==3){
+               ua.setAreaName (dictMapper.findSeriveAreaSecond (dictMapper.findSeriveAreaThird (ua.getAreaId ()).getAreaId ()).getAreaName ()+"-"+dictMapper.findSeriveAreaThird (ua.getAreaId ()).getAreaName ()+"-"+ua.getAreaName ());
+               result.add (ua);
+           }
+        }
+        return result;
+    }
 }

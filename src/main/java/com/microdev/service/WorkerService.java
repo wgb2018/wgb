@@ -68,11 +68,12 @@ public interface WorkerService extends IService<Worker> {
     PageInfo<SupplementResponse> selectNoPunchPageInfo(PageRequest page);
     /**
      * 查询补签记录详情
-     * @param workLogId
-     * @param companyId
+     * @param taskWorkerId
+     * @param date
+     * @param checkSign
      * @return
      */
-    SupplementResponse selectNoPunchDetails(String workLogId, String companyId);
+    SupplementResponse selectNoPunchDetails(String taskWorkerId, String date, String checkSign);
     /**
      * 小时工补签
      * @param info
@@ -97,4 +98,5 @@ public interface WorkerService extends IService<Worker> {
 	void mpdifyAreaAndService(AreaAndServiceRequest request);
 
     Map<String, Object> queryWorker(String id);
+
 }

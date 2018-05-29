@@ -66,7 +66,7 @@ public class UserController {
     /**
      * 用户退出登录
      */
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     public ResultDO logout() throws Exception {
         userService.logout();
         return ResultDO.buildSuccess("用户退出成功");
@@ -114,7 +114,7 @@ public class UserController {
      * 修改基础信息
      * 昵称、邮箱
      */
-    @PatchMapping("/base-info")
+    @PostMapping ("/base-info")
     public ResultDO modifyBaseInfo(@RequestBody UserDTO userDTO) {
         userService.modifyBaseInfo(userDTO);
         return ResultDO.buildSuccess("修改成功");
@@ -148,7 +148,7 @@ public class UserController {
     /**
      * 修改手机号
      */
-    @PatchMapping("/mobiles/{mobile}/{smsCode}")
+    @PostMapping("/{mobile}/mobiles/{smsCode}")
     public ResultDO modifyBaseInfo(@PathVariable String mobile, @PathVariable String smsCode) {
         userService.modifyMobile(mobile, smsCode);
         return ResultDO.buildSuccess("修改成功");
@@ -209,7 +209,11 @@ public class UserController {
         userMapper.updateById(test);
         return ResultDO.buildSuccess(dictMapper.findArea("110100"));
     }
-
+	@GetMapping("/{mobile}/verifyMobile/{smsCode}")
+    public ResultDO verifyMobile(@PathVariable String mobile, @PathVariable String smsCode) {
+        smsFacade.checkSmsCode(mobile, SmsType.register.name(), smsCode);
+        return ResultDO.buildSuccess("验证通过");
+    }
 
     /**
      * 文件下载
@@ -242,5 +246,16 @@ public class UserController {
         file.close();
         out.close();
 
+    }
+
+    /**
+     * 查询未读的数量
+     * @param id
+     * @param type
+     * @return
+     */
+    @GetMapping("/user/selectUnread/amount")
+    public ResultDO selectUnreadAmount(String id, String type) {
+        return ResultDO.buildSuccess(userService.selectUnreadAmount(id, type));
     }
 }

@@ -111,7 +111,7 @@ public class UserDTO {
     /**
      * 服务地区
      */
-    private Map<String,Integer> areaCode;
+    private List<UserArea> areaCode;
     /**
      * 所属公司
      */
@@ -127,7 +127,6 @@ public class UserDTO {
 
     private String idCardBack;
 	private OffsetDateTime birthday;
-    private Map<String, Integer> totalMap = new HashMap<>();
 
     public String getId() {
         return id;

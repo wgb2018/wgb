@@ -100,8 +100,8 @@ public class WorkerController {
      * 小时工补签详情
      */
     @PostMapping("/workers/noPunchInfoDetail")
-    public ResultDO noPunchInfoDetail(String workLogId, String companyId) {
-        return ResultDO.buildSuccess(workerService.selectNoPunchDetails(workLogId, companyId));
+    public ResultDO noPunchInfoDetail(String taskWorkerId, String date, String checkSign) {
+        return ResultDO.buildSuccess(workerService.selectNoPunchDetails(taskWorkerId, date, checkSign));
     }
     /**
      * 小时工申请补签

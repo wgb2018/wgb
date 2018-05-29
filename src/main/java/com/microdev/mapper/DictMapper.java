@@ -2,6 +2,7 @@ package com.microdev.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.microdev.model.Dict;
+import com.microdev.model.UserArea;
 import com.microdev.param.DictDTO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -36,4 +37,14 @@ public interface DictMapper extends BaseMapper<Dict> {
     List<String> selectTypeByUserId(String id);
 
     List<Dict> queryTypeByUserId(String id);
+
+    List<UserArea> findServiceArea(String id);
+
+    UserArea findSeriveAreaSecond(String id);
+
+    UserArea findSeriveAreaFirst(String id);
+
+    UserArea findSeriveAreaThird(String id);
+
+
 }

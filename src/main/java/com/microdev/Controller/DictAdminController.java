@@ -103,7 +103,7 @@ public class DictAdminController {
      */
     @GetMapping("/findarea/{userId}")
     public ResultDO getUserArea(@PathVariable String userId) {
-        return  ResultDO.buildSuccess(dictMapper.findArea(userId));
+        return  ResultDO.buildSuccess(dictService.findServiceArea(userId));
     }
 
 }

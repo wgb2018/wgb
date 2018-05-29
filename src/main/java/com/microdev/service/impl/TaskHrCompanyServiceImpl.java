@@ -262,7 +262,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         }
         message.setStatus(1);
         messageMapper.updateById(message);
-        taskHrCompanyMapper.updateStatus(id,1);
+        taskMapper.updateStatus(taskHrCompany.getTaskId(),2);
+        taskHrCompanyMapper.updateStatus(id,2);
     }
     /**
      * 人力公司拒绝任务
@@ -278,7 +279,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         }
         message.setStatus(1);
         messageMapper.updateById(message);
-        taskHrCompanyMapper.updateStatus(id,2);
+        taskHrCompanyMapper.updateStatus(id,3);
     }
     /**
      * 人力公司任务调配

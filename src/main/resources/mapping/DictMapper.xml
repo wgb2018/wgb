@@ -80,9 +80,21 @@
         INNER JOIN dict d ON tr.`task_type_id` = d.`id`
         WHERE tr.`id` = #{id}
     </select>
-	 <select id="queryTypeByUserId" parameterType="com.microdev.model.Dict" resultType="java.lang.String">
+    <select id="queryTypeByUserId" parameterType="com.microdev.model.Dict" resultType="com.microdev.model.Dict">
         SELECT d.*  FROM task_type_relation tr
         INNER JOIN dict d ON tr.`task_type_id` = d.`id`
         WHERE tr.`id` = #{id}
+    </select>
+    <select id="findServiceArea" resultType="com.microdev.model.UserArea" parameterType="java.lang.String">
+        select cityID as areaId,city as areaName from city where cityID = select father from area where areaID = #{id};
+    </select>
+    <select id="findSeriveAreaThird" resultType="com.microdev.model.UserArea" parameterType="java.lang.String">
+        select  from area
+    </select>
+    <select id="findSeriveAreaSecond" resultType="com.microdev.model.UserArea" parameterType="java.lang.String">
+        select provinceID as areaId,province as areaName from province where provinceID = select father from city where cityID = #{id}
+    </select>
+    <select id="findSeriveAreaFirst" resultType="com.microdev.model.UserArea" parameterType="java.lang.String">
+        select provinceID as areaId,province as areaName from province where provinceID = #{id}
     </select>
 </mapper>

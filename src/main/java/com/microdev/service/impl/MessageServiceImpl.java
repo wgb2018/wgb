@@ -119,7 +119,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         List<Message> list = new ArrayList<>();
         MessageTemplate mess = messageTemplateMapper.findFirstByCode(pattern);
         Iterator<String> it = bindCompany.iterator();
-        Map<String, String> param = null;
+        Map<String, String> param = param = new HashMap<>();
+        param.put("userName", applyCompany.getName());
+        String content = StringKit.templateReplace(mess.getContent(), param);
         Message m = null;
         String id = null;
         while (it.hasNext()) {
@@ -128,18 +130,19 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m.setMessageCode(mess.getCode());
             m.setMessageTitle(mess.getTitle());
             m.setStatus(0);
-            param = new HashMap<>();
+            m.setMessageType(5);
             if (type == 1) {
                 m.setApplyType(2);
+                m.setApplicantType(3);
                 m.setHotelId(applyCompany.getPid());
                 m.setHrCompanyId(id);
             } else {
                 m.setApplyType(3);
+                m.setApplicantType(2);
                 m.setHotelId(id);
                 m.setHrCompanyId(applyCompany.getPid());
             }
-            param.put("userName", applyCompany.getName());
-            String content = StringKit.templateReplace(mess.getContent(), param);
+
             m.setMessageContent(content);
             list.add(m);
         }
@@ -167,16 +170,18 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         Iterator<String> it = hrCompanyId.iterator();
         Message m = null;
         List<Message> list = new ArrayList<>();
+        Map<String, String> param = new HashMap<>();
+        param.put("userName", userName);
+        String c = StringKit.templateReplace(mess.getContent(), param);
         while (it.hasNext()) {
             m = new Message();
             m.setDeleted(false);
             m.setMessageCode(mess.getCode());
             m.setMessageTitle(mess.getTitle());
             m.setStatus(0);
+            m.setApplicantType(1);
             m.setWorkerId(workerId);
-            Map<String, String> param = new HashMap<>();
-            param.put("userName", userName);
-            String c = StringKit.templateReplace(mess.getContent(), param);
+            m.setMessageType(5);
             m.setMessageContent(c);
             m.setHrCompanyId(it.next());
             m.setApplyType(2);
@@ -205,6 +210,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         List<Message> list = new ArrayList<>();
         //DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY-MM-dd");
         //DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        Map<String, String> param = new HashMap<>();
+        param.put("hotelName", hotel.getName());
+        param.put("taskContent", request.getTaskContent());
+
+        String c = StringKit.templateReplace(mess.getContent(), param);
         for (TaskHrCompanyDTO dto : request.getHrCompanySet()) {
             m = new Message();
             m.setDeleted(false);
@@ -212,13 +222,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m.setMessageTitle(mess.getTitle());
             m.setStatus(0);
             m.setApplyType(2);
+            m.setApplicantType(3);
+            m.setMessageType(6);
             m.setHrCompanyId(dto.getHrCompanyId());
             m.setHotelId(hotel.getPid());
-            Map<String, String> param = new HashMap<>();
-            param.put("hotelName", hotel.getName());
-            param.put("taskContent", request.getTaskContent());
 
-            String c = StringKit.templateReplace(mess.getContent(), param);
             m.setMessageContent(c);
             list.add(m);
         }
@@ -243,19 +251,22 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         }
         Message m = null;
         List<Message> messageList = new ArrayList<>();
+        Map<String, String> map = new HashMap<>();
+        map.put("hrCompanyName", hrName);
+        String c = StringKit.templateReplace(mess.getContent(), map);
         for (Map<String, String> param : list) {
             m = new Message();
             m.setDeleted(false);
             m.setMessageCode(mess.getCode());
             m.setMessageTitle(mess.getTitle());
             m.setStatus(0);
+            m.setMessageType(6);
             m.setApplyType(0);
+            m.setApplicantType(2);
             m.setHrCompanyId(hrId);
             m.setWorkerId(param.get("workerId"));
             m.setWorkerTaskId(param.get("workerTaskId"));
-            Map<String, String> map = new HashMap<>();
-            map.put("hrCompanyName", hrName);
-            String c = StringKit.templateReplace(mess.getContent(), map);
+
             m.setMessageContent(c);
             messageList.add(m);
         }
@@ -283,7 +294,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         m.setMessageCode(mess.getCode());
         m.setMessageTitle(mess.getTitle());
         m.setStatus(0);
-        m.setApplyType(0);
+        m.setApplyType(3);
+        m.setMessageType(4);
+        m.setApplicantType(2);
         m.setHrCompanyId(c.getHrCompanyId());
         m.setHotelId(c.getHotelId());
         Map<String, String> map = new HashMap<>();

@@ -294,6 +294,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applyLeaveMessage");
         m.setMessageCode(mess.getCode());
+        m.setMessageType(3);
         m.setMessageTitle(mess.getTitle());
         m.setWorkerId(tp.get("workerId"));
         m.setWorkerTaskId(info.getTaskWorkerId());
@@ -341,6 +342,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applyOvertimeMessage");
         m.setMessageCode(mess.getCode());
+        m.setMessageType(2);
         m.setMessageTitle(mess.getTitle());
         m.setWorkerId(tp.get("workerId"));
         m.setWorkerTaskId(info.getTaskWorkerId());
@@ -380,6 +382,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setContent(info.getReason());
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applyCancelTaskMessage");
         m.setMessageCode(mess.getCode());
+        m.setMessageType(7);
         m.setMessageTitle(mess.getTitle());
         m.setWorkerId(tp.get("workerId"));
         m.setWorkerTaskId(info.getTaskWorkerId());
@@ -429,13 +432,19 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
      * 查询补签记录详情
      */
     @Override
-    public SupplementResponse selectNoPunchDetails(String workLogId, String companyId) {
-        if (StringUtils.isEmpty(companyId) || StringUtils.isEmpty(workLogId)) {
+    public SupplementResponse selectNoPunchDetails(String taskWorkerId, String date, String checkSign) {
+        if (StringUtils.isEmpty(date) || StringUtils.isEmpty(taskWorkerId) || StringUtils.isEmpty(checkSign)) {
             throw new ParamsException("参数不能为空");
         }
+
+        if ("0".equals(checkSign)) {
+            WorkLog log = workLogMapper.selectUnreadInfoOne(taskWorkerId, date);
+            log.setCheckSign(1);
+            workLogMapper.updateById(log);
+        }
         Map<String, Object> param = new HashMap<>();
-        param.put("workLogId", workLogId);
-        param.put("companyId", companyId);
+        param.put("taskWorkerId", taskWorkerId);
+        param.put("date", date);
         return workLogMapper.selectNoPunchDetail(param);
     }
 
@@ -466,6 +475,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setMessageCode(mess.getCode());
         m.setMessageTitle(mess.getTitle());
         m.setWorkerId( tp.get("workerId"));
+        m.setMessageType(1);
+        m.setApplicantType(1);
         m.setWorkerTaskId(info.getTaskWorkerId());
         m.setHotelId(tp.get("hotelId"));
         Map<String, String> param = new HashMap<>();

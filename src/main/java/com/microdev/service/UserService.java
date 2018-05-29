@@ -8,6 +8,7 @@ import com.microdev.param.UserDTO;
 import com.microdev.param.WeixinUserInfo;
 
 import java.util.List;
+import java.util.Map;
 
 
 public interface UserService extends IService<User>{
@@ -56,4 +57,12 @@ public interface UserService extends IService<User>{
         * @return
         */
        UserDTO me();
+
+       /**
+        * 查询未读的数量
+        * @param id         用户id
+        * @param type       用户类型worker，hotel，hr
+        * @return
+        */
+       Map<String, Object> selectUnreadAmount(String id, String type);
 }
