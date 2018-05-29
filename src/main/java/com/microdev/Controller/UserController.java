@@ -119,6 +119,7 @@ public class UserController {
      */
     @PostMapping ("/base-info")
     public ResultDO modifyBaseInfo(@RequestBody UserDTO userDTO) {
+        System.out.println ("userDTO:"+userDTO);
         userService.modifyBaseInfo(userDTO);
         return ResultDO.buildSuccess("修改成功");
     }
@@ -221,19 +222,19 @@ public class UserController {
     /**
      * 文件下载
      */
-    @GetMapping("/protocoldownload")
-    public void fileDownload(String param, HttpServletResponse response) throws IOException {
+    @GetMapping("/protocoldownload/{param}")
+    public void fileDownload(@PathVariable String param, HttpServletResponse response) throws IOException {
         OutputStream out = response.getOutputStream();
         String  path = getClass().getResource("/").getFile();
         File f = null;
         if ("1".equals(param)) {
-            f = new File( path, File.separator + "static" + File.separator +  "bindProtocol.txt");
+            f = new File( path, File.separator + "static" + File.separator +  "BindingsOfHRAndHourlyWorkers.txt");
         } else if ("2".equals(param)) {
-            f = new File(path, File.separator + "static" + File.separator + "workContract.txt");
+            f = new File(path, File.separator + "static" + File.separator + "IntroductionOfNewFunctions.txt");
         } else if ("3".equals(param)) {
-            f = new File(path + File.separator + "static" + File.separator + "CooperationAgreement.txt");
+            f = new File(path + File.separator + "static" + File.separator + "CooperationBetweenHumanCompaniesAndHotels.txt");
         } else if ("4".equals(param)) {
-            f = new File(path + File.separator + "static" + File.separator + "userPrivacy.txt");
+            f = new File(path + File.separator + "static" + File.separator + "UserProtocolAndPrivacyClause.txt");
         } else {
             throw new ParamsException("参数错误");
         }

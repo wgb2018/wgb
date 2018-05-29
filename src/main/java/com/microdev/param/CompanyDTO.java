@@ -44,4 +44,6 @@ public class CompanyDTO {
      *  经度，范围为180 ~ -180。
      */
     private Double longitude;
+
+    private Integer status;
 }

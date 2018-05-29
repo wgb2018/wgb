@@ -54,6 +54,7 @@ public interface Constant {
         add("/reset-pwd");
         add("/workers/**");//应该拦截 调试中 暂不删除
         add("/**/test");
+        add("/protocoldownload/*");
     }};
 
 

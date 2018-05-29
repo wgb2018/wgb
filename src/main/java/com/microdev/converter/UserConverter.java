@@ -65,6 +65,7 @@ public class UserConverter {
         if (userDTO.getSex() != null) user.setSex(userDTO.getSex());
 		if (userDTO.getBirthday() != null){
             user.setBirthday(userDTO.getBirthday());
+            System.out.println (user.getBirthday ());
             user.setAge(DateUtil.CaculateAge(userDTO.getBirthday()));
         }
     }

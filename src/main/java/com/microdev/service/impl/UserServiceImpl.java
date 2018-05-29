@@ -24,6 +24,7 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 
 @Transactional
@@ -292,6 +293,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
      */
     @Override
     public void modifyBaseInfo(UserDTO userDTO) {
+        if(userDTO.getBirthdayNew ()!=null){
+            Integer year = Integer.parseInt (userDTO.getBirthdayNew ().split (" ")[0].split ("-")[0]);
+            Integer mouth = Integer.parseInt (userDTO.getBirthdayNew ().split (" ")[0].split ("-")[1]);
+            Integer day = Integer.parseInt (userDTO.getBirthdayNew ().split (" ")[0].split ("-")[2]);
+            Integer h =  Integer.parseInt (userDTO.getBirthdayNew ().split (" ")[1].split (":")[0]);
+            Integer m =  Integer.parseInt (userDTO.getBirthdayNew ().split (" ")[1].split (":")[1]);
+            Integer s =  Integer.parseInt (userDTO.getBirthdayNew ().split (" ")[1].split (":")[2]);
+            userDTO.setBirthday (OffsetDateTime.of (year,mouth,day,h,m,s,0, ZoneOffset.UTC));
+            System.out.println ("brithday:"+userDTO.getBirthday ());
+        }
         com.microdev.common.context.User loginUser = ServiceContextHolder.getServiceContext().getUser();
         User user = userMapper.queryByUserId(loginUser.getId());
         try {
@@ -376,11 +387,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         if (userType == UserType.hr || userType == UserType.hotel) {
             Company company = companyMapper.findFirstByLeaderMobile(mobile);
             if (company != null) {
-                CompanyViewModelDTO companyDTO = new CompanyViewModelDTO();
+                CompanyDTO companyDTO = new CompanyViewModelDTO();
                 companyDTO.setId(company.getPid());
                 companyDTO.setName(company.getName());
                 companyDTO.setCompanyType(company.getCompanyType());
                 companyDTO.setStatus(company.getStatus());
+                companyDTO.setBusinessLicense (company.getBusinessLicense ());
+                companyDTO.setLeader (company.getLeader ());
+                companyDTO.setLeaderMobile (company.getLeaderMobile ());
+                companyDTO.setAddress (company.getAddress ());
+                companyDTO.setLogo (company.getLogo ());
+                companyDTO.setLatitude (company.getLatitude ());
+                companyDTO.setLongitude (companyDTO.getLongitude ());
                 userDTO.setCompany(companyDTO);
 				userDTO.setServiceType (dictMapper.queryTypeByUserId (company.getPid ()));
 

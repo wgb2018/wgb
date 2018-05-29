@@ -77,7 +77,7 @@
     <!-- 获取已添加该人力公司的所有酒店 -->
     <select id="queryHotelsByHrId" parameterType="com.microdev.param.CompanyQueryDTO" resultType="com.microdev.model.Company">
         select <include refid="Company_Column_List"/> from company where id IN
-        (select hotel_id from hotel_hr_company where hr_id = #{id} and status = 0)
+        (select hotel_id from hotel_hr_company where hr_id = #{id} and status in(0,3,4) )
         <if test="name != null and name !=''">
             and name like '%${name}%'
         </if>
@@ -89,7 +89,7 @@
     <!-- 获取已添加该酒店的所有人力公司 -->
     <select id="queryCompanysByHotelId" parameterType="com.microdev.param.CompanyQueryDTO" resultType="com.microdev.model.Company">
         select <include refid="Company_Column_List"/> from company where id IN
-        (select hr_id from hotel_hr_company where hotel_id = #{id} and status = 0)
+        (select hr_id from hotel_hr_company where hotel_id = #{id} and status = in(0,3,4))
         <if test="name != null and name !=''">
             and name like '%${name}%'
         </if>

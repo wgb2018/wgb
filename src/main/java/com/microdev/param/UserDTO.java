@@ -127,7 +127,11 @@ public class UserDTO {
     private String idCardFront;
 
     private String idCardBack;
+
 	private OffsetDateTime birthday;
+
+	private String birthdayNew;
+
 
     public String getId() {
         return id;
