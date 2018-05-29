@@ -532,18 +532,39 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             throw new ParamsException("添加的公司不能为空");
         }
         Integer type = dto.getBindType();
+        Set<String> hrSet = dto.getHrSet();
+        List<HotelHrCompany> list = new ArrayList<>();
+        HotelHrCompany hotelHr = null;
         if (type == 1) {
             if (StringUtils.isEmpty(dto.getHotelId())) {
                 throw new ParamsException("参数hotelId为空");
             }
             Company company = companyMapper.selectById(dto.getHotelId());
             messageService.hotelBindHrCompany(dto.getHrSet(), company, "applyBindMessage", type);
+
+            for (String hrId : hrSet) {
+                hotelHr = new HotelHrCompany();
+                hotelHr.setStatus(3);
+                hotelHr.setHotelId(company.getPid());
+                hotelHr.setHrId(hrId);
+                list.add(hotelHr);
+            }
         } else if (type == 2) {
             if (StringUtils.isEmpty(dto.getHrId())) {
                 throw new ParamsException("参数hrId为空");
             }
             Company company = companyMapper.selectById(dto.getHrId());
             messageService.hotelBindHrCompany(dto.getHrSet(), company, "applyBindMessage", type);
+            for (String hotelId : hrSet) {
+                hotelHr = new HotelHrCompany();
+                hotelHr.setStatus(3);
+                hotelHr.setHotelId(hotelId);
+                hotelHr.setHrId(company.getPid());
+                list.add(hotelHr);
+            }
+        }
+        if (list.size() > 0) {
+            hotelHrCompanyMapper.saveBatch(list);
         }
         return ResultDO.buildSuccess("成功");
     }

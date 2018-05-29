@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.microdev.Constant;
 import com.microdev.common.ResultDO;
+import com.microdev.common.exception.ParamsException;
 import com.microdev.common.oss.ObjectStoreService;
 import com.microdev.common.utils.FileUtil;
 import com.microdev.mapper.DictMapper;
@@ -216,19 +217,18 @@ public class UserController {
     @GetMapping("/protocoldownload")
     public void fileDownload(String param, HttpServletResponse response) throws IOException {
         OutputStream out = response.getOutputStream();
-        int num = Math.abs(param.hashCode());
         String  path = getClass().getResource("/").getFile();
         File f = null;
-        if (num % 4 == 0) {
-            f = new File( path, File.separator + "static" + File.separator +  "company.txt");
-        } else if (num % 4 == 1) {
-            f = new File(path, File.separator + "static" + File.separator + "hrcompany.txt");
-        } else if (num % 4 == 2) {
-            f = new File(path + File.separator + "static" + File.separator + "system.txt");
-        } else if (num % 4 == 3) {
-            f = new File(path + File.separator + "static" + File.separator + "worker.txt");
+        if ("1".equals(param)) {
+            f = new File( path, File.separator + "static" + File.separator +  "bindProtocol.txt");
+        } else if ("2".equals(param)) {
+            f = new File(path, File.separator + "static" + File.separator + "workContract.txt");
+        } else if ("3".equals(param)) {
+            f = new File(path + File.separator + "static" + File.separator + "CooperationAgreement.txt");
+        } else if ("4".equals(param)) {
+            f = new File(path + File.separator + "static" + File.separator + "userPrivacy.txt");
         } else {
-            return;
+            throw new ParamsException("参数错误");
         }
         FileInputStream file = new FileInputStream(f);
         response.setContentType("text/html;charset=utf-8");

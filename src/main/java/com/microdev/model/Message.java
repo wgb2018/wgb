@@ -84,6 +84,10 @@ public class Message extends BaseEntity {
      */
     private Integer checkSign = 0;
 
+    /**
+     * 消息类型1补签申请2加时申请3请假申请4调配申请5绑定申请6任务推荐
+     */
+    private Integer messageType = 0;
     public Integer getStatus() {
         return status;
     }

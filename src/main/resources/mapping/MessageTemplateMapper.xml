@@ -3,7 +3,7 @@
 <mapper namespace="com.microdev.mapper.MessageTemplateMapper">
     <sql id="MessageTemplate_Column_List">
         id as pid, create_time, deleted, modify_time, code,
-        content, msg_link, title,type
+        content, msg_link, title
     </sql>
     <select id="findFirstByCode" parameterType="java.lang.String" resultType="com.microdev.model.MessageTemplate">
         SELECT

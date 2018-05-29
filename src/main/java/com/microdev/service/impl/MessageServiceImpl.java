@@ -327,8 +327,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
 
     /**
      * 查询未读消息数量及各个类型的数量
-     * @param id
-     * @param applyType
+     * @param id            用户id
+     * @param applyType     用户类型1小时工2人力公司3酒店
      * @return
      */
     @Override
@@ -338,6 +338,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         }
         Map<String, Object> param = new HashMap<>();
         param.put("applyType", applyType);
+        param.put("checkSign", 0);
         if ("1".equals(applyType)) {
             param.put("workerId", id);
         } else if ("2".equals(applyType)) {
@@ -351,23 +352,23 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         Map<String, Integer> result = new HashMap<>();
         result.put("total", total);
         //查询补签申请数量
-        param.put("messageCode", "applySupplementMessage");
+        param.put("messageType", 1);
         int supplementCount = messageMapper.selectUnReadCount(param);
         result.put("supplementCount", supplementCount);
         //查询加时申请
-        param.put("messageCode", "applyExtraMessage");
+        param.put("messageType", 2);
         int extraCount = messageMapper.selectUnReadCount(param);
         result.put("extraCount", extraCount);
         //请假申请
-        param.put("messageCode", "applyLeaveMessage");
+        param.put("messageType", 3);
         int leaveCount = messageMapper.selectUnReadCount(param);
         result.put("leaveCount", leaveCount);
         //调配申请
-        param.put("messageCode", "applyChangeMessage");
+        param.put("messageType", 4);
         int changeCount = messageMapper.selectUnReadCount(param);
         result.put("changeCount", changeCount);
         //绑定申请
-        param.put("messageCode", "applyBindMessage");
+        param.put("messageType", 5);
         int bindCount = messageMapper.selectUnReadCount(param);
         result.put("bindCount", bindCount);
 
@@ -442,8 +443,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         if (StringUtils.isEmpty(id)) {
             throw new ParamsException("参数不能为空");
         }
-        if (page <= 0) page = 1;
-        if (pageNum <= 0) pageNum = 10;
         MessageShowDTO message = new MessageShowDTO();
         Map<String, Object> param = new HashMap<>();
         if (role == 1) {
@@ -458,14 +457,17 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             PageHelper.startPage(page, pageNum, true);
             if (type == 2) {
                 param.put("applicantType", 2);
+                message.setHrList(messageMapper.selectByParam(param));
             } else if (type == 3) {
                 param.put("applicantType", 3);
+                message.setCompanyList(messageMapper.selectByParam(param));
             } else if (type == 4) {
                 param.put("applicantType", 4);
+                message.setSystemList(messageMapper.selectByParam(param));
             } else {
                 throw new ParamsException("参数值错误");
             }
-            message.setCompanyList(messageMapper.selectByParam(param));
+
         } else if (role == 2) {
             param.put("hrCompanyId", id);
             param.put("applicantType", 1);
@@ -476,8 +478,35 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             param.put("applicantType", 4);
             message.setSystemNum(messageMapper.selectUnReadCount(param));
             PageHelper.startPage(page, pageNum, true);
-        } else if (role == 3) {
+            if (type == 1) {
+                param.put("applicantType", 1);
+                message.setWorkerList(messageMapper.selectByParam(param));
+            } else if (type == 3) {
+                param.put("applicantType", 3);
+                message.setCompanyList(messageMapper.selectByParam(param));
+            } else if (type == 4) {
+                param.put("applicantType", 4);
+                message.setSystemList(messageMapper.selectByParam(param));
+            } else {
+                throw new ParamsException("参数值错误");
+            }
 
+        } else if (role == 3) {
+            param.put("hrCompanyId", id);
+            param.put("applicantType", 2);
+            param.put("applyType", 3);
+            message.setHrNum(messageMapper.selectUnReadCount(param));
+            param.put("applicantType", 4);
+            message.setSystemNum(messageMapper.selectUnReadCount(param));
+            if (type == 2) {
+                param.put("applicantType", 2);
+                message.setHrList(messageMapper.selectByParam(param));
+            } else if (type == 4) {
+                param.put("applicantType", 4);
+                message.setSystemList(messageMapper.selectByParam(param));
+            } else {
+                throw new ParamsException("参数错误");
+            }
         } else {
             throw new ParamsException("参数值错误");
         }

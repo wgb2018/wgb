@@ -31,8 +31,4 @@ public class MessageTemplate extends BaseEntity {
      */
     private String msgLink;
 
-    /**
-     * 消息类型
-     */
-    private Integer type;
 }

@@ -5,6 +5,7 @@ import com.microdev.common.ResultDO;
 import com.microdev.param.CreateMsgTemplateRequest;
 import com.microdev.param.MessageQuery;
 import com.microdev.service.MessageService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -81,5 +82,20 @@ public class MessageController {
     public ResultDO getUnReadMessageInfo(String id, String applyType) {
 
         return ResultDO.buildSuccess(messageService.selectUnReadMessage(id, applyType));
+    }
+
+    /**
+     * 查询消息
+     * @param id
+     * @param role
+     * @param type
+     * @param page
+     * @param pageNum
+     * @return
+     */
+    @GetMapping("/messages/select/messsageInfo")
+    public ResultDO getMessageInfo(String id, int role, int type, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "pageNum", defaultValue = "10") int pageNum) {
+
+        return ResultDO.buildSuccess(messageService.selectMessage(id, role, type, page, pageNum));
     }
 }
