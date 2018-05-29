@@ -382,7 +382,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                 companyDTO.setCompanyType(company.getCompanyType());
                 companyDTO.setStatus(company.getStatus());
                 userDTO.setCompany(companyDTO);
-                /*userDTO.setServiceType (dictMapper.queryTypeByUserId (company.getPid ()));
+				userDTO.setServiceType (dictMapper.queryTypeByUserId (company.getPid ()));
 
             }
         } else if (userType == UserType.worker) {
@@ -393,7 +393,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             userDTO.setHealthCard(worker.getHealthCard());
             userDTO.setIdCardFront(worker.getIdcardFront());
             userDTO.setIdCardBack(worker.getIdcardBack());
-            /*userDTO.setServiceType (dictMapper.queryTypeByUserId (workerId));
+			 /*userDTO.setServiceType (dictMapper.queryTypeByUserId (workerId));
             //服务地区
             userDTO.setAreaCode (dictMapper.findServiceArea (workerId));*/
         }
