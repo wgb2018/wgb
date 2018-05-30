@@ -78,4 +78,16 @@ public class TaskHrCompanyController {
     public ResultDO swapWorker(Map<String, Object> map) {
         return taskHrCompanyService.hrApplyChangeWorker(map);
     }
+
+    /**
+     * 更新人力任务查看标识
+     * @param taskHrCompanyId
+     * @param status
+     * @return
+     */
+    @GetMapping("/hr-tasks/update/status")
+    public ResultDO updateTaskHrStatus(String taskHrCompanyId, Integer status) {
+
+        return ResultDO.buildSuccess(taskHrCompanyService.updateTaskHrStatus(taskHrCompanyId, status));
+    }
 }

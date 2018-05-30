@@ -32,6 +32,7 @@ import java.util.*;
 @Transactional
 @Service
 public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,TaskHrCompany> implements TaskHrCompanyService{
+
     @Autowired
     TaskHrCompanyMapper taskHrCompanyMapper;
     @Autowired
@@ -431,4 +432,18 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         return taskHrCompanyMapper.selectCompleteCount(hrCompanyId);
     }
 
+    /**
+     * 更新人力任务查看标识
+     * @param taskHrCompanyId
+     * @param status            1未完成已读 3已完成已读
+     * @return
+     */
+    @Override
+    public String updateTaskHrStatus(String taskHrCompanyId, Integer status) {
+        if (StringUtils.isEmpty(taskHrCompanyId) || status == null) {
+            throw new ParamsException("参数错误");
+        }
+        taskHrCompanyMapper.updateStatusById(taskHrCompanyId, status);
+        return "成功";
+    }
 }

@@ -116,7 +116,7 @@ public class TaskWorker extends BaseEntity {
     private OffsetTime dayEndTime;
 
     /**
-     * 是否已查看0未查看1已查看
+     * 是否已查看0未读1未完成已读3已完成已读
      */
     private Integer checkSign = 0;
     public Integer getStatus() {

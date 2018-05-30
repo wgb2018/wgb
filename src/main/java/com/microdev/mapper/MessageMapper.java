@@ -3,6 +3,7 @@ package com.microdev.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.microdev.model.Message;
 import com.microdev.param.*;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -37,4 +38,7 @@ public interface MessageMapper extends BaseMapper<Message> {
     List<Map<String, Object>> selectMessageDetails(String id);
 
     List<Message> selectByParam(Map<String, Object> param);
+
+    @Update("update message set check_sign = 1 where id = #{id} ")
+    int updateMessageCheckSign(String id);
 }

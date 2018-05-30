@@ -39,4 +39,11 @@ public interface TaskService extends IService<Task> {
      * @return
      */
     int selectCompleteAmount(String hotelId);
+
+    /**
+     * 更新任务的状态
+     * @param taskId        任务id
+     * @param status        1未完成已读3已完成已读
+     */
+    String updateTaskStatus(String taskId, Integer status);
 }

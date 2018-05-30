@@ -322,6 +322,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         }
         Map<String, Object> param = new HashMap<>();
         param.put("applyType", applyType);
+        param.put("checkSign", 0);
         if ("1".equals(applyType)) {
             param.put("workerId", id);
         } else if ("2".equals(applyType)) {
@@ -412,6 +413,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             throw new ParamsException("参数applyType类型错误");
         }
         param.put("checkSign", type);
+        param.put("isHandle", 1);
         return messageMapper.selectUnReadCount(param);
     }
 
@@ -438,7 +440,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             throw new ParamsException("参数applyType类型错误");
         }
         param.put("applyType", applyType);
-        param.put("status", status);
+        param.put("status", 0);
+        param.put("checkSign", 0);
+        param.put("isHandle", 0);
         return messageMapper.selectUnReadCount(param);
     }
 
@@ -524,6 +528,20 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             throw new ParamsException("参数值错误");
         }
         return message;
+    }
+
+    /**
+     * 更新消息
+     * @param id
+     * @return
+     */
+    @Override
+    public String updateMessageCheckSign(String id) {
+        if (StringUtils.isEmpty(id)) {
+            throw new ParamsException("参数错误");
+        }
+        messageMapper.updateMessageCheckSign(id);
+        return "成功";
     }
 
 }

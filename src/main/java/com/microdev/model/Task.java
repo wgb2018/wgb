@@ -101,7 +101,7 @@ public class Task extends BaseEntity {
     private Double havePayMoney=0.0;
 
     /**
-     * 是否已查看0未查看1已查看
+     * 是否已查看0未查看,1未完成已查看,3完成已查看
      */
     private Integer checkSign = 0;
 

@@ -77,4 +77,11 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
      */
     int selectCompleteCount(String hrCompanyId);
 
+    /**
+     * 更新人力任务查看标识
+     * @param taskHrCompanyId
+     * @param status            1未完成已读 3已完成已读
+     * @return
+     */
+    String updateTaskHrStatus(String taskHrCompanyId, Integer status);
 }
