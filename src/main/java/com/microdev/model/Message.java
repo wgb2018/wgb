@@ -88,6 +88,11 @@ public class Message extends BaseEntity {
      * 消息类型1补签申请2加时申请3请假申请4调配申请5绑定申请6任务推荐
      */
     private Integer messageType = 0;
+
+    /**
+     * 是否需要处理0需要1不需要(通知)
+     */
+    private Integer isHandle = 0;
     public Integer getStatus() {
         return status;
     }

@@ -68,4 +68,14 @@ public class TaskController {
         return taskWorkerService.noPromise(workerTaskId);
     }
 
+    /**
+     * 更新任务查看状态
+     * @param taskId
+     * @param status
+     * @return
+     */
+    @GetMapping("/tasks/update/status")
+    public ResultDO updateTaskStatus(String taskId, Integer status) {
+        return ResultDO.buildSuccess(taskService.updateTaskStatus(taskId, status));
+    }
 }

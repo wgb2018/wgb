@@ -13,6 +13,7 @@ import com.microdev.param.*;
 import com.microdev.converter.TaskConverter;
 import com.microdev.service.MessageService;
 import com.microdev.service.TaskService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -243,6 +244,20 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
             throw new ParamsException("参数不能为空");
         }
         return taskMapper.selectCompleteCount(hotelId);
+    }
+
+    /**
+     * 更新任务的状态
+     * @param taskId        任务id
+     * @param status        1未完成已读3已完成已读
+     */
+    @Override
+    public String updateTaskStatus(String taskId, Integer status) {
+        if (StringUtils.isEmpty(taskId) || status == null) {
+            throw new ParamsException("参数错误");
+        }
+        taskMapper.updateTaskCheckSign(taskId, status);
+        return "成功";
     }
 
     //循环添加人力资源任务

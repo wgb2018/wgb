@@ -48,10 +48,8 @@ public class UserController {
     public UserMapper userMapper;
     @Autowired
     DictMapper dictMapper;
-    @Autowired
-    SmsFacade smsFacade;
-
-    /**
+	@Autowired
+    SmsFacade smsFacade;    /**
      * 创建用户
      */
     @ResponseStatus(HttpStatus.CREATED)

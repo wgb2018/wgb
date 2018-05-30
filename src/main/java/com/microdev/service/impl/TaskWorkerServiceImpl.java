@@ -24,6 +24,7 @@ import org.springframework.util.StringUtils;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Transactional
 @Service
@@ -214,5 +215,23 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
             throw new ParamsException("参数不能为空");
         }
         return taskWorkerMapper.selectCompleteCount(userId);
+    }
+
+    /**
+     * 更新查看标识
+     * @param taskWorkerId
+     * @param status        状态1未完成已读3已完成已读
+     * @return
+     */
+    @Override
+    public String updateTaskWorkerStatus(String taskWorkerId, Integer status) {
+        if (StringUtils.isEmpty(taskWorkerId) || status == null) {
+            throw new ParamsException("参数错误");
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("pid", taskWorkerId);
+        map.put("checkSign", status);
+        taskWorkerMapper.updateByPrimaryKey(map);
+        return null;
     }
 }

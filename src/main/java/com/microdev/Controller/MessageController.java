@@ -98,4 +98,15 @@ public class MessageController {
 
         return ResultDO.buildSuccess(messageService.selectMessage(id, role, type, page, pageNum));
     }
+
+    /**
+     * 更新消息的已读标识
+     * @param id        消息id
+     * @return
+     */
+    @GetMapping("/messages/update/checkSign")
+    public ResultDO updateMessageCheckSign(String id) {
+        return ResultDO.buildSuccess(messageService.updateMsgStatus(id));
+    }
+
 }
