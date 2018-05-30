@@ -5,6 +5,8 @@ import com.microdev.common.ResultDO;
 import com.microdev.model.Company;
 import com.microdev.param.*;
 import com.microdev.service.CompanyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +17,9 @@ import java.util.Map;
  */
 @RestController
 public class HotelController {
+
+    private static final Logger logger = LoggerFactory.getLogger(HotelController.class);
+
     @Autowired
     CompanyService companyService;
     /**
@@ -29,6 +34,7 @@ public class HotelController {
      */
     @PostMapping("/hotels/hrcompanies")
     public ResultDO gethotelHrCompanies(@RequestBody PagingDO<CompanyQueryDTO> paging) {
+        logger.info("gethotelHrCompanies param:" + paging.toString());
         return companyService.hotelHrCompanies(paging.getPaginator(),paging.getSelector());
     }
     /**

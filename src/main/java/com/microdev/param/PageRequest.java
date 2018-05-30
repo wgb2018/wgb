@@ -1,11 +1,14 @@
 package com.microdev.param;
 
+import lombok.Data;
+
 /**
  * 分页请求参数.
  * @author zhanglin
  *
  * @date 2018年5月10日
  */
+@Data
 public class PageRequest {
 
 	/**
@@ -20,23 +23,9 @@ public class PageRequest {
 	 * workerId
 	 */
 	private String id;
-	public Integer getPage() {
-		return page;
-	}
-	public void setPage(Integer page) {
-		this.page = page;
-	}
-	public Integer getPageSize() {
-		return pageSize;
-	}
-	public void setPageSize(Integer pageSize) {
-		this.pageSize = pageSize;
-	}
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
+
+	private int role;
+
+	private int type;
 	
 }

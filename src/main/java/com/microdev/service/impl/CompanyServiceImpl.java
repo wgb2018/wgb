@@ -14,6 +14,8 @@ import com.microdev.model.*;
 import com.microdev.param.*;
 import com.microdev.service.CompanyService;
 import com.microdev.service.MessageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,9 @@ import java.util.*;
 @Transactional
 @Service
 public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> implements CompanyService{
+
+    private static final Logger logger = LoggerFactory.getLogger(CompanyServiceImpl.class);
+
     @Autowired
     CompanyMapper companyMapper;
     @Autowired
@@ -72,8 +77,10 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     @Override
     public ResultDO hrCompanyHotels(Paginator paginator, CompanyQueryDTO request) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
-        List<Company> list = companyMapper.queryHotelsByHrId(request);
-        PageInfo<Company> pageInfo = new PageInfo<>(list);
+        List<Map<String, Object>> list = companyMapper.queryHotelsByHrId(request);
+        logger.info("-------------" + list.toString());
+
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
         HashMap<String,Object> result = new HashMap<>();
         //设置获取到的总记录数total：
         result.put("total",pageInfo.getTotal());
@@ -206,8 +213,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     @Override
     public ResultDO hotelHrCompanies(Paginator paginator, CompanyQueryDTO request) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
-        List<Company> list=  companyMapper.queryCompanysByHotelId(request);
-        PageInfo<Company> pageInfo = new PageInfo<>(list);
+        List<Map<String, Object>> list=  companyMapper.queryCompanysByHotelId(request);
+        logger.info(list.toString());
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
         HashMap<String,Object> result = new HashMap<>();
         //设置获取到的总记录数total：
         result.put("total",pageInfo.getTotal());
