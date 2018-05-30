@@ -5,6 +5,7 @@ import com.microdev.model.TaskHrCompany;
 import com.microdev.param.TaskHrQueryDTO;
 
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -38,5 +39,8 @@ public interface TaskHrCompanyMapper extends BaseMapper<TaskHrCompany> {
     int selectUnreadCount(String hrCompanyId);
 
     int selectCompleteCount(String hrCompanyId);
+
+    @Update("update task_hr_company set check_sign = #{status} where id = #{taskHrCompanyId}")
+    int updateStatusById(String taskHrCompanyId, Integer status);
 }
 

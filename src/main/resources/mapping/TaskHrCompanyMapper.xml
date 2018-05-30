@@ -137,6 +137,6 @@
         SELECT COUNT(1) FROM
         (SELECT * FROM task_hr_company WHERE hr_company_id= #{hrCompanyId})th
         INNER JOIN task t
-        ON th.task_id = t.id AND CURDATE() > t.to_date
+        ON th.task_id = t.id AND CURDATE() > t.to_date and AND th.check_sign <![CDATA[<>]]> 3
     </select>
 </mapper>

@@ -241,9 +241,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             throw new ParamsException("参数错误");
         }
         Message mg = new Message();
-        mg.setPid(id);
+        Message oldMsg = messageMapper.selectById(id);
         mg.setStatus(1);
-        messageMapper.updateByMapId(mg);
+        messageMapper.updateById(oldMsg);
+
+
         if ("1".equals(status)) {
             PunchMessageDTO punch = messageMapper.selectPunchMessage(id);
             if (punch == null) {
@@ -448,8 +450,14 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
         List<Message> list = new ArrayList<>();
         Map<String, Object> param = null;
-        Map<String, String> map = null;
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        Map<String, String> map = new HashMap<>();
+        map.put("hotelName", request.getName());
+        map.put("taskContent", request.getTaskContent());
+        map.put("fromDate", request.getFromDate().format(format));
+        map.put("toDate", request.getToDate().format(format));
+        map.put("price", Double.toString(request.getHourlyPay()));
+
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("hotelDeployHrMessage");
         Iterator<Map<String, Object>> it = request.getHrCompany().iterator();
         while (it.hasNext()) {
@@ -465,12 +473,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             message.setMessageTitle(mess.getTitle());
             message.setStatus(0);
             message.setStatus((Integer)param.get("number"));
-            map = new HashMap<>();
-            map.put("hotelName", request.getName());
-            map.put("taskContent", request.getTaskContent());
-			map.put("fromDate", request.getFromDate().format(format));
-            map.put("toDate", request.getToDate().format(format));
-            map.put("price", Double.toString(request.getHourlyPay()));
+
             map.put("number", String.valueOf(param.get("number")));
             String c = StringKit.templateReplace(mess.getContent(), map);
             message.setMessageContent(c);

@@ -134,4 +134,10 @@ public interface MessageService extends IService<Message> {
      */
     MessageShowDTO selectMessage(String id, int role, int type, int page, int pageNum);
 
+    /**
+     * 更新消息
+     * @param id
+     * @return
+     */
+    String updateMessageCheckSign(String id);
 }

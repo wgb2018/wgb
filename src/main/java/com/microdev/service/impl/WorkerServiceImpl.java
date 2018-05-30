@@ -846,11 +846,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         return response;
     }
 
-    /**
+	/**
      *  修改小时工服务类型及服务地区
-     */
-    @Override
-    public void mpdifyAreaAndService(AreaAndServiceRequest request) {
+     */    public void mpdifyAreaAndService(AreaAndServiceRequest request) {
         //删除旧数据
         companyMapper.deleteAreaRelation(request.getWorkerID());
         companyMapper.deleteCompanyArea(request.getWorkerID());

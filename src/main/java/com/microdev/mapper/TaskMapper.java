@@ -7,6 +7,7 @@ import com.microdev.param.TaskQueryDTO;
 import com.microdev.param.TaskViewDTO;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -42,4 +43,7 @@ public interface TaskMapper extends BaseMapper<Task> {
     int selectUnReadCount(String hotelId);
 
     int selectCompleteCount(String hotelId);
+
+    @Update("update task set check_sign = #{checkSign} where id = #{taskId}")
+    int updateTaskCheckSign(String taskId, Integer checkSign);
 }

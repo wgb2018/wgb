@@ -42,4 +42,12 @@ public interface TaskWorkerService extends IService<TaskWorker> {
      * @return
      */
     int selectCompleteCount(String userId);
+
+    /**
+     * 更新查看标识
+     * @param taskWorkerId
+     * @param status        状态1未完成已读3已完成已读
+     * @return
+     */
+    String updateTaskWorkerStatus(String taskWorkerId, Integer status);
 }

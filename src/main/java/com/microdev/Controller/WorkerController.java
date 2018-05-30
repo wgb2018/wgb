@@ -7,6 +7,7 @@ import com.microdev.param.TaskWorkerQuery;
 import com.microdev.param.WorkerSupplementRequest;
 import com.microdev.param.api.request.PunchRequest;
 import com.microdev.service.TaskWorkerService;
+import com.microdev.service.WorkLogService;
 import com.microdev.service.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,8 @@ public class WorkerController {
     private WorkerService workerService;
     @Autowired
     private TaskWorkerService taskWorkerService;
+    @Autowired
+    private WorkLogService workLogService;
 
     /**
      * 获取小时工当前任务信息
@@ -131,5 +134,17 @@ public class WorkerController {
     @GetMapping("/query/worker/{id}")
     public ResultDO queryWorker(@PathVariable String id) {
         return ResultDO.buildSuccess(workerService.queryWorker(id));
+    }
+
+    /**
+     * 更新打卡信息查看标识
+     * @param taskWorkerId
+     * @param date
+     * @return
+     */
+    @GetMapping("/workers/update/checkSign")
+    public ResultDO updateWorkerLogCheckSign(String taskWorkerId, String date) {
+
+        return ResultDO.buildSuccess(workLogService.updateCheckSign(taskWorkerId, date));
     }
 }
