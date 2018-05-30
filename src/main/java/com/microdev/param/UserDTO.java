@@ -2,6 +2,7 @@ package com.microdev.param;
 
 import com.microdev.model.Dict;
 import com.microdev.model.Role;
+import com.microdev.model.UserArea;
 import com.microdev.type.PlatformType;
 import com.microdev.type.SocialType;
 import com.microdev.type.UserSex;
