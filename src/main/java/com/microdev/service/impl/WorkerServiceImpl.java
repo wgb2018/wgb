@@ -3,10 +3,12 @@ package com.microdev.service.impl;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.microdev.common.ResultDO;
 import com.microdev.common.context.ServiceContextHolder;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.exception.TaskWorkerNotFoundException;
 import com.microdev.common.exception.WorkLogNotFoundException;
+import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.DateUtil;
 import com.microdev.common.utils.StringKit;
 import com.microdev.converter.WorkLogConverter;
@@ -847,43 +849,58 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     }
 
 	/**
-     *  修改小时工服务类型及服务地区
+     *  修改服务类型及服务地区
      */    public void mpdifyAreaAndService(AreaAndServiceRequest request) {
         //删除旧数据
-        companyMapper.deleteAreaRelation(request.getWorkerID());
-        companyMapper.deleteCompanyArea(request.getWorkerID());
-        taskTypeRelationMapper.deleteTaskTypeRelation(request.getWorkerID());
+        companyMapper.deleteAreaRelation(request.getId());
+        companyMapper.deleteCompanyArea(request.getId());
+        taskTypeRelationMapper.deleteTaskTypeRelation(request.getId());
         //添加区域
         List<UserArea> areaList = request.getAreaCode();
         for (UserArea ua:areaList) {
-            companyMapper.insertAreaRelation(request.getWorkerID(),ua.getAreaId (),ua.getAreaLevel (),ua.getAreaName ());
+            companyMapper.insertAreaRelation(request.getId(),ua.getAreaId (),ua.getAreaLevel (),ua.getAreaName ());
             if(ua.getAreaLevel ()==1){
                 Map<String,String> list = dictMapper.findCity(ua.getAreaId ());
                 for (String key : list.keySet()) {
                     Map<String,String> list2= dictMapper.findArea(key);
                     for (String key1 : list2.keySet()) {
-                        companyMapper.insertCompanyArea(request.getWorkerID(),key1,0);
+                        companyMapper.insertCompanyArea(request.getId(),key1,request.getIdType ());
                     }
                 }
             }else if(ua.getAreaLevel ()==2){
                 Map<String,String> list2= dictMapper.findArea(ua.getAreaId ());
                 for (String key1 : list2.keySet()) {
-                    companyMapper.insertCompanyArea(request.getWorkerID(),key1,0);
+                    companyMapper.insertCompanyArea(request.getId(),key1,request.getIdType ());
                 }
             }else{
-                companyMapper.insertCompanyArea(request.getWorkerID(),ua.getAreaId (),0);
+                companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
             }
         }
         //添加服务类型
         List<String> serviceType = request.getServiceType();
         for(int i = 0;i<serviceType.size();i++){
-            taskTypeRelationMapper.insertTaskTypeRelation(request.getWorkerID(),serviceType.get(i),0);
+            taskTypeRelationMapper.insertTaskTypeRelation(request.getId(),serviceType.get(i),request.getIdType ());
         }
     }
 
     @Override
     public Map<String, Object> queryWorker(String id) {
         return workerMapper.queryWorker(id);
+    }
+
+    @Override
+    public ResultDO pagingWorkers(Paginator paginator, WorkerQueryDTO workerQueryDTO) {
+        PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
+        //查询数据集合
+        List<Map<String,Object>> list = workerMapper.queryWorkers(workerQueryDTO);
+        PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(list);
+        HashMap<String,Object> result = new HashMap<>();
+        //设置获取到的总记录数total：
+        result.put("total",pageInfo.getTotal());
+        //设置数据集合rows：
+        result.put("result",pageInfo.getList());
+        result.put("page",paginator.getPage());
+        return ResultDO.buildSuccess(result);
     }
 
     /**

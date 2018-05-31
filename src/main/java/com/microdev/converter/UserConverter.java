@@ -68,5 +68,6 @@ public class UserConverter {
             System.out.println (user.getBirthday ());
             user.setAge(DateUtil.CaculateAge(userDTO.getBirthday()));
         }
+        //if (userDTO.getLaborDispatchCard () != null) user.setLaborDispatchCard (userDTO.getLaborDispatchCard ());
     }
 }

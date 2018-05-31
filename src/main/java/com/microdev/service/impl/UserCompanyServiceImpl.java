@@ -139,7 +139,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         //查询数据集合
         Map<String,Object> map = new HashMap<>();
         map.put("company_id",queryDTO.getHrId());
-        map.put("status",1);
+        map.put("status","1 or status = 3");
         List<User> list = null;
         User us = null;
         //List<String> ids = new ArrayList<>();
@@ -197,7 +197,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         //查询数据集合
         Map map = new HashMap<String,Object>();
-        map.put("user_id",queryDTO.getWorkerId());
+        map.put("user_id",userMapper.queryByWorkerId (queryDTO.getWorkerId()).getPid ());
         map.put("status",1);
         List<UserCompany> list = userCompanyMapper.selectByMap(map);
         PageInfo<UserCompany> pageInfo = new PageInfo<>(list);

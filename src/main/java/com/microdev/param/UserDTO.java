@@ -65,6 +65,8 @@ public class UserDTO {
      */
     private UserType userType;
 
+    private String laborDispatchCard;
+
     public Integer getUserCode() {
         return userCode;
     }

@@ -7,13 +7,11 @@ import com.microdev.common.ResultDO;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.oss.ObjectStoreService;
 import com.microdev.common.utils.FileUtil;
+import com.microdev.common.utils.QRCodeUtil;
 import com.microdev.mapper.DictMapper;
 import com.microdev.mapper.UserMapper;
 import com.microdev.model.User;
-import com.microdev.param.ChangePwdRequest;
-import com.microdev.param.SmsType;
-import com.microdev.param.UserDTO;
-import com.microdev.param.WeixinUserInfo;
+import com.microdev.param.*;
 import com.microdev.service.SmsFacade;
 import com.microdev.service.TokenService;
 import com.microdev.service.UserService;
@@ -26,6 +24,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLDecoder;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -49,7 +48,8 @@ public class UserController {
     @Autowired
     DictMapper dictMapper;
 	@Autowired
-    SmsFacade smsFacade;    /**
+    SmsFacade smsFacade;
+	/**
      * 创建用户
      */
     @ResponseStatus(HttpStatus.CREATED)
@@ -173,8 +173,22 @@ public class UserController {
     }
     /**
      * 上传文件
-     * 上传文件到服务器，比如：用户图像、营业执照等等
+     * 上传文件到服务器，比如：用户图像、营业执照 等等
      */
+    @PostMapping("/files")
+    //@RequestMapping(value = "/form", method = RequestMethod.POST, consumes = "multipart/form-data")
+    public ResultDO uploadFile1(FileRequest fileRequest) throws Exception {
+        System.out.println ("FileType:"+fileRequest.getFileType ());
+        System.out.println ("File:"+fileRequest.getFileType ());
+        String filePath = fileRequest.getFileType ().toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(fileRequest.getFile ());
+
+        //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
+        String fileURI = objectStoreService.uploadObject (filePath, fileRequest.getFile ().getBytes ());
+
+
+        //返回地址给前端
+        return ResultDO.buildSuccess("上传文件成功", fileURI);
+    }
     @PostMapping("/files/{fileType}")
     public ResultDO uploadFile(@PathVariable String fileType, @RequestParam("file") MultipartFile file) throws Exception {
 
@@ -224,6 +238,7 @@ public class UserController {
     public void fileDownload(@PathVariable String param, HttpServletResponse response) throws IOException {
         OutputStream out = response.getOutputStream();
         String  path = getClass().getResource("/").getFile();
+        path = URLDecoder.decode(path,  "utf-8");
         File f = null;
         if ("1".equals(param)) {
             f = new File( path, File.separator + "static" + File.separator +  "BindingsOfHRAndHourlyWorkers.txt");

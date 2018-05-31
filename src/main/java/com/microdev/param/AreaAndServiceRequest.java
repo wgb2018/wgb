@@ -9,10 +9,12 @@ import java.util.Map;
 @Data
 public class AreaAndServiceRequest {
 
-    private String workerID;
+    private String id;
 
     private List<UserArea> areaCode;
 
 
     private List<String> serviceType;
+
+    private Integer idType;
 }

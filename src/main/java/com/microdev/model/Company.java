@@ -75,6 +75,11 @@ public class Company extends BaseEntity {
 
     @TableField(exist = false)
     private List<String> serviceType;
+    /**
+     * 劳务派遣证
+     */
+    private String laborDispatchCard;
+
     public String getName() {
         return name;
     }

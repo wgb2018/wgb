@@ -53,6 +53,10 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     DictMapper dictMapper;
     @Autowired
     TaskTypeRelationMapper taskTypeRelationMapper;
+    @Autowired
+    UserCompanyMapper userCompanyMapper;
+    @Autowired
+    UserMapper userMapper;
 
     @Override
     public ResultDO pagingCompanys(Paginator paginator, CompanyQueryDTO queryDTO) {
@@ -66,7 +70,18 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
          //设置数据集合rows：
         result.put("result",list);
         result.put("page",paginator.getPage());
+        if(queryDTO.getObservertype () == 1){
+            String total = dictMapper.findByNameAndCode ("WorkerBindHrMaxNum","1").getText ();
+            Map<String,Object> map = new HashMap <> ();
+            map.put("user_id",userMapper.queryByWorkerId (queryDTO.getObserverId ()).getPid ());
+            Integer num = userCompanyMapper.selectByMap (map).size();
+            map.clear ();
+            map.put("bindTotalNum",Integer.parseInt (total));
+            map.put("bindNum",num);
+            return ResultDO.buildSuccess("您已经绑定"+num+"家人力公司，还可以绑定"+total+"家人力公司",result,map,null);
+        }
         return ResultDO.buildSuccess(result);
+
     }
 
     @Override
@@ -136,34 +151,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     @Override
     public ResultDO createCompany(Company companyDTO) {
         Company company = companyMapper.findFirstByLeaderMobile(companyDTO.getLeaderMobile());
-        //添加区域
-        Map<String,Integer> areaList = companyDTO.getAreaCode();
-            Iterator<Map.Entry<String, Integer>> entries = areaList.entrySet().iterator();
-            while (entries.hasNext()) {
-                Map.Entry<String, Integer> entry = entries.next();
-                //companyMapper.insertAreaRelation(company.getPid(),entry.getKey(),entry.getValue());
-                if(entry.getValue()==1){
-                    Map<String,String> list = dictMapper.findCity(entry.getKey());
-                    for (String key : list.keySet()) {
-                        Map<String,String> list2= dictMapper.findArea(key);
-                        for (String key1 : list2.keySet()) {
-                            companyMapper.insertCompanyArea (company.getPid(),key1,company.getCompanyType());
-                        }
-                    }
-                }else if(entry.getValue()==2){
-                    Map<String,String> list2= dictMapper.findArea(entry.getKey());
-                    for (String key1 : list2.keySet()) {
-                        companyMapper.insertCompanyArea(company.getPid(),key1,company.getCompanyType());
-                    }
-                }else{
-                    companyMapper.insertCompanyArea(company.getPid(),entry.getKey(),company.getCompanyType());
-                }
-            }
-
-        //添加服务类型
-        List<String> serviceType = companyDTO.getServiceType();
-        for(int i = 0;i<serviceType.size();i++){
-            taskTypeRelationMapper.insertTaskTypeRelation(company.getPid(),serviceType.get(i),company.getCompanyType());
+        if(company == null){
+            companyDTO.setStatus(0);
+            companyMapper.insert(companyDTO);
+        }else{
+            return ResultDO.buildError ("该负责人已创建过公司");
         }
         return ResultDO.buildSuccess(companyDTO);
     }
@@ -531,11 +523,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         if (dto == null) {
             throw new ParamsException("参数不能为空");
         }
-        if (dto.getHrSet().size() == 0) {
+        if (dto.getSet().size() == 0) {
             throw new ParamsException("添加的公司不能为空");
         }
         Integer type = dto.getBindType();
-        Set<String> hrSet = dto.getHrSet();
+        Set<String> hrSet = dto.getSet();
         List<HotelHrCompany> list = new ArrayList<>();
         HotelHrCompany hotelHr = null;
         if (type == 1) {
@@ -543,7 +535,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 throw new ParamsException("参数hotelId为空");
             }
             Company company = companyMapper.selectById(dto.getHotelId());
-            messageService.hotelBindHrCompany(dto.getHrSet(), company, "applyBindMessage", type);
+            messageService.hotelBindHrCompany(dto.getSet(), company, "applyBindMessage", type);
 
             for (String hrId : hrSet) {
                 hotelHr = new HotelHrCompany();
@@ -557,7 +549,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 throw new ParamsException("参数hrId为空");
             }
             Company company = companyMapper.selectById(dto.getHrId());
-            messageService.hotelBindHrCompany(dto.getHrSet(), company, "applyBindMessage", type);
+            messageService.hotelBindHrCompany(dto.getSet(), company, "applyBindMessage", type);
             for (String hotelId : hrSet) {
                 hotelHr = new HotelHrCompany();
                 hotelHr.setStatus(3);
@@ -569,6 +561,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         if (list.size() > 0) {
             hotelHrCompanyMapper.saveBatch(list);
         }
-        return ResultDO.buildSuccess("成功");
+        return ResultDO.buildSuccess("申请成功");
     }
 }

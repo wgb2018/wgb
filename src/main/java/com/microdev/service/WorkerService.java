@@ -2,6 +2,8 @@ package com.microdev.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.github.pagehelper.PageInfo;
+import com.microdev.common.ResultDO;
+import com.microdev.common.paging.Paginator;
 import com.microdev.model.Company;
 import com.microdev.model.Worker;
 import com.microdev.param.*;
@@ -99,4 +101,5 @@ public interface WorkerService extends IService<Worker> {
 
     Map<String, Object> queryWorker(String id);
 
+    ResultDO pagingWorkers(Paginator paginator, WorkerQueryDTO workerQueryDTO);
 }

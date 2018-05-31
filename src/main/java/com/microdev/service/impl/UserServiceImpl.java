@@ -6,7 +6,10 @@ import com.microdev.common.context.ServiceContextHolder;
 import com.microdev.common.exception.AuthenticationException;
 import com.microdev.common.exception.AuthorizationException;
 import com.microdev.common.exception.ParamsException;
+import com.microdev.common.oss.ObjectStoreService;
+import com.microdev.common.utils.FileUtil;
 import com.microdev.common.utils.PasswordHash;
+import com.microdev.common.utils.QRCodeUtil;
 import com.microdev.common.utils.TokenUtil;
 import com.microdev.converter.UserConverter;
 import com.microdev.mapper.*;
@@ -23,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -58,6 +62,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     private DictMapper dictMapper;
     @Autowired
     private WorkerLogMapper workerLogMapper;
+    @Autowired
+    private ObjectStoreService objectStoreService;
 
     @Override
     public User create(User user) throws Exception{
@@ -106,6 +112,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         if (userMapper.findByMobile(register.getMobile()) != null) {
             throw new ParamsException("手机号码已经存在");
         }
+        File file;
+        String fileURI = null;
+        String filePath;
+
         User newUser = new User();
         newUser.setUserType(register.getUserType());
         newUser.setMobile(register.getMobile());
@@ -118,6 +128,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         if(newUser.getUserType().name().equals("worker")){
             Worker worker = new Worker();
             workerMapper.insert(worker);
+            file = QRCodeUtil.createQRCode (worker.getPid ()+"WGB"+register.getUserType());
+            filePath = "QRCode".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
+            //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
+            fileURI = objectStoreService.uploadFile(filePath, file);
             newUser.setWorkerId(worker.getPid());
         } else if(newUser.getUserType().name().equals("hotel")){
             Company company = new Company();
@@ -125,14 +139,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             company.setLeaderMobile(register.getMobile());
             company.setCompanyType(1);
             companyMapper.insert(company);
+            file = QRCodeUtil.createQRCode (company.getPid ()+"WGB"+register.getUserType());
+            filePath = "QRCode".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
+            //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
+            fileURI = objectStoreService.uploadFile(filePath, file);
         }else if(newUser.getUserType().name().equals("hr")){
             Company company = new Company();
             company.setStatus(0);
             company.setLeaderMobile(register.getMobile());
             company.setCompanyType(2);
             companyMapper.insert(company);
+            file = QRCodeUtil.createQRCode (company.getPid ()+"WGB"+register.getUserType());
+            filePath = "QRCode".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
+            //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
+            fileURI = objectStoreService.uploadFile(filePath, file);
         }
         //存入用户
+        newUser.setQrCode (fileURI);
         userMapper.insert(newUser);
         //存入用户角色关系
         roleMapper.insertRoleAndUserRelation(newUser
@@ -325,6 +348,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             if(userDTO.getNickname ()!=null && userDTO.getNickname ()!="")company.setLeader (userDTO.getNickname ());
             if(userDTO.getCompany ().getBusinessLicense ()!=null && userDTO.getCompany ().getBusinessLicense ()!="")company.setBusinessLicense (userDTO.getCompany ().getBusinessLicense ());
             if(userDTO.getCompany ().getLogo ()!=null && userDTO.getCompany ().getLogo ()!="")company.setLogo (userDTO.getCompany ().getLogo ());
+            if(userDTO.getLaborDispatchCard ()!=null && userDTO.getLaborDispatchCard ()!="")company.setLaborDispatchCard (userDTO.getLaborDispatchCard ());
             companyMapper.updateById (company);
         }
     }
