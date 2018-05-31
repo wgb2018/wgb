@@ -122,6 +122,17 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         taskMapper.updateById(hotelTask);
         taskHrCompanyMapper.updateById(taskHr);
 
+        //添加一个通知消息
+        Message notice = new Message();
+        notice.setWorkerId(message.getWorkerId());
+        notice.setHrCompanyId(message.getHrCompanyId());
+        notice.setApplicantType(1);
+        notice.setApplyType(2);
+        notice.setIsHandle(1);
+        notice.setMessageType(9);
+        notice.setMessageTitle("任务已接受");
+        notice.setMessageContent("小时工" + taskWorker.getUserName() + "接受了你派发的任务");
+        messageMapper.insert(notice);
         return ResultDO.buildSuccess("任务领取成功");
     }
     /**
@@ -171,6 +182,17 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         taskWorkerMapper.updateById(taskWorker);
         taskMapper.updateById(hotelTask);
         taskHrCompanyMapper.updateById(taskHr);
+
+        Message notice = new Message();
+        notice.setWorkerId(message.getWorkerId());
+        notice.setHrCompanyId(message.getHrCompanyId());
+        notice.setApplicantType(1);
+        notice.setApplyType(2);
+        notice.setIsHandle(1);
+        notice.setMessageType(9);
+        notice.setMessageTitle("任务被拒绝");
+        notice.setMessageContent("小时工" + taskWorker.getUserName() + "拒绝了你派发的任务");
+        messageMapper.insert(notice);
         return ResultDO.buildSuccess("拒绝任务成功");
     }
     /**

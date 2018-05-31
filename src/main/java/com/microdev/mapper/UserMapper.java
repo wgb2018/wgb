@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.microdev.model.User;
 import com.microdev.param.UserDTO;
 import com.microdev.param.UserTaskResponse;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface UserMapper extends BaseMapper<User> {
@@ -25,4 +27,9 @@ public interface UserMapper extends BaseMapper<User> {
     @Select("SELECT u.username AS username, u.sex AS sex,u.birthday AS birthday,u.mobile AS mobile,w.health_card AS healthCard"+
             " FROM (SELECT * FROM USER WHERE id = #{id}) u INNER JOIN worker w ON u.worker_id = w.id")
     UserTaskResponse selectUserInfo(String id);
+
+    @Select("select * from user where worker_id = #{workerId}")
+    User selectByWorkerId(String workerId);
+
+    List<String> selectIdByWorkerId(@Param("set") Set<String> set);
 }

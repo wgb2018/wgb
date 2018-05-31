@@ -39,4 +39,7 @@ public interface CompanyMapper extends BaseMapper<Company> {
 
     void deleteCompanyArea(String id);
 
+    List<Map<String, Object>> selectExamineCompanies(@Param("hrCompanyId") String hrCompanyId);
+
+    List<Map<String, Object>> selectCooperateWorker(@Param("hrCompanyId") String hrCompanyId);
 }

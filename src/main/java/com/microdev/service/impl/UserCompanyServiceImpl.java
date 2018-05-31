@@ -13,18 +13,17 @@ import com.microdev.common.utils.DateUtil;
 import com.microdev.converter.TaskConverter;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
-import com.microdev.param.DictDTO;
-import com.microdev.param.HrQueryWorkerDTO;
-import com.microdev.param.HrTaskWorkersResponse;
-import com.microdev.param.WokerQueryHrDTO;
+import com.microdev.param.*;
 import com.microdev.service.MessageService;
 import com.microdev.service.UserCompanyService;
+import com.microdev.type.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoField;
 import java.util.*;
 
 @Transactional
@@ -50,58 +49,67 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
      * 小时工绑定人力公司
      */
     @Override
-    public ResultDO workerBindHr(String workerId, String hrId, String messageId) {
-        if (StringUtils.isEmpty(messageId)) {
+    public ResultDO workerBindHr(String messageId, String status) {
+        if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(status)) {
             throw new ParamsException("参数messageId不能为空");
         }
         Message message = messageMapper.selectById(messageId);
         if (message == null || message.getStatus() == 1) {
             throw new ParamsException("消息已被处理");
         }
-        message.setStatus(1);
-        messageMapper.updateAllColumnById(message);
-        boolean flag = true;
-        UserCompany userCompany= userCompanyMapper.findOneUserCompany(hrId,workerId);
-        if(userCompany==null){
-            userCompany=new UserCompany();
-            User user=  userMapper.queryByWorkerId(workerId);
-            if(user==null){
-                throw new ParamsException("未找到匹配的员工信息");
-            }
-            Company company= companyMapper.findCompanyById(hrId);
-            if(company==null){
-                throw new ParamsException("未找到匹配的公司信息");
-            }
-            userCompany.setCompanyId(hrId);
-            userCompany.setCompanyType(company.getCompanyType());
-            userCompany.setUserId(user.getPid());
-            userCompany.setUserType(user.getUserType());
-            flag = false;
-        }
-        //TODO 绑定上限设置
-        DictDTO dict = dictMapper.findByNameAndCode("WorkerBindHrMaxNum","1");
-        Integer maxNum = Integer.parseInt(dict.getText());
-        Wrapper<UserCompany>  wrapper = new EntityWrapper<>();
-        wrapper.and("user_id", workerId);
-        wrapper.and("company_id", hrId);
-        wrapper.in("status", new Integer[]{0, 1, 3});
-        Integer hasBindNum = userCompanyMapper.selectCount(wrapper);
-        if (hasBindNum >= maxNum) {
-            throw new BusinessException("已达到可绑定人力公司的个数上限");
-        }
-        //TODO 已绑定是否返回重复绑定提示
-        userCompany.setStatus(1);
-        if (flag) {
-            // 修改
-            userCompany.setStatus(1);
-            userCompanyMapper.updateAllColumnById(userCompany);
 
-        } else {
-            // 新增
-            userCompany.setStatus(1);
-            userCompany.setDeleted(false);
-            userCompanyMapper.insert(userCompany);
+        boolean flag = true;
+        Message newMess = new Message();
+        User user=  userMapper.queryByWorkerId(message.getWorkerId());
+        if(user==null){
+            throw new ParamsException("未找到匹配的员工信息");
         }
+
+        if ("0".equals(status)) {
+
+        } else if ("1".equals(status)) {
+            UserCompany userCompany= userCompanyMapper.findOneUserCompany(message.getHrCompanyId(),message.getWorkerId());
+            if(userCompany==null){
+                userCompany=new UserCompany();
+
+                Company company= companyMapper.findCompanyById(message.getWorkerId());
+                if(company==null){
+                    throw new ParamsException("未找到匹配的公司信息");
+                }
+                userCompany.setCompanyId(company.getPid());
+                userCompany.setCompanyType(company.getCompanyType());
+                userCompany.setUserId(user.getPid());
+                userCompany.setUserType(user.getUserType());
+                flag = false;
+            }
+            //TODO 绑定上限设置
+            DictDTO dict = dictMapper.findByNameAndCode("WorkerBindHrMaxNum","1");
+            Integer maxNum = Integer.parseInt(dict.getText());
+            Wrapper<UserCompany>  wrapper = new EntityWrapper<>();
+            wrapper.and("user_id", userCompany.getUserId());
+            wrapper.and("company_id", message.getHrCompanyId());
+            wrapper.in("status", new Integer[]{0, 1, 3});
+            Integer hasBindNum = userCompanyMapper.selectCount(wrapper);
+            if (hasBindNum >= maxNum) {
+                throw new BusinessException("已达到可绑定人力公司的个数上限");
+            }
+            //TODO 已绑定是否返回重复绑定提示
+            userCompany.setStatus(1);
+            if (flag) {
+                // 修改
+                userCompany.setStatus(1);
+                userCompanyMapper.updateAllColumnById(userCompany);
+
+            } else {
+                // 新增
+                userCompany.setStatus(1);
+                userCompany.setDeleted(false);
+                userCompanyMapper.insert(userCompany);
+            }
+        } else {
+            return ResultDO.buildSuccess("失败");
+        }
+
         return    ResultDO.buildSuccess("添加成功");
     }
     /**
@@ -170,19 +178,35 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         return ResultDO.buildSuccess(result);
     }
 
+    @Override
+    public ResultDO getHrwWorkers(Paginator paginator, HrQueryWorkerDTO queryDTO) {
+        return null;
+    }
+
 
     /**
      * 根据小时工获取人力公司
      */
     @Override
     public ResultDO getWorkerHrs(Paginator paginator, WokerQueryHrDTO queryDTO) {
+        if (StringUtils.isEmpty(queryDTO.getWorkerId())) {
+            throw new ParamsException("参数错误");
+        }
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         //查询数据集合
-        Map map = new HashMap<String,Object>();
-        map.put("user_id",queryDTO.getWorkerId());
-        map.put("status",1);
-        List<UserCompany> list = userCompanyMapper.selectByMap(map);
-        PageInfo<UserCompany> pageInfo = new PageInfo<>(list);
+
+        List<WorkerBindCompany> list = userCompanyMapper.selectHrCompanyByUserId(queryDTO.getWorkerId());
+        OffsetDateTime nowTime = OffsetDateTime.now();
+        OffsetDateTime applyTime = null;
+        for (WorkerBindCompany work : list) {
+            if (work.getStatus() == 3) {
+                applyTime = work.getCreateTime();
+                long leaveMinute = nowTime.getLong(ChronoField.MINUTE_OF_DAY) - applyTime.getLong(ChronoField.MINUTE_OF_DAY);
+                int hour = (int)(leaveMinute % 60 == 0 ? leaveMinute / 60 : (leaveMinute / 60) + 1);
+                work.setHour(hour/24 + "天" + hour%24 + "小时");
+            }
+        }
+        PageInfo<WorkerBindCompany> pageInfo = new PageInfo<>(list);
         HashMap<String,Object> result = new HashMap<>();
         //设置获取到的总记录数total：
         result.put("total",pageInfo.getTotal());
@@ -196,5 +220,86 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
     public ResultDO removeHrWorkers(List<String> request) {
         taskWorkerMapper.deleteBatchIds(request);
         return ResultDO.buildSuccess("移除成功");
+    }
+
+    /**
+     * 人力申请绑定小时工
+     * @param hrId      人力公司id
+     * @param set       小时工workerId集合
+     * @return
+     */
+    @Override
+    public String hrApplyBindWorker(String hrId, Set<String> set) {
+        if (StringUtils.isEmpty(hrId) || set == null || set.size() == 0) {
+            throw new ParamsException("参数错误");
+        }
+        List<String> userList = userMapper.selectIdByWorkerId(set);
+        if (set.size() != userList.size()) {
+            throw new BusinessException("set包含无效数据");
+        }
+        Company c = companyMapper.selectById(hrId);
+        if (c == null) {
+            throw new ParamsException("人力公司查询不到");
+        }
+        int count = userCompanyMapper.selectIsbind(hrId, userList);
+        if (count > 0) {
+            throw new BusinessException("已绑定");
+        }
+        UserCompany userCompany = null;
+        List<UserCompany> userCompanyList = new ArrayList<>();
+        for (String str : userList) {
+            userCompany = new UserCompany();
+            userCompany.setCompanyId(hrId);
+            userCompany.setUserType(UserType.worker);
+            userCompany.setCompanyType(2);
+            userCompany.setUserId(str);
+            userCompanyList.add(userCompany);
+        }
+        messageService.bindUserHrCompany(c.getName(), hrId, new ArrayList<>(set), 2);
+        return "成功";
+    }
+
+    /**
+     * 查询对人力发出申请的小时工的待审核信息
+     * @param hrCompanyId
+     * @param page
+     * @param pageNum
+     * @return
+     */
+    @Override
+    public ResultDO selectUserByHrId(String hrCompanyId, Integer page, Integer pageNum) {
+        if (StringUtils.isEmpty(hrCompanyId)) {
+            throw new ParamsException("参数错误");
+        }
+        PageHelper.startPage(page, pageNum, true);
+        List<Map<String, Object>> list = userCompanyMapper.selectUserByHrId(hrCompanyId);
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
+        Map<String, Object> param = new HashMap<>();
+        param.put("page", page);
+        param.put("total", pageInfo.getTotal());
+        param.put("result", list);
+        return ResultDO.buildSuccess(param);
+    }
+
+    /**
+     * 人力查询合作的小时工
+     * @param hrCompanyId
+     * @param page
+     * @param pageNum
+     * @return
+     */
+    @Override
+    public ResultDO selectWorkerCooperate(String hrCompanyId, Integer page, Integer pageNum) {
+        if (StringUtils.isEmpty(hrCompanyId)) {
+            throw new ParamsException("参数错误");
+        }
+        PageHelper.startPage(page, pageNum, true);
+        List<Map<String, Object>> list = companyMapper.selectCooperateWorker(hrCompanyId);
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
+        Map<String, Object> param = new HashMap<>();
+        param.put("page", page);
+        param.put("total", pageInfo.getTotal());
+        param.put("result", list);
+        return ResultDO.buildSuccess(param);
     }
 }

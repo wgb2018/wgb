@@ -2,6 +2,7 @@ package com.microdev.Controller;
 
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
+import com.microdev.param.CompanyDTO;
 import com.microdev.param.HrQueryWorkerDTO;
 import com.microdev.param.HrTaskDistributeRequest;import com.microdev.param.WokerQueryHrDTO;
 import com.microdev.service.UserCompanyService;
@@ -18,19 +19,13 @@ public class WorkerCompanyController {
     @Autowired
     UserCompanyService userCompanyService;
     /**
-     * 小时工绑定人力公司
+     * 小时工反馈人力公司绑定申请
      */
-    @PostMapping("/workers/{workId}/bind/{hrId}")
-    public ResultDO bindHr(@PathVariable String workId, @PathVariable String hrId, String messageId) {
-        return userCompanyService.workerBindHr(workId, hrId, messageId);
+    @GetMapping("/workers/{messageId}/bind/{status}")
+    public ResultDO bindHr(@PathVariable String messageId, @PathVariable String status) {
+        return userCompanyService.workerBindHr(messageId, status);
     }
-    /**
-     * 小时工申请绑定人力公司
-     */
-    /*@PostMapping("/workers/bind")
-    public ResultDO applyBindHr(@RequestBody RequestDO<String,Set<CompanyDTO>> param) {
-        return userCompanyService.workerApplyBindHr(param.getWorkerId(),param.getCompanys());
-    }*/
+
     /**
      * 获取人力公司下所有员工
      */
@@ -46,9 +41,9 @@ public class WorkerCompanyController {
         return userCompanyService.getWorkerHrs(paging.getPaginator(),paging.getSelector());
     }
     /**
-     * 小时工解绑人力公司
+     * 小时工申请解绑人力公司
      */
-    @PutMapping("/workers/{workId}/unbind/{hrId}")
+    @GetMapping("/workers/{workId}/unbind/{hrId}")
     public ResultDO unbindHr(@PathVariable String workId,@PathVariable String hrId) {
         return userCompanyService.workerUnbindHr(workId,hrId);
     }
@@ -66,5 +61,15 @@ public class WorkerCompanyController {
     @PostMapping("/remove-workers/search")
     public ResultDO removeHrWorkers(@RequestBody List<String> workerTaskdelete) {
         return userCompanyService.removeHrWorkers(workerTaskdelete);
+    }
+
+    /**
+     * 查询人力所有小时工的待审核信息
+     * @return
+     */
+    @PostMapping("/hrCompany/examine/worker")
+    public ResultDO selectExamineWorker(String hrCompanyId, Integer page, Integer pageNum) {
+
+        return userCompanyService.selectUserByHrId(hrCompanyId, page, pageNum);
     }
 }

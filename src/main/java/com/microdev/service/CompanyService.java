@@ -5,9 +5,11 @@ import com.github.pagehelper.PageInfo;
 import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.model.Company;
+import com.microdev.model.User;
 import com.microdev.param.*;
 
 import java.util.Map;
+import java.util.Set;
 
 
 public interface CompanyService extends IService<Company> {
@@ -59,7 +61,7 @@ public interface CompanyService extends IService<Company> {
     /**
      * 酒店反馈补签
      */
-    boolean supplementResponse(String id, String status);
+    String supplementResponse(String id, String status);
     /**
      * 酒店申请替换小时工
      */
@@ -99,4 +101,21 @@ public interface CompanyService extends IService<Company> {
      * @return
      */
     ResultDO hotelAddHrCompanySet(HotelHrIdBindDTO dto);
+
+    /**
+     * 人力公司同意解绑小时工
+     * @param messageId
+     * @return
+     */
+    String hrUnbindWorker(String messageId, String status);
+
+    /**
+     * 人力查询待审核的酒店信息
+     * @param hrCompanyId
+     * @param page
+     * @param pageNum
+     * @return
+     */
+    ResultDO selectExamineCompanies(String hrCompanyId, Integer page, Integer pageNum);
+
 }

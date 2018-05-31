@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
+import java.util.Set;
 
 /**
  * 小时工相关的Api
@@ -116,8 +117,8 @@ public class WorkerController {
     /**
      * 查看小时工工作记录
      */
-    @PostMapping("/workers/getWorkerDetails")
-    public ResultDO getWorkerDetails(String taskWorkerId, String userId) {
+    @PostMapping("/workers/{taskWorkerId}/getWorkerDetails/{userId}")
+    public ResultDO getWorkerDetails(@PathVariable String taskWorkerId,@PathVariable String userId) {
         return ResultDO.buildSuccess(workerService.selectUserTaskInfo(taskWorkerId, userId));
     }
 	/**
@@ -142,9 +143,21 @@ public class WorkerController {
      * @param date
      * @return
      */
-    @GetMapping("/workers/update/checkSign")
-    public ResultDO updateWorkerLogCheckSign(String taskWorkerId, String date) {
+    @GetMapping("/workers/{taskWorkerId}/updateCheckSign/{date}/")
+    public ResultDO updateWorkerLogCheckSign(@PathVariable String taskWorkerId,@PathVariable String date) {
 
         return ResultDO.buildSuccess(workLogService.updateCheckSign(taskWorkerId, date));
+    }
+
+    /**
+     * 小时工申请绑定人力公司
+     * @param workerId  小时工workerId
+     * @param set       人力公司id
+     * @return
+     */
+    @PostMapping("/worker/apply/bindHrs")
+    public ResultDO workerApplyBindHrCompany(@RequestBody String workerId, @RequestBody Set<String> set) {
+
+        return ResultDO.buildSuccess(workerService.workerApplybind(workerId, set));
     }
 }

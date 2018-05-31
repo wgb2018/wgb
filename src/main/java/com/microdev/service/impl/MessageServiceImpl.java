@@ -353,6 +353,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         Map<String, Object> param = new HashMap<>();
         param.put("applyType", applyType);
         param.put("checkSign", 0);
+        param.put("isHandle", 0);
         if ("1".equals(applyType)) {
             param.put("workerId", id);
         } else if ("2".equals(applyType)) {
@@ -542,6 +543,50 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         }
         messageMapper.updateMessageCheckSign(id);
         return "成功";
+    }
+
+    /**
+     * 小时工绑定人力公司或人力绑定小时工
+     * @param name      申请人名称
+     * @param id        申请绑定的用户id
+     * @param list      待绑定的id列表
+     * @param type      1小时工绑定人力2人力绑定小时工
+     */
+    @Override
+    public void bindUserHrCompany(String name, String id, List<String> list, int type) {
+        if (StringUtils.isEmpty(id) || list == null || list.size() == 0 ) {
+            throw new ParamsException("参数错误");
+        }
+        if (type != 1 && type != 2) {
+            throw new ParamsException("参数值错误");
+        }
+        Message message = null;
+        MessageTemplate template = messageTemplateMapper.findFirstByCode("applyBindMessage");
+        Map<String, String> map = new HashMap<>();
+        map.put("userName", name);
+        String str = StringKit.templateReplace(template.getContent(), map);
+        List<Message> messageList = new ArrayList<>();
+        for (String s : list) {
+            message = new Message();
+            message.setMessageContent(str);
+            message.setMessageTitle(template.getTitle());
+            if (type == 1) {
+                message.setWorkerId(id);
+                message.setHrCompanyId(s);
+                message.setApplicantType(1);
+                message.setApplyType(2);
+                message.setMessageType(5);
+
+            } else {
+                message.setApplyType(1);
+                message.setApplicantType(2);
+                message.setWorkerId(s);
+                message.setHrCompanyId(id);
+                message.setMessageType(5);
+            }
+            messageList.add(message);
+        }
+        messageMapper.saveBatch(messageList);
     }
 
 }

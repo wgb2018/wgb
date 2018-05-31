@@ -80,13 +80,13 @@ public class TaskHrCompanyController {
     }
 
     /**
-     * 更新人力任务查看标识
+     * 将任务更新为已查看
      * @param taskHrCompanyId
      * @param status
      * @return
      */
-    @GetMapping("/hr-tasks/update/status")
-    public ResultDO updateTaskHrStatus(String taskHrCompanyId, Integer status) {
+    @GetMapping("/hr-tasks/{taskHrCompanyId}/update/{status}")
+    public ResultDO updateTaskHrStatus(@PathVariable String taskHrCompanyId,@PathVariable Integer status) {
 
         return ResultDO.buildSuccess(taskHrCompanyService.updateTaskHrStatus(taskHrCompanyId, status));
     }

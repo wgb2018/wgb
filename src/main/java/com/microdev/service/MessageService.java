@@ -140,4 +140,13 @@ public interface MessageService extends IService<Message> {
      * @return
      */
     String updateMessageCheckSign(String id);
+
+    /**
+     * 小时工绑定人力公司或人力公司绑定小时工
+     * @param name
+     * @param id
+     * @param list
+     * @param type    1小时工绑定人力2人力绑定小时工
+     */
+    void bindUserHrCompany(String name, String id, List<String> list, int type);
 }

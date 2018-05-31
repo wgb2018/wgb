@@ -30,7 +30,7 @@ public class User extends BaseEntity{
      */
     private String email;
     /**
-     * 昵称
+     * 手机
      */
     private String mobile;
     /**

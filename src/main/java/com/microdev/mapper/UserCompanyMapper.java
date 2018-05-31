@@ -5,10 +5,14 @@ import com.microdev.model.TaskWorker;
 import com.microdev.model.User;
 import com.microdev.model.UserCompany;
 import com.microdev.param.HrQueryWorkerDTO;
+import com.microdev.param.WorkerBindCompany;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 @Repository
 public interface UserCompanyMapper extends BaseMapper<UserCompany> {
 
@@ -25,5 +29,15 @@ public interface UserCompanyMapper extends BaseMapper<UserCompany> {
 
     List<TaskWorker> getUnSelectableWorker(HrQueryWorkerDTO queryDTO);
 
+    List<WorkerBindCompany> selectHrCompanyByUserId(@Param("userId") String userId);
 
+    int saveBatch(List<UserCompany> list);
+
+    int selectWorkerBindCount(String userId);
+
+    int selectIsbind(@Param("companyId") String companyId,@Param("set") List<String> list);
+
+    int selectIsBindUserId(@Param("userId") String userId,@Param("set") Set<String> set);
+
+    List<Map<String, Object>> selectUserByHrId(@Param("hrCompanyId") String hrCompanyId);
 }

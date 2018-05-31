@@ -12,6 +12,7 @@ import com.microdev.param.api.response.GetCurrentTaskResponse;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface WorkerService extends IService<Worker> {
     /**
@@ -98,5 +99,14 @@ public interface WorkerService extends IService<Worker> {
 	void mpdifyAreaAndService(AreaAndServiceRequest request);
 
     Map<String, Object> queryWorker(String id);
+
+    /**
+     * 小时工申请绑定人力公司
+     * @param workerId
+     * @param set
+     * @return
+     */
+    String workerApplybind(String workerId, Set<String> set);
+
 
 }

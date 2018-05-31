@@ -28,6 +28,18 @@
         select
         <include refid="Company_Column_List"/>
         from company
+        <where>
+            <if test="name != null and name !=''">
+                and name like '%${name}%'
+            </if>
+            <if test="leader != null and leader !=''">
+                and leader like '%${leader}%'
+            </if>
+            <if test="companyType != null">
+                and company_type = #{companyType}
+            </if>
+        </where>
+        order by create_time desc
         <!--<where>
             <include refid="Company_Query_Param"/>
             <if test="observertype != null">
@@ -173,4 +185,15 @@
         insert into area_relation values(#{id},#{areaId},#{idType})
     </insert>
 
+    <select id="selectExamineCompanies" resultType="java.util.Map">
+        SELECT c.name,c.address,c.logo,c.leader,c.leader_mobile,c.status,m.id AS messageId FROM company c INNER JOIN
+(SELECT id,hotel_id,create_time FROM message WHERE STATUS = 0 AND hr_company_id = #{hrCompanyId} AND apply_type = 2 AND applicant_type = 3) m ON c.id = m.hotel_id ORDER BY m.create_time DESC
+    </select>
+
+    <select id = "selectCooperateWorker" resultType="java.util.Map">
+      SELECT u.activated,u.avatar,u.email,u.mobile,u.nickname,u.sex,u.username, uc.status AS bindType FROM USER u INNER JOIN
+    (
+    SELECT user_id,STATUS FROM user_company WHERE company_id = #{hrCompanyId} AND STATUS IN (0,1,3)
+    ) uc ON uc.user_id = u.id
+    </select>
 </mapper>
