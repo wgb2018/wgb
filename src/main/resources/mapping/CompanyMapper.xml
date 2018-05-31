@@ -28,9 +28,6 @@
         select
         <include refid="Company_Column_List"/>
         from company
-        <where>
-            <include refid="Company_Query_Param"/>
-        </where>
         <!--<where>
             <include refid="Company_Query_Param"/>
             <if test="observertype != null">
@@ -78,34 +75,59 @@
         </where>-->
     </select>
     <!-- 获取已添加该人力公司的所有酒店 -->
-    <select id="queryHotelsByHrId" parameterType="com.microdev.param.CompanyQueryDTO" resultType="com.microdev.model.Company">
-        select <include refid="Company_Column_List"/> from company where id IN
-        (select hotel_id from hotel_hr_company where hr_id = #{id})
+    <select id="queryHotelsByHrId" parameterType="com.microdev.param.CompanyQueryDTO" resultType="java.util.Map">
+        <!--select <include refid="Company_Column_List"/> from company where id IN
+        (select hotel_id from hotel_hr_company where hr_id = #{id} and status = 0)
         <if test="name != null and name !=''">
             and name like '%${name}%'
         </if>
         <if test="leader != null and leader !=''">
             and leader like '%${leader}%'
         </if>
+
+        order by create_time desc-->
+        SELECT c.*, hh.status AS bindType FROM company c
+        INNER JOIN
+        (
+        SELECT hotel_id,STATUS FROM hotel_hr_company WHERE hr_id = #{id} AND STATUS IN (0,3,4)
+        ) hh ON c.id = hh.hotel_id
+        <if test="name != null and name !=''">
+            and c.name like '%${name}%'
+        </if>
+        <if test="leader != null and leader !=''">
+            and c.leader like '%${leader}%'
+        </if>
         <if test="status != null">
             and status = #{status}
         </if>
-        order by create_time desc
+        order by c.create_time desc
     </select>
     <!-- 获取已添加该酒店的所有人力公司 -->
-    <select id="queryCompanysByHotelId" parameterType="com.microdev.param.CompanyQueryDTO" resultType="com.microdev.model.Company">
-        select <include refid="Company_Column_List"/> from company where id IN
-        (select hr_id from hotel_hr_company where hotel_id = #{id})
+    <select id="queryCompanysByHotelId" parameterType="com.microdev.param.CompanyQueryDTO" resultType="java.util.Map">
+        <!--select <include refid="Company_Column_List"/> from company where id IN
+        (select hr_id from hotel_hr_company where hotel_id = #{id} and status = 0)
         <if test="name != null and name !=''">
             and name like '%${name}%'
         </if>
         <if test="leader != null and leader !=''">
             and leader like '%${leader}%'
         </if>
+        order by create_time desc-->
+        SELECT c.*, hh.status AS bindType FROM company c
+        INNER JOIN
+        (
+        SELECT hr_id, STATUS FROM hotel_hr_company WHERE hotel_id = #{id} AND STATUS IN (0,3,4)
+        ) hh ON c.id = hh.hr_id
+        <if test="name != null and name !=''">
+            and c.name like '%${name}%'
+        </if>
+        <if test="leader != null and leader !=''">
+            and c.leader like '%${leader}%'
+        </if>
         <if test="status != null">
             and status = #{status}
         </if>
-        order by create_time desc
+        order by c.create_time desc
     </select>
     <!-- 获取酒店可以添加的人力公司 -->
     <select id="queryNotCompanysByHotelId" parameterType="java.lang.String" resultType="com.microdev.model.Company">

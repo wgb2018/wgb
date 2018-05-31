@@ -6,6 +6,8 @@ import com.microdev.model.Company;
 import com.microdev.param.CompanyQueryDTO;
 import com.microdev.param.HotelHrIdBindDTO;
 import com.microdev.service.CompanyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class HrCompanyController {
 
+    private static final Logger logger = LoggerFactory.getLogger(HrCompanyController.class);
     @Autowired
     CompanyService companyService;
     /**
@@ -92,6 +95,7 @@ public class HrCompanyController {
      */
     @PostMapping("/hrcompanies/apply/bindCompany")
     public ResultDO bindCompany(@RequestBody HotelHrIdBindDTO dto) {
+        logger.info("bindCompany param:" + dto.toString());
         return companyService.hotelAddHrCompanySet(dto);
     }
 }

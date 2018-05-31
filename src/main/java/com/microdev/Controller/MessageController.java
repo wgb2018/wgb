@@ -4,6 +4,7 @@ import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
 import com.microdev.param.CreateMsgTemplateRequest;
 import com.microdev.param.MessageQuery;
+import com.microdev.param.PageRequest;
 import com.microdev.service.MessageService;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,8 +67,8 @@ public class MessageController {
      * @param applyType
      * @return
      */
-    @GetMapping("/messages/unread/amount")
-    public ResultDO getMessageAmount(String id, String applyType) {
+    @GetMapping("/messages/{id}/amount/{applyType}")
+    public ResultDO getMessageAmount(@PathVariable String id, @PathVariable String applyType) {
 
         return ResultDO.buildSuccess(messageService.selectUnReadCount(id, applyType));
     }
@@ -78,25 +79,21 @@ public class MessageController {
      * @param applyType
      * @return
      */
-    @GetMapping("/messages/unread/messsageInfo")
-    public ResultDO getUnReadMessageInfo(String id, String applyType) {
+    @GetMapping("/messages/{id}/info/{applyType}")
+    public ResultDO getUnReadMessageInfo(@PathVariable String id,@PathVariable String applyType) {
 
         return ResultDO.buildSuccess(messageService.selectUnReadMessage(id, applyType));
     }
 
     /**
      * 查询消息
-     * @param id
-     * @param role
-     * @param type
-     * @param page
-     * @param pageNum
+     * @param request
      * @return
      */
-    @GetMapping("/messages/select/messsageInfo")
-    public ResultDO getMessageInfo(String id, int role, int type, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "pageNum", defaultValue = "10") int pageNum) {
+    @PostMapping("/messages/select/messsageInfo")
+    public ResultDO getMessageInfo(PageRequest request) {
 
-        return ResultDO.buildSuccess(messageService.selectMessage(id, role, type, page, pageNum));
+        return ResultDO.buildSuccess(messageService.selectMessage(request.getId(), request.getRole(), request.getType(), request.getPage(), request.getPage()));
     }
 
     /**
@@ -104,8 +101,8 @@ public class MessageController {
      * @param id        消息id
      * @return
      */
-    @GetMapping("/messages/update/checkSign")
-    public ResultDO updateMessageCheckSign(String id) {
+    @GetMapping("/messages/{id}/checkSign")
+    public ResultDO updateMessageCheckSign(@PathVariable String id) {
         return ResultDO.buildSuccess(messageService.updateMsgStatus(id));
     }
 

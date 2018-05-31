@@ -7,16 +7,17 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface CompanyMapper extends BaseMapper<Company> {
     List<Company> queryCompanys(CompanyQueryDTO queryDTO);
 
-    List<Company> queryHotelsByHrId(CompanyQueryDTO queryDTO);
+    List<Map<String, Object>> queryHotelsByHrId(CompanyQueryDTO queryDTO);
 
     List<Company>  queryNotHotelsByHrId(String HrId);
 
-    List<Company> queryCompanysByHotelId(CompanyQueryDTO queryDTO);
+    List<Map<String, Object>> queryCompanysByHotelId(CompanyQueryDTO queryDTO);
 
     List<Company> queryNotCompanysByHotelId(String HotelId);
 
