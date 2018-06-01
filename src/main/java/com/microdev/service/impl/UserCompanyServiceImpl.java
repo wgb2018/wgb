@@ -229,7 +229,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
      * @return
      */
     @Override
-    public String hrApplyBindWorker(String hrId, Set<String> set) {
+    public String hrApplyBindWorker(String hrId, List<String> set) {
         if (StringUtils.isEmpty(hrId) || set == null || set.size() == 0) {
             throw new ParamsException("参数错误");
         }
@@ -253,10 +253,12 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             userCompany.setUserType(UserType.worker);
             userCompany.setCompanyType(2);
             userCompany.setUserId(str);
+            userCompany.setStatus(0);
             userCompanyList.add(userCompany);
         }
-        messageService.bindUserHrCompany(c.getName(), hrId, new ArrayList<>(set), 2);
-        return "成功";
+        userCompanyMapper.saveBatch(userCompanyList);
+        messageService.bindUserHrCompany(c.getName(), hrId, set, 2);
+        return "绑定成功";
     }
 
     /**
@@ -301,5 +303,32 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         param.put("total", pageInfo.getTotal());
         param.put("result", list);
         return ResultDO.buildSuccess(param);
+    }
+
+    /**
+     * 人力公司处理小时工绑定申请
+     * @param messageId
+     * @param status        0拒绝1同意
+     * @return
+     */
+    @Override
+    public ResultDO hrRespondWorkerBind(String messageId, String status) {
+        if (StringUtils.isEmpty(messageId) || !"0".equals(status) || "1".equals(status)) {
+            return ResultDO.buildError("参数错误");
+        }
+        Message message = messageMapper.selectById(messageId);
+        if (message == null) {
+            return ResultDO.buildError("消息id错误");
+        }
+        message.setStatus(1);
+        messageMapper.updateById(message);
+
+        if ("1".equals(status)) {
+
+            UserCompany userCompany = userCompanyMapper.selectByWorkerIdHrId(message.getHrCompanyId(), message.getWorkerId());
+            userCompany.setStatus(1);
+            userCompanyMapper.update(userCompany);
+        }
+        return ResultDO.buildSuccess("绑定成功");
     }
 }

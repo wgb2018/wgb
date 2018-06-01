@@ -29,7 +29,7 @@ public interface UserCompanyMapper extends BaseMapper<UserCompany> {
 
     List<TaskWorker> getUnSelectableWorker(HrQueryWorkerDTO queryDTO);
 
-    List<WorkerBindCompany> selectHrCompanyByUserId(@Param("userId") String userId);
+    List<WorkerBindCompany> selectHrCompanyByUserId(@Param("workerId") String userId);
 
     int saveBatch(List<UserCompany> list);
 
@@ -37,7 +37,11 @@ public interface UserCompanyMapper extends BaseMapper<UserCompany> {
 
     int selectIsbind(@Param("companyId") String companyId,@Param("set") List<String> list);
 
-    int selectIsBindUserId(@Param("userId") String userId,@Param("set") Set<String> set);
+    int selectIsBindUserId(@Param("userId") String userId,@Param("set") List<String> set);
 
     List<Map<String, Object>> selectUserByHrId(@Param("hrCompanyId") String hrCompanyId);
+
+    int selectHrBindCount(@Param("companyId") String companyId);
+
+    UserCompany selectByWorkerIdHrId(@Param("companyId") String companyId,@Param("workerId") String workerId);
 }

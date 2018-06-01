@@ -2,6 +2,7 @@ package com.microdev.Controller;
 
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
+import com.microdev.common.paging.Paginator;
 import com.microdev.param.CompanyDTO;
 import com.microdev.param.HrQueryWorkerDTO;
 import com.microdev.param.HrTaskDistributeRequest;import com.microdev.param.WokerQueryHrDTO;
@@ -68,8 +69,20 @@ public class WorkerCompanyController {
      * @return
      */
     @PostMapping("/hrCompany/examine/worker")
-    public ResultDO selectExamineWorker(String hrCompanyId, Integer page, Integer pageNum) {
+    public ResultDO selectExamineWorker(@RequestBody PagingDO<String> page) {
+        Paginator paginator = page.getPaginator();
+        return userCompanyService.selectUserByHrId(page.getSelector(), paginator.getPage(), paginator.getPageSize());
+    }
 
-        return userCompanyService.selectUserByHrId(hrCompanyId, page, pageNum);
+    /**
+     * 人力公司处理小时工绑定申请
+     * @param messageId   消息id
+     * @param status      0拒绝1同意
+     * @return
+     */
+    @GetMapping("/hrcompany/{messageId}/bind/{status}")
+    public ResultDO hrcompanyBindWorker(@PathVariable String messageId,@PathVariable String status) {
+
+        return ResultDO.buildSuccess(userCompanyService.hrRespondWorkerBind(messageId, status));
     }
 }

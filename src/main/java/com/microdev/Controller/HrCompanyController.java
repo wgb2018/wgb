@@ -2,6 +2,7 @@ package com.microdev.Controller;
 
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
+import com.microdev.common.paging.Paginator;
 import com.microdev.model.Company;
 import com.microdev.model.User;
 import com.microdev.param.CompanyQueryDTO;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -113,7 +115,7 @@ public class HrCompanyController {
     @PostMapping("/hrcompanies/apply/bindWorkers")
     public ResultDO bindWorkers(@RequestBody Map<String, Object> param) {
 
-        return ResultDO.buildSuccess(userCompanyService.hrApplyBindWorker((String)param.get("hrId"), (Set<String>) param.get("set")));
+        return ResultDO.buildSuccess(userCompanyService.hrApplyBindWorker((String)param.get("hrId"), (List<String>) param.get("set")));
     }
 
     /**
@@ -130,27 +132,45 @@ public class HrCompanyController {
 
     /**
      * 人力查询待审核的酒店信息
-     * @param hrCompanyId
      * @param page
-     * @param pageNum
      * @return
      */
     @PostMapping("/hrcompanies/examine/companies")
-    public ResultDO hrCompaniesExamineCompanies(String hrCompanyId, Integer page, Integer pageNum) {
-
-        return companyService.selectExamineCompanies(hrCompanyId, page, pageNum);
+    public ResultDO hrCompaniesExamineCompanies(@RequestBody PagingDO<String> page) {
+        Paginator paginator = page.getPaginator();
+        return companyService.selectExamineCompanies(page.getSelector(), paginator.getPage(), paginator.getPageSize());
     }
 
     /**
      * 人力查询合作的小时工
-     * @param hrCompanyId
-     * @param page
-     * @param pageNum
      * @return
      */
     @PostMapping("/hrcompanies/manager/workers")
-    public ResultDO hrcompaniesManagerWorkers(String hrCompanyId, Integer page, Integer pageNum) {
+    public ResultDO hrcompaniesManagerWorkers(@RequestBody PagingDO<String> page) {
+        Paginator paginator = page.getPaginator();
+        return userCompanyService.selectWorkerCooperate(page.getSelector(), paginator.getPage(), paginator.getPageSize());
+    }
 
-        return userCompanyService.selectWorkerCooperate(hrCompanyId, page, pageNum);
+    /**
+     * 人力处理酒店绑定申请
+     * @param messageId
+     * @param status    0拒绝1同意
+     * @return
+     */
+    @GetMapping("/hrcompanies/{messageId}/handle/{status}")
+    public ResultDO hrcompanyHandleBind(@PathVariable String messageId,@PathVariable String status) {
+
+        return ResultDO.buildSuccess(companyService.hrHandlerHotelBind(messageId, status));
+    }
+
+    /**
+     * 人力查询合作的酒店
+     * @param page
+     * @return
+     */
+    @PostMapping("/hrcompanies/cooperate/hotels")
+    public ResultDO hrcompaniesCooperateInfo(@RequestBody PagingDO<String> page) {
+
+        return companyService.hrQueryCooperatorHotel(page.getSelector(), page.getPaginator());
     }
 }

@@ -900,12 +900,12 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
      * @return
      */
     @Override
-    public String workerApplybind(String workerId, Set<String> set) {
+    public String workerApplybind(String workerId, List<String> set) {
         if (StringUtils.isEmpty(workerId) || set == null || set.size() == 0) {
             throw new ParamsException("参数错误");
         }
         User user = userMapper.selectByWorkerId(workerId);
-        if (user == null) return "false";
+        if (user == null) throw new ParamsException("查询不到用户");
         DictDTO dict = dictMapper.findByNameAndCode("WorkerBindHrMaxNum","1");
         Integer maxNum = Integer.parseInt(dict.getText());
         int nowNum = userCompanyMapper.selectWorkerBindCount(user.getPid());
@@ -924,12 +924,13 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             userCompany.setUserType(UserType.worker);
             userCompany.setUserId(user.getPid());
             userCompany.setCompanyId(str);
+            userCompany.setStatus(0);
             userCompanyList.add(userCompany);
         }
         userCompanyMapper.saveBatch(userCompanyList);
         //发送消息
-        messageService.bindUserHrCompany(user.getUsername(), workerId, new ArrayList<String>(set), 1);
-        return "成功";
+        messageService.bindUserHrCompany(user.getUsername(), workerId, set, 1);
+        return "申请成功";
     }
 
     /**

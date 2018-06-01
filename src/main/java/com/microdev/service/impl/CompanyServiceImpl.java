@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.microdev.common.ResultDO;
+import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.StringKit;
@@ -664,6 +665,75 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
         Map<String, Object> param = new HashMap<>();
         param.put("page", page);
+        param.put("total", pageInfo.getTotal());
+        param.put("result", list);
+        return ResultDO.buildSuccess(param);
+    }
+
+    /**
+     * 查询合作的人力公司信息
+     * @param hotelId       酒店id
+     * @param page          页码
+     * @param pageNum       页数
+     * @return
+     */
+    @Override
+    public ResultDO selectCooperatorHr(String hotelId, Integer page, Integer pageNum) {
+        if (StringUtils.isEmpty(hotelId)) {
+            throw new ParamsException("参数错误");
+        }
+        PageHelper.startPage(page, pageNum, true);
+        List<Map<String, Object>> list = hotelHrCompanyMapper.selectCooperateHr(hotelId);
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
+        Map<String, Object> param = new HashMap<>();
+        param.put("page", page);
+        param.put("total", pageInfo.getTotal());
+        param.put("result", list);
+        return ResultDO.buildSuccess(param);
+    }
+
+    /**
+     * 人力处理酒店绑定申请
+     * @param messageId     消息id
+     * @param status        0拒绝1同意
+     * @return
+     */
+    @Override
+    public ResultDO hrHandlerHotelBind(String messageId, String status) {
+
+        if (StringUtils.isEmpty(messageId)) {
+            throw new ParamsException("参数错误");
+        }
+        Message message = messageMapper.selectById(messageId);
+        message.setStatus(1);
+        messageMapper.updateById(message);
+        if ("1".equals(status)) {
+            HotelHrCompany hotelHrCompany = hotelHrCompanyMapper.findOneHotelHr(message.getHotelId(), message.getHrCompanyId());
+            if (hotelHrCompany == null) {
+                throw new BusinessException("查询不到人力酒店关系");
+            }
+            hotelHrCompany.setStatus(0);
+            hotelHrCompanyMapper.update(hotelHrCompany);
+        }
+        return ResultDO.buildSuccess("处理成功");
+    }
+
+    /**
+     * 人力查询合作的酒店
+     * @param hrCompanyId
+     * @param paginator     分页
+     * @return
+     */
+    @Override
+    public ResultDO hrQueryCooperatorHotel(String hrCompanyId, Paginator paginator) {
+        if (StringUtils.isEmpty(hrCompanyId)) {
+            throw new ParamsException("参数错误");
+        }
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+        List<Company> list = companyMapper.selectCooperateHotel(hrCompanyId);
+        PageInfo<Company> pageInfo = new PageInfo<>(list);
+        Map<String, Object> param = new HashMap<>();
+        param.put("page", pageInfo.getPageNum());
         param.put("total", pageInfo.getTotal());
         param.put("result", list);
         return ResultDO.buildSuccess(param);

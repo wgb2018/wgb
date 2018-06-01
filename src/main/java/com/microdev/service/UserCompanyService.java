@@ -34,7 +34,7 @@ public interface UserCompanyService extends IService<UserCompany> {
      * @param set
      * @return
      */
-    String hrApplyBindWorker(String hrId, Set<String> set);
+    String hrApplyBindWorker(String hrId, List<String> set);
 
     /**
      * 查询对人力发出申请的小时工的待审核信息
@@ -53,4 +53,12 @@ public interface UserCompanyService extends IService<UserCompany> {
      * @return
      */
     ResultDO selectWorkerCooperate(String hrCompanyId, Integer page, Integer pageNum);
+
+    /**
+     * 人力公司处理小时工绑定申请
+     * @param messageId
+     * @param status
+     * @return
+     */
+    ResultDO hrRespondWorkerBind(String messageId, String status);
 }

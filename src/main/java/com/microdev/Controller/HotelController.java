@@ -148,4 +148,17 @@ public class HotelController {
     public ResultDO bindHrCompany(@RequestBody HotelHrIdBindDTO dto) {
         return companyService.hotelAddHrCompanySet(dto);
     }
+
+    /**
+     * 查询合作的人力公司信息
+     * @param hotelId
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @PostMapping("/hotels/cooperate/hr")
+    public ResultDO hotelsCooperateHr(String hotelId, Integer page, Integer pageSize) {
+
+        return companyService.selectCooperatorHr(hotelId, page, pageSize);
+    }
 }

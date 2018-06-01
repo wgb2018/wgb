@@ -50,11 +50,11 @@
         SELECT uc.confirmed_date,uc.create_time,uc.status,c.name,c.logo,c.leader,c.leader_mobile,             c.address,c.status AS companyStatus FROM company c
         INNER JOIN
         (
-    SELECT company_id,STATUS,create_time,confirmed_date FROM user_company  WHERE user_id = #{userId}      AND STATUS IN  (1,3)) uc ON c.id = uc.company_id
+    SELECT company_id,STATUS,create_time,confirmed_date FROM user_company  WHERE user_id = (SELECT id FROM USER WHERE worker_id = #{workerId})      AND STATUS IN  (1,3)) uc ON c.id = uc.company_id
     </select>
 
     <insert id="saveBatch" parameterType="java.util.List">
-        insert into user_company (id, create_time, deleted, modify_time, all_tasks, company_type, confirmed_date, confirmed_tasks, no_promise_tasks, refused_reason, refused_tasks, relieve_time, status, user_type, company_id, user_id) values
+        insert into user_company (id, create_time,  modify_time,deleted, all_tasks, company_type, confirmed_date, confirmed_tasks, no_promise_tasks, refused_reason, refused_tasks, relieve_time, status, user_type, company_id, user_id) values
         <foreach collection="list" separator="," item="item">
             (#{item.pid},#{item.createTime},#{item.modifyTime},#{item.deleted},#{item.allTasks},#{item.companyType},#{item.confirmedDate},#{item.confirmedTasks},#{item.noPromiseTasks},#{item.refusedReason},
             #{item.refusedTasks},#{item.relieveTime},#{item.status},#{item.userType},#{item.companyId},#{item.userId})
@@ -82,5 +82,13 @@
         SELECT u.`age`,u.mobile,u.username,u.`sex`,m.id AS messageId FROM USER u INNER JOIN
       (SELECT id,worker_id,create_time FROM message WHERE STATUS = 0 AND hr_company_id = #{hrCompanyId}       AND  apply_type = 2 AND applicant_type = 1) m
       ON u.id = m.worker_id ORDER BY m.create_time DESC
+    </select>
+
+    <select id="selectHrBindCount" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM user_company WHERE company_id =#{companyId} AND STATUS IN (0,1,3)
+    </select>
+
+    <select id="selectByWorkerIdHrId" resultType="com.microdev.model.UserCompany">
+        SELECT <include refid="UserCompany_Query_List"/> FROM user_company WHERE company_id = #{companyId} AND user_id =(SELECT id FROM USER WHERE worker_id = #{workerId})
     </select>
 </mapper>

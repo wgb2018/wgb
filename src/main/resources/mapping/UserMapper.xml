@@ -36,4 +36,8 @@
             #{item}
         </foreach>
     </select>
+
+    <select id="selectByWorkerId" resultType="com.microdev.model.User" parameterType="java.lang.String">
+        select <include refid="User_Query_List"/> from user where worker_id = #{workerId}
+    </select>
 </mapper>

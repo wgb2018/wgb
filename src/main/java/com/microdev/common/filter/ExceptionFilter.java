@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -38,6 +39,7 @@ public class ExceptionFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
+
         try {
             chain.doFilter(request, response);
         } catch (NestedServletException e) {
@@ -88,6 +90,7 @@ public class ExceptionFilter implements Filter {
 class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private Logger log = LoggerFactory.getLogger(getClass());
 
+    @ExceptionHandler(Exception.class)
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception e, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
         if (e instanceof ParamsException) {

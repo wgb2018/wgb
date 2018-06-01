@@ -12,7 +12,7 @@
         status ,hr_id ,hotel_id
     </sql>
     <select id="save" parameterType="com.microdev.model.HotelHrCompany">
-        insert into hotel_hr_company values (#{id},#{createTime},#{deleted},#{modifyTime},#{bindTime},
+        insert into hotel_hr_company values (#{pid},#{createTime},#{deleted},#{modifyTime},#{bindTime},
         #{bindType},#{relieveTime},#{relieveType},#{status},#{hrId},#{hotelId})
     </select>
     <select id="findOneHotelHr" resultType="com.microdev.model.HotelHrCompany">
@@ -22,8 +22,8 @@
     </select>
     <update id="update" parameterType="com.microdev.model.HotelHrCompany">
         update hotel_hr_company
-        <include refid="query_Column_List"/>
-        where id = #{hotelHr.id}
+        <include refid="update_Column_List"/>
+        where id = #{pid}
     </update>
 
     <insert id="saveBatch" parameterType="java.util.List">
@@ -32,4 +32,29 @@
             (#{item.pid}, #{item.createTime},#{item.deleted}, #{item.modifyTime}, #{item.bindTime}, #{item.bindType}, #{item.relieveTime}, #{item.relieveType},#{item.status}, #{item.hrId}, #{item.hotelId})
         </foreach>
     </insert>
+
+    <select id="selectCooperateHr" resultType="java.util.Map">
+      SELECT f.*,IFNULL(m.amount,0) AS num FROM
+(SELECT cy.name,cy.`logo`,cy.address,cy.`leader`,cy.id,cy.leader_mobile,cy.`status` FROM company cy
+INNER JOIN
+(
+SELECT hr_id,create_time FROM hotel_hr_company WHERE hotel_id = #{hotelId} AND STATUS = 3
+) hy ON cy.id = hy.hr_id
+ORDER BY hy.create_time DESC
+) f
+LEFT JOIN
+(
+SELECT uy.company_id AS companyId, COUNT(1) AS amount FROM user_company uy WHERE uy.company_id IN
+(
+SELECT hh.hr_id FROM company c
+INNER JOIN
+(
+SELECT hr_id,create_time FROM hotel_hr_company WHERE hotel_id = #{hotelId} AND STATUS = 3
+) hh ON c.id = hh.hr_id
+ORDER BY hh.create_time DESC
+) AND uy.STATUS IN (0,1,3) GROUP BY uy.company_id
+) m
+ON f.id = m.companyId
+    </select>
+
 </mapper>

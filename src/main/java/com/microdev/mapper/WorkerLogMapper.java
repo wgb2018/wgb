@@ -8,6 +8,7 @@ import com.microdev.model.WorkLog;
 import com.microdev.param.PunchDTO;
 import com.microdev.param.SupplementResponse;
 import com.microdev.param.WorkerOneDayInfo;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -35,8 +36,7 @@ public interface WorkerLogMapper extends BaseMapper<WorkLog> {
 
 	List<WorkLog> selectPunchDetails(String taskWorkerId);
 
-	@Select("select * from work_log where task_worker_id = #{taskWorkerId} and DATE_FORMAT(create_time, '%Y-%m-%d') = #{date} limit 1")
-	WorkLog selectUnreadInfoOne(String taskWorkerId, String date);
+	WorkLog selectUnreadInfoOne(@Param("taskWorkerId") String taskWorkerId,@Param("date") String date);
 
 	List<Integer> selectUnreadPunchCount();
 

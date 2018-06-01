@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -151,13 +153,11 @@ public class WorkerController {
 
     /**
      * 小时工申请绑定人力公司
-     * @param workerId  小时工workerId
-     * @param set       人力公司id
      * @return
      */
     @PostMapping("/worker/apply/bindHrs")
-    public ResultDO workerApplyBindHrCompany(@RequestBody String workerId, @RequestBody Set<String> set) {
+    public ResultDO workerApplyBindHrCompany(@RequestBody Map<String, Object> map) {
 
-        return ResultDO.buildSuccess(workerService.workerApplybind(workerId, set));
+        return ResultDO.buildSuccess(workerService.workerApplybind((String) map.get("workerId"), (List<String>)map.get("set")));
     }
 }

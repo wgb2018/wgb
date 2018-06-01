@@ -9,7 +9,6 @@ import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Set;
 
 @Repository
 public interface UserMapper extends BaseMapper<User> {
@@ -28,8 +27,7 @@ public interface UserMapper extends BaseMapper<User> {
             " FROM (SELECT * FROM USER WHERE id = #{id}) u INNER JOIN worker w ON u.worker_id = w.id")
     UserTaskResponse selectUserInfo(String id);
 
-    @Select("select * from user where worker_id = #{workerId}")
     User selectByWorkerId(String workerId);
 
-    List<String> selectIdByWorkerId(@Param("set") Set<String> set);
+    List<String> selectIdByWorkerId(@Param("set") List<String> set);
 }

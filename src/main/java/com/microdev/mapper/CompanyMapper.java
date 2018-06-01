@@ -42,4 +42,6 @@ public interface CompanyMapper extends BaseMapper<Company> {
     List<Map<String, Object>> selectExamineCompanies(@Param("hrCompanyId") String hrCompanyId);
 
     List<Map<String, Object>> selectCooperateWorker(@Param("hrCompanyId") String hrCompanyId);
+
+    List<Company> selectCooperateHotel(@Param("hrId") String hrId);
 }

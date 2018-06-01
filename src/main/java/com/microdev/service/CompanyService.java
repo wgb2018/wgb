@@ -118,4 +118,27 @@ public interface CompanyService extends IService<Company> {
      */
     ResultDO selectExamineCompanies(String hrCompanyId, Integer page, Integer pageNum);
 
+    /**
+     * 查询合作的人力公司信息
+     * @param hotelId
+     * @param page
+     * @param pageNum
+     * @return
+     */
+    ResultDO selectCooperatorHr(String hotelId, Integer page, Integer pageNum);
+
+    /**
+     * 人力处理酒店绑定申请
+     * @param messageId     消息id
+     * @param status        0拒绝1同意
+     * @return
+     */
+    ResultDO hrHandlerHotelBind(String messageId, String status);
+
+    /**
+     * 人力查询合作的酒店
+     * @param hrCompanyId
+     * @return
+     */
+    ResultDO hrQueryCooperatorHotel(String hrCompanyId, Paginator paginator);
 }

@@ -106,7 +106,7 @@ public interface WorkerService extends IService<Worker> {
      * @param set
      * @return
      */
-    String workerApplybind(String workerId, Set<String> set);
+    String workerApplybind(String workerId, List<String> set);
 
 
 }
