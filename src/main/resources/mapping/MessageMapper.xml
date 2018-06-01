@@ -4,7 +4,7 @@
     <sql id="Message_Column_List">
         id as pid, create_time, deleted, modify_time,message_type,
         message_code, message_content, message_link, message_title, msg_link, status, worker_id, worker_task_id, hotel_id,
-        hr_company_id, applicant_type, apply_type, content, minutes, supplement_time_end, supplement_time, request_id,check_sign, is_handle
+        hr_company_id, applicant_type, apply_type, content, minutes, supplement_time_end, supplement_time, request_id,check_sign, is_handle,task_id
     </sql>
 
     <update id="updateByMapId" parameterType="java.util.Map">
@@ -216,12 +216,12 @@
     </select>
     <insert id="saveBatch" parameterType="java.util.List">
         insert into message(id,create_time,deleted,modify_time,message_type,status,
-        worker_task_id, worker_id, message_code, message_title,message_content,content,minutes,    supplement_time_end,supplement_time ,request_id, hotel_id, hr_company_id, applicant_type,apply_type,message_link,msg_link, check_sign,is_handle) values
+        worker_task_id, worker_id, message_code, message_title,message_content,content,minutes,    supplement_time_end,supplement_time ,request_id, hotel_id, hr_company_id, applicant_type,apply_type,message_link,msg_link, check_sign,is_handle,task_id) values
         <foreach collection="list" item="item" separator=",">
             (#{item.pid},#{item.createTime},#{item.deleted},#{item.modifyTime},#{item.messageType},#{item.status},
             #{item.workerTaskId},#{item.workerId},#{item.messageCode},#{item.messageTitle},#{item.messageContent}
             ,#{item.content},#{item.minutes},#{item.supplementTimeEnd},#{item.supplementTime},
-            #{item.requestId},#{item.hotelId},#{item.hrCompanyId},#{item.applicantType},#{item.applyType},#{item.messageLink}, #{item.msgLink}, #{item.checkSign}, #{item.isHandle})
+            #{item.requestId},#{item.hotelId},#{item.hrCompanyId},#{item.applicantType},#{item.applyType},#{item.messageLink}, #{item.msgLink}, #{item.checkSign}, #{item.isHandle}, #{item.taskId})
         </foreach>
     </insert>
     <select id="selectAllMessage" parameterType="java.util.Map" resultType="com.microdev.param.MessageResponse">

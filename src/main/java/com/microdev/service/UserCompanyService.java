@@ -6,6 +6,7 @@ import com.microdev.common.paging.Paginator;
 import com.microdev.model.User;
 import com.microdev.model.UserCompany;
 import com.microdev.param.HrQueryWorkerDTO;
+import com.microdev.param.QueryCooperateRequest;
 import com.microdev.param.WokerQueryHrDTO;
 import java.util.List;
 import java.util.Map;
@@ -47,12 +48,12 @@ public interface UserCompanyService extends IService<UserCompany> {
 
     /**
      * 人力查询合作的小时工
-     * @param hrCompanyId
+     * @param param
      * @param page
      * @param pageNum
      * @return
      */
-    ResultDO selectWorkerCooperate(String hrCompanyId, Integer page, Integer pageNum);
+    ResultDO selectWorkerCooperate(QueryCooperateRequest param, Integer page, Integer pageNum);
 
     /**
      * 人力公司处理小时工绑定申请
@@ -61,4 +62,6 @@ public interface UserCompanyService extends IService<UserCompany> {
      * @return
      */
     ResultDO hrRespondWorkerBind(String messageId, String status);
+
+
 }

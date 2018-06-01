@@ -120,12 +120,12 @@ public interface CompanyService extends IService<Company> {
 
     /**
      * 查询合作的人力公司信息
-     * @param hotelId
+     * @param map
      * @param page
      * @param pageNum
      * @return
      */
-    ResultDO selectCooperatorHr(String hotelId, Integer page, Integer pageNum);
+    ResultDO selectCooperatorHr(QueryCooperateRequest map, Integer page, Integer pageNum);
 
     /**
      * 人力处理酒店绑定申请
@@ -137,8 +137,8 @@ public interface CompanyService extends IService<Company> {
 
     /**
      * 人力查询合作的酒店
-     * @param hrCompanyId
+     * @param map
      * @return
      */
-    ResultDO hrQueryCooperatorHotel(String hrCompanyId, Paginator paginator);
+    ResultDO hrQueryCooperatorHotel(QueryCooperateRequest map, Paginator paginator);
 }

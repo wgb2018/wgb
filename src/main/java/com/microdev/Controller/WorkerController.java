@@ -2,6 +2,7 @@ package com.microdev.Controller;
 
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
+import com.microdev.common.exception.ParamsException;
 import com.microdev.param.AreaAndServiceRequest;import com.microdev.param.PageRequest;
 import com.microdev.param.TaskWorkerQuery;
 import com.microdev.param.WorkerSupplementRequest;
@@ -9,6 +10,7 @@ import com.microdev.param.api.request.PunchRequest;
 import com.microdev.service.TaskWorkerService;
 import com.microdev.service.WorkLogService;
 import com.microdev.service.WorkerService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -145,7 +147,7 @@ public class WorkerController {
      * @param date
      * @return
      */
-    @GetMapping("/workers/{taskWorkerId}/updateCheckSign/{date}/")
+    @GetMapping("/workers/{taskWorkerId}/updateCheckSign/{date}")
     public ResultDO updateWorkerLogCheckSign(@PathVariable String taskWorkerId,@PathVariable String date) {
 
         return ResultDO.buildSuccess(workLogService.updateCheckSign(taskWorkerId, date));
@@ -159,5 +161,13 @@ public class WorkerController {
     public ResultDO workerApplyBindHrCompany(@RequestBody Map<String, Object> map) {
 
         return ResultDO.buildSuccess(workerService.workerApplybind((String) map.get("workerId"), (List<String>)map.get("set")));
+    }
+
+    @GetMapping("/workers/test2/{a}")
+    public ResultDO test3(@PathVariable String a) {
+        if (!"0".equals(a)) {
+            throw new ParamsException("参数错误");
+        }
+        return ResultDO.buildSuccess("测试成功");
     }
 }

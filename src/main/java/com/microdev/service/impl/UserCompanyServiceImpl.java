@@ -285,18 +285,18 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
 
     /**
      * 人力查询合作的小时工
-     * @param hrCompanyId
+     * @param map
      * @param page
      * @param pageNum
      * @return
      */
     @Override
-    public ResultDO selectWorkerCooperate(String hrCompanyId, Integer page, Integer pageNum) {
-        if (StringUtils.isEmpty(hrCompanyId)) {
+    public ResultDO selectWorkerCooperate(QueryCooperateRequest map, Integer page, Integer pageNum) {
+        if (StringUtils.isEmpty(map.getId())) {
             throw new ParamsException("参数错误");
         }
         PageHelper.startPage(page, pageNum, true);
-        List<Map<String, Object>> list = companyMapper.selectCooperateWorker(hrCompanyId);
+        List<Map<String, Object>> list = companyMapper.selectCooperateWorker(map);
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
         Map<String, Object> param = new HashMap<>();
         param.put("page", page);

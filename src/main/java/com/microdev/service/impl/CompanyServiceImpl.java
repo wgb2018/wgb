@@ -83,6 +83,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     @Override
     public ResultDO hrCompanyHotels(Paginator paginator, CompanyQueryDTO request) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
+        logger.info(request.toString());
         List<Map<String, Object>> list = companyMapper.queryHotelsByHrId(request);
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
         HashMap<String,Object> result = new HashMap<>();
@@ -672,18 +673,18 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
     /**
      * 查询合作的人力公司信息
-     * @param hotelId       酒店id
+     * @param map
      * @param page          页码
      * @param pageNum       页数
      * @return
      */
     @Override
-    public ResultDO selectCooperatorHr(String hotelId, Integer page, Integer pageNum) {
-        if (StringUtils.isEmpty(hotelId)) {
+    public ResultDO selectCooperatorHr(QueryCooperateRequest map, Integer page, Integer pageNum) {
+        if (StringUtils.isEmpty(map.getHotelId())) {
             throw new ParamsException("参数错误");
         }
         PageHelper.startPage(page, pageNum, true);
-        List<Map<String, Object>> list = hotelHrCompanyMapper.selectCooperateHr(hotelId);
+        List<Map<String, Object>> list = hotelHrCompanyMapper.selectCooperateHr(map);
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
         Map<String, Object> param = new HashMap<>();
         param.put("page", page);
@@ -720,18 +721,18 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
     /**
      * 人力查询合作的酒店
-     * @param hrCompanyId
+     * @param map
      * @param paginator     分页
      * @return
      */
     @Override
-    public ResultDO hrQueryCooperatorHotel(String hrCompanyId, Paginator paginator) {
-        if (StringUtils.isEmpty(hrCompanyId)) {
+    public ResultDO hrQueryCooperatorHotel(QueryCooperateRequest map, Paginator paginator) {
+        if (StringUtils.isEmpty(map.getHrCompanyId())) {
             throw new ParamsException("参数错误");
         }
         PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
-        List<Company> list = companyMapper.selectCooperateHotel(hrCompanyId);
-        PageInfo<Company> pageInfo = new PageInfo<>(list);
+        List<Map<String, Object>> list = companyMapper.selectCooperateHotel(map);
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
         Map<String, Object> param = new HashMap<>();
         param.put("page", pageInfo.getPageNum());
         param.put("total", pageInfo.getTotal());

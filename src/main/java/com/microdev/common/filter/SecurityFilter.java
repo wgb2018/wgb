@@ -98,6 +98,7 @@ public class SecurityFilter implements Filter {
             } else {
                 throw new AuthorizationException("无权限访问");
             }
+
         }
     }
 

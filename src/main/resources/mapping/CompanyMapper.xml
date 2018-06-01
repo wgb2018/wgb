@@ -8,7 +8,7 @@
     </sql>
     <sql id="Company_Query_Param">
         <if test="name != null and name != ''">
-            name LIKE '%${name}%'
+            name LIKE concat('%', #{name},'%')
         </if>
         <if test="companyType != null and companyType != ''">
             and company_type = #{companyType}
@@ -30,10 +30,10 @@
         from company
         <where>
             <if test="name != null and name !=''">
-                and name like '%${name}%'
+                and name like concat('%', #{name},'%')
             </if>
             <if test="leader != null and leader !=''">
-                and leader like '%${leader}%'
+                and leader like concat('%', #{leader},'%')
             </if>
             <if test="companyType != null">
                 and company_type = #{companyType}
@@ -104,10 +104,10 @@
         SELECT hotel_id,STATUS FROM hotel_hr_company WHERE hr_id = #{id} AND STATUS IN (0,3,4)
         ) hh ON c.id = hh.hotel_id
         <if test="name != null and name !=''">
-            and c.name like '%${name}%'
+            and c.name like concat('%', #{name},'%')
         </if>
         <if test="leader != null and leader !=''">
-            and c.leader like '%${leader}%'
+            and c.leader like concat('%', #{leader},'%')
         </if>
         order by c.create_time desc
     </select>
@@ -128,10 +128,10 @@
         SELECT hr_id, STATUS FROM hotel_hr_company WHERE hotel_id = #{id} AND STATUS IN (0,3,4)
         ) hh ON c.id = hh.hr_id
         <if test="name != null and name !=''">
-            and c.name like '%${name}%'
+            and c.name like concat('%', #{name},'%')
         </if>
         <if test="leader != null and leader !=''">
-            and c.leader like '%${leader}%'
+            and c.leader like concat('%', #{leader},'%')
         </if>
         order by c.create_time desc
     </select>
@@ -190,17 +190,36 @@
 (SELECT id,hotel_id,create_time FROM message WHERE STATUS = 0 AND hr_company_id = #{hrCompanyId} AND apply_type = 2 AND applicant_type = 3) m ON c.id = m.hotel_id ORDER BY m.create_time DESC
     </select>
 
-    <select id = "selectCooperateWorker" resultType="java.util.Map">
-      SELECT u.activated,u.avatar,u.email,u.mobile,u.nickname,u.sex,u.username, uc.status AS bindType FROM USER u INNER JOIN
+    <select id = "selectCooperateWorker" resultType="java.util.Map" parameterType="java.util.Map">
+      SELECT u.activated,u.avatar,u.email,u.mobile,u.nickname,u.sex,u.username, uc.status AS bindType FROM (select * from USER
+      <where>
+          <if test="nickname != null">
+              and nickname like concat('%', #{nickname}, '%')
+          </if>
+          <if test="mobile != null">
+              and mobile like concat('%', #{mobile}, '%')
+          </if>
+      </where>
+      ) u INNER JOIN
     (
-    SELECT user_id,STATUS FROM user_company WHERE company_id = #{hrCompanyId} AND STATUS IN (0,1,3)
+    SELECT user_id,STATUS FROM user_company WHERE company_id = #{id} AND STATUS IN (0,1,3)
     ) uc ON uc.user_id = u.id
     </select>
 
-    <select id="selectCooperateHotel" resultType="com.microdev.model.Company">
-        SELECT <include refid="Company_Column_List"/> FROM company c INNER JOIN
+    <select id="selectCooperateHotel" resultType="java.util.Map">
+        SELECT c.id as pid,c.address,c.business_license,c.company_type,c.latitude,c.leader,c.leader_mobile,c.logo,c.name,c.status,m.status as bindType FROM (
+        select * from company
+        <where>
+          <if test="name != null">
+            and name like concat('%', #{name},'%')
+          </if>
+          <if test="leader != null">
+             and leader like concat('%', #{leader},'%')
+          </if>
+        </where>
+        ) c INNER JOIN
 (
-SELECT hotel_id FROM hotel_hr_company  WHERE hr_id = #{hrId} AND STATUS = 1
+SELECT hotel_id,status FROM hotel_hr_company  WHERE hr_id = #{hrCompanyId} AND STATUS in (0,3,4)
 ) m ON c.id = m.hotel_id
     </select>
 </mapper>

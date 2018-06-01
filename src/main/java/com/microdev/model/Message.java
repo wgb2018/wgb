@@ -93,6 +93,10 @@ public class Message extends BaseEntity {
      * 是否需要处理0需要1不需要(通知)
      */
     private Integer isHandle = 0;
+    /**
+     * 任务id
+     */
+    private String taskId;
     public Integer getStatus() {
         return status;
     }

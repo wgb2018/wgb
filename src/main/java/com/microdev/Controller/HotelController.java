@@ -2,6 +2,7 @@ package com.microdev.Controller;
 
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
+import com.microdev.common.paging.Paginator;
 import com.microdev.model.Company;
 import com.microdev.param.*;
 import com.microdev.service.CompanyService;
@@ -151,14 +152,12 @@ public class HotelController {
 
     /**
      * 查询合作的人力公司信息
-     * @param hotelId
-     * @param page
-     * @param pageSize
+     * @param paging
      * @return
      */
     @PostMapping("/hotels/cooperate/hr")
-    public ResultDO hotelsCooperateHr(String hotelId, Integer page, Integer pageSize) {
-
-        return companyService.selectCooperatorHr(hotelId, page, pageSize);
+    public ResultDO hotelsCooperateHr(@RequestBody PagingDO<QueryCooperateRequest> paging) {
+        Paginator paginator = paging.getPaginator();
+        return companyService.selectCooperatorHr(paging.getSelector(), paginator.getPage(), paginator.getPageSize());
     }
 }

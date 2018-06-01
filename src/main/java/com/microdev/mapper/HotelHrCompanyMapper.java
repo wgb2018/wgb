@@ -2,6 +2,7 @@ package com.microdev.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.microdev.model.HotelHrCompany;
+import com.microdev.param.QueryCooperateRequest;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -18,5 +19,5 @@ public interface HotelHrCompanyMapper extends BaseMapper<HotelHrCompany> {
 
     int saveBatch(List<HotelHrCompany> list);
 
-    List<Map<String, Object>> selectCooperateHr(@Param("hotelId") String hotelId);
+    List<Map<String, Object>> selectCooperateHr(QueryCooperateRequest map);
 }

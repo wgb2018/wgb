@@ -7,6 +7,7 @@ import com.microdev.model.Company;
 import com.microdev.model.User;
 import com.microdev.param.CompanyQueryDTO;
 import com.microdev.param.HotelHrIdBindDTO;
+import com.microdev.param.QueryCooperateRequest;
 import com.microdev.service.CompanyService;
 import com.microdev.service.UserCompanyService;
 import org.slf4j.Logger;
@@ -136,9 +137,9 @@ public class HrCompanyController {
      * @return
      */
     @PostMapping("/hrcompanies/examine/companies")
-    public ResultDO hrCompaniesExamineCompanies(@RequestBody PagingDO<String> page) {
+    public ResultDO hrCompaniesExamineCompanies(@RequestBody PagingDO<QueryCooperateRequest> page) {
         Paginator paginator = page.getPaginator();
-        return companyService.selectExamineCompanies(page.getSelector(), paginator.getPage(), paginator.getPageSize());
+        return companyService.selectExamineCompanies(page.getSelector().getId(), paginator.getPage(), paginator.getPageSize());
     }
 
     /**
@@ -146,7 +147,7 @@ public class HrCompanyController {
      * @return
      */
     @PostMapping("/hrcompanies/manager/workers")
-    public ResultDO hrcompaniesManagerWorkers(@RequestBody PagingDO<String> page) {
+    public ResultDO hrcompaniesManagerWorkers(@RequestBody PagingDO<QueryCooperateRequest> page) {
         Paginator paginator = page.getPaginator();
         return userCompanyService.selectWorkerCooperate(page.getSelector(), paginator.getPage(), paginator.getPageSize());
     }
@@ -169,7 +170,7 @@ public class HrCompanyController {
      * @return
      */
     @PostMapping("/hrcompanies/cooperate/hotels")
-    public ResultDO hrcompaniesCooperateInfo(@RequestBody PagingDO<String> page) {
+    public ResultDO hrcompaniesCooperateInfo(@RequestBody PagingDO<QueryCooperateRequest> page) {
 
         return companyService.hrQueryCooperatorHotel(page.getSelector(), page.getPaginator());
     }

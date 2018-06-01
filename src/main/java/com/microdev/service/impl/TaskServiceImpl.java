@@ -75,7 +75,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
 
         AddHrTask(task,request);
         taskMapper.insert(task);
-        messageService.hotelDistributeTask(request, hotel, "workTaskMessage");
+        messageService.hotelDistributeTask(request, hotel, "workTaskMessage", task.getPid());
         TaskViewDTO taskDto= taskConverter.toViewDTOWithOutSet(task);
         return ResultDO.buildSuccess("任务发布成功",taskDto);
     }
