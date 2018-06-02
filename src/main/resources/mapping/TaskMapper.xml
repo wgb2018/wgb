@@ -76,7 +76,7 @@
             <if test="status == 0">
                 and to_date &gt; now()
             </if>
-            <if test="status == 1 || status == 2 || status == 3">
+            <if test="status == 1 || status == 2 || status == 3 || status == 8">
                 and to_date &gt; now() and status = #{status}
             </if>
             <if test="status == 4">
@@ -87,6 +87,9 @@
             </if>
             <if test="status == 6">
                 and to_date &lt;= now()
+            </if>
+            <if test="status == 7">
+                and to_date &gt; now() and status != 8
             </if>
         </where>
         order by create_time desc

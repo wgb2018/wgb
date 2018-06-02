@@ -98,4 +98,13 @@
     <select id="findSeriveAreaFirst" resultType="com.microdev.model.UserArea" parameterType="java.lang.String">
         select provinceID as areaId,province as areaName from province where provinceID = #{id}
     </select>
+    <select id="findProvinceNameById" resultType="java.lang.String" parameterType="java.lang.String">
+        select province from province where provinceID = #{id}
+    </select>
+    <select id="findCityNameById" resultType="java.lang.String" parameterType="java.lang.String">
+        select city from city where cityID = #{id}
+    </select>
+    <select id="findAreaNameById" resultType="java.lang.String" parameterType="java.lang.String">
+        select area from area where areaID = #{id}
+    </select>
 </mapper>

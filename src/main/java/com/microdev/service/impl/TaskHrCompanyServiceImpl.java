@@ -282,6 +282,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         message.setStatus(1);
         messageMapper.updateById(message);
         taskHrCompanyMapper.updateStatus(id,3);
+        taskMapper.updateStatus (taskHrCompanyMapper.queryByTaskId (id).getTaskId (),8);
     }
     /**
      * 人力公司任务调配

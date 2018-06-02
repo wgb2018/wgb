@@ -169,6 +169,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
             refuseWorkers=0;
         }
         taskHr.setRefusedWorkers(refuseWorkers+1);
+        taskHr.setStatus (8);
         taskWorker.setStatus(2);
         taskWorker.setConfirmedDate(OffsetDateTime.now());
         taskWorker.setRefusedReason(refusedTaskReq.getRefusedReason());

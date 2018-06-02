@@ -30,6 +30,12 @@ public interface DictMapper extends BaseMapper<Dict> {
 
     List<Map<String,String>> findProvince();
 
+    String findProvinceNameById(String id);
+
+    String findCityNameById(String id);
+
+    String findAreaNameById(String id);
+
     List<Map<String,String>> findCity(String pid);
 
     List<Map<String,String>> findArea(String cid);

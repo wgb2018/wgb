@@ -20,7 +20,7 @@ public class User extends BaseEntity{
     /**
      * logo地址
      */
-    private String avatar;
+    private String avatar ="";
     /**
      * 生日日期
      */
@@ -28,19 +28,19 @@ public class User extends BaseEntity{
     /**
      * 邮箱地址
      */
-    private String email;
+    private String email ="";
     /**
      * 手机
      */
-    private String mobile;
+    private String mobile ="";
     /**
      * 昵称
      */
-    private String nickname;
+    private String nickname ="";
     /**
      * 密码
      */
-    private String password;
+    private String password ="";
     /**
      * 性别
      */
@@ -52,22 +52,22 @@ public class User extends BaseEntity{
     /**
      * 用户名
      */
-    private String username;
+    private String username ="";
     /**
      * 小时工
      */
-    private String workerId;
+    private String workerId ="";
     /**
      * 用户编码
      */
-    private String userCode;
+    private String userCode ="";
 	private Integer age;
 
 
     /**
      * 用户二维码
      */
-    private String qrCode;
+    private String qrCode ="";
     /**
      * 用户所属角色集合
      */

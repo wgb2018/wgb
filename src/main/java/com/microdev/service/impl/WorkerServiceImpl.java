@@ -865,9 +865,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             //添加区域
             List<UserArea> areaList = request.getAreaCode();
             for (UserArea ua:areaList) {
-                companyMapper.insertAreaRelation(request.getId(),ua.getAreaId (),ua.getAreaLevel (),ua.getAreaName ());
                 if(ua.getAreaLevel ()==1){
                     List<Map<String,String>> list = dictMapper.findCity(ua.getAreaId ());
+                    companyMapper.insertAreaRelation(request.getId(),ua.getAreaId (),ua.getAreaLevel (),dictMapper.findProvinceNameById (ua.getAreaId ()));
                     if(list == null){
                         companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
                     }
@@ -881,6 +881,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                         }
                     }
                 }else if(ua.getAreaLevel ()==2){
+                    companyMapper.insertAreaRelation(request.getId(),ua.getAreaId (),ua.getAreaLevel (),dictMapper.findCityNameById (ua.getAreaId ()));
                     List<Map<String,String>> list2= dictMapper.findArea(ua.getAreaId ());
                     if(list2 == null ){
                         companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
@@ -889,6 +890,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                         companyMapper.insertCompanyArea(request.getId(),key2.get("areaId"),request.getIdType ());
                     }
                 }else{
+                    companyMapper.insertAreaRelation(request.getId(),ua.getAreaId (),ua.getAreaLevel (),dictMapper.findAreaNameById (ua.getAreaId ()));
                     companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
                 }
             }

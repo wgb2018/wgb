@@ -401,6 +401,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         userDTO.setNickname(user.getString("nickName"));
         userDTO.setAvatar( user1.getAvatar());
         userDTO.setAge (user1.getAge ());
+        userDTO.setQrCode (user1.getQrCode ());
         try{
             switch (user.getString("sex")) {
                 case "男":

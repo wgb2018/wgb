@@ -8,21 +8,21 @@ public class Worker extends BaseEntity {
     /**
      * 小时工身份证正面照片
      */
-    private String idcardFront;
+    private String idcardFront ="";
 
     /**
      * 小时工身份证背面照片
      */
-    private String idcardBack;
+    private String idcardBack ="";
 
     /**
      * 小时工健康证
      */
-    private String healthCard;
+    private String healthCard ="";
 
     /**
      * 小时工身份证号码
      */
-    private String idcardNumber;
+    private String idcardNumber ="";
 
 }
