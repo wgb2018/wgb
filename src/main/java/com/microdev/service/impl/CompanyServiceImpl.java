@@ -6,6 +6,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.microdev.common.ResultDO;
 import com.microdev.common.exception.ParamsException;
+import com.microdev.common.paging.PagedList;
 import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.StringKit;
 import com.microdev.converter.TaskConverter;
@@ -13,6 +14,7 @@ import com.microdev.mapper.*;
 import com.microdev.model.*;
 import com.microdev.param.*;
 import com.microdev.service.CompanyService;
+import com.microdev.service.DictService;
 import com.microdev.service.MessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +64,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     UserCompanyMapper userCompanyMapper;
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    DictService dictService;
 
     @Override
     public ResultDO pagingCompanys(Paginator paginator, CompanyQueryDTO queryDTO) {
@@ -69,13 +73,14 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         //查询数据集合
         List<Company> list = companyMapper.queryCompanys(queryDTO);
         PageInfo<Company> pageInfo = new PageInfo<>(list);
+        System.out.println ("last:"+pageInfo.isHasNextPage ());
         HashMap<String,Object> result = new HashMap<>();
          //设置获取到的总记录数total：
         result.put("total",pageInfo.getTotal());
          //设置数据集合rows：
-        result.put("result",list);
+        result.put("result",pageInfo.getList());
         result.put("page",paginator.getPage());
-        if(queryDTO.getObservertype () == 1){
+        if(queryDTO.getObservertype () == 0){
             String total = dictMapper.findByNameAndCode ("WorkerBindHrMaxNum","1").getText ();
             Map<String,Object> map = new HashMap <> ();
             map.put("user_id",userMapper.queryByWorkerId (queryDTO.getObserverId ()).getPid ());
@@ -110,6 +115,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         Company company = companyMapper.findCompanyById(id);
         if (company == null) {
             company = new Company();
+        }else{
+            List l1 = dictService.findServiceArea (company.getPid ());
+            List l2 = dictMapper.queryTypeByUserId (company.getPid ());
+            company.setAreaCode (l1==null?new ArrayList<>():l1);
+            company.setServiceType (l2==null?new ArrayList<>():l2);
         }
         return ResultDO.buildSuccess(company);
     }

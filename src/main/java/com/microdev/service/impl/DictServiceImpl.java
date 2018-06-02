@@ -52,10 +52,10 @@ public class DictServiceImpl extends ServiceImpl<DictMapper,Dict> implements Dic
 
     @Override
     public void update(DictDTO dictDTO) {
-        if(!StringUtils.hasLength(dictDTO.getId())){
+        if(!StringUtils.hasLength(dictDTO.getPid ())){
             throw new ParamsException("请求参数有误：缺少id");
         }
-        Dict newDict = dictMapper.findOne(dictDTO.getId());
+        Dict newDict = dictMapper.findOne(dictDTO.getPid());
         newDict.setRemark(dictDTO.getRemark());
         newDict.setText(dictDTO.getText());
         newDict.setCode(dictDTO.getCode());
@@ -162,7 +162,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper,Dict> implements Dic
     @Override
     public List <UserArea> findServiceArea(String id) {
         List<UserArea> list = dictMapper.findServiceArea (id);
-        List<UserArea> result = null;
+        List<UserArea> result = new ArrayList<>();
         for (UserArea ua : list) {
            if(ua.getAreaLevel ()==1){
                result.add (ua);

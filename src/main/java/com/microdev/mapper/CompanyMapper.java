@@ -22,7 +22,7 @@ public interface CompanyMapper extends BaseMapper<Company> {
     List<Company> queryNotCompanysByHotelId(String HotelId);
 
     Company findCompanyById(String Id);
-
+/**/
     void save(Company companyDTO);
 
     void update(Company companyDTO);
@@ -31,9 +31,9 @@ public interface CompanyMapper extends BaseMapper<Company> {
 
     Company findFirstByLeaderMobile(@Param("mobile") String mobile);
 
-    void insertAreaRelation(@Param("id") String id, @Param("code,") String code,@Param("level") Integer level,@Param("name") String name);
+    void insertAreaRelation(@Param("id") String id, @Param("code") String code,@Param("level") Integer level,@Param("name") String name);
 
-    void insertCompanyArea(@Param("id") String id, @Param("areaId,") String area_id,@Param("idType") Integer idType);
+    void insertCompanyArea(@Param("id") String id, @Param("areaId") String area_id,@Param("idType") Integer idType);
 
     void deleteAreaRelation(String id);
 

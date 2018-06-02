@@ -28,6 +28,10 @@ public class UserDTO {
      * 用户名
      */
     private String username;
+    /**Integerage
+     * 年龄
+     */
+    private Integer age;
     /**
      * 昵称
      */
@@ -65,7 +69,6 @@ public class UserDTO {
      */
     private UserType userType;
 
-    private String laborDispatchCard;
 
     public Integer getUserCode() {
         return userCode;

@@ -64,7 +64,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     private WorkerLogMapper workerLogMapper;
     @Autowired
     private ObjectStoreService objectStoreService;
-
+    @Autowired
+    DictService dictService;
     @Override
     public User create(User user) throws Exception{
         try{
@@ -344,12 +345,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             workerMapper.updateById (worker);
         }else if(user.getUserType () == UserType.hotel || user.getUserType () == UserType.hr) {
             Company company = companyMapper.findFirstByLeaderMobile (user.getMobile ());
-            if(userDTO.getCompany ().getName ()!=null && userDTO.getCompany ().getName ()!="")company.setName (userDTO.getCompany ().getName ());
             if(userDTO.getNickname ()!=null && userDTO.getNickname ()!="")company.setLeader (userDTO.getNickname ());
-            if(userDTO.getCompany ().getBusinessLicense ()!=null && userDTO.getCompany ().getBusinessLicense ()!="")company.setBusinessLicense (userDTO.getCompany ().getBusinessLicense ());
-            if(userDTO.getCompany ().getLogo ()!=null && userDTO.getCompany ().getLogo ()!="")company.setLogo (userDTO.getCompany ().getLogo ());
-            if(userDTO.getLaborDispatchCard ()!=null && userDTO.getLaborDispatchCard ()!="")company.setLaborDispatchCard (userDTO.getLaborDispatchCard ());
-            companyMapper.updateById (company);
+            if(userDTO.getCompany ()!=null){
+                if(userDTO.getCompany ().getName ()!=null && userDTO.getCompany ().getName ()!="")company.setName (userDTO.getCompany ().getName ());
+                if(userDTO.getCompany ().getBusinessLicense ()!=null && userDTO.getCompany ().getBusinessLicense ()!="")company.setBusinessLicense (userDTO.getCompany ().getBusinessLicense ());
+                if(userDTO.getCompany ().getLogo ()!=null && userDTO.getCompany ().getLogo ()!="")company.setLogo (userDTO.getCompany ().getLogo ());
+                if(userDTO.getCompany ().getLaborDispatchCard ()!=null && userDTO.getCompany ().getLaborDispatchCard ()!="")company.setLaborDispatchCard (userDTO.getCompany ().getLaborDispatchCard ());
+                if(userDTO.getCompany ().getArea ()!=null && userDTO.getCompany ().getArea ()!=""){
+                    System.out.println ("userDTO:"+userDTO);
+                    company.setAddress (userDTO.getCompany ().getAddress ());
+                    company.setArea (userDTO.getCompany ().getArea ());
+                    company.setAddressCode (userDTO.getCompany ().getAddressCode ());
+                    company.setLatitude (userDTO.getCompany ().getLatitude ());
+                    company.setLongitude (userDTO.getCompany ().getLongitude ());
+                }
+            }
+            companyMapper.updateAllColumnById (company);
         }
     }
     /**
@@ -383,11 +394,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
 
         String mobile = user.getString("mobile");
+        User user1 = userMapper.queryByUserId(user.getId());
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setUsername(user.getString("username"));
         userDTO.setNickname(user.getString("nickName"));
-        userDTO.setAvatar( userMapper.queryByUserId(user.getId()).getAvatar());
+        userDTO.setAvatar( user1.getAvatar());
+        userDTO.setAge (user1.getAge ());
         try{
             switch (user.getString("sex")) {
                 case "男":
@@ -423,8 +436,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                 companyDTO.setLogo (company.getLogo ());
                 companyDTO.setLatitude (company.getLatitude ());
                 companyDTO.setLongitude (companyDTO.getLongitude ());
+                companyDTO.setLaborDispatchCard (company.getLaborDispatchCard ());
+                companyDTO.setArea (company.getArea ());
+                companyDTO.setAddressCode (company.getAddressCode ());
                 userDTO.setCompany(companyDTO);
-				userDTO.setServiceType (dictMapper.queryTypeByUserId (company.getPid ()));
+                List l1 = dictMapper.queryTypeByUserId (company.getPid ());
+                List l2 = dictService.findServiceArea(company.getPid ());
+				userDTO.setServiceType (l1 == null?new ArrayList<>():l1);
+				userDTO.setAreaCode (l2 == null?new ArrayList<>():l2);
 
             }
         } else if (userType == UserType.worker) {
@@ -435,9 +454,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             userDTO.setHealthCard(worker.getHealthCard());
             userDTO.setIdCardFront(worker.getIdcardFront());
             userDTO.setIdCardBack(worker.getIdcardBack());
-			 /*userDTO.setServiceType (dictMapper.queryTypeByUserId (workerId));
-            //服务地区
-            userDTO.setAreaCode (dictMapper.findServiceArea (workerId));*/
+            List l1 = dictMapper.queryTypeByUserId (workerId);
+            List l2 = dictService.findServiceArea(workerId);
+            userDTO.setServiceType (l1==null?new ArrayList<>():l1);
+            userDTO.setAreaCode (l2==null?new ArrayList<>():l2);
         }
 
         return userDTO;

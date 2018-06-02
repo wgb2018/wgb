@@ -852,40 +852,58 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
      *  修改服务类型及服务地区
      */    public void mpdifyAreaAndService(AreaAndServiceRequest request) {
         //删除旧数据
-        companyMapper.deleteAreaRelation(request.getId());
-        companyMapper.deleteCompanyArea(request.getId());
-        taskTypeRelationMapper.deleteTaskTypeRelation(request.getId());
-        //添加区域
-        List<UserArea> areaList = request.getAreaCode();
-        for (UserArea ua:areaList) {
-            companyMapper.insertAreaRelation(request.getId(),ua.getAreaId (),ua.getAreaLevel (),ua.getAreaName ());
-            if(ua.getAreaLevel ()==1){
-                Map<String,String> list = dictMapper.findCity(ua.getAreaId ());
-                for (String key : list.keySet()) {
-                    Map<String,String> list2= dictMapper.findArea(key);
-                    for (String key1 : list2.keySet()) {
-                        companyMapper.insertCompanyArea(request.getId(),key1,request.getIdType ());
+        if(request.getAreaCode()!=null){
+            companyMapper.deleteAreaRelation(request.getId());
+            companyMapper.deleteCompanyArea(request.getId());
+            //添加区域
+            List<UserArea> areaList = request.getAreaCode();
+            for (UserArea ua:areaList) {
+                companyMapper.insertAreaRelation(request.getId(),ua.getAreaId (),ua.getAreaLevel (),ua.getAreaName ());
+                if(ua.getAreaLevel ()==1){
+                    List<Map<String,String>> list = dictMapper.findCity(ua.getAreaId ());
+                    if(list == null){
+                        companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
                     }
+                    for (Map<String,String> key : list) {
+                        List<Map<String,String>> list2 = dictMapper.findArea(key.get("cityId"));
+                        if(list2 == null ){
+                            companyMapper.insertCompanyArea(request.getId(),key.get("cityId"),request.getIdType ());
+                        }
+                        for (Map<String,String> key2 : list2) {
+                            companyMapper.insertCompanyArea(request.getId(),key2.get("areaId"),request.getIdType ());
+                        }
+                    }
+                }else if(ua.getAreaLevel ()==2){
+                    List<Map<String,String>> list2= dictMapper.findArea(ua.getAreaId ());
+                    if(list2 == null ){
+                        companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
+                    }
+                    for (Map<String,String> key2 : list2) {
+                        companyMapper.insertCompanyArea(request.getId(),key2.get("areaId"),request.getIdType ());
+                    }
+                }else{
+                    companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
                 }
-            }else if(ua.getAreaLevel ()==2){
-                Map<String,String> list2= dictMapper.findArea(ua.getAreaId ());
-                for (String key1 : list2.keySet()) {
-                    companyMapper.insertCompanyArea(request.getId(),key1,request.getIdType ());
-                }
-            }else{
-                companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
             }
         }
-        //添加服务类型
-        List<String> serviceType = request.getServiceType();
-        for(int i = 0;i<serviceType.size();i++){
-            taskTypeRelationMapper.insertTaskTypeRelation(request.getId(),serviceType.get(i),request.getIdType ());
+        if(request.getServiceType ()!=null){
+            taskTypeRelationMapper.deleteTaskTypeRelation(request.getId());
+            //添加服务类型
+            List<String> serviceType = request.getServiceType();
+            for(int i = 0;i<serviceType.size();i++){
+                taskTypeRelationMapper.insertTaskTypeRelation(request.getId(),serviceType.get(i),request.getIdType ());
+            }
         }
     }
 
     @Override
     public Map<String, Object> queryWorker(String id) {
-        return workerMapper.queryWorker(id);
+        Map<String, Object> map = workerMapper.queryWorker(id);
+        List l1 = dictService.findServiceArea (id);
+        List l2 = dictMapper.queryTypeByUserId (id);
+        map.put("areaCode",l1==null?new ArrayList<>():l1);
+        map.put("serviceType",l2==null?new ArrayList<>():l2);
+        return map;
     }
 
     @Override

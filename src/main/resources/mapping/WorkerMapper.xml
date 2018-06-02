@@ -37,12 +37,11 @@
         )b on a.id = b.id
         where a.id not IN
         (select worker_id from user where id in (select user_id from user_company where company_id = #{hrId} and status IN (0,1,3)))
-        )
-        )
+        ) order by u.create_time desc
         <if test="name != null and name !=''">
             and u.nickname like '%${name}%'
         </if>
-         order by u.create_time desc
+
     </select>
 
 </mapper>

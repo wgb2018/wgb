@@ -28,11 +28,11 @@ public interface DictMapper extends BaseMapper<Dict> {
 
     List<Dict> queryDicts(DictDTO dictDTO);
 
-    Map<String,String> findProvince();
+    List<Map<String,String>> findProvince();
 
-    Map<String,String> findCity(String pid);
+    List<Map<String,String>> findCity(String pid);
 
-    Map<String,String> findArea(String cid);
+    List<Map<String,String>> findArea(String cid);
 
     List<String> selectTypeByUserId(String id);
 

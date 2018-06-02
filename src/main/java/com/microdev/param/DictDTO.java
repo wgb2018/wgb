@@ -7,7 +7,7 @@ import lombok.Data;
  */
 @Data
 public class DictDTO {
-    private String id;
+    private String pid;
     /**
      * 名    taskType
      */
@@ -33,13 +33,6 @@ public class DictDTO {
      */
     private String extend;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

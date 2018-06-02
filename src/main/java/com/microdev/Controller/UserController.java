@@ -275,4 +275,26 @@ public class UserController {
     public ResultDO selectUnreadAmount(String id, String type) {
         return ResultDO.buildSuccess(userService.selectUnreadAmount(id, type));
     }
+    /**
+     * 邀请注册
+     */
+    @GetMapping("/apply/register")
+    public ResultDO applyRegister(ApplyRequest applyRequest) {
+        Map<String, String> map = new LinkedHashMap <> ();
+        map.put ("name",applyRequest.getName ());
+        map.put ("address",applyRequest.getUrl ());
+        smsFacade.sendSmsNotice (applyRequest.getMobile (),SmsType.apply_register,map);
+        return ResultDO.buildSuccess ("发送成功");
+    }
+    /**
+     * 请求地图数据
+     */
+    @GetMapping("/apply/bdMap")
+    public ResultDO bdMap( String url) {
+        //HttpServletRequest.
+        return ResultDO.buildSuccess (null);
+    }
+
+
+
 }

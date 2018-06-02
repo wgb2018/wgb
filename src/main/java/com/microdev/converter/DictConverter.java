@@ -26,7 +26,7 @@ public class DictConverter {
 
     public DictDTO toDTO(Dict dict) {
         DictDTO dictDTO = new DictDTO();
-        dictDTO.setId(dict.getPid());
+        dictDTO.setPid(dict.getPid());
         dictDTO.setName(dict.getName());
         dictDTO.setCode(dict.getCode());
         dictDTO.setText(dict.getText());

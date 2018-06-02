@@ -21,7 +21,6 @@ import java.util.Hashtable;
 
 public class QRCodeUtil {
     public static File createQRCode(String text) throws Exception {
-        text = "www.baidu.com";
         int width = 100;
         int height = 100;
         String format = "png";
