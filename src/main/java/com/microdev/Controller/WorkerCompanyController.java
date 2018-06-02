@@ -3,9 +3,7 @@ package com.microdev.Controller;
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
-import com.microdev.param.CompanyDTO;
-import com.microdev.param.HrQueryWorkerDTO;
-import com.microdev.param.HrTaskDistributeRequest;import com.microdev.param.WokerQueryHrDTO;
+import com.microdev.param.*;
 import com.microdev.service.UserCompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -69,9 +67,9 @@ public class WorkerCompanyController {
      * @return
      */
     @PostMapping("/hrCompany/examine/worker")
-    public ResultDO selectExamineWorker(@RequestBody PagingDO<String> page) {
+    public ResultDO selectExamineWorker(@RequestBody PagingDO<QueryCooperateRequest> page) {
         Paginator paginator = page.getPaginator();
-        return userCompanyService.selectUserByHrId(page.getSelector(), paginator.getPage(), paginator.getPageSize());
+        return userCompanyService.selectUserByHrId(page.getSelector().getId(), paginator.getPage(), paginator.getPageSize());
     }
 
     /**

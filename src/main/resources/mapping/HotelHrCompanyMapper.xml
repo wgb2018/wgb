@@ -38,13 +38,13 @@
 (SELECT cy.name,cy.`logo`,cy.address,cy.`leader`,cy.id,cy.leader_mobile,cy.`status` FROM company cy
 INNER JOIN
 (
-SELECT hr_id,create_time FROM hotel_hr_company WHERE hotel_id = #{hotelId} AND STATUS in (0,3,4)
-) hy ON cy.id = hy.hr_id
+SELECT hr_id,create_time FROM hotel_hr_company WHERE hotel_id = #{hotelId} AND STATUS in (0,4)
+  and bind_type = 1) hy ON cy.id = hy.hr_id
 <where>
-    <if test="name != null">
+    <if test="name != null and name != ''">
       and name like concat('%', #{name} , '%')
     </if>
-    <if test="leader != null">
+    <if test="leader != null and leader != ''">
       and leader like concat('%', #{leader}, '%')
     </if>
 </where>
@@ -57,12 +57,59 @@ SELECT uy.company_id AS companyId, COUNT(1) AS amount FROM user_company uy WHERE
 SELECT hh.hr_id FROM company c
 INNER JOIN
 (
-SELECT hr_id,create_time FROM hotel_hr_company WHERE hotel_id = #{hotelId} AND STATUS in (0,3,4)
+SELECT hr_id,create_time FROM hotel_hr_company WHERE hotel_id = #{hotelId} AND STATUS in (0,4)
 ) hh ON c.id = hh.hr_id
 ORDER BY hh.create_time DESC
 ) AND uy.STATUS IN (0,1,3) GROUP BY uy.company_id
 ) m
 ON f.id = m.companyId
+union
+        (
+        SELECT f.*,IFNULL(m.amount,0) AS num FROM
+        (SELECT cy.name,cy.`logo`,cy.address,cy.`leader`,cy.id,cy.leader_mobile,cy.`status` FROM company cy
+        INNER JOIN
+        (
+        SELECT hr_id,create_time FROM hotel_hr_company WHERE hotel_id = #{hotelId} AND STATUS = 3
+         and bind_type = 1) hy ON cy.id = hy.hr_id
+        <where>
+        <if test="name != null and name != ''">
+            and name like concat('%', #{name} , '%')
+        </if>
+        <if test="leader != null and leader != ''">
+            and leader like concat('%', #{leader}, '%')
+        </if>
+        </where>
+        ORDER BY hy.create_time DESC
+        ) f
+        LEFT JOIN
+        (
+        SELECT uy.company_id AS companyId, COUNT(1) AS amount FROM user_company uy WHERE uy.company_id IN
+        (
+        SELECT hh.hr_id FROM company c
+        INNER JOIN
+        (
+        SELECT hr_id,create_time FROM hotel_hr_company WHERE hotel_id = #{hotelId} AND STATUS = 3
+         and bind_type = 1) hh ON c.id = hh.hr_id
+        ORDER BY hh.create_time DESC
+        ) AND uy.STATUS IN (0,1,3) GROUP BY uy.company_id
+        ) m
+        ON f.id = m.companyId
+        )
     </select>
 
+    <select id="selectIsBind" parameterType="com.microdev.param.HotelHrIdBindDTO" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM hotel_hr_company WHERE hotel_id = #{hotelId} AND hr_id IN
+        <foreach collection="hrSet" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        AND STATUS IN (1,4)
+    </select>
+
+    <select id="selectIsBIndByCompanyId" parameterType="com.microdev.param.HotelHrIdBindDTO" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM hotel_hr_company WHERE hr_id = #{hrId} AND hotel_id IN
+        <foreach collection="hrSet" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        AND STATUS IN (1,4)
+    </select>
 </mapper>

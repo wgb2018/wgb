@@ -41,4 +41,6 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     @Update("update message set check_sign = 1 where id = #{id} ")
     int updateMessageCheckSign(String id);
+
+    List<Message> selectWorkerUnbindMessage();
 }

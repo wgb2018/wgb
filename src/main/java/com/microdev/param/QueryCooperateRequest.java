@@ -12,4 +12,5 @@ public class QueryCooperateRequest {
     private String name;
     private String leader;
     private String id;
+    private String type;
 }

@@ -45,4 +45,6 @@ public interface CompanyMapper extends BaseMapper<Company> {
     List<Map<String, Object>> selectCooperateWorker(QueryCooperateRequest param);
 
     List<Map<String, Object>> selectCooperateHotel(QueryCooperateRequest param);
-}
+
+    List<Map<String, Object>> hotelExamineCompany(QueryCooperateRequest param);
+ }

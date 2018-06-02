@@ -592,4 +592,16 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         messageMapper.saveBatch(messageList);
     }
 
+    /**
+     *分页查询待处理事务
+     * @param id        小时工传worker_id,酒店和人力传id
+     * @param type      小时工传worker,酒店传hotel，人力传hr
+     * @return
+     */
+    @Override
+    public ResultDO showWaitHandleWork(QueryCooperateRequest request, Paginator paginator) {
+
+        return ResultDO.buildSuccess("");
+    }
+
 }

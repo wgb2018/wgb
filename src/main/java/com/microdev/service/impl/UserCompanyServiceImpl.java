@@ -45,6 +45,8 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
     TaskConverter taskConverter;
     @Autowired
     TaskWorkerMapper taskWorkerMapper;
+    @Autowired
+    private InformMapper informMapper;
     /**
      * 小时工绑定人力公司
      */
@@ -64,9 +66,13 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         if(user==null){
             throw new ParamsException("未找到匹配的员工信息");
         }
-
+        Inform inform = new Inform();
+        inform.setReceiveId(message.getHrCompanyId());
+        inform.setAcceptType(2);
+        inform.setSendType(1);
         if ("0".equals(status)) {
-
+            inform.setTitle("绑定被拒绝");
+            inform.setContent("小时工" + user.getUsername() + "拒绝了你的绑定申请。");
         } else if ("1".equals(status)) {
             UserCompany userCompany= userCompanyMapper.findOneUserCompany(message.getHrCompanyId(),message.getWorkerId());
             if(userCompany==null){
@@ -106,10 +112,12 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                 userCompany.setDeleted(false);
                 userCompanyMapper.insert(userCompany);
             }
+            inform.setTitle("绑定成功");
+            inform.setContent("小时工" + user.getUsername() + "同意了你的绑定申请，成功添加为合作伙伴，添加合作人力公司即代表同意劳务合作协议。你可以接受合作的人力公司派发的任务，确保能够及时完美的完成任务，可以获得相应的酬劳。");
         } else {
             return ResultDO.buildSuccess("失败");
         }
-
+        informMapper.insert(inform);
         return    ResultDO.buildSuccess("添加成功");
     }
     /**

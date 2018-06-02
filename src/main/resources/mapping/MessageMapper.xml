@@ -333,4 +333,8 @@
             order by check_sign asc, create_time desc
         </where>
     </select>
+
+    <select id = "selectWorkerUnbindMessage" resultType="com.microdev.model.Message">
+      SELECT <include refid="Message_Column_List"/> FROM message WHERE message_code = 'MaxUnbindDay' AND applicant_type=1 AND apply_type = 2 AND STATUS = 0
+    </select>
 </mapper>

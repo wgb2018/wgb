@@ -53,6 +53,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
     MessageMapper messageMapper;
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private InformMapper informMapper;
     /**
      * 查看人力资源公司的任务
      */
@@ -266,6 +268,14 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId(id);
         taskMapper.updateStatus(taskHrCompany.getTaskId(),2);
         taskHrCompanyMapper.updateStatus(id,2);
+
+        Inform inform = new Inform();
+        inform.setTitle("任务已接受");
+        inform.setContent(taskHrCompany.getHrCompanyName() + "接受了派发的任务。");
+        inform.setReceiveId(taskHrCompany.getHotelId());
+        inform.setAcceptType(3);
+        inform.setSendType(2);
+        informMapper.insert(inform);
     }
     /**
      * 人力公司拒绝任务
@@ -281,7 +291,19 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         }
         message.setStatus(1);
         messageMapper.updateById(message);
+        TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId(id);
+        if (taskHrCompany == null) {
+            throw new BusinessException("查询不到人力任务数据");
+        }
         taskHrCompanyMapper.updateStatus(id,3);
+
+        Inform inform = new Inform();
+        inform.setTitle("任务被拒绝");
+        inform.setSendType(2);
+        inform.setAcceptType(3);
+        inform.setReceiveId(taskHrCompany.getHotelId());
+        inform.setContent(taskHrCompany.getHrCompanyName() + "拒绝了你派发的任务。");
+        informMapper.insert(inform);
     }
     /**
      * 人力公司任务调配

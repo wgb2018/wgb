@@ -190,7 +190,7 @@
 (SELECT id,hotel_id,create_time FROM message WHERE STATUS = 0 AND hr_company_id = #{hrCompanyId} AND apply_type = 2 AND applicant_type = 3) m ON c.id = m.hotel_id ORDER BY m.create_time DESC
     </select>
 
-    <select id = "selectCooperateWorker" resultType="java.util.Map" parameterType="java.util.Map">
+    <select id = "selectCooperateWorker" resultType="java.util.Map" parameterType="com.microdev.param.QueryCooperateRequest">
       SELECT u.activated,u.avatar,u.email,u.mobile,u.nickname,u.sex,u.username, uc.status AS bindType FROM (select * from USER
       <where>
           <if test="nickname != null">
@@ -206,20 +206,49 @@
     ) uc ON uc.user_id = u.id
     </select>
 
-    <select id="selectCooperateHotel" resultType="java.util.Map">
+    <select id="selectCooperateHotel" resultType="java.util.Map" parameterType="com.microdev.param.QueryCooperateRequest">
         SELECT c.id as pid,c.address,c.business_license,c.company_type,c.latitude,c.leader,c.leader_mobile,c.logo,c.name,c.status,m.status as bindType FROM (
         select * from company
         <where>
-          <if test="name != null">
+          <if test="name != null and name != ''">
             and name like concat('%', #{name},'%')
           </if>
-          <if test="leader != null">
+          <if test="leader != null and leader != ''">
              and leader like concat('%', #{leader},'%')
           </if>
         </where>
         ) c INNER JOIN
 (
-SELECT hotel_id,status FROM hotel_hr_company  WHERE hr_id = #{hrCompanyId} AND STATUS in (0,3,4)
+SELECT hotel_id,status FROM hotel_hr_company  WHERE hr_id = #{hrCompanyId} AND STATUS in (0,4)
 ) m ON c.id = m.hotel_id
+union
+        (SELECT c.id as pid,c.address,c.business_license,c.company_type,c.latitude,c.leader,c.leader_mobile,c.logo,c.name,c.status,m.status as bindType FROM (
+        select * from company
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name},'%')
+            </if>
+            <if test="leader != null and leader != ''">
+                and leader like concat('%', #{leader},'%')
+            </if>
+        </where>
+        ) c INNER JOIN
+        (
+        SELECT hotel_id,status FROM hotel_hr_company  WHERE hr_id = #{hrCompanyId} AND STATUS = 3
+         and bind_type = 2) m ON c.id = m.hotel_id)
+    </select>
+
+    <select id="hotelExamineCompany" resultType="java.util.Map" parameterType="com.microdev.param.QueryCooperateRequest">
+      SELECT c.name,c.address,c.logo,c.leader,c.leader_mobile,c.status,m.id AS messageId FROM (select * from company
+        <where>
+            <if test="name != null">
+                and name like concat('%', #{name}, '%')
+            </if>
+            <if test="leader != null">
+                and leader like concat('%', #{leader}, '%')
+            </if>
+        </where>
+      ) c INNER JOIN
+(SELECT id,hr_company_id,create_time FROM message WHERE STATUS = 0 AND hotel_id = #{hotelId} AND apply_type = 2 AND applicant_type = 3) m ON c.id = m.hr_company_id ORDER BY m.create_time DESC
     </select>
 </mapper>

@@ -53,12 +53,12 @@ public class HotelController {
         return companyService.createCompany(companyDTO);
     }
     /**
-     * 酒店添加合作的人力资源公司
+     * 酒店处理人力资源公司绑定
      */
-    @PostMapping("/hotels/{hotelId}/add/{hrCompanyId}")
-    public ResultDO addHrCompany(@PathVariable String hotelId,@PathVariable String hrCompanyId, String messageId) {
+    @PostMapping("/hotels/{messageId}/add/{status}")
+    public ResultDO addHrCompany(@PathVariable String messageId,@PathVariable String status) {
 
-        return companyService.hotelAddHrCompanyById(hotelId, hrCompanyId, messageId, 1);
+        return companyService.hotelAddHrCompanyById(messageId, status, 1);
     }
     /**
      * 分页查询酒店信息
@@ -159,5 +159,16 @@ public class HotelController {
     public ResultDO hotelsCooperateHr(@RequestBody PagingDO<QueryCooperateRequest> paging) {
         Paginator paginator = paging.getPaginator();
         return companyService.selectCooperatorHr(paging.getSelector(), paginator.getPage(), paginator.getPageSize());
+    }
+
+    /**
+     * 酒店查询待审核的人力公司
+     * @param paging
+     * @return
+     */
+    @PostMapping("/hotels/examine/companies")
+    public ResultDO hotelsExamineCompanies(@RequestBody PagingDO<QueryCooperateRequest> paging) {
+
+        return companyService.hotelExamineHr(paging.getSelector(), paging.getPaginator());
     }
 }

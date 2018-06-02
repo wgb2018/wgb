@@ -27,4 +27,8 @@ public class Inform extends BaseEntity{
      * 接收方id
      */
     private String receiveId;
+    /**
+     * 消息标题
+     */
+    private String title;
 }

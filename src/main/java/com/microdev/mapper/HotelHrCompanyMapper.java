@@ -2,8 +2,10 @@ package com.microdev.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.microdev.model.HotelHrCompany;
+import com.microdev.param.HotelHrIdBindDTO;
 import com.microdev.param.QueryCooperateRequest;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,4 +22,11 @@ public interface HotelHrCompanyMapper extends BaseMapper<HotelHrCompany> {
     int saveBatch(List<HotelHrCompany> list);
 
     List<Map<String, Object>> selectCooperateHr(QueryCooperateRequest map);
+
+    int selectIsBind(HotelHrIdBindDTO dto);
+
+    int selectIsBIndByCompanyId(HotelHrIdBindDTO dto);
+
+    @Select("select count(1) from hotel_hr_company where hr_id = #{hrId} and hotel_id = #{hotelId} and status in (0,3)")
+    int selectHrHotelId(String hrId, String hotelId);
 }

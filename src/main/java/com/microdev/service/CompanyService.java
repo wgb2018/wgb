@@ -29,7 +29,7 @@ public interface CompanyService extends IService<Company> {
     /**
      * 酒店绑定添加合作的人力资源公司
      */
-    ResultDO hotelAddHrCompanyById(String hotelId, String hrCompanyId, String messageId, Integer type);
+    ResultDO hotelAddHrCompanyById(String hotelId, String hrCompanyId, Integer type);
     /**
      * 添加人力资源公司
      */
@@ -141,4 +141,12 @@ public interface CompanyService extends IService<Company> {
      * @return
      */
     ResultDO hrQueryCooperatorHotel(QueryCooperateRequest map, Paginator paginator);
+
+    /**
+     * 酒店查询待审核的人力公司
+     * @param request
+     * @param paginator
+     * @return
+     */
+    ResultDO hotelExamineHr(QueryCooperateRequest request, Paginator paginator);
 }

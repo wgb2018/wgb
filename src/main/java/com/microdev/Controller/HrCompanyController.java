@@ -71,12 +71,12 @@ public class HrCompanyController {
         return companyService.createCompany(companyDTO);
     }
     /**
-     * 人力资源公司添加合作酒店
+     * 人力资源处理合作酒店
      */
-    @PostMapping("/hrcompanies/{hrCompanyId}/add/{hotelId}")
-    public ResultDO addHrCompany(@PathVariable String hrCompanyId,@PathVariable String hotelId, String messageId) {
+    @PostMapping("/hrcompanies/{messageId}/add/{status}")
+    public ResultDO addHrCompany(@PathVariable String messageId,@PathVariable String status) {
         //HotelHrIdBindDTO hotelHr=new HotelHrIdBindDTO(hotelId,hrCompanyId,2);
-        return companyService.hotelAddHrCompanyById(hotelId, hrCompanyId, messageId, 2);
+        return companyService.hotelAddHrCompanyById(messageId, status, 2);
     }
     /**
      * 修改人力资源公司
