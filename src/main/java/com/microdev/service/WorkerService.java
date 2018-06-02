@@ -14,6 +14,7 @@ import com.microdev.param.api.response.GetCurrentTaskResponse;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface WorkerService extends IService<Worker> {
     /**
@@ -102,4 +103,13 @@ public interface WorkerService extends IService<Worker> {
     Map<String, Object> queryWorker(String id);
 
     ResultDO pagingWorkers(Paginator paginator, WorkerQueryDTO workerQueryDTO);
+    /**
+     * 小时工申请绑定人力公司
+     * @param workerId
+     * @param set
+     * @return
+     */
+    String workerApplybind(String workerId, List<String> set);
+
+
 }

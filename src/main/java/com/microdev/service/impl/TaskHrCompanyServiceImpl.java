@@ -149,7 +149,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             list.add(m);
         }
         taskHrCompanyMapper.updateById(hrTask);
-        messageService.hrDistributeTask(list, hrTask.getHrCompanyId(), hrTask.getHrCompanyName(), "workTaskMessage");
+        messageService.hrDistributeTask(list, hrTask.getHrCompanyId(), hrTask.getHrCompanyName(), "workTaskMessage", hotelTask.getPid());
         //短信发送
         /*CreateMessageDTO createMessageDTO =new CreateMessageDTO();
         createMessageDTO.setHotelName(hotel.getName());

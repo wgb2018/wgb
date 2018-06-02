@@ -15,6 +15,8 @@ import com.microdev.param.*;
 import com.microdev.service.SmsFacade;
 import com.microdev.service.TokenService;
 import com.microdev.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +37,7 @@ import java.util.*;
  */
 @RestController
 public class UserController {
+
     @Autowired
     private UserService userService;
     @Autowired
@@ -271,8 +274,8 @@ public class UserController {
      * @param type
      * @return
      */
-    @GetMapping("/user/selectUnread/amount")
-    public ResultDO selectUnreadAmount(String id, String type) {
+    @GetMapping("/user/{id}/amount/{type}")
+    public ResultDO selectUnreadAmount(@PathVariable String id,@PathVariable String type) {
         return ResultDO.buildSuccess(userService.selectUnreadAmount(id, type));
     }
     /**

@@ -2,15 +2,22 @@ package com.microdev.Controller;
 
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
-import com.microdev.param.*;
+import com.microdev.common.exception.ParamsException;
+import com.microdev.param.AreaAndServiceRequest;import com.microdev.param.PageRequest;
+import com.microdev.param.TaskWorkerQuery;
+import com.microdev.param.WorkerSupplementRequest;
 import com.microdev.param.api.request.PunchRequest;
 import com.microdev.service.TaskWorkerService;
 import com.microdev.service.WorkLogService;
 import com.microdev.service.WorkerService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 小时工相关的Api
@@ -114,8 +121,8 @@ public class WorkerController {
     /**
      * 查看小时工工作记录
      */
-    @PostMapping("/workers/getWorkerDetails")
-    public ResultDO getWorkerDetails(String taskWorkerId, String userId) {
+    @PostMapping("/workers/{taskWorkerId}/getWorkerDetails/{userId}")
+    public ResultDO getWorkerDetails(@PathVariable String taskWorkerId,@PathVariable String userId) {
         return ResultDO.buildSuccess(workerService.selectUserTaskInfo(taskWorkerId, userId));
     }
 	/**
@@ -140,8 +147,8 @@ public class WorkerController {
      * @param date
      * @return
      */
-    @GetMapping("/workers/update/checkSign")
-    public ResultDO updateWorkerLogCheckSign(String taskWorkerId, String date) {
+    @GetMapping("/workers/{taskWorkerId}/updateCheckSign/{date}")
+    public ResultDO updateWorkerLogCheckSign(@PathVariable String taskWorkerId,@PathVariable String date) {
 
         return ResultDO.buildSuccess(workLogService.updateCheckSign(taskWorkerId, date));
     }
@@ -153,4 +160,22 @@ public class WorkerController {
         return workerService.pagingWorkers(paging.getPaginator(),paging.getSelector());
     }
 
+
+    /**
+     * 小时工申请绑定人力公司
+     * @return
+     */
+    @PostMapping("/worker/apply/bindHrs")
+    public ResultDO workerApplyBindHrCompany(@RequestBody Map<String, Object> map) {
+
+        return ResultDO.buildSuccess(workerService.workerApplybind((String) map.get("workerId"), (List<String>)map.get("set")));
+    }
+
+    @GetMapping("/workers/test2/{a}")
+    public ResultDO test3(@PathVariable String a) {
+        if (!"0".equals(a)) {
+            throw new ParamsException("参数错误");
+        }
+        return ResultDO.buildSuccess("测试成功");
+    }
 }

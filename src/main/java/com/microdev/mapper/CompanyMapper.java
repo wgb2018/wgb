@@ -3,6 +3,7 @@ package com.microdev.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.microdev.model.Company;
 import com.microdev.param.CompanyQueryDTO;
+import com.microdev.param.QueryCooperateRequest;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -39,4 +40,9 @@ public interface CompanyMapper extends BaseMapper<Company> {
 
     void deleteCompanyArea(String id);
 
+    List<Map<String, Object>> selectExamineCompanies(@Param("hrCompanyId") String hrCompanyId);
+
+    List<Map<String, Object>> selectCooperateWorker(QueryCooperateRequest param);
+
+    List<Map<String, Object>> selectCooperateHotel(QueryCooperateRequest param);
 }

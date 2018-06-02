@@ -74,8 +74,8 @@ public class TaskController {
      * @param status
      * @return
      */
-    @GetMapping("/tasks/update/status")
-    public ResultDO updateTaskStatus(String taskId, Integer status) {
+    @GetMapping("/tasks/{taskId}/update/{status}")
+    public ResultDO updateTaskStatus(@PathVariable String taskId,@PathVariable Integer status) {
         return ResultDO.buildSuccess(taskService.updateTaskStatus(taskId, status));
     }
 }

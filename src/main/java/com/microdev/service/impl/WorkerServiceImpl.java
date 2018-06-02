@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.microdev.common.ResultDO;
 import com.microdev.common.context.ServiceContextHolder;
+import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.exception.TaskWorkerNotFoundException;
 import com.microdev.common.exception.WorkLogNotFoundException;
@@ -19,7 +20,9 @@ import com.microdev.param.AreaAndServiceRequest;
 import com.microdev.param.api.response.GetBalanceResponse;
 import com.microdev.param.api.response.GetCurrentTaskResponse;
 import com.microdev.service.DictService;
+import com.microdev.service.MessageService;
 import com.microdev.service.WorkerService;
+import com.microdev.type.UserType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +72,10 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     WorkerMapper workerMapper;
     @Autowired
     TaskTypeRelationMapper taskTypeRelationMapper;
+    @Autowired
+    private UserCompanyMapper userCompanyMapper;
+    @Autowired
+    private MessageService messageService;
 
     @Override
     public GetCurrentTaskResponse getCurrentTask(String workerId) {
@@ -919,6 +926,46 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         result.put("result",pageInfo.getList());
         result.put("page",paginator.getPage());
         return ResultDO.buildSuccess(result);
+    }
+
+    /**
+     * 小时工申请绑定人力公司
+     * @param workerId      小时工workerId
+     * @param set           人力公司id
+     * @return
+     */
+    @Override
+    public String workerApplybind(String workerId, List<String> set) {
+        if (StringUtils.isEmpty(workerId) || set == null || set.size() == 0) {
+            throw new ParamsException("参数错误");
+        }
+        User user = userMapper.selectByWorkerId(workerId);
+        if (user == null) throw new ParamsException("查询不到用户");
+        DictDTO dict = dictMapper.findByNameAndCode("WorkerBindHrMaxNum","1");
+        Integer maxNum = Integer.parseInt(dict.getText());
+        int nowNum = userCompanyMapper.selectWorkerBindCount(user.getPid());
+        if (nowNum >= maxNum || (nowNum + set.size()) >= maxNum) {
+            throw new BusinessException("绑定人数达到上限");
+        }
+        int bindNum = userCompanyMapper.selectIsBindUserId(user.getPid(), set);
+        if (bindNum > 0) {
+            throw new BusinessException("人力公司已绑定");
+        }
+        List<UserCompany> userCompanyList = new ArrayList<>();
+        UserCompany userCompany = null;
+        for (String str : set) {
+            userCompany = new UserCompany();
+            userCompany.setCompanyType(2);
+            userCompany.setUserType(UserType.worker);
+            userCompany.setUserId(user.getPid());
+            userCompany.setCompanyId(str);
+            userCompany.setStatus(0);
+            userCompanyList.add(userCompany);
+        }
+        userCompanyMapper.saveBatch(userCompanyList);
+        //发送消息
+        messageService.bindUserHrCompany(user.getUsername(), workerId, set, 1);
+        return "申请成功";
     }
 
     /**

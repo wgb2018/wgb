@@ -2,14 +2,23 @@ package com.microdev.Controller;
 
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
+import com.microdev.common.paging.Paginator;
 import com.microdev.model.Company;
+import com.microdev.model.User;
 import com.microdev.param.CompanyQueryDTO;
 import com.microdev.param.HotelHrIdBindDTO;
+import com.microdev.param.QueryCooperateRequest;
 import com.microdev.service.CompanyService;
+import com.microdev.service.UserCompanyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 人力公司信息相关的Api
@@ -20,6 +29,8 @@ public class HrCompanyController {
     private static final Logger logger = LoggerFactory.getLogger(HrCompanyController.class);
     @Autowired
     CompanyService companyService;
+    @Autowired
+    private UserCompanyService userCompanyService;
     /**
      * 分页查询人力资源公司
      */
@@ -97,5 +108,70 @@ public class HrCompanyController {
     public ResultDO bindCompany(@RequestBody HotelHrIdBindDTO dto) {
         logger.info("bindCompany param:" + dto.toString());
         return companyService.hotelAddHrCompanySet(dto);
+    }
+
+    /**
+     * 人力申请绑定小时工
+     */
+    @PostMapping("/hrcompanies/apply/bindWorkers")
+    public ResultDO bindWorkers(@RequestBody Map<String, Object> param) {
+
+        return ResultDO.buildSuccess(userCompanyService.hrApplyBindWorker((String)param.get("hrId"), (List<String>) param.get("set")));
+    }
+
+    /**
+     * 人力公司反馈小时工解绑申请
+     * @param messageId     消息id
+     * @param status        1同意
+     * @return
+     */
+    @GetMapping("/hrcompanies/{messageId}/unbind/{status}")
+    public ResultDO hrCompanyUnbindWorker(@PathVariable String messageId,@PathVariable String status) {
+
+        return ResultDO.buildSuccess(companyService.hrUnbindWorker(messageId, status));
+    }
+
+    /**
+     * 人力查询待审核的酒店信息
+     * @param page
+     * @return
+     */
+    @PostMapping("/hrcompanies/examine/companies")
+    public ResultDO hrCompaniesExamineCompanies(@RequestBody PagingDO<QueryCooperateRequest> page) {
+        Paginator paginator = page.getPaginator();
+        return companyService.selectExamineCompanies(page.getSelector().getId(), paginator.getPage(), paginator.getPageSize());
+    }
+
+    /**
+     * 人力查询合作的小时工
+     * @return
+     */
+    @PostMapping("/hrcompanies/manager/workers")
+    public ResultDO hrcompaniesManagerWorkers(@RequestBody PagingDO<QueryCooperateRequest> page) {
+        Paginator paginator = page.getPaginator();
+        return userCompanyService.selectWorkerCooperate(page.getSelector(), paginator.getPage(), paginator.getPageSize());
+    }
+
+    /**
+     * 人力处理酒店绑定申请
+     * @param messageId
+     * @param status    0拒绝1同意
+     * @return
+     */
+    @GetMapping("/hrcompanies/{messageId}/handle/{status}")
+    public ResultDO hrcompanyHandleBind(@PathVariable String messageId,@PathVariable String status) {
+
+        return ResultDO.buildSuccess(companyService.hrHandlerHotelBind(messageId, status));
+    }
+
+    /**
+     * 人力查询合作的酒店
+     * @param page
+     * @return
+     */
+    @PostMapping("/hrcompanies/cooperate/hotels")
+    public ResultDO hrcompaniesCooperateInfo(@RequestBody PagingDO<QueryCooperateRequest> page) {
+
+        return companyService.hrQueryCooperatorHotel(page.getSelector(), page.getPaginator());
     }
 }

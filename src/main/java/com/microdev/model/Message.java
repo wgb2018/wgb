@@ -53,7 +53,7 @@ public class Message extends BaseEntity {
      */
     private int applicantType;
     /**
-     * 申请类型
+     * 申请类型0代表人力公司派发任务给小时工，1代表被申请方为小时工，2代表被申请方为人力资源公司，      *  3代表被申请方为酒店
      */
     private int applyType;
     /**
@@ -85,7 +85,7 @@ public class Message extends BaseEntity {
     private Integer checkSign = 0;
 
     /**
-     * 消息类型1补签申请2加时申请3请假申请4调配申请5绑定申请6任务推荐
+     * 消息类型1补签申请2加时申请3请假申请4调配申请5绑定申请6任务推荐9通知
      */
     private Integer messageType = 0;
 
@@ -93,6 +93,10 @@ public class Message extends BaseEntity {
      * 是否需要处理0需要1不需要(通知)
      */
     private Integer isHandle = 0;
+    /**
+     * 任务id
+     */
+    private String taskId;
     public Integer getStatus() {
         return status;
     }

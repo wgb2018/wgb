@@ -67,9 +67,10 @@ public interface MessageService extends IService<Message> {
      * @param request
      * @param hotel
      * @param pattern
+     * @param taskId
      * @return
      */
-    void hotelDistributeTask(CreateTaskRequest request, Company hotel, String pattern);
+    void hotelDistributeTask(CreateTaskRequest request, Company hotel, String pattern, String taskId);
 
     /**
      * 人力派发给小时工任务
@@ -77,8 +78,9 @@ public interface MessageService extends IService<Message> {
      * @param hrId
      * @param hrName
      * @param pattern
+     * @param taskId
      */
-    void hrDistributeTask(List<Map<String, String>> list, String hrId, String hrName, String pattern);
+    void hrDistributeTask(List<Map<String, String>> list, String hrId, String hrName, String pattern, String taskId);
 
     /**
      * 人力申请调配消息
@@ -140,4 +142,13 @@ public interface MessageService extends IService<Message> {
      * @return
      */
     String updateMessageCheckSign(String id);
+
+    /**
+     * 小时工绑定人力公司或人力公司绑定小时工
+     * @param name
+     * @param id
+     * @param list
+     * @param type    1小时工绑定人力2人力绑定小时工
+     */
+    void bindUserHrCompany(String name, String id, List<String> list, int type);
 }

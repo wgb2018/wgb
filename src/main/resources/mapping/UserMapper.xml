@@ -30,4 +30,14 @@
         user_code = #{userCode} where id = #{pid}
     </update>
 
+    <select id="selectIdByWorkerId" resultType="java.lang.String">
+        select id from USER WHERE worker_id IN
+        <foreach collection="set" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="selectByWorkerId" resultType="com.microdev.model.User" parameterType="java.lang.String">
+        select <include refid="User_Query_List"/> from user where worker_id = #{workerId}
+    </select>
 </mapper>

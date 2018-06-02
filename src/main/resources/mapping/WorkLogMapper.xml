@@ -91,7 +91,7 @@
 
     <select id="selectWorkLogByTime" parameterType="java.util.Map"
             resultType="com.microdev.model.WorkLog">
-		SELECT *
+		SELECT <include refid="WorkLog_Column_List"/>
 		FROM work_log WHERE task_worker_id = #{taskWorkerId}
 		AND DATE_FORMAT(create_time, '%Y-%m-%d') =
 		DATE_FORMAT(#{time},'%Y-%m-%d')
@@ -159,5 +159,9 @@
     <select id = "selectUnreadPunchCount" resultType="java.lang.Integer">
         SELECT SUM(IFNULL(wl.check_sign,0)) AS checkSign
         FROM (SELECT * FROM work_log WHERE to_date IS NULL AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <![CDATA[>=]]> DATE(create_time)) wl GROUP BY DATE_FORMAT(wl.create_time,'%Y.%m.%d') HAVING checkSign <![CDATA[<]]> 1
+    </select>
+
+    <select id="selectUnreadInfoOne" resultType="com.microdev.model.WorkLog">
+        select <include refid="WorkLog_Column_List"/> from work_log where task_worker_id = #{taskWorkerId} and DATE_FORMAT(create_time, '%Y-%m-%d') = #{date} limit 1
     </select>
 </mapper>

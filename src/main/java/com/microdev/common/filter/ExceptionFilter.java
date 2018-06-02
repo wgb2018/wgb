@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -38,6 +39,7 @@ public class ExceptionFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
+
         try {
             chain.doFilter(request, response);
         } catch (NestedServletException e) {
@@ -84,22 +86,13 @@ public class ExceptionFilter implements Filter {
 }
 
 @ControllerAdvice
-@ResponseBody
-class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+class GlobalExceptionHandler{
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    @Override
-    protected ResponseEntity<Object> handleExceptionInternal(Exception e, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        if (e instanceof ParamsException) {
-            log.error(e.getMessage(), e);
-            status = HttpStatus.BAD_REQUEST;//400
-        } else if (e instanceof AuthenticationException) {
-            log.debug(e.getMessage(), e);
-            status = HttpStatus.UNAUTHORIZED;//401
-        } else if (e instanceof AuthorizationException) {
-            log.debug(e.getMessage(), e);
-            status = HttpStatus.FORBIDDEN;//403
-        }
-        return new ResponseEntity<>(ResultDO.buildError(e.getMessage()), status);
+    @ExceptionHandler(Exception.class)
+    @ResponseBody
+    public ResultDO handleExceptionInternal(Exception e) {
+        log.error(e.getMessage(), e);
+        return ResultDO.buildError(e.getMessage());
     }
 }

@@ -34,14 +34,14 @@ public class TaskWorkerController {
     /**
      * 小时工接受任务
      */
-    @PutMapping("/worker-tasks/{workerId}/accept/{workerTaskId}")
-    public ResultDO getById(@PathVariable String workerId,@PathVariable String workerTaskId, String messageId) {
+    @PostMapping("/worker-tasks/accept")
+    public ResultDO getById(String workerId, String workerTaskId, String messageId) {
         return taskWorkerService.receivedTask(workerId, workerTaskId, messageId);
     }
     /**
      * 小时工拒绝任务
      */
-    @PutMapping("/worker-tasks/reject")
+    @PostMapping("/worker-tasks/reject")
     public ResultDO getById(@RequestBody RefusedTaskRequest refusedReq) {
         return taskWorkerService.refusedTask(refusedReq);
     }
