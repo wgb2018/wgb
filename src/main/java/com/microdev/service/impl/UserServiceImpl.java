@@ -6,7 +6,10 @@ import com.microdev.common.context.ServiceContextHolder;
 import com.microdev.common.exception.AuthenticationException;
 import com.microdev.common.exception.AuthorizationException;
 import com.microdev.common.exception.ParamsException;
+import com.microdev.common.oss.ObjectStoreService;
+import com.microdev.common.utils.FileUtil;
 import com.microdev.common.utils.PasswordHash;
+import com.microdev.common.utils.QRCodeUtil;
 import com.microdev.common.utils.TokenUtil;
 import com.microdev.converter.UserConverter;
 import com.microdev.mapper.*;
@@ -23,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -58,7 +62,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     private DictMapper dictMapper;
     @Autowired
     private WorkerLogMapper workerLogMapper;
-
+    @Autowired
+    private ObjectStoreService objectStoreService;
+    @Autowired
+    DictService dictService;
     @Override
     public User create(User user) throws Exception{
         try{
@@ -106,6 +113,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         if (userMapper.findByMobile(register.getMobile()) != null) {
             throw new ParamsException("手机号码已经存在");
         }
+        File file;
+        String fileURI = null;
+        String filePath;
+
         User newUser = new User();
         newUser.setUserType(register.getUserType());
         newUser.setMobile(register.getMobile());
@@ -118,6 +129,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         if(newUser.getUserType().name().equals("worker")){
             Worker worker = new Worker();
             workerMapper.insert(worker);
+            file = QRCodeUtil.createQRCode (worker.getPid ()+"WGB"+register.getUserType());
+            filePath = "QRCode".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
+            //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
+            fileURI = objectStoreService.uploadFile(filePath, file);
             newUser.setWorkerId(worker.getPid());
         } else if(newUser.getUserType().name().equals("hotel")){
             Company company = new Company();
@@ -125,14 +140,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             company.setLeaderMobile(register.getMobile());
             company.setCompanyType(1);
             companyMapper.insert(company);
+            file = QRCodeUtil.createQRCode (company.getPid ()+"WGB"+register.getUserType());
+            filePath = "QRCode".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
+            //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
+            fileURI = objectStoreService.uploadFile(filePath, file);
         }else if(newUser.getUserType().name().equals("hr")){
             Company company = new Company();
             company.setStatus(0);
             company.setLeaderMobile(register.getMobile());
             company.setCompanyType(2);
             companyMapper.insert(company);
+            file = QRCodeUtil.createQRCode (company.getPid ()+"WGB"+register.getUserType());
+            filePath = "QRCode".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
+            //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
+            fileURI = objectStoreService.uploadFile(filePath, file);
         }
         //存入用户
+        newUser.setQrCode (fileURI);
         userMapper.insert(newUser);
         //存入用户角色关系
         roleMapper.insertRoleAndUserRelation(newUser
@@ -321,11 +345,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             workerMapper.updateById (worker);
         }else if(user.getUserType () == UserType.hotel || user.getUserType () == UserType.hr) {
             Company company = companyMapper.findFirstByLeaderMobile (user.getMobile ());
-            if(userDTO.getCompany ().getName ()!=null && userDTO.getCompany ().getName ()!="")company.setName (userDTO.getCompany ().getName ());
             if(userDTO.getNickname ()!=null && userDTO.getNickname ()!="")company.setLeader (userDTO.getNickname ());
-            if(userDTO.getCompany ().getBusinessLicense ()!=null && userDTO.getCompany ().getBusinessLicense ()!="")company.setBusinessLicense (userDTO.getCompany ().getBusinessLicense ());
-            if(userDTO.getCompany ().getLogo ()!=null && userDTO.getCompany ().getLogo ()!="")company.setLogo (userDTO.getCompany ().getLogo ());
-            companyMapper.updateById (company);
+            if(userDTO.getCompany ()!=null){
+                if(userDTO.getCompany ().getName ()!=null && userDTO.getCompany ().getName ()!="")company.setName (userDTO.getCompany ().getName ());
+                if(userDTO.getCompany ().getBusinessLicense ()!=null && userDTO.getCompany ().getBusinessLicense ()!="")company.setBusinessLicense (userDTO.getCompany ().getBusinessLicense ());
+                if(userDTO.getCompany ().getLogo ()!=null && userDTO.getCompany ().getLogo ()!="")company.setLogo (userDTO.getCompany ().getLogo ());
+                if(userDTO.getCompany ().getLaborDispatchCard ()!=null && userDTO.getCompany ().getLaborDispatchCard ()!="")company.setLaborDispatchCard (userDTO.getCompany ().getLaborDispatchCard ());
+                if(userDTO.getCompany ().getArea ()!=null && userDTO.getCompany ().getArea ()!=""){
+                    System.out.println ("userDTO:"+userDTO);
+                    company.setAddress (userDTO.getCompany ().getAddress ());
+                    company.setArea (userDTO.getCompany ().getArea ());
+                    company.setAddressCode (userDTO.getCompany ().getAddressCode ());
+                    company.setLatitude (userDTO.getCompany ().getLatitude ());
+                    company.setLongitude (userDTO.getCompany ().getLongitude ());
+                }
+            }
+            companyMapper.updateAllColumnById (company);
         }
     }
     /**
@@ -359,11 +394,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
 
         String mobile = user.getString("mobile");
+        User user1 = userMapper.queryByUserId(user.getId());
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setUsername(user.getString("username"));
         userDTO.setNickname(user.getString("nickName"));
-        userDTO.setAvatar( userMapper.queryByUserId(user.getId()).getAvatar());
+        userDTO.setAvatar( user1.getAvatar());
+        userDTO.setAge (user1.getAge ());
+        userDTO.setQrCode (user1.getQrCode ());
         try{
             switch (user.getString("sex")) {
                 case "男":
@@ -399,8 +437,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                 companyDTO.setLogo (company.getLogo ());
                 companyDTO.setLatitude (company.getLatitude ());
                 companyDTO.setLongitude (companyDTO.getLongitude ());
+                companyDTO.setLaborDispatchCard (company.getLaborDispatchCard ());
+                companyDTO.setArea (company.getArea ());
+                companyDTO.setAddressCode (company.getAddressCode ());
                 userDTO.setCompany(companyDTO);
-				userDTO.setServiceType (dictMapper.queryTypeByUserId (company.getPid ()));
+                List l1 = dictMapper.queryTypeByUserId (company.getPid ());
+                List l2 = dictService.findServiceArea(company.getPid ());
+				userDTO.setServiceType (l1 == null?new ArrayList<>():l1);
+				userDTO.setAreaCode (l2 == null?new ArrayList<>():l2);
 
             }
         } else if (userType == UserType.worker) {
@@ -411,9 +455,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             userDTO.setHealthCard(worker.getHealthCard());
             userDTO.setIdCardFront(worker.getIdcardFront());
             userDTO.setIdCardBack(worker.getIdcardBack());
-			 /*userDTO.setServiceType (dictMapper.queryTypeByUserId (workerId));
-            //服务地区
-            userDTO.setAreaCode (dictMapper.findServiceArea (workerId));*/
+            List l1 = dictMapper.queryTypeByUserId (workerId);
+            List l2 = dictService.findServiceArea(workerId);
+            userDTO.setServiceType (l1==null?new ArrayList<>():l1);
+            userDTO.setAreaCode (l2==null?new ArrayList<>():l2);
         }
 
         return userDTO;

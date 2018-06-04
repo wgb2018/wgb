@@ -3,9 +3,7 @@ package com.microdev.Controller;
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
 import com.microdev.common.exception.ParamsException;
-import com.microdev.param.AreaAndServiceRequest;import com.microdev.param.PageRequest;
-import com.microdev.param.TaskWorkerQuery;
-import com.microdev.param.WorkerSupplementRequest;
+import com.microdev.param.*;
 import com.microdev.param.api.request.PunchRequest;
 import com.microdev.service.TaskWorkerService;
 import com.microdev.service.WorkLogService;
@@ -126,9 +124,9 @@ public class WorkerController {
         return ResultDO.buildSuccess(workerService.selectUserTaskInfo(taskWorkerId, userId));
     }
 	/**
-     * 修改小时工服务类型及地区
+     * 修改服务类型及地区
      */
-    @PostMapping("/workers/AreaAndService")
+    @PostMapping("/mpdify/AreaAndService")
     public ResultDO mpdifyAreaAndService(@RequestBody AreaAndServiceRequest request) {
         workerService.mpdifyAreaAndService(request);
         return ResultDO.buildSuccess("修改成功");
@@ -152,6 +150,14 @@ public class WorkerController {
 
         return ResultDO.buildSuccess(workLogService.updateCheckSign(taskWorkerId, date));
     }
+    /**
+     * 分页查询小时工
+     */
+    @PostMapping("/workers/search")
+    public ResultDO getPageData(@RequestBody PagingDO<WorkerQueryDTO> paging) {
+        return workerService.pagingWorkers(paging.getPaginator(),paging.getSelector());
+    }
+
 
     /**
      * 小时工申请绑定人力公司

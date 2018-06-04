@@ -6,7 +6,7 @@ package com.microdev.param;
 public enum SmsType {
     login("登录"), register("注册"), bind("绑定"), reset_password("重置密码"), identity_check("身份验证"),
     hr_dispatch_worker("人力公司派单给小时工"), worker_feedback_hr("小时工反馈任务状态给人力公司"),hr_company_apply_hotel("人力公司申请添加酒店"),
-    hotel_apply_hr_company("酒店申请添加人力公司"), worker_apply_hr_company("小时工申请添加酒店");
+    hotel_apply_hr_company("酒店申请添加人力公司"), worker_apply_hr_company("小时工申请添加酒店"), apply_register("申请注册");
 
     String text;
 

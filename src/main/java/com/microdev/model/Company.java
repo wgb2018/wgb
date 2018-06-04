@@ -71,10 +71,19 @@ public class Company extends BaseEntity {
     private Integer activeWorkers;
 
 	@TableField(exist = false)
-    private Map<String,Integer> areaCode;
+    private List <UserArea> areaCode;
 
     @TableField(exist = false)
-    private List<String> serviceType;
+    private List<Dict> serviceType;
+
+    private Integer addressCode;
+
+    private String area;
+    /**
+     * 劳务派遣证
+     */
+    private String laborDispatchCard;
+
     public String getName() {
         return name;
     }

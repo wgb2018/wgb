@@ -125,7 +125,7 @@ public class CompanyTest {
 	public void nineTest() {
 		String messageId = "1191dbb1-3777-4527-970a-4b21f0618d1d";
 		Integer type = 1;
-		companyService.hotelAddHrCompanyById("","",messageId, type);
+
 	}
 
 	@Test

@@ -79,10 +79,13 @@
                 and status = #{status}
             </if>
             <if test="status == 0">
-                and status in (1,2,4,5)
+                and status in (1,2,4,5,8)
             </if>
             <if test="status == 7">
                 and status in (3,6)
+            </if>
+            <if test="status == 9">
+                and status in (2,4,5,6,8)
             </if>
         </where>
         order by create_time desc

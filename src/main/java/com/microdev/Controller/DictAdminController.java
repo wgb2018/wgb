@@ -101,7 +101,7 @@ public class DictAdminController {
 	/**
      * 获取用户的服务地区
      */
-    @GetMapping("/findarea/{userId}")
+    @GetMapping("/findServiceArea/{userId}")
     public ResultDO getUserArea(@PathVariable String userId) {
         return  ResultDO.buildSuccess(dictService.findServiceArea(userId));
     }

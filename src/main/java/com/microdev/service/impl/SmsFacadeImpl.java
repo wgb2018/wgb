@@ -111,6 +111,10 @@ public class SmsFacadeImpl extends ServiceImpl<SmsTemplateMapper,SmsTemplate> im
         String content = StringKit.templateReplace(smsTemplate.getContent(), templateParams);
         //调用短信通道发送短信
         SmsSendDTO smsSendDTO = new SmsSendDTO();
+        System.out.println ("mpbile:"+mobile);
+        System.out.println ("PlatformSignName:"+smsTemplate.getPlatformSignName());
+        System.out.println ("PlatformTemplateCode:"+smsTemplate.getPlatformTemplateCode());
+        System.out.println ("templateParams:"+templateParams);
         smsSendDTO.setMobile(mobile);
         smsSendDTO.setSignName(smsTemplate.getPlatformSignName());
         smsSendDTO.setTemplateCode(smsTemplate.getPlatformTemplateCode());

@@ -3,7 +3,7 @@
 <mapper namespace="com.microdev.mapper.UserMapper">
     <sql id="User_Query_List">
         id as pid, create_time, deleted, modify_time, activated, avatar, birthday, email, mobile, nickname, password,
-        sex, user_type, username, worker_id, user_code, age
+        sex, user_type, username, worker_id, user_code, age, qr_code
     </sql>
     <select id="query" resultType="com.microdev.model.User" parameterType="com.microdev.param.UserDTO">
         select * from USER

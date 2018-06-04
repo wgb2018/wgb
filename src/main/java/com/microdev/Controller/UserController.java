@@ -7,13 +7,11 @@ import com.microdev.common.ResultDO;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.oss.ObjectStoreService;
 import com.microdev.common.utils.FileUtil;
+import com.microdev.common.utils.QRCodeUtil;
 import com.microdev.mapper.DictMapper;
 import com.microdev.mapper.UserMapper;
 import com.microdev.model.User;
-import com.microdev.param.ChangePwdRequest;
-import com.microdev.param.SmsType;
-import com.microdev.param.UserDTO;
-import com.microdev.param.WeixinUserInfo;
+import com.microdev.param.*;
 import com.microdev.service.SmsFacade;
 import com.microdev.service.TokenService;
 import com.microdev.service.UserService;
@@ -178,8 +176,22 @@ public class UserController {
     }
     /**
      * 上传文件
-     * 上传文件到服务器，比如：用户图像、营业执照等等
+     * 上传文件到服务器，比如：用户图像、营业执照 等等
      */
+    @PostMapping("/files")
+    //@RequestMapping(value = "/form", method = RequestMethod.POST, consumes = "multipart/form-data")
+    public ResultDO uploadFile1(FileRequest fileRequest) throws Exception {
+        System.out.println ("FileType:"+fileRequest.getFileType ());
+        System.out.println ("File:"+fileRequest.getFileType ());
+        String filePath = fileRequest.getFileType ().toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(fileRequest.getFile ());
+
+        //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
+        String fileURI = objectStoreService.uploadObject (filePath, fileRequest.getFile ().getBytes ());
+
+
+        //返回地址给前端
+        return ResultDO.buildSuccess("上传文件成功", fileURI);
+    }
     @PostMapping("/files/{fileType}")
     public ResultDO uploadFile(@PathVariable String fileType, @RequestParam("file") MultipartFile file) throws Exception {
 
@@ -266,4 +278,26 @@ public class UserController {
     public ResultDO selectUnreadAmount(@PathVariable String id,@PathVariable String type) {
         return ResultDO.buildSuccess(userService.selectUnreadAmount(id, type));
     }
+    /**
+     * 邀请注册
+     */
+    @GetMapping("/apply/register")
+    public ResultDO applyRegister(ApplyRequest applyRequest) {
+        Map<String, String> map = new LinkedHashMap <> ();
+        map.put ("name",applyRequest.getName ());
+        map.put ("address",applyRequest.getUrl ());
+        smsFacade.sendSmsNotice (applyRequest.getMobile (),SmsType.apply_register,map);
+        return ResultDO.buildSuccess ("发送成功");
+    }
+    /**
+     * 请求地图数据
+     */
+    @GetMapping("/apply/bdMap")
+    public ResultDO bdMap( String url) {
+        //HttpServletRequest.
+        return ResultDO.buildSuccess (null);
+    }
+
+
+
 }

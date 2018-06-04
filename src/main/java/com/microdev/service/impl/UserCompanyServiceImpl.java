@@ -155,7 +155,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         //查询数据集合
         Map<String,Object> map = new HashMap<>();
         map.put("company_id",queryDTO.getHrId());
-        map.put("status",1);
+        map.put("status","1 or status = 3");
         List<User> list = null;
         User us = null;
         //List<String> ids = new ArrayList<>();
@@ -188,8 +188,22 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
 
     @Override
     public ResultDO getHrwWorkers(Paginator paginator, HrQueryWorkerDTO queryDTO) {
-        return null;
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize());
+        List<TaskWorker> list1 = userCompanyMapper.getUnSelectableWorker(queryDTO);
+        PageInfo<TaskWorker> pageInfo = new PageInfo<TaskWorker>(list1);
+        List<HrTaskWorkersResponse> list = new ArrayList<>();
+        for (TaskWorker taskWorker:pageInfo.getList()) {
+            list.add(taskConverter.toWorkerReponse(taskWorker));
+        }
+        HashMap<String, Object> result = new HashMap<>();
+        //设置获取到的总记录数total：
+        result.put("total", pageInfo.getTotal());
+        //设置数据集合rows：
+        result.put("result", list);
+        result.put("page", paginator.getPage());
+        return ResultDO.buildSuccess(result);
     }
+
 
 
     /**

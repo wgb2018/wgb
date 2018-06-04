@@ -55,6 +55,9 @@ public interface Constant {
         add("/workers/**");//应该拦截 调试中 暂不删除
         add("/**/test");
         add("/protocoldownload/*");
+        add("/apply/register");
+        add("/findbyname/*");
+        add("/admin/dicts/*");
     }};
 
 

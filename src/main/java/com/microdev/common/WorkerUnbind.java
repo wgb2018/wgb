@@ -20,7 +20,7 @@ public class WorkerUnbind {
     @Autowired
     private DictMapper dictMapper;
 
-    @Scheduled(cron = "* * 0/1 * * ?")
+    //@Scheduled(cron = "* * 0/1 * * ?")
     public void scanUnbindMessage() {
         DictDTO dict = dictMapper.findByNameAndCode("MaxUnbindDay","22");
         if (dict != null) {

@@ -28,6 +28,10 @@ public class UserDTO {
      * 用户名
      */
     private String username;
+    /**Integerage
+     * 年龄
+     */
+    private Integer age;
     /**
      * 昵称
      */
@@ -64,6 +68,10 @@ public class UserDTO {
      * 用户类型
      */
     private UserType userType;
+    /**
+     * 用户二维码
+     */
+    private String qrCode;
 
     public Integer getUserCode() {
         return userCode;

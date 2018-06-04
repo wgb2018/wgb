@@ -46,4 +46,14 @@ public class CompanyDTO {
     private Double longitude;
 
     private Integer status;
+
+    private String laborDispatchCard;
+
+    private Integer addressCode;
+
+    private String area;
+
+
+
+
 }

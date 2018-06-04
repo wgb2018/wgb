@@ -3,11 +3,13 @@ package com.microdev.service.impl;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.microdev.common.ResultDO;
 import com.microdev.common.context.ServiceContextHolder;
 import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.exception.TaskWorkerNotFoundException;
 import com.microdev.common.exception.WorkLogNotFoundException;
+import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.DateUtil;
 import com.microdev.common.utils.StringKit;
 import com.microdev.converter.WorkLogConverter;
@@ -854,43 +856,78 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     }
 
 	/**
-     *  修改小时工服务类型及服务地区
+     *  修改服务类型及服务地区
      */    public void mpdifyAreaAndService(AreaAndServiceRequest request) {
         //删除旧数据
-        companyMapper.deleteAreaRelation(request.getWorkerID());
-        companyMapper.deleteCompanyArea(request.getWorkerID());
-        taskTypeRelationMapper.deleteTaskTypeRelation(request.getWorkerID());
-        //添加区域
-        List<UserArea> areaList = request.getAreaCode();
-        for (UserArea ua:areaList) {
-            companyMapper.insertAreaRelation(request.getWorkerID(),ua.getAreaId (),ua.getAreaLevel (),ua.getAreaName ());
-            if(ua.getAreaLevel ()==1){
-                Map<String,String> list = dictMapper.findCity(ua.getAreaId ());
-                for (String key : list.keySet()) {
-                    Map<String,String> list2= dictMapper.findArea(key);
-                    for (String key1 : list2.keySet()) {
-                        companyMapper.insertCompanyArea(request.getWorkerID(),key1,0);
+        if(request.getAreaCode()!=null){
+            companyMapper.deleteAreaRelation(request.getId());
+            companyMapper.deleteCompanyArea(request.getId());
+            //添加区域
+            List<UserArea> areaList = request.getAreaCode();
+            for (UserArea ua:areaList) {
+                if(ua.getAreaLevel ()==1){
+                    List<Map<String,String>> list = dictMapper.findCity(ua.getAreaId ());
+                    companyMapper.insertAreaRelation(request.getId(),ua.getAreaId (),ua.getAreaLevel (),dictMapper.findProvinceNameById (ua.getAreaId ()));
+                    if(list == null){
+                        companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
                     }
+                    for (Map<String,String> key : list) {
+                        List<Map<String,String>> list2 = dictMapper.findArea(key.get("cityId"));
+                        if(list2 == null ){
+                            companyMapper.insertCompanyArea(request.getId(),key.get("cityId"),request.getIdType ());
+                        }
+                        for (Map<String,String> key2 : list2) {
+                            companyMapper.insertCompanyArea(request.getId(),key2.get("areaId"),request.getIdType ());
+                        }
+                    }
+                }else if(ua.getAreaLevel ()==2){
+                    companyMapper.insertAreaRelation(request.getId(),ua.getAreaId (),ua.getAreaLevel (),dictMapper.findCityNameById (ua.getAreaId ()));
+                    List<Map<String,String>> list2= dictMapper.findArea(ua.getAreaId ());
+                    if(list2 == null ){
+                        companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
+                    }
+                    for (Map<String,String> key2 : list2) {
+                        companyMapper.insertCompanyArea(request.getId(),key2.get("areaId"),request.getIdType ());
+                    }
+                }else{
+                    companyMapper.insertAreaRelation(request.getId(),ua.getAreaId (),ua.getAreaLevel (),dictMapper.findAreaNameById (ua.getAreaId ()));
+                    companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
                 }
-            }else if(ua.getAreaLevel ()==2){
-                Map<String,String> list2= dictMapper.findArea(ua.getAreaId ());
-                for (String key1 : list2.keySet()) {
-                    companyMapper.insertCompanyArea(request.getWorkerID(),key1,0);
-                }
-            }else{
-                companyMapper.insertCompanyArea(request.getWorkerID(),ua.getAreaId (),0);
             }
         }
-        //添加服务类型
-        List<String> serviceType = request.getServiceType();
-        for(int i = 0;i<serviceType.size();i++){
-            taskTypeRelationMapper.insertTaskTypeRelation(request.getWorkerID(),serviceType.get(i),0);
+        if(request.getServiceType ()!=null){
+            taskTypeRelationMapper.deleteTaskTypeRelation(request.getId());
+            //添加服务类型
+            List<String> serviceType = request.getServiceType();
+            for(int i = 0;i<serviceType.size();i++){
+                taskTypeRelationMapper.insertTaskTypeRelation(request.getId(),serviceType.get(i),request.getIdType ());
+            }
         }
     }
 
     @Override
     public Map<String, Object> queryWorker(String id) {
-        return workerMapper.queryWorker(id);
+        Map<String, Object> map = workerMapper.queryWorker(id);
+        List l1 = dictService.findServiceArea (id);
+        List l2 = dictMapper.queryTypeByUserId (id);
+        map.put("areaCode",l1==null?new ArrayList<>():l1);
+        map.put("serviceType",l2==null?new ArrayList<>():l2);
+        return map;
+    }
+
+    @Override
+    public ResultDO pagingWorkers(Paginator paginator, WorkerQueryDTO workerQueryDTO) {
+        PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
+        //查询数据集合
+        List<Map<String,Object>> list = workerMapper.queryWorkers(workerQueryDTO);
+        PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(list);
+        HashMap<String,Object> result = new HashMap<>();
+        //设置获取到的总记录数total：
+        result.put("total",pageInfo.getTotal());
+        //设置数据集合rows：
+        result.put("result",pageInfo.getList());
+        result.put("page",paginator.getPage());
+        return ResultDO.buildSuccess(result);
     }
 
     /**

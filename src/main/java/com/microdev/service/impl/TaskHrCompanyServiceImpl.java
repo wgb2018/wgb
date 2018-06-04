@@ -296,15 +296,14 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             throw new BusinessException("查询不到人力任务数据");
         }
         taskHrCompanyMapper.updateStatus(id,3);
-
-        Inform inform = new Inform();
+		taskMapper.updateStatus (taskHrCompanyMapper.queryByTaskId (id).getTaskId (),8);
+		Inform inform = new Inform();
         inform.setTitle("任务被拒绝");
         inform.setSendType(2);
         inform.setAcceptType(3);
         inform.setReceiveId(taskHrCompany.getHotelId());
         inform.setContent(taskHrCompany.getHrCompanyName() + "拒绝了你派发的任务。");
-        informMapper.insert(inform);
-    }
+        informMapper.insert(inform);    }
     /**
      * 人力公司任务调配
      */

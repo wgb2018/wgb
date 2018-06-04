@@ -3,8 +3,8 @@
 <mapper namespace="com.microdev.mapper.CompanyMapper">
     <sql id="Company_Column_List">
         id as pid, create_time, deleted, modify_time,address,
-        business_license, company_type, confirmed_time, latitude, leader, leader_mobile,
-        logo, longitude, name, status
+        business_license, company_type, confirmed_time, latitude, leader, leader_mobile, address_code ,area,
+        logo, longitude, name, status,labor_dispatch_card
     </sql>
     <sql id="Company_Query_Param">
         <if test="name != null and name != ''">
@@ -43,17 +43,19 @@
         <!--<where>
             <include refid="Company_Query_Param"/>
             <if test="observertype != null">
-
                 <if test="observertype == 0">
-                    and id IN(select a.id from                    (select DISTINCT id from task_type_relation where task_type_id In
+                    and id IN(select a.id from
+                    (select DISTINCT id from task_type_relation where task_type_id In
                     (select task_type_id from task_type_relation where id = #{observerId}) and id_type = 2
                     )a
                     inner join
                     (select DISTINCT id from area_relation where area_id In
                     (select area_id from area_relation where id = #{observerId}) and id_type = 2
                     )b on a.id = b.id
-                    where a.id not IN                    (select company_id from user_company where user_id = #{observerId} and status IN (0,1,3))
-                    )                </if>
+                    where a.id not IN
+                    (select hr_id from user_company where user_id = #{observerId} and status IN (0,1,3))
+                    )
+                </if>
                 <if test="observertype == 1">
                     and id IN(select a.id from
                     (select DISTINCT id from task_type_relation where task_type_id In
@@ -64,10 +66,8 @@
                     (select area_id from area_relation where id = #{observerId}) and id_type = 2
                     )b on a.id = b.id
                     where a.id not IN
-
-                    (select company_id from hotel_hr_company where hotel_id = #{observerId} and status IN (0))
+                    (select hr_id from hotel_hr_company where hotel_id = #{observerId} and status IN (0))
                     )
-
                 </if>
                 <if test="observertype == 2">
                     and id IN(select a.id from
@@ -81,7 +81,6 @@
                     where a.id not IN
                     (select hotel_id from hotel_hr_company where company_id = #{observerId} and status IN (0))
                     )
-
                 </if>
             </if>
         </where>-->
@@ -109,6 +108,12 @@
         <if test="leader != null and leader !=''">
             and c.leader like concat('%', #{leader},'%')
         </if>
+        <if test="status != null">
+            and hh.status = #{status}
+        </if>
+        <if test="serviceType != null and serviceType !=''">
+            and 1 &lt;= (select count(0) from task_type_relation where id = c.id and task_type_id = #{serviceType})
+        </if>
         order by c.create_time desc
     </select>
     <!-- 获取已添加该酒店的所有人力公司 -->
@@ -132,6 +137,12 @@
         </if>
         <if test="leader != null and leader !=''">
             and c.leader like concat('%', #{leader},'%')
+        </if>
+        <if test="status != null">
+            and hh.status = #{status}
+        </if>
+        <if test="serviceType != null and serviceType !=''">
+            and 1 &lt;= (select count(0) from task_type_relation where id = c.id and task_type_id = #{serviceType})
         </if>
         order by c.create_time desc
     </select>
@@ -162,7 +173,7 @@
         #{leader_mobile},#{logo},#{longitude},#{name},#{status})
     </insert>
     <insert id="insertAreaRelation">
-        insert into user_area values(#{id},#{code},#{level},#{name)
+        insert into user_area values(#{id},#{code},#{level},#{name})
     </insert>
     <!-- 修改人力公司 -->
     <update id="update" parameterType="com.microdev.model.Company">
