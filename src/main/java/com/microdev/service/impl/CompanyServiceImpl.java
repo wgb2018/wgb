@@ -20,9 +20,11 @@ import com.microdev.service.CompanyService;
 import com.microdev.service.DictService;
 import com.microdev.service.MessageService;
 import com.microdev.type.UserType;
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -65,11 +67,13 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     @Autowired
     TaskTypeRelationMapper taskTypeRelationMapper;
     @Autowired
-    UserCompanyMapper userCompanyMapper;
-    @Autowired
-    UserMapper userMapper;
+    private UserMapper userMapper;
     @Autowired
     DictService dictService;
+    @Autowired
+    private InformMapper informMapper;
+    @Autowired
+    private UserCompanyMapper userCompanyMapper;
 
     @Override
     public ResultDO pagingCompanys(Paginator paginator, CompanyQueryDTO queryDTO) {
@@ -82,7 +86,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
          //设置获取到的总记录数total：
         result.put("total",pageInfo.getTotal());
          //设置数据集合rows：
-        result.put("result",pageInfo.getList());
+        result.put("result",list);
         result.put("page",paginator.getPage());
         if(queryDTO.getObservertype () == 0){
             String total = dictMapper.findByNameAndCode ("WorkerBindHrMaxNum","1").getText ();
@@ -106,7 +110,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         logger.info(request.toString());
         List<Map<String, Object>> list = companyMapper.queryHotelsByHrId(request);
-        logger.info("-------------" + list.toString());
 
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
         HashMap<String,Object> result = new HashMap<>();
@@ -126,8 +129,10 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }else{
             List l1 = dictService.findServiceArea (company.getPid ());
             List l2 = dictMapper.queryTypeByUserId (company.getPid ());
+            logger.error("areaCode:" + l1.toString() + ";serviceType:" + l2.toString());
             company.setAreaCode (l1==null?new ArrayList<>():l1);
             company.setServiceType (l2==null?new ArrayList<>():l2);
+            logger.error("areaCode:" + (l1==null?new ArrayList<>():l1) + ";serviceType:" + (l2==null?new ArrayList<>():l2));
         }
         return ResultDO.buildSuccess(company);
     }
@@ -135,37 +140,78 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
      * 人力资源公司和酒店关系绑定 根据ID绑定
      */
     @Override
-    public ResultDO hotelAddHrCompanyById(String hotelId, String hrCompanyId, String messageId, Integer type) {
-        if (StringUtils.isEmpty(messageId) || (type != 1 && type != 2)) {
+    public ResultDO hotelAddHrCompanyById(String messageId, String status, Integer type) {
+        if (StringUtils.isEmpty(messageId) || (type != 1 && type != 2) || StringUtils.isEmpty(status)) {
             throw new ParamsException("参数不能为空");
         }
+
         Message message = messageMapper.selectById(messageId);
-        if (message == null || message.getStatus() == 1) {
-            throw new ParamsException("消息已经被处理");
+        if (message == null) {
+            throw new BusinessException("消息查询不到数据。");
         }
         message.setStatus(1);
-        messageMapper.updateAllColumnById(message);
-        Map<String, Object> columnMap = new HashMap<>();
-        columnMap.put("hotel_id", message.getHotelId());
-        columnMap.put("hr_id", message.getHrCompanyId());
-        List<HotelHrCompany> list = hotelHrCompanyMapper.selectByMap(columnMap);
-        if (list == null || list.size() == 0) {
-            HotelHrCompany h = new HotelHrCompany();
-            h.setDeleted(false);
-            h.setStatus(0);
-            h.setBindType(type);
-            h.setBindTime(OffsetDateTime.now());
-            h.setHrId(message.getHrCompanyId());
-            h.setHotelId(message.getHotelId());
-            hotelHrCompanyMapper.insert(h);
-        } else {
-            HotelHrCompany h = list.get(0);
-            if (h.getStatus() == 1) {
-                h.setDeleted(false);
-                h.setStatus(0);
-                h.setBindType(type);
-                h.setBindTime(OffsetDateTime.now());
-                hotelHrCompanyMapper.updateAllColumnById(h);
+        messageMapper.updateById(message);
+
+        Company company = null;
+        Inform inform = null;
+        if (type == 1) {//酒店处理
+            inform = new Inform();
+            inform.setSendType(3);
+            inform.setAcceptType(2);
+            inform.setReceiveId(message.getHrCompanyId());
+            company = companyMapper.selectById(message.getHotelId());
+            if ("0".equals(status)) {
+                inform.setTitle("绑定被拒绝");
+                inform.setContent(company.getName() + "拒绝了你的绑定申请，等以后有机会希望可以再合作。");
+            } else if ("1".equals(status)) {
+                Map<String, Object> columnMap = new HashMap<>();
+                columnMap.put("hotel_id", message.getHotelId());
+                columnMap.put("hr_id", message.getHrCompanyId());
+                List<HotelHrCompany> list = hotelHrCompanyMapper.selectByMap(columnMap);
+                if (list == null || list.size() == 0) {
+                    throw new BusinessException("酒店人力关系数据查询不到");
+                } else {
+                    HotelHrCompany h = list.get(0);
+                    h.setDeleted(false);
+                    h.setStatus(0);
+                    h.setBindType(type);
+                    h.setBindTime(OffsetDateTime.now());
+                    hotelHrCompanyMapper.updateAllColumnById(h);
+                }
+                inform.setTitle("绑定成功");
+                inform.setContent(company.getName() + "同意了你的绑定申请，成功添加为合作酒店,添加合作酒店代表同意劳务合作协议。你可以接受合作酒店派发的任务，选择小时工，确保能够及时完美的完成任务，可以获得和支出相应的酬劳。");
+            } else {
+                throw new BusinessException("参数错误");
+            }
+            informMapper.insert(inform);
+        } else {//人力处理
+            inform = new Inform();
+            inform.setSendType(2);
+            inform.setAcceptType(3);
+            inform.setReceiveId(message.getHotelId());
+            company = companyMapper.selectById(message.getHotelId());
+            if ("0".equals(status)) {
+                inform.setTitle("绑定被拒绝");
+                inform.setContent(company.getName() + "拒绝了你的绑定申请，等以后有机会希望可以再合作。");
+            } else if ("1".equals(status)) {
+                Map<String, Object> columnMap = new HashMap<>();
+                columnMap.put("hotel_id", message.getHotelId());
+                columnMap.put("hr_id", message.getHrCompanyId());
+                List<HotelHrCompany> list = hotelHrCompanyMapper.selectByMap(columnMap);
+                if (list == null || list.size() == 0) {
+                    throw new BusinessException("酒店人力关系数据查询不到");
+                } else {
+                    HotelHrCompany h = list.get(0);
+                    h.setDeleted(false);
+                    h.setStatus(0);
+                    h.setBindType(type);
+                    h.setBindTime(OffsetDateTime.now());
+                    hotelHrCompanyMapper.updateAllColumnById(h);
+                }
+                inform.setTitle("绑定成功");
+                inform.setContent(company.getName() + "接受了你的绑定申请，成功添加为合作人力公司。添加人力公司代表同意劳务合作协议，你可以向合作的人力公司派发任务，由合作的的人力公司选择小时工，并支出相应的酬劳，确保能及时完美的完成任务。");
+            } else {
+                throw new BusinessException("参数错误");
             }
         }
 
@@ -224,7 +270,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     public ResultDO hotelHrCompanies(Paginator paginator, CompanyQueryDTO request) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         List<Map<String, Object>> list=  companyMapper.queryCompanysByHotelId(request);
-        logger.info(list.toString());
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
         HashMap<String,Object> result = new HashMap<>();
         //设置获取到的总记录数total：
@@ -258,18 +303,16 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         if (!"0".equals(status) && !"1".equals(status)) {
             throw new ParamsException("参数错误");
         }
-        Message newMessage = new Message();
+        Inform inform = new Inform();
         Message oldMsg = messageMapper.selectById(id);
         oldMsg.setStatus(1);
         messageMapper.updateById(oldMsg);
 
-        newMessage.setWorkerId(oldMsg.getWorkerId());
-        newMessage.setHotelId(oldMsg.getHotelId());
-        newMessage.setMessageType(9);
-        newMessage.setIsHandle(1);
-        newMessage.setApplicantType(3);
-        newMessage.setApplyType(1);
         Company c = companyMapper.selectById(oldMsg.getHotelId());
+        inform.setAcceptType(1);
+        inform.setSendType(3);
+        inform.setStatus(0);
+        inform.setReceiveId(oldMsg.getWorkerId());
         if ("1".equals(status)) {
             PunchMessageDTO punch = messageMapper.selectPunchMessage(id);
             if (punch == null) {
@@ -313,14 +356,16 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 taskMapper.addMinutes(punch.getTaskId(),minutes,shouldPayMoney_hoteltohr);
             }
 
-            newMessage.setMessageTitle("申请补签成功");
-            newMessage.setMessageContent(c.getName() + "同意了你的补签申请" + oldMsg.getMessageContent());
+            inform.setTitle("申请补签成功");
+            inform.setContent(c.getName() + "拒绝了你的补签申请。" + oldMsg.getMessageContent());
         } else if ("0".equals(status)) {
-            newMessage.setMessageTitle("申请补签被拒绝");
-            newMessage.setMessageContent(c.getName() + "拒绝了你的补签申请" + oldMsg.getMessageContent());
+
+            inform.setTitle("申请补签被拒绝");
+            inform.setContent(c.getName() + "拒绝了你的补签申请。" + oldMsg.getMessageContent());
         } else {
             throw new ParamsException("参数错误");
         }
+        informMapper.insert(inform);
         return "成功";
     }
     /**
@@ -363,6 +408,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         m.setApplyType(2);
         m.setApplicantType(3);
         m.setStatus(0);
+        m.setIsTask(0);
+        m.setMessageType(9);
         messageMapper.insert(m);
         return true;
     }
@@ -505,6 +552,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             message.setMessageCode(mess.getCode());
             message.setMessageTitle(mess.getTitle());
             message.setStatus(0);
+            message.setIsTask(0);
+            message.setMessageType(6);
             message.setStatus((Integer)param.get("number"));
 
             map.put("number", String.valueOf(param.get("number")));
@@ -530,13 +579,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         Message m = messageMapper.selectById(id);
         m.setStatus(1);
         messageMapper.updateById(m);
-        Message newMessage = new Message();
-        newMessage.setWorkerId(m.getWorkerId());
-        newMessage.setHotelId(m.getHotelId());
-        newMessage.setMessageType(9);
-        newMessage.setIsHandle(1);
-        newMessage.setApplicantType(3);
-        newMessage.setApplyType(1);
+
+        Inform inform = new Inform();
+        inform.setReceiveId(m.getWorkerId());
+        inform.setSendType(3);
+        inform.setAcceptType(1);
         Company c = companyMapper.selectById(m.getHotelId());
 
         if ("1".equals(status)) {
@@ -562,15 +609,18 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             taskHrCompanyMapper.addMinutes(taskWorker.getTaskHrId(),minutes.longValue(),shouldPayMoney_hrtoworker,shouldPayMoney_hoteltohr);
             taskMapper.addMinutes(log.getTaskId(),minutes.longValue(),shouldPayMoney_hoteltohr);
 
-            newMessage.setMessageTitle("申请加时成功");
-            newMessage.setMessageContent(c.getName() + "同意了你的加时请求。" + m.getMessageContent());
+
+            inform.setTitle("申请加时成功");
+            inform.setContent(c.getName() + "同意了你的加时请求。" + m.getMessageContent());
         } else if ("0".equals(status)) {
-            newMessage.setMessageTitle("申请加时被拒绝");
-            newMessage.setMessageContent(c.getName() + "拒绝了你的加时请求。" + m.getMessageContent());
+
+            inform.setTitle("申请加时被拒绝");
+            inform.setContent(c.getName() + "拒绝了你的加时请求。" + m.getMessageContent());
         } else {
             throw new ParamsException("参数错误");
         }
-        messageMapper.insert(newMessage);
+
+        informMapper.insert(inform);
         return true;
     }
     /**
@@ -581,23 +631,32 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         if (dto == null) {
             throw new ParamsException("参数不能为空");
         }
+
         if (dto.getSet().size() == 0) {
             throw new ParamsException("添加的公司不能为空");
         }
         Integer type = dto.getBindType();
+
         Set<String> hrSet = dto.getSet();
+
         List<HotelHrCompany> list = new ArrayList<>();
         HotelHrCompany hotelHr = null;
         if (type == 1) {
             if (StringUtils.isEmpty(dto.getHotelId())) {
                 throw new ParamsException("参数hotelId为空");
             }
+            int num = hotelHrCompanyMapper.selectIsBind(dto);
+            if (num > 0) {
+                throw new BusinessException("已绑定数据,请勿重复");
+            }
             Company company = companyMapper.selectById(dto.getHotelId());
+
             messageService.hotelBindHrCompany(dto.getSet(), company, "applyBindMessage", type);
 
             for (String hrId : hrSet) {
                 hotelHr = new HotelHrCompany();
                 hotelHr.setStatus(3);
+                hotelHr.setBindType(type);
                 hotelHr.setHotelId(company.getPid());
                 hotelHr.setHrId(hrId);
                 list.add(hotelHr);
@@ -606,10 +665,16 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             if (StringUtils.isEmpty(dto.getHrId())) {
                 throw new ParamsException("参数hrId为空");
             }
+            int num = hotelHrCompanyMapper.selectIsBIndByCompanyId(dto);
+            if (num > 0) {
+                throw new BusinessException("已绑定数据,请勿重复");
+            }
             Company company = companyMapper.selectById(dto.getHrId());
+
             messageService.hotelBindHrCompany(dto.getSet(), company, "applyBindMessage", type);
             for (String hotelId : hrSet) {
                 hotelHr = new HotelHrCompany();
+                hotelHr.setBindType(2);
                 hotelHr.setStatus(3);
                 hotelHr.setHotelId(hotelId);
                 hotelHr.setHrId(company.getPid());
@@ -619,6 +684,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         if (list.size() > 0) {
             hotelHrCompanyMapper.saveBatch(list);
         }
+
         return ResultDO.buildSuccess("申请成功");
     }
 
@@ -639,6 +705,10 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }
         message.setStatus(1);
         messageMapper.updateById(message);
+        Inform inform = new Inform();
+        inform.setAcceptType(1);
+        inform.setSendType(2);
+        inform.setReceiveId(message.getWorkerId());
         if ("1".equals(status)) {
             User user = userMapper.selectByWorkerId(message.getWorkerId());
             Map<String, Object> columnMap = new HashMap<>();
@@ -651,6 +721,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             UserCompany userCompany = list.get(0);
             userCompany.setStatus(2);
             userCompanyMapper.update(userCompany);
+            Company company = companyMapper.selectById(userCompany.getCompanyId());
+            inform.setTitle("解绑成功");
+            inform.setContent(company.getName() + "同意了你的申请解绑。你可以添加新的合作人力公司，没人最多只能绑定5家人力公司");
         }
         return "成功";
     }
@@ -670,6 +743,13 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         PageHelper.startPage(page, pageNum, true);
         List<Map<String, Object>> list = companyMapper.selectExamineCompanies(hrCompanyId);
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
+        logger.info("size=" + list.size());
+        for (Map<String, Object> map : list) {
+            for(Map.Entry<String, Object> m : map.entrySet()) {
+                System.out.print("key:" + m.getKey() + ";value=" + m.getValue());
+            }
+            System.out.println();
+        }
         Map<String, Object> param = new HashMap<>();
         param.put("page", page);
         param.put("total", pageInfo.getTotal());
@@ -700,7 +780,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     }
 
     /**
-     * 人力处理酒店绑定申请
+     * 人力处理酒店绑定申请或酒店处理人力绑定
      * @param messageId     消息id
      * @param status        0拒绝1同意
      * @return
@@ -712,8 +792,15 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             throw new ParamsException("参数错误");
         }
         Message message = messageMapper.selectById(messageId);
+        if (message == null) {
+            throw new BusinessException("查询不到这个消息");
+        }
         message.setStatus(1);
         messageMapper.updateById(message);
+        Inform inform = new Inform();
+        inform.setSendType(2);
+        inform.setAcceptType(3);
+        inform.setReceiveId(message.getHotelId());
         if ("1".equals(status)) {
             HotelHrCompany hotelHrCompany = hotelHrCompanyMapper.findOneHotelHr(message.getHotelId(), message.getHrCompanyId());
             if (hotelHrCompany == null) {
@@ -721,7 +808,34 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             }
             hotelHrCompany.setStatus(0);
             hotelHrCompanyMapper.update(hotelHrCompany);
+            Company company = null;
+            inform.setTitle("绑定成功");
+            if (message.getApplicantType() == 2) {
+                company = companyMapper.selectById(message.getHotelId());
+                inform.setContent(company.getName() + "同意了你的绑定申请，成功添加为合作酒店,添加合作酒店代表同意劳务合作协议。你可以接受合作酒店派发的任务，选择小时工，确保能够及时完美的完成任务，可以获得和支出相应的酬劳。");
+            } else if (message.getApplicantType() == 3) {
+                company = companyMapper.selectById(message.getHrCompanyId());
+                inform.setContent(company.getName() + "接受了你的绑定申请，成功添加为合作人力公司。添加人力公司代表同意劳务合作协议，你可以向合作的人力公司派发任务，由合作的的人力公司选择小时工，并支出相应的酬劳，确保能及时完美的完成任务。");
+            } else {
+                throw new BusinessException("数据错误");
+            }
+
+        } else if ("0".equals(status)) {
+            inform.setTitle("绑定拒绝");
+            Company company = null;
+            if (message.getApplicantType() == 2) {
+                company = companyMapper.selectById(message.getHotelId());
+            } else if (message.getApplicantType() == 3) {
+                company = companyMapper.selectById(message.getHrCompanyId());
+            } else {
+                throw new BusinessException("数据错误");
+            }
+
+            inform.setContent(company.getName() + "拒绝了你的绑定申请，等以后有机会希望可以再合作。");
+        } else {
+            throw new ParamsException("参数错误");
         }
+        informMapper.insert(inform);
         return ResultDO.buildSuccess("处理成功");
     }
 
@@ -738,6 +852,27 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }
         PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
         List<Map<String, Object>> list = companyMapper.selectCooperateHotel(map);
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
+        Map<String, Object> param = new HashMap<>();
+        param.put("page", pageInfo.getPageNum());
+        param.put("total", pageInfo.getTotal());
+        param.put("result", list);
+        return ResultDO.buildSuccess(param);
+    }
+
+    /**
+     * 酒店查询待审核的人力公司
+     * @param request
+     * @param paginator
+     * @return
+     */
+    @Override
+    public ResultDO hotelExamineHr(QueryCooperateRequest request, Paginator paginator) {
+        if (request == null || StringUtils.isEmpty(request.getHotelId())) {
+            throw new ParamsException("参数错误");
+        }
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+        List<Map<String, Object>> list = companyMapper.hotelExamineCompany(request);
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
         Map<String, Object> param = new HashMap<>();
         param.put("page", pageInfo.getPageNum());

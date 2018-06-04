@@ -15,6 +15,7 @@ import com.microdev.model.MessageTemplate;
 import com.microdev.model.TaskHrCompany;
 import com.microdev.param.*;
 import com.microdev.service.MessageService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -131,6 +132,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m.setMessageTitle(mess.getTitle());
             m.setStatus(0);
             m.setMessageType(5);
+            m.setIsTask(1);
             if (type == 1) {
                 m.setApplyType(2);
                 m.setApplicantType(3);
@@ -167,6 +169,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         }
 
         MessageTemplate mess = messageTemplateMapper.findFirstByCode(pattern);
+        if (mess == null) {
+            throw new ParamsException("消息模板错误");
+        }
         Iterator<String> it = hrCompanyId.iterator();
         Message m = null;
         List<Message> list = new ArrayList<>();
@@ -181,10 +186,15 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m.setStatus(0);
             m.setApplicantType(1);
             m.setWorkerId(workerId);
-            m.setMessageType(5);
+            if ("applyBindMessage".equals(pattern)) {
+                m.setMessageType(5);
+            } else {
+                m.setMessageType(12);
+            }
             m.setMessageContent(c);
             m.setHrCompanyId(it.next());
             m.setApplyType(2);
+            m.setIsTask(1);
             list.add(m);
         }
         messageMapper.saveBatch(list);
@@ -300,6 +310,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         m.setApplyType(3);
         m.setMessageType(4);
         m.setApplicantType(2);
+        m.setIsTask(0);
         m.setHrCompanyId(c.getHrCompanyId());
         m.setHotelId(c.getHotelId());
         Map<String, String> map = new HashMap<>();
@@ -356,7 +367,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         Map<String, Object> param = new HashMap<>();
         param.put("applyType", applyType);
         param.put("checkSign", 0);
-        param.put("isHandle", 0);
         if ("1".equals(applyType)) {
             param.put("workerId", id);
         } else if ("2".equals(applyType)) {
@@ -417,7 +427,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             throw new ParamsException("参数applyType类型错误");
         }
         param.put("checkSign", type);
-        param.put("isHandle", 1);
+
         return messageMapper.selectUnReadCount(param);
     }
 
@@ -446,7 +456,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         param.put("applyType", applyType);
         param.put("status", 0);
         param.put("checkSign", 0);
-        param.put("isHandle", 0);
+
         return messageMapper.selectUnReadCount(param);
     }
 
@@ -573,6 +583,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             message = new Message();
             message.setMessageContent(str);
             message.setMessageTitle(template.getTitle());
+            message.setIsTask(1);
+            message.setStatus(0);
             if (type == 1) {
                 message.setWorkerId(id);
                 message.setHrCompanyId(s);
@@ -590,6 +602,75 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             messageList.add(message);
         }
         messageMapper.saveBatch(messageList);
+    }
+
+    /**
+     *分页查询待处理事务
+     * @param request
+     * @param paginator
+     * @return
+     */
+    @Override
+    public ResultDO showWaitHandleWork(QueryCooperateRequest request, Paginator paginator) {
+        if (StringUtils.isEmpty(request.getId()) || StringUtils.isEmpty(request.getType())) {
+            throw new ParamsException("参数错误");
+        }
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+        List<AwaitHandleInfo> list = null;
+        if ("worker".equals(request.getType())) {
+            list = messageMapper.selectWorkerAwaitHandleInfo(request.getId());
+        } else if ("hotel".equals(request.getType())) {
+            list = messageMapper.selectHotelAwaitHandleInfo(request.getId());
+        } else if ("hr".equals(request.getType())) {
+            list = messageMapper.selectHrAwaitHandleInfo(request.getId());
+        } else {
+            throw new ParamsException("参数传递错误");
+        }
+        PageInfo<AwaitHandleInfo> pageInfo = new PageInfo<>(list);
+        Map<String, Object> map = new HashMap<>();
+        map.put("page", pageInfo.getPageNum());
+        map.put("total", pageInfo.getTotal());
+        map.put("result", list);
+        return ResultDO.buildSuccess(map);
+    }
+
+    /**
+     * 拒绝任务(type:0小时工拒绝任务1人力拒绝任务)
+     */
+    @Override
+    public void refuseTask(Map<String, String> param) {
+        if (StringUtils.isEmpty(param.get("userName")) || StringUtils.isEmpty(param.get("startId")) || StringUtils.isEmpty(param.get("endId"))) {
+            throw new ParamsException("参数错误");
+        }
+        Message message = null;
+        MessageTemplate template = messageTemplateMapper.findFirstByCode("refuseTaskMessage");
+        if (template == null) {
+            throw new ParamsException("消息模板查询不到");
+        }
+        Map<String, String> map = new HashMap<>();
+        map.put("userName", param.get("userName"));
+        map.put("content", param.get("reason"));
+        String str = StringKit.templateReplace(template.getContent(), map);
+        message = new Message();
+        message.setMessageContent(str);
+        message.setMessageTitle(template.getTitle());
+        message.setMessageCode(template.getCode());
+        message.setStatus(0);
+        message.setMessageType(10);
+        message.setTaskId("");
+        message.setContent(param.get("reason"));
+        if ("0".equals(param.get("type"))) {
+            message.setWorkerId(param.get("startId"));
+            message.setHrCompanyId(param.get("endId"));
+            message.setApplicantType(1);
+            message.setApplyType(2);
+        } else {
+            message.setHrCompanyId(param.get("startId"));
+            message.setHotelId(param.get("endId"));
+            message.setApplicantType(2);
+            message.setApplyType(3);
+        }
+        messageMapper.insert(message);
     }
 
 }

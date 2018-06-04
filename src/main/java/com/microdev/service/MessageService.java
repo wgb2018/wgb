@@ -6,10 +6,7 @@ import com.microdev.common.paging.Paginator;
 import com.microdev.model.Company;
 import com.microdev.model.Message;
 import com.microdev.model.TaskHrCompany;
-import com.microdev.param.CreateMsgTemplateRequest;
-import com.microdev.param.CreateTaskRequest;
-import com.microdev.param.MessageQuery;
-import com.microdev.param.MessageShowDTO;
+import com.microdev.param.*;
 
 import java.util.List;
 import java.util.Map;
@@ -151,4 +148,17 @@ public interface MessageService extends IService<Message> {
      * @param type    1小时工绑定人力2人力绑定小时工
      */
     void bindUserHrCompany(String name, String id, List<String> list, int type);
+
+    /**
+     * 分页显示用户的待处理数据
+     * @param request
+     * @param paginator
+     * @return
+     */
+    ResultDO showWaitHandleWork(QueryCooperateRequest request, Paginator paginator);
+
+    /**
+     * 拒绝任务
+     */
+    void refuseTask(Map<String, String> param);
 }

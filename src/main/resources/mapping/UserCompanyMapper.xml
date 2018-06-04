@@ -47,7 +47,7 @@
     </update>
 
     <select id="selectHrCompanyByUserId" resultType="com.microdev.param.WorkerBindCompany">
-        SELECT uc.confirmed_date,uc.create_time,uc.status,c.name,c.logo,c.leader,c.leader_mobile,             c.address,c.status AS companyStatus FROM company c
+        SELECT c.id as pid,uc.confirmed_date,uc.create_time,uc.status,c.name,c.logo,c.leader,c.leader_mobile,             c.address,c.status AS companyStatus FROM company c
         INNER JOIN
         (
     SELECT company_id,STATUS,create_time,confirmed_date FROM user_company  WHERE user_id = (SELECT id FROM USER WHERE worker_id = #{workerId})      AND STATUS IN  (1,3)) uc ON c.id = uc.company_id
@@ -90,5 +90,11 @@
 
     <select id="selectByWorkerIdHrId" resultType="com.microdev.model.UserCompany">
         SELECT <include refid="UserCompany_Query_List"/> FROM user_company WHERE company_id = #{companyId} AND user_id =(SELECT id FROM USER WHERE worker_id = #{workerId})
+    </select>
+
+    <select id="selectBindCountByWorkerId" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM user_company WHERE STATUS IN (1,3) AND user_id = (
+SELECT id FROM USER WHERE worker_id = #{workerId}
+)
     </select>
 </mapper>

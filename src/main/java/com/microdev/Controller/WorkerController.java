@@ -140,7 +140,7 @@ public class WorkerController {
     }
 
     /**
-     * 更新打卡信息查看标识
+     * 将补签信息更新为已读
      * @param taskWorkerId
      * @param date
      * @return
@@ -169,11 +169,4 @@ public class WorkerController {
         return ResultDO.buildSuccess(workerService.workerApplybind((String) map.get("workerId"), (List<String>)map.get("set")));
     }
 
-    @GetMapping("/workers/test2/{a}")
-    public ResultDO test3(@PathVariable String a) {
-        if (!"0".equals(a)) {
-            throw new ParamsException("参数错误");
-        }
-        return ResultDO.buildSuccess("测试成功");
-    }
 }

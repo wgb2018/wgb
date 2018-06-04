@@ -9,10 +9,7 @@ import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
 import com.microdev.converter.TaskWorkerConverter;
 import com.microdev.mapper.*;
-import com.microdev.model.Message;
-import com.microdev.model.Task;
-import com.microdev.model.TaskHrCompany;
-import com.microdev.model.TaskWorker;
+import com.microdev.model.*;
 import com.microdev.param.RefusedTaskRequest;
 import com.microdev.param.TaskWorkerQuery;
 import com.microdev.service.TaskWorkerService;
@@ -42,6 +39,8 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
     TaskMapper  taskMapper;
     @Autowired
     private MessageMapper messageMapper;
+    @Autowired
+    private InformMapper informMapper;
     /**
      * 设置违约的任务
      */
@@ -123,16 +122,13 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         taskHrCompanyMapper.updateById(taskHr);
 
         //添加一个通知消息
-        Message notice = new Message();
-        notice.setWorkerId(message.getWorkerId());
-        notice.setHrCompanyId(message.getHrCompanyId());
-        notice.setApplicantType(1);
-        notice.setApplyType(2);
-        notice.setIsHandle(1);
-        notice.setMessageType(9);
-        notice.setMessageTitle("任务已接受");
-        notice.setMessageContent("小时工" + taskWorker.getUserName() + "接受了你派发的任务");
-        messageMapper.insert(notice);
+        Inform notice = new Inform();
+        notice.setReceiveId(taskHr.getHrCompanyId());
+        notice.setAcceptType(2);
+        notice.setSendType(1);
+        notice.setTitle("任务已接受");
+        notice.setContent("小时工" + taskWorker.getUserName() + "接受了你派发的任务");
+        informMapper.insert(notice);
         return ResultDO.buildSuccess("任务领取成功");
     }
     /**
@@ -184,16 +180,13 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         taskMapper.updateById(hotelTask);
         taskHrCompanyMapper.updateById(taskHr);
 
-        Message notice = new Message();
-        notice.setWorkerId(message.getWorkerId());
-        notice.setHrCompanyId(message.getHrCompanyId());
-        notice.setApplicantType(1);
-        notice.setApplyType(2);
-        notice.setIsHandle(1);
-        notice.setMessageType(9);
-        notice.setMessageTitle("任务被拒绝");
-        notice.setMessageContent("小时工" + taskWorker.getUserName() + "拒绝了你派发的任务");
-        messageMapper.insert(notice);
+        Inform notice = new Inform();
+        notice.setReceiveId(taskHr.getHrCompanyId());
+        notice.setSendType(1);
+        notice.setAcceptType(2);
+        notice.setTitle("任务被拒绝");
+        notice.setContent("小时工" + taskWorker.getUserName() + "拒绝了你派发的任务");
+        informMapper.insert(notice);
         return ResultDO.buildSuccess("拒绝任务成功");
     }
     /**

@@ -34,7 +34,7 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
     /**
      * 人力公司拒绝任务
      */
-    void TaskHrrefuse(String id, String messageId);
+    void TaskHrrefuse(String id, String messageId, String reason);
     /**
      * 人力公司申请调配
      */

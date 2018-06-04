@@ -3,6 +3,7 @@ package com.microdev.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.microdev.model.Message;
 import com.microdev.param.*;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
@@ -41,4 +42,12 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     @Update("update message set check_sign = 1 where id = #{id} ")
     int updateMessageCheckSign(String id);
+
+    List<Message> selectWorkerUnbindMessage();
+
+    List<AwaitHandleInfo> selectWorkerAwaitHandleInfo(@Param("workerId") String workerId);
+
+    List<AwaitHandleInfo> selectHrAwaitHandleInfo(@Param("hrId") String hrId);
+
+    List<AwaitHandleInfo> selectHotelAwaitHandleInfo(@Param("hotelId") String hotelId);
 }

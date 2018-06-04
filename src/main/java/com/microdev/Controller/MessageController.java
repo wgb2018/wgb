@@ -5,6 +5,7 @@ import com.microdev.common.ResultDO;
 import com.microdev.param.CreateMsgTemplateRequest;
 import com.microdev.param.MessageQuery;
 import com.microdev.param.PageRequest;
+import com.microdev.param.QueryCooperateRequest;
 import com.microdev.service.MessageService;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,6 +105,16 @@ public class MessageController {
     @GetMapping("/messages/{id}/checkSign")
     public ResultDO updateMessageCheckSign(@PathVariable String id) {
         return ResultDO.buildSuccess(messageService.updateMsgStatus(id));
+    }
+
+    /**
+     *分页查询待处理事务
+     * @return
+     */
+    @PostMapping("/message/await/handle")
+    public ResultDO selectWaitHandleWork(@RequestBody PagingDO<QueryCooperateRequest> paging) {
+
+        return messageService.showWaitHandleWork(paging.getSelector(), paging.getPaginator());
     }
 
 }

@@ -318,6 +318,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setMessageContent(c);
         m.setApplyType(3);
         m.setStatus(0);
+        m.setIsTask(0);
 
         messageMapper.insert(m);
         return true;
@@ -366,6 +367,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setMessageContent(c);
         m.setApplyType(3);
         m.setStatus(0);
+        m.setIsTask(0);
 
         messageMapper.insert(m);
         return true;
@@ -403,6 +405,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setMessageContent(c);
         m.setApplyType(2);
         m.setStatus(0);
+        m.setIsTask(0);
         messageMapper.insert(m);
 
         return true;
@@ -497,6 +500,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setMessageContent(c);
         m.setApplyType(3);
         m.setStatus(0);
+        m.setIsTask(0);
 
         messageMapper.insert(m);
         return true;
@@ -952,7 +956,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         int bindNum = userCompanyMapper.selectIsBindUserId(user.getPid(), set);
         if (bindNum > 0) {
-            throw new BusinessException("人力公司已绑定");
+            throw new BusinessException("已提交绑定申请");
         }
         List<UserCompany> userCompanyList = new ArrayList<>();
         UserCompany userCompany = null;

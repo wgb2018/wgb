@@ -45,6 +45,8 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
     TaskConverter taskConverter;
     @Autowired
     TaskWorkerMapper taskWorkerMapper;
+    @Autowired
+    private InformMapper informMapper;
     /**
      * 小时工绑定人力公司
      */
@@ -64,9 +66,13 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         if(user==null){
             throw new ParamsException("未找到匹配的员工信息");
         }
-
+        Inform inform = new Inform();
+        inform.setReceiveId(message.getHrCompanyId());
+        inform.setAcceptType(2);
+        inform.setSendType(1);
         if ("0".equals(status)) {
-
+            inform.setTitle("绑定被拒绝");
+            inform.setContent("小时工" + user.getUsername() + "拒绝了你的绑定申请。");
         } else if ("1".equals(status)) {
             UserCompany userCompany= userCompanyMapper.findOneUserCompany(message.getHrCompanyId(),message.getWorkerId());
             if(userCompany==null){
@@ -106,10 +112,12 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                 userCompany.setDeleted(false);
                 userCompanyMapper.insert(userCompany);
             }
+            inform.setTitle("绑定成功");
+            inform.setContent("小时工" + user.getUsername() + "同意了你的绑定申请，成功添加为合作伙伴，添加合作人力公司即代表同意劳务合作协议。你可以接受合作的人力公司派发的任务，确保能够及时完美的完成任务，可以获得相应的酬劳。");
         } else {
             return ResultDO.buildSuccess("失败");
         }
-
+        informMapper.insert(inform);
         return    ResultDO.buildSuccess("添加成功");
     }
     /**
@@ -117,7 +125,8 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
      */
     @Override
     public ResultDO workerUnbindHr(String workerId, String hrId) {
-        UserCompany userCompany= userCompanyMapper.findOneUserCompany(hrId,workerId);
+
+        UserCompany userCompany= userCompanyMapper.selectByWorkerIdHrId(hrId,workerId);
         if(userCompany==null){
             throw new ParamsException("未找到匹配的信息");
         }
@@ -128,13 +137,13 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         OffsetDateTime releaseTime=OffsetDateTime.now().plusDays(days);
         userCompany.setRelieveTime(releaseTime);
         userCompanyMapper.updateById(userCompany);
-        User user = userMapper.selectById(workerId);
+        User user = userMapper.selectById(userCompany.getUserId());
         if (user == null) {
             throw new ParamsException("用户不存在");
         }
         Set<String> set = new HashSet<>();
         set.add(hrId);
-        messageService.bindHrCompany(user.getWorkerId(), set, user.getUsername(), "applyUnbindHrCompanyMessage");
+        messageService.bindHrCompany(user.getWorkerId(), set, user.getUsername(), "applyUnbindMessage");
         return    ResultDO.buildSuccess("解绑已提交");
     }
 
@@ -217,6 +226,9 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                 applyTime = work.getCreateTime();
                 long leaveMinute = nowTime.getLong(ChronoField.MINUTE_OF_DAY) - applyTime.getLong(ChronoField.MINUTE_OF_DAY);
                 int hour = (int)(leaveMinute % 60 == 0 ? leaveMinute / 60 : (leaveMinute / 60) + 1);
+                DictDTO dict = dictMapper.findByNameAndCode("MaxUnbindDay","22");
+                Integer maxNum = Integer.parseInt(dict.getText());
+                hour = maxNum * 24 - hour <= 0 ? 0 : maxNum * 24 - hour;
                 work.setHour(hour/24 + "天" + hour%24 + "小时");
             }
         }
@@ -227,7 +239,12 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         //设置数据集合rows：
         result.put("result",list);
         result.put("page",paginator.getPage());
-        return ResultDO.buildSuccess(result);
+        Map<String, Object> extra = new HashMap<>();
+        String total = dictMapper.findByNameAndCode ("WorkerBindHrMaxNum","1").getText ();
+        int num = userCompanyMapper.selectBindCountByWorkerId(queryDTO.getWorkerId());
+        extra.put("bindTotalNum",Integer.parseInt (total));
+        extra.put("bindNum",num);
+        return ResultDO.buildSuccess(null, result, extra, null);
     }
 
     @Override
