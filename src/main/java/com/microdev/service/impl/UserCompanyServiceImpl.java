@@ -61,7 +61,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         }
 
         boolean flag = true;
-        Message newMess = new Message();
+
         User user=  userMapper.queryByWorkerId(message.getWorkerId());
         if(user==null){
             throw new ParamsException("未找到匹配的员工信息");
@@ -353,13 +353,27 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         }
         message.setStatus(1);
         messageMapper.updateById(message);
-
+        Inform inform = new Inform();
+        inform.setReceiveId(message.getWorkerId());
+        inform.setSendType(2);
+        inform.setAcceptType(1);
+        UserCompany userCompany = userCompanyMapper.selectByWorkerIdHrId(message.getHrCompanyId(), message.getWorkerId());
+        if (userCompany == null) {
+            throw new ParamsException("查询不到小时工和人力的关联信息");
+        }
+        Company company = companyMapper.selectById(userCompany.getCompanyId());
         if ("1".equals(status)) {
-
-            UserCompany userCompany = userCompanyMapper.selectByWorkerIdHrId(message.getHrCompanyId(), message.getWorkerId());
             userCompany.setStatus(1);
             userCompanyMapper.update(userCompany);
+            inform.setTitle("绑定成功");
+            inform.setContent(company.getName() + "同意了你的绑定申请，成功添加为合作人力公司，添加人力公司代表同意劳务合作协议。合作的人力公司可以向你派发任务，认真完成能获得相应的报酬。");
+        } else {
+            userCompany.setStatus(2);
+            userCompanyMapper.update(userCompany);
+            inform.setTitle("绑定被拒绝");
+            inform.setContent(company.getName() + "拒绝了你的绑定申请，等以后有机会希望可以再合作。");
         }
+        informMapper.insert(inform);
         return ResultDO.buildSuccess("绑定成功");
     }
 }

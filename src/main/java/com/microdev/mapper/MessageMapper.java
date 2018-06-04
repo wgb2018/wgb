@@ -43,11 +43,13 @@ public interface MessageMapper extends BaseMapper<Message> {
     @Update("update message set check_sign = 1 where id = #{id} ")
     int updateMessageCheckSign(String id);
 
-    List<Message> selectWorkerUnbindMessage();
+    List<Message> selectWorkerUnbindMessage(int start, int end);
 
     List<AwaitHandleInfo> selectWorkerAwaitHandleInfo(@Param("workerId") String workerId);
 
     List<AwaitHandleInfo> selectHrAwaitHandleInfo(@Param("hrId") String hrId);
 
     List<AwaitHandleInfo> selectHotelAwaitHandleInfo(@Param("hotelId") String hotelId);
+
+    int selectWorkerUnbindCount();
 }

@@ -759,6 +759,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             inform.setTitle("解绑成功");
             inform.setContent(company.getName() + "同意了你的申请解绑。你可以添加新的合作人力公司，没人最多只能绑定5家人力公司");
         }
+        informMapper.insert(inform);
         return "成功";
     }
 
