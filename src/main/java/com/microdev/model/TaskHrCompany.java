@@ -103,7 +103,7 @@ public class TaskHrCompany extends BaseEntity {
      */
     private Double workersHavePay=0.0;
     /**
-     *  人力公司已付小时工金额 (这个字段不清楚何时赋值,因为系统暂时是线下支付)
+     *  任务描述
      */
     private String taskContent;
 

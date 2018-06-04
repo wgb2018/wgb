@@ -161,7 +161,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         //设置数据集合rows：
         result.put("result",pageInfo.getList());
         result.put("page",paginator.getPage());
-        HashMap<String,Object> extra = new HashMap<>();
+        /*HashMap<String,Object> extra = new HashMap<>();
         Double shouldPayMoney = 0.0;
         Double havePayMoney=0.0;
         for (Task task:list) {
@@ -169,8 +169,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
             havePayMoney += task.getHavePayMoney();
         }
         extra.put("shouldPayMoney",shouldPayMoney);
-        extra.put("havePayMoney",havePayMoney);
-        return ResultDO.buildSuccess(null,result,extra,null);
+        extra.put("havePayMoney",havePayMoney);*/
+        return ResultDO.buildSuccess(null,result,null,null);
 
     }
     /**

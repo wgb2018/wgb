@@ -58,6 +58,7 @@ public interface Constant {
         add("/apply/register");
         add("/findbyname/*");
         add("/admin/dicts/*");
+        add("/files");
     }};
 
 

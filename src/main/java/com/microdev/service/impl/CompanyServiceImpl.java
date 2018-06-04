@@ -1,6 +1,8 @@
 package com.microdev.service.impl;
 
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -85,7 +87,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         if(queryDTO.getObservertype () == 0){
             String total = dictMapper.findByNameAndCode ("WorkerBindHrMaxNum","1").getText ();
             Map<String,Object> map = new HashMap <> ();
-            map.put("user_id",userMapper.queryByWorkerId (queryDTO.getObserverId ()).getPid ());
+            /*map.put("user_id",userMapper.queryByWorkerId (queryDTO.getObserverId ()).getPid ());
+            System.out.println ("userId:"+userMapper.queryByWorkerId (queryDTO.getObserverId ()).getPid ());
+            map.put("status","1 or status = 3");*/
+            Wrapper<UserCompany> et = new EntityWrapper<UserCompany> ().where("user_id={0}",userMapper.queryByWorkerId (queryDTO.getObserverId ()).getPid ()).in("status","1,3");
+            userCompanyMapper.selectList (et);
             Integer num = userCompanyMapper.selectByMap (map).size();
             map.clear ();
             map.put("bindTotalNum",Integer.parseInt (total));

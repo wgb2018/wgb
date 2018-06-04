@@ -918,6 +918,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     @Override
     public ResultDO pagingWorkers(Paginator paginator, WorkerQueryDTO workerQueryDTO) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
+        System.out.println (workerQueryDTO);
         //查询数据集合
         List<Map<String,Object>> list = workerMapper.queryWorkers(workerQueryDTO);
         PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(list);

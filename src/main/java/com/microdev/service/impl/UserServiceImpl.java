@@ -133,6 +133,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             filePath = "QRCode".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
             //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
             fileURI = objectStoreService.uploadFile(filePath, file);
+            worker.setQrCode (fileURI);
+            workerMapper.updateById (worker);
+            System.out.println ("workerID:"+worker.getPid());
             newUser.setWorkerId(worker.getPid());
         } else if(newUser.getUserType().name().equals("hotel")){
             Company company = new Company();
@@ -144,6 +147,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             filePath = "QRCode".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
             //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
             fileURI = objectStoreService.uploadFile(filePath, file);
+            company.setQrCode (fileURI);
+            companyMapper.updateById (company);
         }else if(newUser.getUserType().name().equals("hr")){
             Company company = new Company();
             company.setStatus(0);
@@ -154,9 +159,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             filePath = "QRCode".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
             //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
             fileURI = objectStoreService.uploadFile(filePath, file);
+            company.setQrCode (fileURI);
+            companyMapper.updateById (company);
         }
         //存入用户
-        newUser.setQrCode (fileURI);
         userMapper.insert(newUser);
         //存入用户角色关系
         roleMapper.insertRoleAndUserRelation(newUser
@@ -401,7 +407,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         userDTO.setNickname(user.getString("nickName"));
         userDTO.setAvatar( user1.getAvatar());
         userDTO.setAge (user1.getAge ());
-        userDTO.setQrCode (user1.getQrCode ());
         try{
             switch (user.getString("sex")) {
                 case "男":
@@ -445,7 +450,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                 List l2 = dictService.findServiceArea(company.getPid ());
 				userDTO.setServiceType (l1 == null?new ArrayList<>():l1);
 				userDTO.setAreaCode (l2 == null?new ArrayList<>():l2);
-
+                userDTO.setQrCode (company.getQrCode ());
             }
         } else if (userType == UserType.worker) {
             String workerId = user.getString("workerId");
@@ -459,6 +464,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             List l2 = dictService.findServiceArea(workerId);
             userDTO.setServiceType (l1==null?new ArrayList<>():l1);
             userDTO.setAreaCode (l2==null?new ArrayList<>():l2);
+            userDTO.setQrCode (worker.getQrCode ());
         }
 
         return userDTO;

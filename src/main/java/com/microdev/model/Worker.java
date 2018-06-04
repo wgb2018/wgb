@@ -24,5 +24,9 @@ public class Worker extends BaseEntity {
      * 小时工身份证号码
      */
     private String idcardNumber ="";
+    /**
+     * 用户二维码
+     */
+    private String qrCode ="";
 
 }

@@ -6,10 +6,7 @@ import com.microdev.param.HrCompanyPayWorkerRequest;
 import com.microdev.service.BillService;
 import com.microdev.service.TaskHrCompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 /**
@@ -25,7 +22,7 @@ public class BillController {
      * 酒店按人力公司查询账目
      *
      */
-    @PostMapping("/hotel/bill/{HotelId}")
+    @GetMapping("/hotel/bill/{HotelId}")
     public ResultDO hotelbill(@PathVariable String HotelId) {
         return taskHrCompanyService.getHotelBill(HotelId);
     }
@@ -33,7 +30,7 @@ public class BillController {
      * 人力公司按酒店查询账目
      *
      */
-    @PostMapping("/hrCompany/bill/{HrCompanylId}/hotel")
+    @GetMapping("/hrCompany/bill/{HrCompanylId}/hotel")
     public ResultDO hrCompanybillhotel(@PathVariable String HrCompanylId) {
         return taskHrCompanyService.getCompanyBillHotel(HrCompanylId);
     }
@@ -41,7 +38,7 @@ public class BillController {
      * 人力公司按小时工查询账目
      *
      */
-    @PostMapping("/hrCompany/bill/{HrCompanylId}/worker")
+    @GetMapping("/hrCompany/bill/{HrCompanylId}/worker")
     public ResultDO hrCompanybillworker(@PathVariable String HrCompanylId) {
         return taskHrCompanyService.getCompanyBillWorker(HrCompanylId);
     }
@@ -49,7 +46,7 @@ public class BillController {
      * 小时工按人力公司工查询账目
      *
      */
-    @PostMapping("/worker/bill/{workerId}")
+    @GetMapping("/worker/bill/{workerId}")
     public ResultDO workerbill(@PathVariable String workerId) {
         return taskHrCompanyService.getWorkerBill(workerId);
     }
@@ -67,5 +64,4 @@ public class BillController {
     public ResultDO queryHrCompanyPayWorker(@RequestBody HrCompanyPayWorkerRequest request) {
         return BillService.queryHrCompanyPayWorker(request);
     }
-
 }

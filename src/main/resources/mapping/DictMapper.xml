@@ -63,16 +63,16 @@
         </where>
     </select>
     <select id="findProvince" resultType="java.util.Map">
-        select provinceID as provinceId,province as
-        province from province
+        select areaID as areaId,area as
+        area from province
     </select>
     <select id="findCity" resultType="java.util.Map" parameterType="java.lang.String">
-        select cityID as cityId,city as
-        city from city where father = #{pid}
+        select areaID as areaId,area as
+        area from city where father = #{id}
     </select>
     <select id="findArea" resultType="java.util.Map" parameterType="java.lang.String">
         select areaID as areaId,area as
-        area from area where father = #{cid}
+        area from area where father = #{id}
     </select>
 
     <select id="selectTypeByUserId" parameterType="java.lang.String" resultType="java.lang.String">
@@ -90,19 +90,19 @@
         select area_id as areaId,area_name as areaName,area_level as areaLevel from user_area where id = #{id}
     </select>
     <select id="findSeriveAreaThird" resultType="com.microdev.model.UserArea" parameterType="java.lang.String">
-        select cityID as areaId,city as areaName from city where cityID = (select father from area where areaID = #{id})
+        select areaID as areaId,area as areaName from city where areaID = (select father from area where areaID = #{id})
     </select>
     <select id="findSeriveAreaSecond" resultType="com.microdev.model.UserArea" parameterType="java.lang.String">
-        select provinceID as areaId,province as areaName from province where provinceID = (select father from city where cityID = #{id})
+        select areaID as areaId,area as areaName from province where areaID = (select father from city where areaID = #{id})
     </select>
     <select id="findSeriveAreaFirst" resultType="com.microdev.model.UserArea" parameterType="java.lang.String">
-        select provinceID as areaId,province as areaName from province where provinceID = #{id}
+        select areaID as areaId,area as areaName from province where areaID = #{id}
     </select>
     <select id="findProvinceNameById" resultType="java.lang.String" parameterType="java.lang.String">
-        select province from province where provinceID = #{id}
+        select area from province where areaID = #{id}
     </select>
     <select id="findCityNameById" resultType="java.lang.String" parameterType="java.lang.String">
-        select city from city where cityID = #{id}
+        select area from city where areaID = #{id}
     </select>
     <select id="findAreaNameById" resultType="java.lang.String" parameterType="java.lang.String">
         select area from area where areaID = #{id}

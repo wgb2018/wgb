@@ -10,6 +10,9 @@
         <if test="name != null and name != ''">
             name LIKE concat('%', #{name},'%')
         </if>
+        <if test="leader != null and leader !=''">
+            and leader like concat('%', #{leader},'%')
+        </if>
         <if test="companyType != null and companyType != ''">
             and company_type = #{companyType}
         </if>
@@ -29,18 +32,6 @@
         <include refid="Company_Column_List"/>
         from company
         <where>
-            <if test="name != null and name !=''">
-                and name like concat('%', #{name},'%')
-            </if>
-            <if test="leader != null and leader !=''">
-                and leader like concat('%', #{leader},'%')
-            </if>
-            <if test="companyType != null">
-                and company_type = #{companyType}
-            </if>
-        </where>
-        order by create_time desc
-        <!--<where>
             <include refid="Company_Query_Param"/>
             <if test="observertype != null">
                 <if test="observertype == 0">
@@ -53,7 +44,7 @@
                     (select area_id from area_relation where id = #{observerId}) and id_type = 2
                     )b on a.id = b.id
                     where a.id not IN
-                    (select hr_id from user_company where user_id = #{observerId} and status IN (0,1,3))
+                    (select company_id from user_company where user_id = #{observerId} and status IN (0,1,3))
                     )
                 </if>
                 <if test="observertype == 1">
@@ -66,7 +57,7 @@
                     (select area_id from area_relation where id = #{observerId}) and id_type = 2
                     )b on a.id = b.id
                     where a.id not IN
-                    (select hr_id from hotel_hr_company where hotel_id = #{observerId} and status IN (0))
+                    (select hr_id from hotel_hr_company where hotel_id = #{observerId} and status IN (0,3))
                     )
                 </if>
                 <if test="observertype == 2">
@@ -79,11 +70,12 @@
                     (select area_id from area_relation where id = #{observerId}) and id_type = 1
                     )b on a.id = b.id
                     where a.id not IN
-                    (select hotel_id from hotel_hr_company where company_id = #{observerId} and status IN (0))
+                    (select hotel_id from hotel_hr_company where company_id = #{observerId} and status IN (0,3))
                     )
                 </if>
             </if>
-        </where>-->
+        </where>
+        order by create_time desc
     </select>
     <!-- 获取已添加该人力公司的所有酒店 -->
     <select id="queryHotelsByHrId" parameterType="com.microdev.param.CompanyQueryDTO" resultType="java.util.Map">
