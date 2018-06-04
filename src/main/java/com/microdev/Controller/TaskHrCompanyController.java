@@ -37,8 +37,8 @@ public class TaskHrCompanyController {
      * 拒绝任务
      */
     @PostMapping("/hr-tasks/refuse/{id}")
-    public ResultDO refuse(@PathVariable String id, String messageId) {
-        taskHrCompanyService.TaskHrrefuse(id, messageId);
+    public ResultDO refuse(@PathVariable String id, String messageId, String reason) {
+        taskHrCompanyService.TaskHrrefuse(id, messageId, reason);
         return ResultDO.buildSuccess("拒绝任务成功");
     }
     /**

@@ -5,6 +5,8 @@ import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.param.*;
 import com.microdev.service.UserCompanyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +17,8 @@ import java.util.List;import java.util.Set;
  */
 @RestController
 public class WorkerCompanyController {
+
+    private static final Logger logger = LoggerFactory.getLogger(WorkerCompanyController.class);
     @Autowired
     UserCompanyService userCompanyService;
     /**
@@ -30,6 +34,7 @@ public class WorkerCompanyController {
      */
     @PostMapping("/hr-workers/search")
     public ResultDO getHrWorkers(@RequestBody PagingDO<HrQueryWorkerDTO> paging) {
+        logger.error("getHrWorkers:" + paging.toString());
         return userCompanyService.getHrWorkers(paging.getPaginator(),paging.getSelector());
     }
     /**
@@ -37,6 +42,7 @@ public class WorkerCompanyController {
      */
     @PostMapping("/workers-hrs/search")
     public ResultDO getWorkersHr(@RequestBody PagingDO<WokerQueryHrDTO> paging) {
+        logger.error("getWorkersHr:" + paging.toString());
         return userCompanyService.getWorkerHrs(paging.getPaginator(),paging.getSelector());
     }
     /**

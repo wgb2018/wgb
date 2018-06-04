@@ -97,7 +97,7 @@
         </if>
 
         order by create_time desc-->
-        SELECT c.*, hh.status AS bindType FROM company c
+        SELECT c.name,c.company_type,c.logo,c.address,c.business_license,c.leader,c.leader_mobile,c.status,c.confirmed_time,c.latitude,c.longitude,c.id as pid, hh.status AS bindType FROM company c
         INNER JOIN
         (
         SELECT hotel_id,STATUS FROM hotel_hr_company WHERE hr_id = #{id} AND STATUS IN (0,3,4)
@@ -127,7 +127,7 @@
             and leader like '%${leader}%'
         </if>
         order by create_time desc-->
-        SELECT c.*, hh.status AS bindType FROM company c
+        SELECT c.name,c.company_type,c.logo,c.address,c.business_license,c.leader,c.leader_mobile,c.status,c.confirmed_time,c.latitude,c.longitude,c.id as pid, hh.status AS bindType FROM company c
         INNER JOIN
         (
         SELECT hr_id, STATUS FROM hotel_hr_company WHERE hotel_id = #{id} AND STATUS IN (0,3,4)

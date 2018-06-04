@@ -123,8 +123,10 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }else{
             List l1 = dictService.findServiceArea (company.getPid ());
             List l2 = dictMapper.queryTypeByUserId (company.getPid ());
+            logger.error("areaCode:" + l1.toString() + ";serviceType:" + l2.toString());
             company.setAreaCode (l1==null?new ArrayList<>():l1);
             company.setServiceType (l2==null?new ArrayList<>():l2);
+            logger.error("areaCode:" + (l1==null?new ArrayList<>():l1) + ";serviceType:" + (l2==null?new ArrayList<>():l2));
         }
         return ResultDO.buildSuccess(company);
     }

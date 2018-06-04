@@ -281,7 +281,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
      * 人力公司拒绝任务
      */
     @Override
-    public void TaskHrrefuse(String id, String messageId) {
+    public void TaskHrrefuse(String id, String messageId, String reason) {
         if (StringUtils.isEmpty(id) || StringUtils.isEmpty(messageId)) {
             throw new ParamsException("参数不能为空");
         }
@@ -297,13 +297,16 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         }
         taskHrCompanyMapper.updateStatus(id,3);
 		taskMapper.updateStatus (taskHrCompanyMapper.queryByTaskId (id).getTaskId (),8);
-		Inform inform = new Inform();
-        inform.setTitle("任务被拒绝");
-        inform.setSendType(2);
-        inform.setAcceptType(3);
-        inform.setReceiveId(taskHrCompany.getHotelId());
-        inform.setContent(taskHrCompany.getHrCompanyName() + "拒绝了你派发的任务。");
-        informMapper.insert(inform);    }
+
+		//发送拒绝消息
+        Map<String, String> param = new HashMap<>();
+        param.put("userName", taskHrCompany.getHrCompanyName());
+        param.put("startId", taskHrCompany.getHrCompanyId());
+        param.put("endId", taskHrCompany.getHotelId());
+        param.put("type", "1");
+        param.put("reason", reason);
+        messageService.refuseTask(param);
+    }
     /**
      * 人力公司任务调配
      */

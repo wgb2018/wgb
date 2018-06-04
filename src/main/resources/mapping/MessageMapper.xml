@@ -216,12 +216,12 @@
     </select>
     <insert id="saveBatch" parameterType="java.util.List">
         insert into message(id,create_time,deleted,modify_time,message_type,status,
-        worker_task_id, worker_id, message_code, message_title,message_content,content,minutes,    supplement_time_end,supplement_time ,request_id, hotel_id, hr_company_id, applicant_type,apply_type,message_link,msg_link, check_sign,is_handle,task_id) values
+        worker_task_id, worker_id, message_code, message_title,message_content,content,minutes,    supplement_time_end,supplement_time ,request_id, hotel_id, hr_company_id, applicant_type,apply_type,message_link,msg_link, check_sign,task_id,is_task) values
         <foreach collection="list" item="item" separator=",">
             (#{item.pid},#{item.createTime},#{item.deleted},#{item.modifyTime},#{item.messageType},#{item.status},
             #{item.workerTaskId},#{item.workerId},#{item.messageCode},#{item.messageTitle},#{item.messageContent}
             ,#{item.content},#{item.minutes},#{item.supplementTimeEnd},#{item.supplementTime},
-            #{item.requestId},#{item.hotelId},#{item.hrCompanyId},#{item.applicantType},#{item.applyType},#{item.messageLink}, #{item.msgLink}, #{item.checkSign}, #{item.isHandle}, #{item.taskId})
+            #{item.requestId},#{item.hotelId},#{item.hrCompanyId},#{item.applicantType},#{item.applyType},#{item.messageLink}, #{item.msgLink}, #{item.checkSign}, #{item.taskId},#{item.isTask})
         </foreach>
     </insert>
     <select id="selectAllMessage" parameterType="java.util.Map" resultType="com.microdev.param.MessageResponse">
@@ -306,9 +306,6 @@
       <if test="messageType != null">
           and message_type = #{messageType}
       </if>
-        <if test="isHandle != null">
-          and is_handle = #{isHandle}
-        </if>
     </select>
 
     <select id = "selectByParam" parameterType="java.util.Map" resultType="com.microdev.model.Message">
@@ -339,7 +336,7 @@
     </select>
 
     <select id="selectWorkerAwaitHandleInfo" resultType="com.microdev.param.AwaitHandleInfo">
-        SELECT m.content,m.id AS messageId,m.create_time,c.address,c.logo,t.*, message_type  AS TYPE FROM message m
+        SELECT m.is_task,m.content,m.id AS messageId,m.create_time,c.address,c.logo,t.*, message_type  AS TYPE FROM message m
 INNER JOIN
 (
 	SELECT task_type_text,from_date,to_date,day_start_time,day_end_time,hotel_name,confirmed_workers,need_workers,IFNULL(need_workers,0)-IFNULL(confirmed_workers,0) AS lackWorkers,hotel_id,id FROM task
@@ -352,7 +349,7 @@ WHERE m.apply_type=1 AND m.is_task = 0 AND worker_id= #{workerId}
 UNION
 
 (
- SELECT m2.content,m2.id AS messageId,m2.`create_time`,c2.address,c2.logo,NULL AS task_type_text,NULL AS from_date, NULL AS to_date,NULL AS day_start_time,NULL AS day_end_time, NULL AS hotel_name, 0 AS confirmed_workers,0 AS need_workers,
+ SELECT m2.is_task,m2.content,m2.id AS messageId,m2.`create_time`,c2.address,c2.logo,NULL AS task_type_text,NULL AS from_date, NULL AS to_date,NULL AS day_start_time,NULL AS day_end_time, NULL AS hotel_name, 0 AS confirmed_workers,0 AS need_workers,
   0 AS lackWorkers,NULL AS hotel_id, NULL AS id, 5 AS TYPE
  FROM message m2
  INNER JOIN company c2 ON m2.hotel_id = c2.id
@@ -363,7 +360,7 @@ ORDER BY create_time
     </select>
 
     <select id = "selectHrAwaitHandleInfo" resultType="com.microdev.param.AwaitHandleInfo">
-      SELECT m.content,m.id AS messageId,m.create_time,c.address,c.logo,t.*,message_type AS TYPE  FROM message m
+      SELECT m.is_task,m.content,m.id AS messageId,m.create_time,c.address,c.logo,t.*,message_type AS TYPE  FROM message m
 INNER JOIN
 (
 SELECT task_type_text,from_date,to_date,day_start_time,day_end_time,hotel_name,confirmed_workers,need_workers,IFNULL(need_workers,0)-IFNULL(confirmed_workers,0) AS lackWorkers,hotel_id,id FROM task
@@ -376,7 +373,7 @@ WHERE m.apply_type=2 AND m.is_task = 0 AND hr_company_id= #{hrId}
 UNION
 
 (
-SELECT m2.content,m2.id AS messageId,m2.`create_time`,NULL AS address,u.avatar AS logo,NULL AS task_type_text,NULL AS from_date, NULL AS to_date,NULL AS day_start_time,NULL AS day_end_time, NULL AS hotel_name, 0 AS confirmed_workers,0 AS need_workers,
+SELECT m2.is_task,m2.content,m2.id AS messageId,m2.`create_time`,NULL AS address,u.avatar AS logo,NULL AS task_type_text,NULL AS from_date, NULL AS to_date,NULL AS day_start_time,NULL AS day_end_time, NULL AS hotel_name, 0 AS confirmed_workers,0 AS need_workers,
   0 AS lackWorkers,NULL AS hotel_id, NULL AS id, message_type AS TYPE FROM message m2
   INNER JOIN USER u
   ON u.`worker_id` = m2.`worker_id`
@@ -385,7 +382,7 @@ SELECT m2.content,m2.id AS messageId,m2.`create_time`,NULL AS address,u.avatar A
 
 UNION
 (
-SELECT m3.content,m3.id AS messageId,m3.`create_time`,NULL AS address,c3.`logo`,NULL AS task_type_text,NULL AS from_date, NULL AS to_date,NULL AS day_start_time,NULL AS day_end_time, NULL AS hotel_name, 0 AS confirmed_workers,0 AS need_workers,
+SELECT m3.is_task,m3.content,m3.id AS messageId,m3.`create_time`,NULL AS address,c3.`logo`,NULL AS task_type_text,NULL AS from_date, NULL AS to_date,NULL AS day_start_time,NULL AS day_end_time, NULL AS hotel_name, 0 AS confirmed_workers,0 AS need_workers,
   0 AS lackWorkers,NULL AS hotel_id, NULL AS id, message_type AS TYPE FROM message m3
   INNER JOIN company c3
   ON c3.id = m3.`hotel_id`
@@ -395,7 +392,7 @@ ORDER BY create_time
     </select>
 
     <select id="selectHotelAwaitHandleInfo" resultType="com.microdev.param.AwaitHandleInfo">
-        SELECT m.content,m.id AS messageId,m.create_time,c.address,c.logo,t.*,message_type AS TYPE  FROM message m
+        SELECT m.is_task,m.content,m.id AS messageId,m.create_time,c.address,c.logo,t.*,message_type AS TYPE  FROM message m
 INNER JOIN
 (
 SELECT task_type_text,from_date,to_date,day_start_time,day_end_time,hotel_name,confirmed_workers,need_workers,IFNULL(need_workers,0)-IFNULL(confirmed_workers,0) AS lackWorkers,hotel_id,id FROM task
@@ -408,7 +405,7 @@ WHERE m.apply_type=2 AND m.is_task = 0 AND m.hotel_id= #{hotelId}
 UNION
 
 (
-SELECT m3.content,m3.id AS messageId,m3.`create_time`,NULL AS address,c3.`logo`,NULL AS task_type_text,NULL AS from_date, NULL AS to_date,NULL AS day_start_time,NULL AS day_end_time, NULL AS hotel_name, 0 AS confirmed_workers,0 AS need_workers,
+SELECT m3.is_task,m3.content,m3.id AS messageId,m3.`create_time`,NULL AS address,c3.`logo`,NULL AS task_type_text,NULL AS from_date, NULL AS to_date,NULL AS day_start_time,NULL AS day_end_time, NULL AS hotel_name, 0 AS confirmed_workers,0 AS need_workers,
   0 AS lackWorkers,NULL AS hotel_id, NULL AS id, message_type AS TYPE FROM message m3
   INNER JOIN company c3
   ON c3.id = m3.`hotel_id`

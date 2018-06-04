@@ -68,7 +68,7 @@ public class TaskHrCompanyTest {
 	public void fourTest() {
 		String id = "0012c7dd-bb27-4475-b197-c2e870275653";
 		String messageId = "dd750ed6dc444b16a4eb7369bdb3f6bc";
-		taskHrCompanyService.TaskHrrefuse(id, messageId);
+		taskHrCompanyService.TaskHrrefuse(id, messageId, "123");
 	}
 
 	@Test

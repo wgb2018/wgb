@@ -44,4 +44,6 @@ public interface UserCompanyMapper extends BaseMapper<UserCompany> {
     int selectHrBindCount(@Param("companyId") String companyId);
 
     UserCompany selectByWorkerIdHrId(@Param("companyId") String companyId,@Param("workerId") String workerId);
+
+    int selectBindCountByWorkerId(@Param("workerId") String workerId);
 }

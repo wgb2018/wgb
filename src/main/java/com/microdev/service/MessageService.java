@@ -156,4 +156,9 @@ public interface MessageService extends IService<Message> {
      * @return
      */
     ResultDO showWaitHandleWork(QueryCooperateRequest request, Paginator paginator);
+
+    /**
+     * 拒绝任务
+     */
+    void refuseTask(Map<String, String> param);
 }

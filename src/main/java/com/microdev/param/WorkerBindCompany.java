@@ -19,4 +19,5 @@ public class WorkerBindCompany {
     private Integer companyStatus;
     //当companyStatus=3申请解绑中时，统计距离解绑有XX天XX小时
     private String hour;
+    private String pid;
 }
