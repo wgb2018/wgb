@@ -335,11 +335,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         }
         com.microdev.common.context.User loginUser = ServiceContextHolder.getServiceContext().getUser();
         User user = userMapper.queryByUserId(loginUser.getId());
+        System.out.println ("u:"+user);
         try {
             userConverter.update(userDTO, user);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println ("userID:"+user);
         userMapper.updateById(user);
         if(user.getUserType () == UserType.worker){
             Worker worker = new Worker ();
@@ -348,6 +350,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             if(userDTO.getIdCardFront ()!=null && userDTO.getIdCardFront ()!="")worker.setIdcardFront (userDTO.getIdCardFront ());
             if(userDTO.getIdCardNumber ()!=null && userDTO.getIdCardNumber ()!="")worker.setIdcardNumber (userDTO.getIdCardNumber ());
             worker.setPid (user.getWorkerId ());
+            System.out.println ("worker:"+worker);
             workerMapper.updateById (worker);
         }else if(user.getUserType () == UserType.hotel || user.getUserType () == UserType.hr) {
             Company company = companyMapper.findFirstByLeaderMobile (user.getMobile ());
@@ -366,6 +369,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                     company.setLongitude (userDTO.getCompany ().getLongitude ());
                 }
             }
+            System.out.println ("company:"+company);
             companyMapper.updateAllColumnById (company);
         }
     }

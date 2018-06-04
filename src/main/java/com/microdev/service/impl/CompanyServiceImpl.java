@@ -95,8 +95,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             System.out.println ("userId:"+userMapper.queryByWorkerId (queryDTO.getObserverId ()).getPid ());
             map.put("status","1 or status = 3");*/
             Wrapper<UserCompany> et = new EntityWrapper<UserCompany> ().where("user_id={0}",userMapper.queryByWorkerId (queryDTO.getObserverId ()).getPid ()).in("status","1,3");
-            userCompanyMapper.selectList (et);
-            Integer num = userCompanyMapper.selectByMap (map).size();
+            //userCompanyMapper.selectList (et);
+            Integer num = userCompanyMapper.selectList(et).size();
             map.clear ();
             map.put("bindTotalNum",Integer.parseInt (total));
             map.put("bindNum",num);

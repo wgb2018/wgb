@@ -56,7 +56,7 @@ public class User extends BaseEntity{
     /**
      * 小时工
      */
-    private String workerId ="";
+    private String workerId;
     /**
      * 用户编码
      */

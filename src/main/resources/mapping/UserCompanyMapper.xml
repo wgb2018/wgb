@@ -67,7 +67,7 @@
 
     <select id="selectIsbind" resultType="java.lang.Integer">
         SELECT count(1) FROM user_company WHERE  company_id = #{companyId} AND STATUS IN (0,1,3) AND user_id IN
-        <foreach collection="list" item="item" separator="," open="(" close=")">
+        <foreach collection="set" item="item" separator="," open="(" close=")">
             #{item}
         </foreach>
     </select>

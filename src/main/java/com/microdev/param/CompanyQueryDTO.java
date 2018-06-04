@@ -23,7 +23,7 @@ public class CompanyQueryDTO {
     /**
      * 状态
      */
-    private Integer status;
+    private Integer status = 1;
     /**
      * 负责人
      */

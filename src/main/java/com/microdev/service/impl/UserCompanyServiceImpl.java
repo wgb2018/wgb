@@ -155,14 +155,15 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         //查询数据集合
         Map<String,Object> map = new HashMap<>();
-        map.put("company_id",queryDTO.getHrId());
-        map.put("status","1 or status = 3");
+        /*map.put("company_id",queryDTO.getHrId());
+        map.put("status","1 or status = 3");*/
+        Wrapper<UserCompany> et = new EntityWrapper<UserCompany> ().where("company_id={0}",queryDTO.getHrId()).in("status","1,3");
         List<User> list = null;
         User us = null;
         //List<String> ids = new ArrayList<>();
         HashMap<String,Object> result = new HashMap<>();
         if(queryDTO.getTaskId()==null) {
-            List<UserCompany> list1 = userCompanyMapper.selectByMap(map);
+            List<UserCompany> list1 = userCompanyMapper.selectList (et);
             for (UserCompany u:list1) {
                 us = userMapper.selectById(u.getUserId());
                 us.setAge(DateUtil.CaculateAge(us.getBirthday()));
@@ -272,9 +273,11 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         if (c == null) {
             throw new ParamsException("人力公司查询不到");
         }
+        System.out.println ("hrId:"+hrId);
+        System.out.println ("userList:"+userList);
         int count = userCompanyMapper.selectIsbind(hrId, userList);
         if (count > 0) {
-            throw new BusinessException("已绑定");
+            throw new BusinessException("提交过申请");
         }
         UserCompany userCompany = null;
         List<UserCompany> userCompanyList = new ArrayList<>();

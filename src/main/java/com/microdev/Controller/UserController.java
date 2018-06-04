@@ -178,7 +178,7 @@ public class UserController {
      * 上传文件
      * 上传文件到服务器，比如：用户图像、营业执照 等等
      */
-    @GetMapping("{fileType}/files/{fileAddress}")
+    @GetMapping("/{fileType}/files/{fileAddress}")
     //@GetMapping("/files")
     //@RequestMapping(value = "/form", method = RequestMethod.POST, consumes = "multipart/form-data")
     public ResultDO uploadFile1(@PathVariable String fileAddress,@PathVariable String fileType) throws Exception {
