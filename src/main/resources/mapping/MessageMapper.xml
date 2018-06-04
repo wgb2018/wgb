@@ -400,7 +400,7 @@ SELECT task_type_text,from_date,to_date,day_start_time,day_end_time,hotel_name,c
 ON m.task_id = t.id
 INNER JOIN company c
 ON c.id = t.hotel_id
-WHERE m.apply_type=2 AND m.is_task = 0 AND m.hotel_id= #{hotelId}
+WHERE m.apply_type=3 AND m.is_task = 0 AND m.hotel_id= #{hotelId}
 
 UNION
 
@@ -409,7 +409,7 @@ SELECT m3.is_task,m3.content,m3.id AS messageId,m3.`create_time`,NULL AS address
   0 AS lackWorkers,NULL AS hotel_id, NULL AS id, message_type AS TYPE FROM message m3
   INNER JOIN company c3
   ON c3.id = m3.`hotel_id`
-  WHERE m3.apply_type=2 AND m3.is_task = 1 AND m3.hotel_id= #{hotelId}
+  WHERE m3.apply_type=3 AND m3.is_task = 1 AND m3.hotel_id= #{hotelId}
 )
     </select>
 </mapper>
