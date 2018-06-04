@@ -400,6 +400,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         m.setApplyType(2);
         m.setApplicantType(3);
         m.setStatus(0);
+        m.setIsTask(0);
+        m.setMessageType(9);
         messageMapper.insert(m);
         return true;
     }
@@ -542,6 +544,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             message.setMessageCode(mess.getCode());
             message.setMessageTitle(mess.getTitle());
             message.setStatus(0);
+            message.setIsTask(0);
+            message.setMessageType(6);
             message.setStatus((Integer)param.get("number"));
 
             map.put("number", String.valueOf(param.get("number")));

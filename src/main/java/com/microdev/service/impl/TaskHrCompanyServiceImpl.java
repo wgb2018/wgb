@@ -420,6 +420,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         param.put("number", (String)map.get("number"));
         String c = StringKit.templateReplace(mess.getContent(), param);
         m.setMessageContent(c);
+        m.setMessageType(4);
         m.setApplyType(3);
         m.setStatus(0);
 

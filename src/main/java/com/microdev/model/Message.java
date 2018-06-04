@@ -90,9 +90,9 @@ public class Message extends BaseEntity {
     private Integer messageType = 0;
 
     /**
-     * 是否需要处理0需要1不需要(通知)
+     * 是否需要处理0任务1(绑定解绑通知)
      */
-    private Integer isHandle = 0;
+    private Integer isTask = 0;
     /**
      * 任务id
      */

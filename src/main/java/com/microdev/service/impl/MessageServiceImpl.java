@@ -15,6 +15,7 @@ import com.microdev.model.MessageTemplate;
 import com.microdev.model.TaskHrCompany;
 import com.microdev.param.*;
 import com.microdev.service.MessageService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -300,6 +301,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         m.setApplyType(3);
         m.setMessageType(4);
         m.setApplicantType(2);
+        m.setIsTask(0);
         m.setHrCompanyId(c.getHrCompanyId());
         m.setHotelId(c.getHotelId());
         Map<String, String> map = new HashMap<>();
@@ -594,14 +596,32 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
 
     /**
      *分页查询待处理事务
-     * @param id        小时工传worker_id,酒店和人力传id
-     * @param type      小时工传worker,酒店传hotel，人力传hr
+     * @param request
+     * @param paginator
      * @return
      */
     @Override
     public ResultDO showWaitHandleWork(QueryCooperateRequest request, Paginator paginator) {
-
-        return ResultDO.buildSuccess("");
+        if (StringUtils.isEmpty(request.getId()) || StringUtils.isEmpty(request.getType())) {
+            throw new ParamsException("参数错误");
+        }
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+        List<AwaitHandleInfo> list = null;
+        if ("worker".equals(request.getType())) {
+            list = messageMapper.selectWorkerAwaitHandleInfo(request.getId());
+        } else if ("hotel".equals(request.getType())) {
+            list = messageMapper.selectHotelAwaitHandleInfo(request.getId());
+        } else if ("hr".equals(request.getType())) {
+            list = messageMapper.selectHrAwaitHandleInfo(request.getId());
+        } else {
+            throw new ParamsException("参数传递错误");
+        }
+        PageInfo<AwaitHandleInfo> pageInfo = new PageInfo<>(list);
+        Map<String, Object> map = new HashMap<>();
+        map.put("page", pageInfo.getPageNum());
+        map.put("total", pageInfo.getTotal());
+        map.put("result", list);
+        return ResultDO.buildSuccess(map);
     }
 
 }

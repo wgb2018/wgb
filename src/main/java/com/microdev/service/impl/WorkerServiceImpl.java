@@ -318,6 +318,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setMessageContent(c);
         m.setApplyType(3);
         m.setStatus(0);
+        m.setIsTask(0);
 
         messageMapper.insert(m);
         return true;
@@ -366,6 +367,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setMessageContent(c);
         m.setApplyType(3);
         m.setStatus(0);
+        m.setIsTask(0);
 
         messageMapper.insert(m);
         return true;
@@ -403,6 +405,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setMessageContent(c);
         m.setApplyType(2);
         m.setStatus(0);
+        m.setIsTask(0);
         messageMapper.insert(m);
 
         return true;
@@ -497,6 +500,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setMessageContent(c);
         m.setApplyType(3);
         m.setStatus(0);
+        m.setIsTask(0);
 
         messageMapper.insert(m);
         return true;
