@@ -112,4 +112,25 @@ union
         </foreach>
         AND STATUS IN (1,4)
     </select>
+
+    <select id = "selectBindCountByHotelId" parameterType="com.microdev.param.HotelHrIdBindDTO" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM hotel_hr_company WHERE hotel_id = #{hotelId} AND hr_id IN
+        <foreach collection="set" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        AND STATUS IN (0,3)
+    </select>
+
+    <select id = "selectBindCountByHrId" parameterType="com.microdev.param.HotelHrIdBindDTO" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM hotel_hr_company WHERE hr_id = #{hrId} AND hotel_id IN
+        <foreach collection="set" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        AND STATUS IN (0,3)
+    </select>
+
+    <select id="selectByHrHotelId" resultType="com.microdev.model.HotelHrCompany">
+        select <include refid="query_Column_List"/> from hotel_hr_company
+        where hr_id = #{hrId} and hotel_id = #{hotelId}
+    </select>
 </mapper>

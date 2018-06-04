@@ -29,4 +29,10 @@ public interface HotelHrCompanyMapper extends BaseMapper<HotelHrCompany> {
 
     @Select("select count(1) from hotel_hr_company where hr_id = #{hrId} and hotel_id = #{hotelId} and status in (0,3)")
     int selectHrHotelId(String hrId, String hotelId);
+
+    int selectBindCountByHotelId(HotelHrIdBindDTO dto);
+
+    int selectBindCountByHrId(HotelHrIdBindDTO dto);
+
+    HotelHrCompany selectByHrHotelId(@Param("hrId") String hrId,@Param("hotelId") String hotelId);
 }

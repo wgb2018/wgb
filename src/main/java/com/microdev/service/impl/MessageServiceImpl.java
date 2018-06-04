@@ -131,8 +131,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m.setMessageCode(mess.getCode());
             m.setMessageTitle(mess.getTitle());
             m.setStatus(0);
-            m.setMessageType(5);
+            m.setMessageType(13);
             m.setIsTask(1);
+            m.setContent(applyCompany.getName() + "向你发出了申请合作申请");
             if (type == 1) {
                 m.setApplyType(2);
                 m.setApplicantType(3);
@@ -188,8 +189,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m.setWorkerId(workerId);
             if ("applyBindMessage".equals(pattern)) {
                 m.setMessageType(5);
+                m.setContent(userName + "向您发出了申请绑定申请");
             } else {
                 m.setMessageType(12);
+                m.setContent(userName + "向您发出了申请解绑申请");
             }
             m.setMessageContent(c);
             m.setHrCompanyId(it.next());
@@ -599,6 +602,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 message.setHrCompanyId(id);
                 message.setMessageType(5);
             }
+            message.setContent(name + "向您发出了申请绑定申请");
             messageList.add(message);
         }
         messageMapper.saveBatch(messageList);

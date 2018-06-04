@@ -641,50 +641,84 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
         List<HotelHrCompany> list = new ArrayList<>();
         HotelHrCompany hotelHr = null;
+        Company company = null;
         if (type == 1) {
             if (StringUtils.isEmpty(dto.getHotelId())) {
                 throw new ParamsException("参数hotelId为空");
             }
-            int num = hotelHrCompanyMapper.selectIsBind(dto);
+            int num = hotelHrCompanyMapper.selectBindCountByHotelId(dto);
             if (num > 0) {
                 throw new BusinessException("已绑定数据,请勿重复");
             }
-            Company company = companyMapper.selectById(dto.getHotelId());
-
-            messageService.hotelBindHrCompany(dto.getSet(), company, "applyBindMessage", type);
-
-            for (String hrId : hrSet) {
-                hotelHr = new HotelHrCompany();
-                hotelHr.setStatus(3);
-                hotelHr.setBindType(type);
-                hotelHr.setHotelId(company.getPid());
-                hotelHr.setHrId(hrId);
-                list.add(hotelHr);
+            num = hotelHrCompanyMapper.selectIsBind(dto);
+            if (num > 0) {
+                for (String hrId : hrSet) {
+                    hotelHr = hotelHrCompanyMapper.selectByHrHotelId(dto.getHotelId(), hrId);
+                    if (hotelHr == null) {
+                        hotelHr = new HotelHrCompany();
+                        hotelHr.setStatus(3);
+                        hotelHr.setBindType(type);
+                        hotelHr.setHotelId(dto.getHotelId());
+                        hotelHr.setHrId(hrId);
+                        list.add(hotelHr);
+                    } else {
+                        hotelHr.setStatus(3);
+                        hotelHrCompanyMapper.update(hotelHr);
+                    }
+                }
+            } else {
+                for (String hrId : hrSet) {
+                    hotelHr = new HotelHrCompany();
+                    hotelHr.setStatus(3);
+                    hotelHr.setBindType(type);
+                    hotelHr.setHotelId(dto.getHotelId());
+                    hotelHr.setHrId(hrId);
+                    list.add(hotelHr);
+                }
             }
+            company = companyMapper.selectById(dto.getHotelId());
+
         } else if (type == 2) {
             if (StringUtils.isEmpty(dto.getHrId())) {
                 throw new ParamsException("参数hrId为空");
             }
-            int num = hotelHrCompanyMapper.selectIsBIndByCompanyId(dto);
+            int num = hotelHrCompanyMapper.selectBindCountByHrId(dto);
             if (num > 0) {
                 throw new BusinessException("已绑定数据,请勿重复");
             }
-            Company company = companyMapper.selectById(dto.getHrId());
-
-            messageService.hotelBindHrCompany(dto.getSet(), company, "applyBindMessage", type);
-            for (String hotelId : hrSet) {
-                hotelHr = new HotelHrCompany();
-                hotelHr.setBindType(2);
-                hotelHr.setStatus(3);
-                hotelHr.setHotelId(hotelId);
-                hotelHr.setHrId(company.getPid());
-                list.add(hotelHr);
+            num = hotelHrCompanyMapper.selectIsBIndByCompanyId(dto);
+            if (num > 0) {
+                for (String hotelId : hrSet) {
+                    hotelHr = hotelHrCompanyMapper.selectByHrHotelId(hotelId, dto.getHrId());
+                    if (hotelHr == null) {
+                        hotelHr = new HotelHrCompany();
+                        hotelHr.setBindType(2);
+                        hotelHr.setStatus(3);
+                        hotelHr.setHotelId(hotelId);
+                        hotelHr.setHrId(dto.getHrId());
+                        list.add(hotelHr);
+                    } else {
+                        hotelHr.setStatus(3);
+                        hotelHrCompanyMapper.update(hotelHr);
+                    }
+                }
+            } else {
+                for (String hotelId : hrSet) {
+                    hotelHr = new HotelHrCompany();
+                    hotelHr.setBindType(2);
+                    hotelHr.setStatus(3);
+                    hotelHr.setHotelId(hotelId);
+                    hotelHr.setHrId(dto.getHrId());
+                    list.add(hotelHr);
+                }
             }
+            company = companyMapper.selectById(dto.getHrId());
         }
         if (list.size() > 0) {
             hotelHrCompanyMapper.saveBatch(list);
         }
 
+        messageService.hotelBindHrCompany(dto.getSet(), company, "applyBindMessage", type);
         return ResultDO.buildSuccess("申请成功");
     }
 
@@ -725,6 +759,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             inform.setTitle("解绑成功");
             inform.setContent(company.getName() + "同意了你的申请解绑。你可以添加新的合作人力公司，没人最多只能绑定5家人力公司");
         }
+        informMapper.insert(inform);
         return "成功";
     }
 
