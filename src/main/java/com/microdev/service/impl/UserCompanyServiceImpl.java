@@ -62,7 +62,8 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         if (message == null || message.getStatus() == 1) {
             throw new ParamsException("消息已被处理");
         }
-
+        message.setStatus(1);
+        messageMapper.updateById(message);
         boolean flag = true;
 
         User user=  userMapper.queryByWorkerId(message.getWorkerId());

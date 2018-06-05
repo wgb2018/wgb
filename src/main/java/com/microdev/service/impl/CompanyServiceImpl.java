@@ -651,7 +651,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             }
             int num = hotelHrCompanyMapper.selectBindCountByHotelId(dto);
             if (num > 0) {
-                throw new BusinessException("已绑定数据,请勿重复");
+                throw new BusinessException("已绑定,请勿重复");
             }
             num = hotelHrCompanyMapper.selectIsBind(dto);
             if (num > 0) {
