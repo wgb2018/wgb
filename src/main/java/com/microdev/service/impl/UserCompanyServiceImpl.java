@@ -77,11 +77,11 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             inform.setTitle("绑定被拒绝");
             inform.setContent("小时工" + user.getUsername() + "拒绝了你的绑定申请。");
         } else if ("1".equals(status)) {
-            UserCompany userCompany= userCompanyMapper.findOneUserCompany(message.getHrCompanyId(),message.getWorkerId());
+            UserCompany userCompany= userCompanyMapper.selectByWorkerIdHrId(message.getHrCompanyId(),message.getWorkerId());
             if(userCompany==null){
                 userCompany=new UserCompany();
 
-                Company company= companyMapper.findCompanyById(message.getWorkerId());
+                Company company= companyMapper.findCompanyById(message.getHrCompanyId());
                 if(company==null){
                     throw new ParamsException("未找到匹配的公司信息");
                 }

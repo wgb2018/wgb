@@ -18,7 +18,6 @@ public class MessageDetailsResponse {
     private String logo;
     private String minutes;
     private String content;
-    private int amount;
     private OffsetDateTime supplementTime;
     private OffsetDateTime supplementTimeEnd;
     private int needWorkers;

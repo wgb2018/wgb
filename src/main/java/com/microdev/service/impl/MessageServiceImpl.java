@@ -750,7 +750,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     }
 
     /**
-     * 查询消息明细
+     * 查询消息明细---任务信息
      * @param messageId         消息id
      * @param messagetype       用户类型小时工worker,人力hr酒店hotel
      * @param type              消息类型
@@ -768,10 +768,14 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             } else if ("hr".equals(messagetype)) {
                 response = messageMapper.selectHrAwaitHandleTask(messageId);
             }
-        } else if ("1".equals(type) || "2".equals(type) || "3".equals(type) || "4".equals(type)) {
+        } else if ("1".equals(type) || "2".equals(type) || "3".equals(type) || "4".equals(type) || "11".equals(type)) {
             response = messageMapper.selectHrAwaitHandleTask(messageId);
-        } else if ("2".equals(type)) {
-
+        } else if ("10".equals(type)) {
+            if ("hr".equals(type)) {
+                response = messageMapper.selectHrAwaitHandleTask(messageId);
+            } else if ("hotel".equals(type)) {
+                response = messageMapper.selectWorkerAwaitHandleTask(messageId);
+            }
         }
         return response;
     }
