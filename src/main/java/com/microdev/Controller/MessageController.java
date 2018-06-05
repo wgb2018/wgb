@@ -118,15 +118,28 @@ public class MessageController {
     }
 
     /**
-     * 查询消息明细
+     * 查询消息详情的申请信息。
      * @param messageId
      * @param messagetype
      * @param type
      * @return
      */
-    @PostMapping("/message/details")
+    @PostMapping("/message/details/applyInfo")
     public ResultDO selectMessageDetails(String messageId, String messagetype, String type) {
 
         return ResultDO.buildSuccess(messageService.selectMessageDetails(messageId, messagetype, type));
+    }
+
+    /**
+     * 查询消息详情的任务信息
+     * @param messageId
+     * @param messagetype
+     * @param type
+     * @return
+     */
+    @PostMapping("/message/details/taskInfo")
+    public ResultDO selectDetailTaskInfo(String messageId, String messagetype, String type) {
+
+        return ResultDO.buildSuccess(messageService.selectAwaitTaskDetails(messageId, messagetype, type));
     }
 }
