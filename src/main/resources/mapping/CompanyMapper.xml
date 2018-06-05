@@ -44,7 +44,7 @@
                     (select area_id from area_relation where id = #{observerId}) and id_type = 2
                     )b on a.id = b.id
                     where a.id not IN
-                    (select company_id from user_company where user_id = #{observerId} and status IN (0,1,3))
+                    (select company_id from user_company where user_id = (select id from user where worker_id = #{observerId}) and status IN (0,1,3))
                     )
                 </if>
                 <if test="observertype == 1">
@@ -89,7 +89,7 @@
         </if>
 
         order by create_time desc-->
-        SELECT c.name,c.company_type,c.logo,c.address,c.business_license,c.leader,c.leader_mobile,c.status,c.confirmed_time,c.latitude,c.longitude,c.id as pid, hh.status AS bindType FROM company c
+        SELECT c.name,c.company_type as companyType,c.logo,c.address,c.business_license as businessLicense,c.leader,c.leader_mobile as leaderMobile,c.status,c.confirmed_time as confirmedTime,c.latitude,c.longitude,c.id as pid, hh.status AS bindType,c.area FROM company c
         INNER JOIN
         (
         SELECT hotel_id,STATUS FROM hotel_hr_company WHERE hr_id = #{id} AND STATUS IN (0,3,4)
