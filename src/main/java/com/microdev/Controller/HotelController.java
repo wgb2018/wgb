@@ -55,7 +55,7 @@ public class HotelController {
     /**
      * 酒店处理人力资源公司绑定
      */
-    @PostMapping("/hotels/{messageId}/add/{status}")
+    @GetMapping("/hotels/{messageId}/add/{status}")
     public ResultDO addHrCompany(@PathVariable String messageId,@PathVariable String status) {
 
         return companyService.hotelAddHrCompanyById(messageId, status, 1);

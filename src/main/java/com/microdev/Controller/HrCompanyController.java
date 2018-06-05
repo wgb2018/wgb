@@ -162,7 +162,7 @@ public class HrCompanyController {
     @GetMapping("/hrcompanies/{messageId}/handle/{status}")
     public ResultDO hrcompanyHandleBind(@PathVariable String messageId,@PathVariable String status) {
 
-        return ResultDO.buildSuccess(companyService.hrHandlerHotelBind(messageId, status));
+        return companyService.hrHandlerHotelBind(messageId, status);
     }
 
     /**

@@ -28,16 +28,16 @@ public class TaskHrCompanyController {
     /**
      * 接受任务
      */
-    @PostMapping("/hr-tasks/accept/{id}")
-    public ResultDO accept(@PathVariable String id, String messageId) {
+    @PostMapping("/hr-tasks/accept")
+    public ResultDO accept(String id, String messageId) {
         taskHrCompanyService.TaskHraccept(id, messageId);
         return ResultDO.buildSuccess("接受任务成功");
     }
     /**
      * 拒绝任务
      */
-    @PostMapping("/hr-tasks/refuse/{id}")
-    public ResultDO refuse(@PathVariable String id, String messageId, String reason) {
+    @PostMapping("/hr-tasks/refuse")
+    public ResultDO refuse(String id, String messageId, String reason) {
         taskHrCompanyService.TaskHrrefuse(id, messageId, reason);
         return ResultDO.buildSuccess("拒绝任务成功");
     }

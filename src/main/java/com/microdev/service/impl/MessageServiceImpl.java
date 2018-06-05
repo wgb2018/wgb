@@ -677,4 +677,103 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         messageMapper.insert(message);
     }
 
+    /**
+     * 查询消息明细
+     * @param messageId   消息id
+     * @param messagetype 用户类型小时工worker,人力hr酒店hotel
+     * @param type        消息类型
+     * @return
+     */
+    @Override
+    public MessageDetailsResponse selectMessageDetails(String messageId, String messagetype, String type) {
+        if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(type)) {
+            throw new ParamsException("参数不能为空");
+        }
+        MessageDetailsResponse response = null;
+        //更新消息已读状态
+        messageMapper.updateCheckSignStatus(messageId);
+        //根据消息id和类型查询待处理信息
+        if ("12".equals(messagetype)) {
+            response = messageMapper.selectWorkerApply(messageId);
+        } else if ("13".equals(type)) {
+            if ("hr".equals(messagetype)) {
+                response = messageMapper.selectCompanyApply(messageId);
+            } else if ("hotel".equals(messagetype)) {
+                response = messageMapper.selectHotelApply(messageId);
+            } else {
+                throw new ParamsException("用户类型错误");
+            }
+        } else if ("5".equals(type)) {
+            if ("hr".equals(messagetype)) {
+                response = messageMapper.selectWorkerApply(messageId);
+            } else if ("worker".equals(messagetype)) {
+                response = messageMapper.selectHotelApply(messageId);
+            } else {
+                throw new ParamsException("用户类型错误");
+            }
+        } else if ("8".equals(type)) {
+            if ("worker".equals(messagetype)) {
+                response = messageMapper.selectPayConfirm(messageId, "2");
+            } else if ("hotel".equals(messagetype)){
+                response = messageMapper.selectPayConfirm(messageId, "1");
+            }
+        } else if ("10".equals(type)) {
+            if ("hotel".equals(messagetype)) {
+                response = messageMapper.selectHotelApply(messageId);
+            } else if ("hr".equals(messagetype)) {
+                response = messageMapper.selectCompanyApply(messageId);
+            } else {
+                throw new ParamsException("用户类型错误");
+            }
+        } else if ("1".equals(type) || "2".equals(type) || "3".equals(type)) {
+            response = messageMapper.selectWorkerApply(messageId);
+        } else if ("4".equals(type)) {
+            response = messageMapper.selectApplyAllocate(messageId);
+        } else if ("7".equals(type)) {
+            response = messageMapper.selectWorkerApply(messageId);
+        } else if ("9".equals(type)) {
+            response = messageMapper.selectWorkerApply(messageId);
+            String companyName = messageMapper.selectCompanyNameByMessageId(messageId);
+            response.setCompanyName(companyName);
+        } else if ("10".equals(type)) {
+            if ("worker".equals(messagetype)) {
+                response = messageMapper.selectWorkerApply(messageId);
+            } else if ("hr".equals(messagetype)) {
+                response = messageMapper.selectHotelApply(messageId);
+                Map<String, Object> param = messageMapper.selectNeedWorkers(messageId);
+                response.setNeedWorkers((Integer)param.get("needWorkers"));
+            } else {
+                throw new ParamsException("用户类型错误");
+            }
+        }
+        return response;
+    }
+
+    /**
+     * 查询消息明细
+     * @param messageId         消息id
+     * @param messagetype       用户类型小时工worker,人力hr酒店hotel
+     * @param type              消息类型
+     * @return
+     */
+    @Override
+    public AwaitTaskResponse selectAwaitTaskDetails(String messageId, String messagetype, String type) {
+        if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(messagetype) || StringUtils.isEmpty(type)) {
+            throw new ParamsException("参数错误");
+        }
+        AwaitTaskResponse response = null;
+        if ("6".equals(type)) {
+            if ("worker".equals(messagetype)) {
+                response = messageMapper.selectWorkerAwaitHandleTask(messageId);
+            } else if ("hr".equals(messagetype)) {
+                response = messageMapper.selectHrAwaitHandleTask(messageId);
+            }
+        } else if ("1".equals(type) || "2".equals(type) || "3".equals(type) || "4".equals(type)) {
+            response = messageMapper.selectHrAwaitHandleTask(messageId);
+        } else if ("2".equals(type)) {
+
+        }
+        return response;
+    }
+
 }

@@ -117,4 +117,16 @@ public class MessageController {
         return messageService.showWaitHandleWork(paging.getSelector(), paging.getPaginator());
     }
 
+    /**
+     * 查询消息明细
+     * @param messageId
+     * @param messagetype
+     * @param type
+     * @return
+     */
+    @PostMapping("/message/details")
+    public ResultDO selectMessageDetails(String messageId, String messagetype, String type) {
+
+        return ResultDO.buildSuccess(messageService.selectMessageDetails(messageId, messagetype, type));
+    }
 }

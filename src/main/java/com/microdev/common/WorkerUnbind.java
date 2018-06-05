@@ -48,7 +48,7 @@ public class WorkerUnbind {
 
     private void updateInfo(List<Message> list, Integer maxNum) {
         if (list != null || list.size() > 0) {
-            
+
             for (Message message : list) {
                 boolean flag = comparaTime(message.getCreateTime(), maxNum);
                 if (flag) {

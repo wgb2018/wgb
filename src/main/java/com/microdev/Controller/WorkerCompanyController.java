@@ -87,6 +87,6 @@ public class WorkerCompanyController {
     @GetMapping("/hrcompany/{messageId}/bind/{status}")
     public ResultDO hrcompanyBindWorker(@PathVariable String messageId,@PathVariable String status) {
 
-        return ResultDO.buildSuccess(userCompanyService.hrRespondWorkerBind(messageId, status));
+        return userCompanyService.hrRespondWorkerBind(messageId, status);
     }
 }

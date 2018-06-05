@@ -52,4 +52,24 @@ public interface MessageMapper extends BaseMapper<Message> {
     List<AwaitHandleInfo> selectHotelAwaitHandleInfo(@Param("hotelId") String hotelId);
 
     int selectWorkerUnbindCount();
+
+    MessageDetailsResponse selectWorkerApply(@Param("messageId") String messageId);
+
+    MessageDetailsResponse selectCompanyApply(@Param("messageId") String messageId);
+
+    MessageDetailsResponse selectHotelApply(@Param("messageId") String messageId);
+
+    int updateCheckSignStatus(String id);
+
+    MessageDetailsResponse selectPayConfirm(@Param("messageId") String messageId,@Param("type") String type);
+
+    MessageDetailsResponse selectApplyAllocate(@Param("messageId") String messageId);
+
+    String selectCompanyNameByMessageId(String messageId);
+
+    Map<String, Object> selectNeedWorkers(String messageId);
+
+    AwaitTaskResponse selectWorkerAwaitHandleTask(@Param("messageId") String messageId);
+
+    AwaitTaskResponse selectHrAwaitHandleTask(@Param("messageId") String messageId);
 }

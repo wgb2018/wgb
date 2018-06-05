@@ -347,7 +347,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         Message m = new Message();
         m.setContent(info.getReason());
         m.setSupplementTime(info.getTime());
-        m.setMinutes(info.getMinutes());
+        m.setMinutes(info.getMinutes() + "");
         Map<String, String> tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
 
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applyOvertimeMessage");

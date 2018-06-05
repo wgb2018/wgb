@@ -123,17 +123,20 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
     @Override
     public ResultDO getCompanyById(String id) {
+        if (StringUtils.isEmpty(id)) {
+            throw new ParamsException("参数错误");
+        }
+
         Company company = companyMapper.findCompanyById(id);
         if (company == null) {
             company = new Company();
         }else{
             List l1 = dictService.findServiceArea (company.getPid ());
             List l2 = dictMapper.queryTypeByUserId (company.getPid ());
-            logger.error("areaCode:" + l1.toString() + ";serviceType:" + l2.toString());
             company.setAreaCode (l1==null?new ArrayList<>():l1);
             company.setServiceType (l2==null?new ArrayList<>():l2);
-            logger.error("areaCode:" + (l1==null?new ArrayList<>():l1) + ";serviceType:" + (l2==null?new ArrayList<>():l2));
         }
+
         return ResultDO.buildSuccess(company);
     }
     /**
@@ -587,7 +590,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         Company c = companyMapper.selectById(m.getHotelId());
 
         if ("1".equals(status)) {
-            Integer minutes = m.getMinutes() == null ? 0 : m.getMinutes();
+            Integer minutes = m.getMinutes() == null ? 0 : Integer.valueOf(m.getMinutes());
 
             Map<String, Object> map = new HashMap<>();
             map.put("taskWorkerId", m.getWorkerTaskId());
@@ -753,7 +756,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 throw new ParamsException("数据异常");
             }
             UserCompany userCompany = list.get(0);
-            userCompany.setStatus(2);
+            userCompany.setStatus(4);
             userCompanyMapper.update(userCompany);
             Company company = companyMapper.selectById(userCompany.getCompanyId());
             inform.setTitle("解绑成功");

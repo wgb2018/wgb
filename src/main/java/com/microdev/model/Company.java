@@ -79,7 +79,6 @@ public class Company extends BaseEntity {
     private Integer addressCode;
 
     private String area;
-
     /**
      * 用户二维码
      */

@@ -17,6 +17,8 @@ import com.microdev.param.*;
 import com.microdev.service.MessageService;
 import com.microdev.service.UserCompanyService;
 import com.microdev.type.UserType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +31,7 @@ import java.util.*;
 @Transactional
 @Service
 public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCompany> implements UserCompanyService {
+    private static final Logger logger = LoggerFactory.getLogger(UserCompanyServiceImpl.class);
     @Autowired
     UserCompanyMapper userCompanyMapper;
     @Autowired
@@ -347,7 +350,8 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
      */
     @Override
     public ResultDO hrRespondWorkerBind(String messageId, String status) {
-        if (StringUtils.isEmpty(messageId) || !"0".equals(status) || "1".equals(status)) {
+        logger.info("hrRespondWorkerBind:" + messageId + ";status=" + status);
+        if (StringUtils.isEmpty(messageId) || (!"0".equals(status) && !"1".equals(status))) {
             return ResultDO.buildError("参数错误");
         }
         Message message = messageMapper.selectById(messageId);

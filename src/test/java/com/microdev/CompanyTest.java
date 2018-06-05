@@ -47,17 +47,7 @@ public class CompanyTest {
 		ResultDO r = companyService.pagingCompanys(p, c);
 		System.out.println(r.toString());
 	}
-	
-	@Test
-	public void twoTest() {
-        Map<String, Object> map = new HashMap<>();
-		List<Company> list = companyMapper.selectByMap(map);
-		if (list != null && list.size() > 0) {
-			String id = list.get(0).getPid();
-			ResultDO r = companyService.getCompanyById(id);
-			System.out.println(r.toString());
-		}
-	}
+
 	
 	@Test
 	public void threeTest() {

@@ -161,4 +161,22 @@ public interface MessageService extends IService<Message> {
      * 拒绝任务
      */
     void refuseTask(Map<String, String> param);
+
+    /**
+     * 查询消息明细
+     * @param messageId   消息id
+     * @param messagetype 用户类型小时工worker,人力hr酒店hotel
+     * @param type        消息类型
+     * @return
+     */
+    MessageDetailsResponse selectMessageDetails(String messageId, String messagetype, String type);
+
+    /**
+     * 查询待处理事务详情中的任务信息
+     * @param messageId         消息id
+     * @param messagetype       用户类型小时工worker,人力hr酒店hotel
+     * @param type              消息类型
+     * @return
+     */
+    AwaitTaskResponse selectAwaitTaskDetails(String messageId, String messagetype, String type);
 }

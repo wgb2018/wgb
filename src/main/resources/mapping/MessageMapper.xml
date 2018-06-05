@@ -50,6 +50,11 @@
     <update id="updateStatus" parameterType="java.lang.String">
         update message set status = 1 where id = #{id}
     </update>
+
+    <update id="updateCheckSignStatus" parameterType="java.lang.String">
+        update message set check_sign = 1 where id = #{id}
+    </update>
+
     <select id="findAll" parameterType="com.microdev.param.MessageQuery" resultType="com.microdev.model.Message">
         select
         <include refid="Message_Column_List"/>
@@ -350,7 +355,7 @@ INNER JOIN company c
 ON c.id = t.hotel_id
 INNER JOIN task_worker tw
 ON tw.id = m.worker_task_id
-WHERE m.apply_type=1 AND m.is_task = 0 AND m.worker_id= #{workerId}
+WHERE m.apply_type=1 AND m.is_task = 0 and m.status = 0 AND m.worker_id= #{workerId}
 
 UNION
 
@@ -359,7 +364,7 @@ UNION
   0 AS lackWorkers,NULL AS hotel_id, NULL AS id, 5 AS TYPE, 0 AS hourlyPay
  FROM message m2
  INNER JOIN company c2 ON (m2.hotel_id = c2.id OR m2.`hr_company_id` = c2.`id`)
- WHERE m2.apply_type=1 AND m2.is_task = 1 AND worker_id= #{workerId}
+ WHERE m2.apply_type=1 AND m2.is_task = 1 and m2.status = 0 AND worker_id= #{workerId}
 )
 ORDER BY create_time
 
@@ -376,7 +381,7 @@ INNER JOIN company c
 ON c.id = t.hotel_id
 INNER JOIN task_hr_company th
 ON th.task_id = m.task_id AND m.hr_company_id = th.hr_company_id
-WHERE m.apply_type=2 AND m.is_task = 0 AND m.hr_company_id= #{hrId}
+WHERE m.apply_type=2 AND m.is_task = 0 and m.status = 0 AND m.hr_company_id= #{hrId}
 
 UNION
 
@@ -385,7 +390,7 @@ SELECT m2.is_task,m2.content,m2.id AS messageId,m2.`create_time`,NULL AS address
   0 AS lackWorkers,NULL AS hotel_id, NULL AS id, message_type AS TYPE,0 AS hourlyPay,NULL AS AREA FROM message m2
   INNER JOIN USER u
   ON u.`worker_id` = m2.`worker_id`
-  WHERE m2.apply_type=2 AND m2.is_task = 1 AND m2.hr_company_id= #{hrId}
+  WHERE m2.apply_type=2 AND m2.is_task = 1 and m2.status = 0 AND m2.hr_company_id= #{hrId}
 )
 
 UNION
@@ -394,7 +399,7 @@ SELECT m3.is_task,m3.content,m3.id AS messageId,m3.`create_time`,NULL AS address
   0 AS lackWorkers,NULL AS hotel_id, NULL AS id, message_type AS TYPE,0 AS hourlyPay,c3.area FROM message m3
   INNER JOIN company c3
   ON c3.id = m3.`hotel_id`
-  WHERE m3.apply_type=2 AND m3.is_task = 1 AND m3.hr_company_id= #{hrId}
+  WHERE m3.apply_type=2 AND m3.is_task = 1 and m3.status = 0 AND m3.hr_company_id= #{hrId}
 )
 ORDER BY create_time
     </select>
@@ -409,7 +414,7 @@ SELECT task_type_text,from_date,to_date,day_start_time,day_end_time,hotel_name,c
 ON m.task_id = t.id
 INNER JOIN company c
 ON c.id = t.hotel_id
-WHERE m.apply_type=3 AND m.is_task = 0 AND m.hotel_id= #{hotelId}
+WHERE m.apply_type=3 AND m.is_task = 0 and m.status = 0 AND m.hotel_id= #{hotelId}
 
 UNION
 
@@ -418,8 +423,85 @@ SELECT m3.is_task,m3.content,m3.id AS messageId,m3.`create_time`,c3.`address`,c3
   0 AS lackWorkers,NULL AS hotel_id, NULL AS id, message_type AS TYPE,0 AS hourlyPay,c3.`area` FROM message m3
   INNER JOIN company c3
   ON c3.id = m3.`hotel_id`
-  WHERE m3.apply_type=3 AND m3.is_task = 1 AND m3.hotel_id= #{hotelId}
+  WHERE m3.apply_type=3 AND m3.is_task = 1 and m3.status = 0 AND m3.hotel_id= #{hotelId}
 )
 ORDER BY create_time
+    </select>
+
+    <select id="selectWorkerApply" resultType="com.microdev.param.MessageDetailsResponse">
+      SELECT u.`username` as name,u.age,u.`mobile`,u.`sex`,m.message_type,m.create_time,u.avatar,m.content,m.supplement_time,m.supplement_time_end,u.id  FROM
+(
+SELECT * FROM message WHERE id = #{messageId}
+) m
+INNER JOIN USER u
+ON u.`worker_id` = m.`worker_id`
+    </select>
+
+    <select id="selectCompanyApply" resultType="com.microdev.param.MessageDetailsResponse">
+      SELECT c.name as companyName,c.leader as name,c.leader_mobile as mobile,c.address,c.area,m.message_type,m.create_time,c.logo,m.content FROM
+(SELECT * FROM message WHERE id = #{messageId}) m
+INNER JOIN company c ON m.hotel_id = c.id
+    </select>
+
+    <select id="selectHotelApply" resultType="com.microdev.param.MessageDetailsResponse">
+        SELECT c.name as companyName,c.leader as name,c.leader_mobile as mobile,c.address,c.area,m.message_type,m.create_time,c.logo,c.id FROM
+(SELECT * FROM message WHERE id = #{messageId}) m
+INNER JOIN company c ON m.hr_company_id = c.id
+    </select>
+
+    <select id="selectPayConfirm" resultType="com.microdev.param.MessageDetailsResponse">
+      SELECT m.minutes ,m.create_time,c.name,c.logo FROM
+(
+SELECT * FROM message WHERE id = #{messageId}
+) m
+INNER JOIN company c ON
+<if test="type == 1">
+  c.id = m.hotel_id
+</if>
+<if test="type == 2">
+  c.id = m.hr_company_id
+</if>
+    </select>
+
+    <select id="selectApplyAllocate" resultType="com.microdev.param.MessageDetailsResponse">
+        SELECT c.name as companyName,c.leader as name,c.leader_mobile as mobile,tc.need_workers,tc.confirmed_workers,m.message_type,m.minutes,m.create_time,m.content FROM
+(
+SELECT * FROM message WHERE id = #{messageId}
+) m
+INNER JOIN company c ON m.hr_company_id = c.id
+INNER JOIN task_hr_company tc
+ON tc.task_id = m.task_id AND tc.hotel_id = m.hotel_id
+    </select>
+
+    <select id="selectCompanyNameByMessageId" parameterType="java.lang.String" resultType="java.lang.String">
+        select name from company where id =
+(select hotel_id  from message where id = #{messageId})
+    </select>
+
+    <select id="selectNeedWorkers" parameterType="java.lang.String" resultType="java.util.Map">
+        select hc.need_workers from hotel_hr_company hc inner join message m
+        on m.hr_company_id = hc.id and m.task_id = hc.task_id where m.id = #{messageId}
+    </select>
+
+    <select id="selectWorkerAwaitHandleTask" resultType="com.microdev.param.AwaitTaskResponse">
+        select t.from_date, t.to_date,t.day_start_time,t.day_end_time,t.task_content,,c.id as hotelId
+c.name,c.address,c.leader,c.leader_mobile,m.message_title,m.message_type
+  from message m inner join task t on m.task_id = t.id
+inner join company c on t.hotel_id = c.id
+where m.id = #{messageId}
+left join
+(
+select tc.need_workers,c2.name as hrName,c2.id as hrId,c2.leader as hrLeader, tc.hourly_pay
+,c2.leader_mobile as hrLeaderMobile  from message m2 inner join 	task_hr_company tc on m2.task_id = tc.task_id and m2.hr_company_id = tc.hr_company_id inner join company c2
+on c2.id = m2.hr_company_id where m2.id = #{messageId}
+)
+    </select>
+
+    <select id="selectHrAwaitHandleTask" resultType="com.microdev.param.AwaitTaskResponse">
+        select t.from_date, t.to_date,t.day_start_time,t.day_end_time,t.task_content,
+c.name,c.address,c.leader,c.leader_mobile,t.hourly_pay,m.message_title,m.message_type,c.id as hotelId
+ ,t.need_workers,t.confirmed_workers from message m inner join task t on m.task_id = t.id
+inner join company c on t.hotel_id = c.id
+where m.id = #{messageId}
     </select>
 </mapper>

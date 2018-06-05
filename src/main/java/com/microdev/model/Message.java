@@ -72,7 +72,7 @@ public class Message extends BaseEntity {
      */
     private String content;
 
-    private Integer minutes;
+    private String minutes;
 
     private OffsetDateTime supplementTimeEnd;
 
