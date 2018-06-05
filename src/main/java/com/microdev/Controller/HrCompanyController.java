@@ -107,7 +107,6 @@ public class HrCompanyController {
      */
     @PostMapping("/hrcompanies/apply/bindCompany")
     public ResultDO bindCompany(@RequestBody HotelHrIdBindDTO dto) {
-
         return companyService.hotelAddHrCompanySet(dto);
     }
 

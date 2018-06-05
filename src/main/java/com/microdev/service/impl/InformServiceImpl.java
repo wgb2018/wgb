@@ -1,6 +1,7 @@
 package com.microdev.service.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.microdev.common.utils.StringKit;
 import com.microdev.mapper.InformMapper;
 import com.microdev.mapper.InformTemplateMapper;
 import com.microdev.model.Inform;
@@ -16,9 +17,16 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
     @Autowired
     private InformTemplateMapper informTemplateMapper;
     @Override
-    public void sendInform(String acceptype, String receiveTd, InformType informType) {
-        Map<String,Object> map = new HashMap<String,Object> ();
-        map.put ("code",informType);
-        //InformTemplate informTemplate = informTemplateMapper.selectByMap (map);
+    public void sendInform(String acceptype, String receiveTd, InformType informType,Map<String, String> templateParams) {
+        InformTemplate param = new InformTemplate ();
+        param.setCode (informType);
+        InformTemplate informTemplate = informTemplateMapper.selectOne (param);
+        if(informTemplate == null){
+            //throw  new Exception ("没有找到通知模板");
+        }
+        String content = StringKit.templateReplace(informTemplate.getContent(), templateParams);
+        Inform inform = new Inform();
+        //nform.
+
     }
 }

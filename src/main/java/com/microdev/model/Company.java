@@ -59,11 +59,11 @@ public class Company extends BaseEntity {
     /**
      * 纬度，范围为90 ~ -90
      */
-    private Double latitude;
+    private Double latitude = 0.0;
     /**
      *  经度，范围为180 ~ -180。
      */
-    private Double longitude;
+    private Double longitude = 0.0;
     /**
      *  活跃人数
      */
