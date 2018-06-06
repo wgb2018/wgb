@@ -59,8 +59,6 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     MessageDetailsResponse selectHotelApply(@Param("messageId") String messageId);
 
-    int updateCheckSignStatus(String id);
-
     MessageDetailsResponse selectPayConfirm(@Param("messageId") String messageId,@Param("type") String type);
 
     MessageDetailsResponse selectApplyAllocate(@Param("messageId") String messageId);

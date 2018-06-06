@@ -110,7 +110,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      */
     @Override
     public boolean hotelBindHrCompany(Set<String> bindCompany, Company applyCompany, String pattern, Integer type) {
-        System.out.println ("param:"+bindCompany+"-"+applyCompany+"-"+pattern+"-"+type);
         if (bindCompany == null || bindCompany.size() == 0 || applyCompany == null) {
             throw new ParamsException("参数不能为空");
         }
@@ -481,9 +480,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         MessageShowDTO message = new MessageShowDTO();
         Map<String, Object> param = new HashMap<>();
         if (role == 1) {
+            //小时工消息
             param.put("workerId", id);
             param.put("applicantType", 3);
             param.put("applyType", 1);
+            param.put("status", 0);
             message.setCompanyNum(messageMapper.selectUnReadCount(param));
             param.put("applicantType", 2);
             message.setHrNum(messageMapper.selectUnReadCount(param));
@@ -687,13 +688,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      */
     @Override
     public MessageDetailsResponse selectMessageDetails(String messageId, String messagetype, String type) {
-        System.out.println ("param:"+messageId+"-"+messagetype+"-"+type);
+        System.out.println("------------cas:" + messageId + ";messagetype=" +messagetype+";type=" + type);
         if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(type)) {
             throw new ParamsException("参数不能为空");
         }
         MessageDetailsResponse response = null;
-        //更新消息已读状态
-        messageMapper.updateCheckSignStatus(messageId);
         //根据消息id和类型查询待处理信息
         if ("12".equals(messagetype)) {
             response = messageMapper.selectWorkerApply(messageId);

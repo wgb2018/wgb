@@ -35,7 +35,7 @@ public interface UserCompanyService extends IService<UserCompany> {
      * @param set
      * @return
      */
-    String hrApplyBindWorker(String hrId, List<String> set);
+    String hrApplyBindWorker(String hrId, Set<String> set);
 
     /**
      * 查询对人力发出申请的小时工的待审核信息

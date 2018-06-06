@@ -115,9 +115,9 @@ public class HrCompanyController {
      * 人力申请绑定小时工
      */
     @PostMapping("/hrcompanies/apply/bindWorkers")
-    public ResultDO bindWorkers(@RequestBody Map<String, Object> param) {
+    public ResultDO bindWorkers(@RequestBody HotelHrIdBindDTO dto) {
 
-        return ResultDO.buildSuccess(userCompanyService.hrApplyBindWorker((String)param.get("hrId"), (List<String>) param.get("set")));
+        return ResultDO.buildSuccess(userCompanyService.hrApplyBindWorker(dto.getHrId(), dto.getSet()));
     }
 
     /**

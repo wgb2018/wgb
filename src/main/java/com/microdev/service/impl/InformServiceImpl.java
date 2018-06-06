@@ -1,18 +1,22 @@
 package com.microdev.service.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.StringKit;
 import com.microdev.mapper.InformMapper;
 import com.microdev.mapper.InformTemplateMapper;
 import com.microdev.model.Inform;
 import com.microdev.model.InformTemplate;
+import com.microdev.param.InformRequestDTO;
 import com.microdev.param.InformType;
 import com.microdev.service.InformService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Service
 public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  implements InformService {
     @Autowired
     private InformTemplateMapper informTemplateMapper;
@@ -29,4 +33,16 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
         //nform.
 
     }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public int selectMessageInfo(InformRequestDTO dto, Paginator paginator) {
+
+        return 0;
+    }
+
+
 }

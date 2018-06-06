@@ -8,4 +8,22 @@
     <insert id="insertInform" parameterType="com.microdev.model.Inform">
         insert into inform (id, create_time, deleted, modify_time, status, send_type, accept_type, content, receive_id, title) values (#{pid}, #{createTime},#{deleted},#{modifyTime},#{status},#{sendType},#{acceptType},#{content},#{receiveId},#{title})
     </insert>
+
+    <select id="selectUnReadCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+      SELECT id,content,title FROM inform
+      <where>
+          <if test="status != null">
+            and status = #{status}
+          </if>
+          <if test="sendType != null">
+            and send_type = #{sendType}
+          </if>
+          <if test="acceptType != null">
+            and accept_type = #{acceptType}
+          </if>
+          <if test="receiveId != null and receiveId != ''">
+              and receive_id = #{receiveId}
+          </if>
+      </where>
+    </select>
 </mapper>

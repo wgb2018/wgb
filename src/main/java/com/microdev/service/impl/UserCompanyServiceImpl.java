@@ -265,11 +265,13 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
      * @return
      */
     @Override
-    public String hrApplyBindWorker(String hrId, List<String> set) {
+    public String hrApplyBindWorker(String hrId, Set<String> set) {
         if (StringUtils.isEmpty(hrId) || set == null || set.size() == 0) {
             throw new ParamsException("参数错误");
         }
-        List<String> userList = userMapper.selectIdByWorkerId(set);
+        List<String> list = new ArrayList<>(set);
+        List<String> userList = userMapper.selectIdByWorkerId(list);
+        logger.info("-----" + list.toString());
         if (set.size() != userList.size()) {
             throw new BusinessException("set包含无效数据");
         }
@@ -295,7 +297,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             userCompanyList.add(userCompany);
         }
         userCompanyMapper.saveBatch(userCompanyList);
-        messageService.bindUserHrCompany(c.getName(), hrId, set, 2);
+        messageService.bindUserHrCompany(c.getName(), hrId, list, 2);
         return "申请已发送";
     }
 
