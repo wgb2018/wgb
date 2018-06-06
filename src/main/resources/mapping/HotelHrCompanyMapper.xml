@@ -35,11 +35,10 @@
 
     <select id="selectCooperateHr" resultType="java.util.Map">
       SELECT f.*,IFNULL(m.amount,0) AS num FROM
-(SELECT cy.name,cy.`logo`,cy.address,cy.`leader`,cy.id,cy.leader_mobile,cy.`status` FROM company cy
+(SELECT cy.name,cy.`logo`,cy.address,cy.`leader`,cy.id,cy.leader_mobile as leaderMobile,cy.`status`,hy.status as bindType FROM company cy
 INNER JOIN
 (
-SELECT hr_id,create_time FROM hotel_hr_company WHERE hotel_id = #{hotelId} AND STATUS in (0,4)
-  and bind_type = 1) hy ON cy.id = hy.hr_id
+SELECT hr_id,create_time,status FROM hotel_hr_company WHERE hotel_id = #{hotelId} AND STATUS in (0,4) and bind_type = 1) hy ON cy.id = hy.hr_id
 <where>
     <if test="name != null and name != ''">
       and name like concat('%', #{name} , '%')
@@ -66,10 +65,10 @@ ON f.id = m.companyId
 union
         (
         SELECT f.*,IFNULL(m.amount,0) AS num FROM
-        (SELECT cy.name,cy.`logo`,cy.address,cy.`leader`,cy.id,cy.leader_mobile,cy.`status` FROM company cy
+        (SELECT cy.name,cy.`logo`,cy.address,cy.`leader`,cy.id,cy.leader_mobile,cy.`status`,,hy.status as bindType FROM company cy
         INNER JOIN
         (
-        SELECT hr_id,create_time FROM hotel_hr_company WHERE hotel_id = #{hotelId} AND STATUS = 3
+        SELECT hr_id,create_time,status FROM hotel_hr_company WHERE hotel_id = #{hotelId} AND STATUS = 3
          and bind_type = 1) hy ON cy.id = hy.hr_id
         <where>
         <if test="name != null and name != ''">

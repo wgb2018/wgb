@@ -97,8 +97,8 @@ public class HotelController {
      * 酒店反馈补签
      */
     @PostMapping("/hotels/supplementResponse")
-    public ResultDO supplementResponse(String id, String status) {
-        return ResultDO.buildSuccess(companyService.supplementResponse(id, status));
+    public ResultDO supplementResponse(Map<String, String> param) {
+        return ResultDO.buildSuccess(companyService.supplementResponse(param.get("messageId"), param.get("status")));
     }
     /**
      * 酒店申请替换小时工
@@ -139,8 +139,8 @@ public class HotelController {
      * 酒店处理小时工加时
      */
     @PostMapping("/hotels/handleExpandWork")
-    public ResultDO handleExpandWork(String id, String status) {
-        return ResultDO.buildSuccess(companyService.workExpand(id, status));
+    public ResultDO handleExpandWork(Map<String, String> param) {
+        return ResultDO.buildSuccess(companyService.workExpand(param.get("messageId"), param.get("status")));
     }
     /**
      * 酒店申请绑定人力资源公司
@@ -170,5 +170,16 @@ public class HotelController {
     public ResultDO hotelsExamineCompanies(@RequestBody PagingDO<QueryCooperateRequest> paging) {
 
         return companyService.hotelExamineHr(paging.getSelector(), paging.getPaginator());
+    }
+
+    /**
+     * 酒店处理小时工请假
+     * @param param
+     * @return
+     */
+    @PostMapping("/hotels/handle/workerLeave")
+    public ResultDO hotelsHandleWorkerLeave(Map<String, String> param) {
+
+        return companyService.hotelHandleLeave(param.get("messageId"), param.get("status"));
     }
 }

@@ -4,4 +4,8 @@
     <sql id="Basic_Column_List">
         id as pid,create_time,deleted,modify_time,status,send_type,accept_type,content,receive_id,title
     </sql>
+
+    <insert id="insertInform" parameterType="com.microdev.model.Inform">
+        insert into inform (id, create_time, deleted, modify_time, status, send_type, accept_type, content, receive_id, title) values (#{pid}, #{createTime},#{deleted},#{modifyTime},#{status},#{sendType},#{acceptType},#{content},#{receiveId},#{title})
+    </insert>
 </mapper>

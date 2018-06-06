@@ -1,9 +1,16 @@
 package com.microdev;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.microdev.mapper.DictMapper;
+import com.microdev.mapper.MessageMapper;
+import com.microdev.model.Message;
+import com.microdev.param.DictDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +40,9 @@ public class UserTest {
 	@Autowired
 	private UserService userService;
 	@Autowired
-    private WorkerService workerService;
+	private MessageMapper messageMapper;
 	@Autowired
-	private SocialMapper socialMapper;
+	private DictMapper dictMapper;
 	
 	@Test
 	public void oneTest() throws Exception {
@@ -67,14 +74,17 @@ public class UserTest {
 	
 	@Test
 	public void sixTest() {
-		String taskWorkerId = "018f3e28-0526-44dd-8600-3dd8d5ade53c";
-		String userId = "455877e5-d103-4f0e-a7be-c3413edd015b";
-		UserTaskResponse response = workerService.selectUserTaskInfo(taskWorkerId, userId);
-		System.out.println(response.toString());
+		Message message = messageMapper.selectById("a0d16ca48fd94fbbbf4b6b842b071735");
+		OffsetDateTime nowTime = OffsetDateTime.now();
+		OffsetDateTime applyTime = message.getCreateTime();
+		long leaveMinute = nowTime.getLong(ChronoField.MINUTE_OF_DAY) - applyTime.getLong(ChronoField.MINUTE_OF_DAY);
+		int hour = (int)(leaveMinute % 60 == 0 ? leaveMinute / 60 : (leaveMinute / 60) + 1);
+
+		DictDTO dict = dictMapper.findByNameAndCode("MaxUnbindDay","22");
+		Integer maxNum = Integer.parseInt(dict.getText());
+		hour = maxNum * 24 - hour <= 0 ? 0 : maxNum * 24 - hour;
+		String s = hour/24 + "天" + hour%24 + "小时";
+		System.out.println(s);
 	}
-	/*@Test
-	public void test() throws NoSuchAlgorithmException, InvalidKeySpecException {
-		String str = PasswordHash.createHash("123");
-		System.out.println(str);
-	}*/
+
 }

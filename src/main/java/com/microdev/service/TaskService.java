@@ -46,4 +46,11 @@ public interface TaskService extends IService<Task> {
      * @param status        1未完成已读3已完成已读
      */
     String updateTaskStatus(String taskId, Integer status);
+
+    /**
+     * 酒店再次派发任务
+     * @param request
+     * @return
+     */
+    ResultDO hotelAgainSendTask(CreateTaskRequest request);
 }

@@ -275,7 +275,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         inform.setReceiveId(taskHrCompany.getHotelId());
         inform.setAcceptType(3);
         inform.setSendType(2);
-        informMapper.insert(inform);
+        informMapper.insertInform(inform);
     }
     /**
      * 人力公司拒绝任务
@@ -470,6 +470,44 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             throw new ParamsException("参数错误");
         }
         taskHrCompanyMapper.updateStatusById(taskHrCompanyId, status);
+        return "成功";
+    }
+
+    /**
+     * PC端人力接受任务
+     * @param id
+     * @return
+     */
+    @Override
+    public String taskHracceptPC(String id) {
+        if (StringUtils.isEmpty(id) ) {
+            throw new ParamsException("参数不能为空");
+        }
+
+        TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId(id);
+        taskMapper.updateStatus(taskHrCompany.getTaskId(),2);
+        taskHrCompanyMapper.updateStatus(id,2);
+        return "成功";
+    }
+
+    /**
+     * PC端人力拒绝任务
+     * @param id
+     * @return
+     */
+    @Override
+    public String TaskHrrefusePC(String id) {
+
+        if (StringUtils.isEmpty(id) ) {
+            throw new ParamsException("参数不能为空");
+        }
+
+        TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId(id);
+        if (taskHrCompany == null) {
+            throw new BusinessException("查询不到人力任务数据");
+        }
+        taskHrCompanyMapper.updateStatus(id,3);
+        taskMapper.updateStatus (taskHrCompanyMapper.queryByTaskId (id).getTaskId (),8);
         return "成功";
     }
 }

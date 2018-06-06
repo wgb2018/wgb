@@ -84,4 +84,18 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
      * @return
      */
     String updateTaskHrStatus(String taskHrCompanyId, Integer status);
+
+    /**
+     * PC端人力接受任务
+     * @param id
+     * @return
+     */
+    String taskHracceptPC(String id);
+
+    /**
+     * PC端人力拒绝任务
+     * @param id
+     * @return
+     */
+    String TaskHrrefusePC(String id);
 }

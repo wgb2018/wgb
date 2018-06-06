@@ -121,7 +121,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         } else {
             return ResultDO.buildSuccess("失败");
         }
-        informMapper.insert(inform);
+        informMapper.insertInform(inform);
         return    ResultDO.buildSuccess("添加成功");
     }
     /**
@@ -296,7 +296,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         }
         userCompanyMapper.saveBatch(userCompanyList);
         messageService.bindUserHrCompany(c.getName(), hrId, set, 2);
-        return "绑定成功";
+        return "申请已发送";
     }
 
     /**
@@ -381,7 +381,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             inform.setTitle("绑定被拒绝");
             inform.setContent(company.getName() + "拒绝了你的绑定申请，等以后有机会希望可以再合作。");
         }
-        informMapper.insert(inform);
+        informMapper.insertInform(inform);
         return ResultDO.buildSuccess("绑定成功");
     }
 }

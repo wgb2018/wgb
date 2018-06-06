@@ -90,4 +90,26 @@ public class TaskHrCompanyController {
 
         return ResultDO.buildSuccess(taskHrCompanyService.updateTaskHrStatus(taskHrCompanyId, status));
     }
+
+    /**
+     * PC端人力接受任务
+     * @param id    人力任务id:taskHrId
+     * @return
+     */
+    @PostMapping("/hr-tasks/accept/pc")
+    public ResultDO pcAccept(String id) {
+
+        return ResultDO.buildSuccess(taskHrCompanyService.taskHracceptPC(id));
+    }
+
+    /**
+     * PC端人力拒绝任务
+     * @param id        人力任务id:taskHrId
+     * @return
+     */
+    @PostMapping("/hr-tasks/refuse/pc")
+    public ResultDO pcRefuse(String id) {
+
+        return ResultDO.buildSuccess(taskHrCompanyService.TaskHrrefusePC(id));
+    }
 }

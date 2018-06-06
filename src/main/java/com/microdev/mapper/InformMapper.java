@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface InformMapper extends BaseMapper<Inform> {
 
+    int insertInform(Inform inform);
 }

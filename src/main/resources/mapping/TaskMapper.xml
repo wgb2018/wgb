@@ -173,4 +173,5 @@
       SELECT COUNT(1) FROM task
       WHERE hotel_id = #{hotelId} AND CURDATE() > to_date and check_sign <![CDATA[<>]]> 3
     </select>
+
 </mapper>

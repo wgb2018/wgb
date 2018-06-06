@@ -94,7 +94,7 @@ public interface CompanyService extends IService<Company> {
      * @param status
      * @return
      */
-    boolean workExpand(String id, String status);
+    String workExpand(String id, String status);
     /**
      * 酒店添加人力资源公司
      * @param dto
@@ -149,4 +149,12 @@ public interface CompanyService extends IService<Company> {
      * @return
      */
     ResultDO hotelExamineHr(QueryCooperateRequest request, Paginator paginator);
+
+    /**
+     * 酒店处理小时工请假
+     * @param messageId    消息id
+     * @param status       0拒绝1同意
+     * @return
+     */
+    ResultDO hotelHandleLeave(String messageId, String status);
 }

@@ -695,9 +695,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         //根据消息id和类型查询待处理信息
         if ("12".equals(messagetype)) {
             response = messageMapper.selectWorkerApply(messageId);
+            if (response.getAge() < 0) response.setAge(0);
         } else if ("13".equals(type)) {
             if ("hr".equals(messagetype)) {
                 response = messageMapper.selectCompanyApply(messageId);
+                response.setOriginator(response.getName());
             } else if ("hotel".equals(messagetype)) {
                 response = messageMapper.selectHotelApply(messageId);
             } else {
@@ -706,6 +708,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         } else if ("5".equals(type)) {
             if ("hr".equals(messagetype)) {
                 response = messageMapper.selectWorkerApply(messageId);
+                if (response.getAge() < 0) response.setAge(0);
             } else if ("worker".equals(messagetype)) {
                 response = messageMapper.selectHotelApply(messageId);
             } else {
@@ -714,34 +717,47 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         } else if ("8".equals(type)) {
             if ("worker".equals(messagetype)) {
                 response = messageMapper.selectPayConfirm(messageId, "2");
-            } else if ("hotel".equals(messagetype)){
+            } else if ("hr".equals(messagetype)){
                 response = messageMapper.selectPayConfirm(messageId, "1");
             }
         } else if ("10".equals(type)) {
             if ("hotel".equals(messagetype)) {
                 response = messageMapper.selectHotelApply(messageId);
+                response.setOriginator(response.getName());
             } else if ("hr".equals(messagetype)) {
-                response = messageMapper.selectCompanyApply(messageId);
+                response = messageMapper.selectWorkerApply(messageId);
+                if (response.getAge() < 0) response.setAge(0);
+                response.setOriginator(response.getCompanyName());
             } else {
                 throw new ParamsException("用户类型错误");
             }
-        } else if ("1".equals(type) || "2".equals(type) || "3".equals(type)) {
-            response = messageMapper.selectWorkerApply(messageId);
+
+        } else if ("1".equals(type) ) {
+            response = messageMapper.selectSupplementApply(messageId);
+            if (response.getAge() < 0) response.setAge(0);
+        } else if ("2".equals(type)){
+            response = messageMapper.selectOvertimeApply(messageId);
+            if (response.getAge() < 0) response.setAge(0);
+        } else if ("3".equals(type)) {
+            response = messageMapper.selectLeaveApply(messageId);
+            if (response.getAge() < 0) response.setAge(0);
         } else if ("4".equals(type)) {
             response = messageMapper.selectApplyAllocate(messageId);
         } else if ("7".equals(type)) {
             response = messageMapper.selectWorkerApply(messageId);
+            if (response.getAge() < 0) response.setAge(0);
         } else if ("9".equals(type)) {
             response = messageMapper.selectWorkerApply(messageId);
+            if (response.getAge() < 0) response.setAge(0);
             String companyName = messageMapper.selectCompanyNameByMessageId(messageId);
-            response.setCompanyName(companyName);
+            response.setOriginator(companyName);
         } else if ("10".equals(type)) {
-            if ("worker".equals(messagetype)) {
+            if ("hr".equals(messagetype)) {
                 response = messageMapper.selectWorkerApply(messageId);
-            } else if ("hr".equals(messagetype)) {
+                if (response.getAge() < 0) response.setAge(0);
+                response.setOriginator(response.getName());
+            } else if ("hotel".equals(messagetype)) {
                 response = messageMapper.selectHotelApply(messageId);
-                Map<String, Object> param = messageMapper.selectNeedWorkers(messageId);
-                response.setNeedWorkers((Integer)param.get("needWorkers"));
             } else {
                 throw new ParamsException("用户类型错误");
             }
@@ -776,6 +792,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             } else if ("hotel".equals(type)) {
                 response = messageMapper.selectWorkerAwaitHandleTask(messageId);
             }
+        } else if ("7".equals(type)) {
+            response = messageMapper.selectCancelApply(messageId);
         }
         return response;
     }
