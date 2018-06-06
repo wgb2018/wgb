@@ -2,10 +2,7 @@ package com.microdev.Controller;
 
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
-import com.microdev.param.CreateMsgTemplateRequest;
-import com.microdev.param.MessageQuery;
-import com.microdev.param.PageRequest;
-import com.microdev.param.QueryCooperateRequest;
+import com.microdev.param.*;
 import com.microdev.service.MessageService;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,9 +120,9 @@ public class MessageController {
      * 查询消息详情的申请信息。
      */
     @PostMapping("/message/details/applyInfo")
-    public ResultDO selectMessageDetails(Map<String, String> map) {
+    public ResultDO selectMessageDetails(@RequestBody MessageDetailsDTO dto) {
 
-        return ResultDO.buildSuccess(messageService.selectMessageDetails(map.get("messageId"), map.get("messagetype"), map.get("type")));
+        return ResultDO.buildSuccess(messageService.selectMessageDetails(dto.getMessageId(), dto.getMessagetype(), dto.getType()));
     }
 
     /**

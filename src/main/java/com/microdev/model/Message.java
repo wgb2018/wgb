@@ -79,13 +79,9 @@ public class Message extends BaseEntity {
     private OffsetDateTime supplementTime;
 
     private String requestId;
-    /**
-     * 是否已查看0未查看1已查看
-     */
-    private Integer checkSign = 0;
 
     /**
-     * 消息类型1补签申请2加时申请3请假申请4调配申请5绑定申请6任务推荐9通知
+     * 消息类型1补签申请2加时申请3请假申请4调配申请5绑定申请6新任务7申请取消任务8收入确认9申请替换10拒绝接单    * 11待派单12申请解绑13申请合作
      */
     private Integer messageType = 0;
 

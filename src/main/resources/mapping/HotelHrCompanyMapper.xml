@@ -65,7 +65,7 @@ ON f.id = m.companyId
 union
         (
         SELECT f.*,IFNULL(m.amount,0) AS num FROM
-        (SELECT cy.name,cy.`logo`,cy.address,cy.`leader`,cy.id,cy.leader_mobile,cy.`status`,,hy.status as bindType FROM company cy
+        (SELECT cy.name,cy.`logo`,cy.address,cy.`leader`,cy.id,cy.leader_mobile,cy.`status`,hy.status as bindType FROM company cy
         INNER JOIN
         (
         SELECT hr_id,create_time,status FROM hotel_hr_company WHERE hotel_id = #{hotelId} AND STATUS = 3

@@ -93,23 +93,19 @@ public class TaskHrCompanyController {
 
     /**
      * PC端人力接受任务
-     * @param id    人力任务id:taskHrId
-     * @return
      */
     @PostMapping("/hr-tasks/accept/pc")
-    public ResultDO pcAccept(String id) {
+    public ResultDO pcAccept(Map<String, String> param) {
 
-        return ResultDO.buildSuccess(taskHrCompanyService.taskHracceptPC(id));
+        return ResultDO.buildSuccess(taskHrCompanyService.taskHracceptPC(param.get("id")));
     }
 
     /**
      * PC端人力拒绝任务
-     * @param id        人力任务id:taskHrId
-     * @return
      */
     @PostMapping("/hr-tasks/refuse/pc")
-    public ResultDO pcRefuse(String id) {
+    public ResultDO pcRefuse(Map<String, String> param) {
 
-        return ResultDO.buildSuccess(taskHrCompanyService.TaskHrrefusePC(id));
+        return ResultDO.buildSuccess(taskHrCompanyService.TaskHrrefusePC(param.get("id")));
     }
 }

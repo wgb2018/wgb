@@ -4,7 +4,7 @@
     <sql id="Message_Column_List">
         id as pid, create_time, deleted, modify_time,message_type,
         message_code, message_content, message_link, message_title, msg_link, status, worker_id, worker_task_id, hotel_id,
-        hr_company_id, applicant_type, apply_type, content, minutes, supplement_time_end, supplement_time, request_id,check_sign, is_task,task_id
+        hr_company_id, applicant_type, apply_type, content, minutes, supplement_time_end, supplement_time, request_id,is_task,task_id
     </sql>
 
     <update id="updateByMapId" parameterType="java.util.Map">
@@ -49,10 +49,6 @@
 
     <update id="updateStatus" parameterType="java.lang.String">
         update message set status = 1 where id = #{id}
-    </update>
-
-    <update id="updateCheckSignStatus" parameterType="java.lang.String">
-        update message set check_sign = 1 where id = #{id}
     </update>
 
     <select id="findAll" parameterType="com.microdev.param.MessageQuery" resultType="com.microdev.model.Message">
@@ -221,12 +217,12 @@
     </select>
     <insert id="saveBatch" parameterType="java.util.List">
         insert into message(id,create_time,deleted,modify_time,message_type,status,
-        worker_task_id, worker_id, message_code, message_title,message_content,content,minutes,    supplement_time_end,supplement_time ,request_id, hotel_id, hr_company_id, applicant_type,apply_type,message_link,msg_link, check_sign,task_id,is_task) values
+        worker_task_id, worker_id, message_code, message_title,message_content,content,minutes,    supplement_time_end,supplement_time ,request_id, hotel_id, hr_company_id, applicant_type,apply_type,message_link,msg_link,task_id,is_task) values
         <foreach collection="list" item="item" separator=",">
             (#{item.pid},#{item.createTime},#{item.deleted},#{item.modifyTime},#{item.messageType},#{item.status},
             #{item.workerTaskId},#{item.workerId},#{item.messageCode},#{item.messageTitle},#{item.messageContent}
             ,#{item.content},#{item.minutes},#{item.supplementTimeEnd},#{item.supplementTime},
-            #{item.requestId},#{item.hotelId},#{item.hrCompanyId},#{item.applicantType},#{item.applyType},#{item.messageLink}, #{item.msgLink}, #{item.checkSign}, #{item.taskId},#{item.isTask})
+            #{item.requestId},#{item.hotelId},#{item.hrCompanyId},#{item.applicantType},#{item.applyType},#{item.messageLink}, #{item.msgLink}, #{item.taskId},#{item.isTask})
         </foreach>
     </insert>
     <select id="selectAllMessage" parameterType="java.util.Map" resultType="com.microdev.param.MessageResponse">
@@ -272,9 +268,6 @@
                 and apply_type = #{applyType}
             </if>
         </if>
-        <if test="checkSign != null">
-            and check_sign = #{checkSign}
-        </if>
     </select>
 
     <select id="selectUnReadCount" parameterType="java.util.Map" resultType="java.lang.Integer">
@@ -305,9 +298,6 @@
       <if test="applicantType != null">
         and applicant_type = #{applicantType}
       </if>
-      <if test="checkSign != null">
-          and check_sign = #{checkSign}
-      </if>
       <if test="messageType != null">
           and message_type = #{messageType}
       </if>
@@ -332,7 +322,7 @@
             <if test="applyType != null">
                 and apply_type = #{applyType}
             </if>
-            order by check_sign asc, create_time desc
+            order by create_time desc
         </where>
     </select>
 
@@ -429,7 +419,7 @@ ORDER BY create_time
     </select>
 
     <select id="selectWorkerApply" resultType="com.microdev.param.MessageDetailsResponse">
-      SELECT u.`username` as name,IFNULL(u.age,0) as age,u.`mobile`,u.`sex`,m.message_type,u.avatar as logo,m.content,u.id,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') as createTime  FROM
+      SELECT u.`username` as name,IFNULL(u.age,0) as age,u.`mobile`,u.`sex`,m.message_type,u.avatar as logo,m.content,u.id,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') as createTime,m.worker_task_id as workerTaskId  FROM
 (
 SELECT * FROM message WHERE id = #{messageId}
 ) m
@@ -444,7 +434,7 @@ INNER JOIN company c ON m.hotel_id = c.id
     </select>
 
     <select id="selectHotelApply" resultType="com.microdev.param.MessageDetailsResponse">
-        SELECT c.name as companyName,c.leader as name,c.leader_mobile as mobile,c.address,c.area,m.message_type,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') as createTime,c.logo,c.id,IFNULL(tc.need_workers,0) AS needWorkers FROM
+        SELECT c.name as companyName,c.leader as name,c.leader_mobile as mobile,c.address,c.area,m.message_type,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') as createTime,c.logo,c.id,IFNULL(tc.need_workers,0) AS needWorkers,tc.id as taskHrId FROM
 (SELECT * FROM message WHERE id = #{messageId}) m
 INNER JOIN company c ON m.hr_company_id = c.id
 INNER JOIN task_hr_company tc
@@ -466,7 +456,7 @@ INNER JOIN company c ON
     </select>
 
     <select id="selectApplyAllocate" resultType="com.microdev.param.MessageDetailsResponse">
-        SELECT c.name AS companyName,c.leader AS name,c.leader_mobile AS mobile,tc.need_workers,tc.confirmed_workers,m.message_type,m.minutes AS allocateNum,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') AS createTime,
+        SELECT c.name AS companyName,c.leader AS name,c.leader_mobile AS mobile,tc.need_workers,tc.confirmed_workers,m.message_type,m.minutes AS allocateNum,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') AS createTime,tc.id as taskHrId,
 m.content,c.address,c.area FROM
 (
 SELECT * FROM message WHERE id = #{messageId}
