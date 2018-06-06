@@ -863,47 +863,88 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
      *  修改服务类型及服务地区
      */    public void mpdifyAreaAndService(AreaAndServiceRequest request) {
          System.out.println ("param:"+request);
-        //删除旧数据
-        if(request.getAreaCode()!=null){
-            companyMapper.deleteAreaRelation(request.getId());
-            companyMapper.deleteCompanyArea(request.getId());
-            //添加区域
-            List<UserArea> areaList = request.getAreaCode();
-            for (UserArea ua:areaList) {
-                if(ua.getAreaLevel ()==1){
-                    List<Map<String,String>> list = dictMapper.findCity(ua.getAreaId ());
-                    companyMapper.insertAreaRelation(request.getId(),ua.getAreaId (),ua.getAreaLevel (),dictMapper.findProvinceNameById (ua.getAreaId ()));
-                    System.out.println ("1:"+list);
-                    if(list == null){
-                        companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
-                    }
-                    for (Map<String,String> key : list) {
-                        List<Map<String,String>> list2 = dictMapper.findArea(key.get("areaId"));
-                        System.out.println ("2:"+list2);
-                        if(list2 == null ){
-                            companyMapper.insertCompanyArea(request.getId(),key.get("areaId"),request.getIdType ());
-                        }
-                        for (Map<String,String> key2 : list2) {
-                            companyMapper.insertCompanyArea(request.getId(),key2.get("areaId"),request.getIdType ());
-                        }
-                    }
-                }else if(ua.getAreaLevel ()==2){
+         if(request.getAreaCodeList ()==null){
+             //删除旧数据
+             if(request.getAreaCode()!=null){
+                 companyMapper.deleteAreaRelation(request.getId());
+                 companyMapper.deleteCompanyArea(request.getId());
+                 //添加区域
+                 List<UserArea> areaList = request.getAreaCode();
+                 for (UserArea ua:areaList) {
+                     if(ua.getAreaLevel ()==1){
+                         List<Map<String,String>> list = dictMapper.findCity(ua.getAreaId ());
+                         companyMapper.insertAreaRelation(request.getId(),ua.getAreaId (),ua.getAreaLevel (),dictMapper.findProvinceNameById (ua.getAreaId ()));
+                         if(list == null){
+                             companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
+                         }
+                         for (Map<String,String> key : list) {
+                             List<Map<String,String>> list2 = dictMapper.findArea(key.get("areaId"));
+                             System.out.println ("2:"+list2);
+                             if(list2 == null ){
+                                 companyMapper.insertCompanyArea(request.getId(),key.get("areaId"),request.getIdType ());
+                             }
+                             for (Map<String,String> key2 : list2) {
+                                 companyMapper.insertCompanyArea(request.getId(),key2.get("areaId"),request.getIdType ());
+                             }
+                         }
+                     }else if(ua.getAreaLevel ()==2){
 
-                    companyMapper.insertAreaRelation(request.getId(),ua.getAreaId (),ua.getAreaLevel (),dictMapper.findCityNameById (ua.getAreaId ()));
-                    List<Map<String,String>> list2= dictMapper.findArea(ua.getAreaId ());
-                    System.out.println ("3:"+list2);
-                    if(list2 == null ){
-                        companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
-                    }
-                    for (Map<String,String> key2 : list2) {
-                        companyMapper.insertCompanyArea(request.getId(),key2.get("areaId"),request.getIdType ());
-                    }
-                }else{
-                    companyMapper.insertAreaRelation(request.getId(),ua.getAreaId (),ua.getAreaLevel (),dictMapper.findAreaNameById (ua.getAreaId ()));
-                    companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
-                }
-            }
-        }
+                         companyMapper.insertAreaRelation(request.getId(),ua.getAreaId (),ua.getAreaLevel (),dictMapper.findCityNameById (ua.getAreaId ()));
+                         List<Map<String,String>> list2= dictMapper.findArea(ua.getAreaId ());
+                         System.out.println ("3:"+list2);
+                         if(list2 == null ){
+                             companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
+                         }
+                         for (Map<String,String> key2 : list2) {
+                             companyMapper.insertCompanyArea(request.getId(),key2.get("areaId"),request.getIdType ());
+                         }
+                     }else{
+                         companyMapper.insertAreaRelation(request.getId(),ua.getAreaId (),ua.getAreaLevel (),dictMapper.findAreaNameById (ua.getAreaId ()));
+                         companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
+                     }
+                 }
+             }
+         }else{
+             //删除旧数据
+             companyMapper.deleteAreaRelation(request.getId());
+             companyMapper.deleteCompanyArea(request.getId());
+             List<String> lis = request.getAreaCodeList ();
+             //添加区域
+             for(int i=0;i<lis.size ();i++){
+                  if(dictMapper.isProvince (lis.get (i))!=null){//第一级
+                      List<Map<String,String>> list = dictMapper.findCity(lis.get (i));
+                      companyMapper.insertAreaRelation(request.getId(),lis.get (i),1,dictMapper.findProvinceNameById (lis.get (i)));
+                      if(list == null){
+                          companyMapper.insertCompanyArea(request.getId(),lis.get (i),request.getIdType ());
+                      }
+                      for (Map<String,String> key : list) {
+                          List<Map<String,String>> list2 = dictMapper.findArea(key.get("areaId"));
+                          System.out.println ("2:"+list2);
+                          if(list2 == null ){
+                              companyMapper.insertCompanyArea(request.getId(),key.get("areaId"),request.getIdType ());
+                          }
+                          for (Map<String,String> key2 : list2) {
+                              companyMapper.insertCompanyArea(request.getId(),key2.get("areaId"),request.getIdType ());
+                          }
+                      }
+                  }else if (dictMapper.isCity (lis.get (i))!=null){//第二级
+                      companyMapper.insertAreaRelation(request.getId(),lis.get (i),2,dictMapper.findCityNameById (lis.get (i)));
+                      List<Map<String,String>> list2= dictMapper.findArea(lis.get (i));
+                      System.out.println ("3:"+list2);
+                      if(list2 == null ){
+                          companyMapper.insertCompanyArea(request.getId(),lis.get (i),request.getIdType ());
+                      }
+                      for (Map<String,String> key2 : list2) {
+                          companyMapper.insertCompanyArea(request.getId(),key2.get("areaId"),request.getIdType ());
+                      }
+                  }else{//第三级
+                      companyMapper.insertAreaRelation(request.getId(),lis.get (i),3,dictMapper.findAreaNameById (lis.get (i)));
+                      companyMapper.insertCompanyArea(request.getId(),lis.get (i),request.getIdType ());
+                  }
+
+             }
+         }
+
         if(request.getServiceType ()!=null){
             taskTypeRelationMapper.deleteTaskTypeRelation(request.getId());
             //添加服务类型

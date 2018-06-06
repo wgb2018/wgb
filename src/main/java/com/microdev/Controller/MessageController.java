@@ -11,6 +11,8 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 /**
  * @author yinbaoxin
  */
@@ -132,14 +134,9 @@ public class MessageController {
 
     /**
      * 查询消息详情的任务信息
-     * @param messageId
-     * @param messagetype
-     * @param type
-     * @return
      */
     @PostMapping("/message/details/taskInfo")
-    public ResultDO selectDetailTaskInfo(String messageId, String messagetype, String type) {
-
-        return ResultDO.buildSuccess(messageService.selectAwaitTaskDetails(messageId, messagetype, type));
+    public ResultDO selectDetailTaskInfo(Map<String,String> map) {
+        return ResultDO.buildSuccess(messageService.selectAwaitTaskDetails(map.get ("messageId"), map.get ("messagetype"), map.get ("type")));
     }
 }

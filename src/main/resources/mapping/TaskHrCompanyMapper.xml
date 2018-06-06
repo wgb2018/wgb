@@ -90,15 +90,21 @@
         </where>
         order by create_time desc
     </select>
-    <select id="queryHotelBill" resultType="com.microdev.model.TaskHrCompany" parameterType="java.lang.String">
-        select  sum(should_pay_money) as should_pay_money,sum(have_pay_money) as have_pay_money,
+    <select id="queryHotelBill" resultType="com.microdev.model.TaskHrCompany" parameterType="com.microdev.param.BillRequest">
+        select  sum(should_pay_money) as should_pay_money,sum(have_pay_money) as have_pay_money, sum(minutes) as minutes,
         hr_company_id,hr_company_name from task_hr_company
-        where hotel_id = #{hotelId} group by hr_company_id,hr_company_name
+        where hotel_id = #{id} group by hr_company_id,hr_company_name
+        <if test = "name != null and name != ''">
+           and hr_company_name = #{name}
+        </if>
     </select>
-    <select id="queryHrCompanyBill" resultType="com.microdev.model.TaskHrCompany" parameterType="java.lang.String">
-        select  sum(should_pay_money) as should_pay_money,sum(have_pay_money) as have_pay_money,
+    <select id="queryHrCompanyBill" resultType="com.microdev.model.TaskHrCompany" parameterType="com.microdev.param.BillRequest">
+        select  sum(should_pay_money) as should_pay_money,sum(have_pay_money) as have_pay_money, sum(minutes) as minutes,
         hotel_id,hotel_name from task_hr_company
-        where hr_company_id = #{hrCompanyId} group by hotel_id,hotel_name
+        where hr_company_id = #{id} group by hotel_id,hotel_name
+        <if test = "name != null and name != ''">
+            and hotel_name = #{name}
+        </if>
     </select>
     <select id="selectPayHrInfo" parameterType="java.lang.String" resultType="java.util.Map">
         SELECT hr_company_name AS companyName, IFNULL(`should_pay_money`,0) AS shouldPayMoney, IFNULL(have_pay_money,0) AS havePayMoney,

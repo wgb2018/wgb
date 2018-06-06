@@ -52,5 +52,9 @@ public interface DictMapper extends BaseMapper<Dict> {
 
     UserArea findSeriveAreaThird(String id);
 
+    Integer isProvince(String id);
+    Integer isCity(String id);
+    Integer isArea(String id);
+
 
 }

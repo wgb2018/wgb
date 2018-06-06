@@ -17,4 +17,6 @@ public class AreaAndServiceRequest {
     private List<String> serviceType;
 
     private Integer idType;
+
+    private List<String> areaCodeList;
 }

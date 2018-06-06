@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -48,6 +49,19 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
      */
     @Override
     public ResultDO createTask(CreateTaskRequest request) {
+        System.out.println ("param:"+request);
+        if(request.getFromDateL ()!=null){
+            request.setFromDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getFromDateL ()),ZoneOffset.systemDefault ()));
+        }
+        if(request.getToDateL ()!=null){
+            request.setToDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getToDateL ()),ZoneOffset.systemDefault ()));
+        }
+        if(request.getDayStartTimeL ()!=null){
+            request.setDayStartTime (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getDayStartTimeL ()),ZoneOffset.systemDefault ()).toOffsetTime ());
+        }
+        if(request.getDayEndTimeL ()!=null){
+            request.setDayEndTime (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getDayEndTimeL ()),ZoneOffset.systemDefault ()).toOffsetTime ());
+        }
         Company hotel=companyMapper.findCompanyById(request.getHotelId());
         if (hotel == null || !StringUtils.hasLength(hotel.getPid()) ) {
             throw new ParamsException("酒店不存在");

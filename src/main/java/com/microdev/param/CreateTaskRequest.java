@@ -3,6 +3,7 @@ package com.microdev.param;
 
 import lombok.Data;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.util.HashSet;
@@ -33,18 +34,22 @@ public class CreateTaskRequest {
      * 开始时间
      */
     private OffsetDateTime fromDate;
+    private Long fromDateL;
     /**
      * 截止时间
      */
     private OffsetDateTime toDate;
+    private Long toDateL;
     /**
      * 任务每日开始时间
      */
     private OffsetTime dayStartTime;
+    private Long dayStartTimeL;
     /**
      * 任务每日截止时间
      */
     private OffsetTime dayEndTime;
+    private Long dayEndTimeL;
     /**
      * 每小时薪资
      */

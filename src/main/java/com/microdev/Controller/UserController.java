@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLDecoder;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -225,6 +226,8 @@ public class UserController {
 //        test.setUsername("TestNew");
 //        userMapper.update(test);
 //        test = userMapper.selectById("f1f33e09884c4b06b8fbe77465bd208d");
+        OffsetDateTime of = OffsetDateTime. ofInstant (Instant.ofEpochMilli (new Date().getTime ()),ZoneOffset.systemDefault ());
+        System.out.println (of);
         User test = userMapper.findByMobile("15601173951");
         test.setDeleted(false);
         userMapper.updateById(test);

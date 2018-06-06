@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.model.TaskHrCompany;
+import com.microdev.param.BillRequest;
 import com.microdev.param.HrPayWorkerRequest;
 import com.microdev.param.HrTaskDistributeRequest;
 import com.microdev.param.TaskHrQueryDTO;
@@ -42,20 +43,20 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
     /**
      * 酒店查询账目
      */
-    ResultDO getHotelBill(String hotelId);
+    ResultDO getHotelBill(Paginator paginator, BillRequest request);
     /**
      * 人力公司按酒店查询账目
      */
-    ResultDO getCompanyBillHotel(String hrCompanyId);
+    ResultDO getCompanyBillHotel(Paginator paginator, BillRequest request);
     /**
      * 人力公司按小时工查询账目
      */
-    ResultDO getCompanyBillWorker(String hrCompanyId);
+    ResultDO getCompanyBillWorker(Paginator paginator,BillRequest request);
     /**
      * 小时工按人力公司工查询账目
      *
      */
-    ResultDO getWorkerBill(String workerId);
+    ResultDO getWorkerBill(Paginator paginator,BillRequest request);
     /**
      * 人力公司申请调配.
      * @param map

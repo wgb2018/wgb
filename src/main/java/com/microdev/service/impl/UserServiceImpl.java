@@ -120,6 +120,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         User newUser = new User();
         newUser.setUserType(register.getUserType());
         newUser.setMobile(register.getMobile());
+        newUser.setNickname (register.getMobile());
         newUser.setUserCode(register.getUserType()
                 .toString());
         if (StringUtils.hasText(register.getPassword())) {

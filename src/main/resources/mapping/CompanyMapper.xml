@@ -131,8 +131,8 @@
             and c.leader like concat('%', #{leader},'%')
         </if>
         <if test="status != null">
-            and hh.status = #{status}
-        </if>
+        and hh.status = #{status}
+    </if>
         <if test="serviceType != null and serviceType !=''">
             and 1 &lt;= (select count(0) from task_type_relation where id = c.id and task_type_id = #{serviceType})
         </if>

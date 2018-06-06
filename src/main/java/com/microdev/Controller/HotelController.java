@@ -68,6 +68,7 @@ public class HotelController {
         CompanyQueryDTO queryDTO= paging.getSelector();
         queryDTO.setCompanyType(1);
         paging.setSelector(queryDTO);
+        System.out.println ("param:"+paging);
         return companyService.pagingCompanys(paging.getPaginator(),paging.getSelector());
     }
     /**

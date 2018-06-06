@@ -328,70 +328,110 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
      * 酒店查询账目
      */
     @Override
-    public ResultDO getHotelBill(String hotelId) {
-        List<TaskHrCompany> list = taskHrCompanyMapper.queryHotelBill(hotelId);
+    public ResultDO getHotelBill(Paginator paginator, BillRequest request) {
+        PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
+        //查询数据集合
+        List<TaskHrCompany> list = taskHrCompanyMapper.queryHotelBill(request);
+        PageInfo<TaskHrCompany> pageInfo = new PageInfo<>(list);
+        HashMap<String,Object> result = new HashMap<>();
+        //设置获取到的总记录数total：
+        result.put("total",pageInfo.getTotal());
+        //设置数据集合rows：
+        result.put("result",pageInfo.getList());
+        result.put("page",paginator.getPage());
         Map<String,Object> map = new HashMap<>();
         Double should_pay_money = 0.0;
         Double have_pay_money  = 0.0;
         for (TaskHrCompany item:list) {
             should_pay_money += item.getShouldPayMoney();
             have_pay_money += item.getHavePayMoney();
+            item.setHrCompany (companyMapper.selectById (item.getHrCompanyId ()));
         }
         map.put("shouldPayMoney",should_pay_money);
         map.put("havePayMoney",have_pay_money);
-        return ResultDO.buildSuccess(null,list,map,null);
+        return ResultDO.buildSuccess(null,result,map,null);
     }
     /**
      * 人力公司按酒店查询账目
      */
     @Override
-    public ResultDO getCompanyBillHotel(String hrCompanyId) {
-        List<TaskHrCompany> list = taskHrCompanyMapper.queryHrCompanyBill(hrCompanyId);
+    public ResultDO getCompanyBillHotel(Paginator paginator,BillRequest request) {
+        PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
+        //查询数据集合
+        List<TaskHrCompany> list = taskHrCompanyMapper.queryHrCompanyBill(request);
+        PageInfo<TaskHrCompany> pageInfo = new PageInfo<>(list);
+        HashMap<String,Object> result = new HashMap<>();
+        //设置获取到的总记录数total：
+        result.put("total",pageInfo.getTotal());
+        //设置数据集合rows：
+        result.put("result",pageInfo.getList());
+        result.put("page",paginator.getPage());
         Map<String,Object> map = new HashMap<>();
         Double should_pay_money = 0.0;
         Double have_pay_money  = 0.0;
         for (TaskHrCompany item:list) {
             should_pay_money += item.getShouldPayMoney();
             have_pay_money += item.getHavePayMoney();
+            item.setHotel (companyMapper.selectById (item.getHotelId ()));
         }
         map.put("shouldPayMoney",should_pay_money);
         map.put("havePayMoney",have_pay_money);
-        return ResultDO.buildSuccess(null,list,map,null);
+        return ResultDO.buildSuccess(null,result,map,null);
     }
     /**
      * 人力公司按小时工查询账目
      */
     @Override
-    public ResultDO getCompanyBillWorker(String hrCompanyId) {
-        List<TaskWorker> list = taskWorkerMapper.queryHrCompanyBill(hrCompanyId);
+    public ResultDO getCompanyBillWorker(Paginator paginator,BillRequest request) {
+        PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
+        //查询数据集合
+        List<TaskWorker> list = taskWorkerMapper.queryHrCompanyBill(request);
+        PageInfo<TaskWorker> pageInfo = new PageInfo<>(list);
+        HashMap<String,Object> result = new HashMap<>();
+        //设置获取到的总记录数total：
+        result.put("total",pageInfo.getTotal());
+        //设置数据集合rows：
+        result.put("result",pageInfo.getList());
+        result.put("page",paginator.getPage());
         Map<String,Object> map = new HashMap<>();
         Double should_pay_money = 0.0;
         Double have_pay_money  = 0.0;
         for (TaskWorker item:list) {
             should_pay_money += item.getShouldPayMoney();
             have_pay_money += item.getHavePayMoney();
+            item.setUser (userMapper.queryByUserId (item.getUserId ()));
         }
         map.put("shouldPayMoney",should_pay_money);
         map.put("havePayMoney",have_pay_money);
-        return ResultDO.buildSuccess(null,list,map,null);
+        return ResultDO.buildSuccess(null,result,map,null);
     }
     /**
      * 小时工按人力公司工查询账目
      *
      */
     @Override
-    public ResultDO getWorkerBill(String workerId) {
-        List<TaskWorker> list = taskWorkerMapper.queryWorkerBill(workerId);
+    public ResultDO getWorkerBill(Paginator paginator,BillRequest request) {
+        PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
+        //查询数据集合
+        List<TaskHrCompany> list = taskWorkerMapper.queryWorkerBill(request);
+        PageInfo<TaskHrCompany> pageInfo = new PageInfo<>(list);
+        HashMap<String,Object> result = new HashMap<>();
+        //设置获取到的总记录数total：
+        result.put("total",pageInfo.getTotal());
+        //设置数据集合rows：
+        result.put("result",pageInfo.getList());
+        result.put("page",paginator.getPage());
         Map<String,Object> map = new HashMap<>();
         Double should_pay_money = 0.0;
         Double have_pay_money  = 0.0;
-        for (TaskWorker item:list) {
+        for (TaskHrCompany item:list) {
             should_pay_money += item.getShouldPayMoney();
             have_pay_money += item.getHavePayMoney();
+            item.setHrCompany (companyMapper.selectById (item.getHrCompanyId ()));
         }
         map.put("shouldPayMoney",should_pay_money);
         map.put("havePayMoney",have_pay_money);
-        return ResultDO.buildSuccess(null,list,map,null);
+        return ResultDO.buildSuccess(null,result,map,null);
     }
     /**
      * 人力公司申请调配.

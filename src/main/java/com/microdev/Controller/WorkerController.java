@@ -126,7 +126,7 @@ public class WorkerController {
 	/**
      * 修改服务类型及地区
      */
-    @PostMapping("/mpdify/AreaAndService")
+    @PostMapping("/modify/AreaAndService")
     public ResultDO mpdifyAreaAndService(@RequestBody AreaAndServiceRequest request) {
         workerService.mpdifyAreaAndService(request);
         return ResultDO.buildSuccess("修改成功");

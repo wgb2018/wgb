@@ -107,4 +107,13 @@
     <select id="findAreaNameById" resultType="java.lang.String" parameterType="java.lang.String">
         select area from area where areaID = #{id}
     </select>
+    <select id="isProvince" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select id from province where areaID = #{id} limit 1
+    </select>
+    <select id="isCity" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select id from city where areaID = #{id} limit 1
+    </select>
+    <select id="isArea" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select id from area where areaID = #{id} limit 1
+    </select>
 </mapper>

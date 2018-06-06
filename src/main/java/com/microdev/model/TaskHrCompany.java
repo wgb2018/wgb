@@ -72,6 +72,8 @@ public class TaskHrCompany extends BaseEntity {
     private String hotelId;
 
     private String hotelName;
+    @TableField(exist = false)
+    private Company hotel;
 	private Double hourlyPayHotel;
     /**
      * 人力资源公司对应多个TaskWorker

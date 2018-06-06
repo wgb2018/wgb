@@ -1,7 +1,9 @@
 package com.microdev.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.microdev.model.TaskHrCompany;
 import com.microdev.model.TaskWorker;
+import com.microdev.param.BillRequest;
 import com.microdev.param.TaskWorkerQuery;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -32,9 +34,9 @@ public interface TaskWorkerMapper extends BaseMapper<TaskWorker> {
 
     List<TaskWorker> findByHrTaskId(String HrTaskId);
 
-    List<TaskWorker> queryHrCompanyBill(String hrCompanyId);
+    List<TaskWorker> queryHrCompanyBill(BillRequest request);
 
-    List<TaskWorker> queryWorkerBill(@Param("userId") String workerId);
+    List<TaskHrCompany> queryWorkerBill(BillRequest request);
 
     Map<String, Object> selectHrId(String taskWorkerId);
 

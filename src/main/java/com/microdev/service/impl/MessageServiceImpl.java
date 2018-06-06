@@ -110,6 +110,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      */
     @Override
     public boolean hotelBindHrCompany(Set<String> bindCompany, Company applyCompany, String pattern, Integer type) {
+        System.out.println ("param:"+bindCompany+"-"+applyCompany+"-"+pattern+"-"+type);
         if (bindCompany == null || bindCompany.size() == 0 || applyCompany == null) {
             throw new ParamsException("参数不能为空");
         }
@@ -686,6 +687,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      */
     @Override
     public MessageDetailsResponse selectMessageDetails(String messageId, String messagetype, String type) {
+        System.out.println ("param:"+messageId+"-"+messagetype+"-"+type);
         if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(type)) {
             throw new ParamsException("参数不能为空");
         }
