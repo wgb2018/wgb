@@ -59,4 +59,8 @@ public class CreateTaskRequest {
      */
     private Set<TaskHrCompanyDTO> hrCompanySet= new HashSet<TaskHrCompanyDTO>();
 
+    /**
+     * 任务id
+     */
+    private String taskId;
 }

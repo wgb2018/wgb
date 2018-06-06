@@ -106,6 +106,7 @@
         <if test="serviceType != null and serviceType !=''">
             and 1 &lt;= (select count(0) from task_type_relation where id = c.id and task_type_id = #{serviceType})
         </if>
+        where c.company_type = 1
         order by c.create_time desc
     </select>
     <!-- 获取已添加该酒店的所有人力公司 -->

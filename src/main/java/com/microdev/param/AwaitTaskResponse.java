@@ -27,5 +27,6 @@ public class AwaitTaskResponse {
     private String hrLeader;
     private String hrLeaderMobile;
     private String confirmedWorkers;//已报名人数
-
+    private String area;//酒店区域
+    private String taskId;//任务id
 }

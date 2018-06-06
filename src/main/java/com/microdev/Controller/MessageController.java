@@ -121,19 +121,16 @@ public class MessageController {
 
     /**
      * 查询消息详情的申请信息。
-     * @param messageId
-     * @param messagetype
-     * @param type
-     * @return
      */
     @PostMapping("/message/details/applyInfo")
-    public ResultDO selectMessageDetails(String messageId, String messagetype, String type) {
+    public ResultDO selectMessageDetails(Map<String, String> map) {
 
-        return ResultDO.buildSuccess(messageService.selectMessageDetails(messageId, messagetype, type));
+        return ResultDO.buildSuccess(messageService.selectMessageDetails(map.get("messageId"), map.get("messagetype"), map.get("type")));
     }
 
     /**
      * 查询消息详情的任务信息
+     * @return
      */
     @PostMapping("/message/details/taskInfo")
     public ResultDO selectDetailTaskInfo(Map<String,String> map) {

@@ -1,5 +1,10 @@
 package com.microdev;
 
+import com.microdev.mapper.InformMapper;
+import com.microdev.mapper.InformTemplateMapper;
+import com.microdev.model.Inform;
+import com.microdev.model.InformTemplate;
+import com.microdev.param.InformType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +23,8 @@ public class UserCompanyTest {
 
 	@Autowired
 	private UserCompanyService userCompanyService;
+	@Autowired
+	private InformMapper informMapper;
 	
 	@Test
 	public void oneTest() {
@@ -52,11 +59,4 @@ public class UserCompanyTest {
 		userCompanyService.workerUnbindHr(workerId, hrId);
 	}
 
-	@Test
-	public void fourTest() {
-		String hrId = "275f6074-2c2c-4488-b870-2e683613c057";
-		String workerId = "51d454a6-b1e9-4a4e-8a6d-86993c24034d";
-		String messageId = "04f84c55-1476-4fcf-baf1-23ad17c76df5";
-		//userCompanyService.workerBindHr(workerId, hrId, messageId);
-	}
 }

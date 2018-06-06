@@ -74,6 +74,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     private InformMapper informMapper;
     @Autowired
     private UserCompanyMapper userCompanyMapper;
+    @Autowired
+    private HolidayMapper holidayMapper;
 
     @Override
     public ResultDO pagingCompanys(Paginator paginator, CompanyQueryDTO queryDTO) {
@@ -186,7 +188,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             } else {
                 throw new BusinessException("参数错误");
             }
-            informMapper.insert(inform);
+            informMapper.insertInform(inform);
         } else {//人力处理
             inform = new Inform();
             inform.setSendType(2);
@@ -368,7 +370,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         } else {
             throw new ParamsException("参数错误");
         }
-        informMapper.insert(inform);
+        informMapper.insertInform(inform);
         return "成功";
     }
     /**
@@ -575,7 +577,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
      * @return
      */
     @Override
-    public boolean workExpand(String id, String status) {
+    public String workExpand(String id, String status) {
         if (StringUtils.isEmpty(id) || StringUtils.isEmpty(status) ) {
             throw new ParamsException("参数不能为空");
         }
@@ -623,8 +625,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             throw new ParamsException("参数错误");
         }
 
-        informMapper.insert(inform);
-        return true;
+        informMapper.insertInform(inform);
+        return "申请成功";
     }
     /**
      * 酒店申请绑定人力资源公司或人力公司申请绑定酒店
@@ -651,7 +653,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             }
             int num = hotelHrCompanyMapper.selectBindCountByHotelId(dto);
             if (num > 0) {
-                throw new BusinessException("已绑定数据,请勿重复");
+                throw new BusinessException("已绑定,请勿重复");
             }
             num = hotelHrCompanyMapper.selectIsBind(dto);
             if (num > 0) {
@@ -762,7 +764,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             inform.setTitle("解绑成功");
             inform.setContent(company.getName() + "同意了你的申请解绑。你可以添加新的合作人力公司，没人最多只能绑定5家人力公司");
         }
-        informMapper.insert(inform);
+        informMapper.insertInform(inform);
         return "成功";
     }
 
@@ -873,7 +875,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         } else {
             throw new ParamsException("参数错误");
         }
-        informMapper.insert(inform);
+        informMapper.insertInform(inform);
         return ResultDO.buildSuccess("处理成功");
     }
 
@@ -917,6 +919,37 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         param.put("total", pageInfo.getTotal());
         param.put("result", list);
         return ResultDO.buildSuccess(param);
+    }
+
+    /**
+     *酒店处理小时工请假
+     * @param messageId    消息id
+     * @param status       0拒绝1同意
+     * @return
+     */
+    @Override
+    public ResultDO hotelHandleLeave(String messageId, String status) {
+
+        if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(status)) {
+            throw new ParamsException("参数错误");
+        }
+        Message message = messageMapper.selectById(messageId);
+        if (message == null) {
+            throw new BusinessException("查询不到消息记录");
+        }
+        message.setStatus(1);
+        messageMapper.updateById(message);
+
+        if ("1".equals(status)) {
+            Holiday holiday = new Holiday();
+            holiday.setFromDate(message.getSupplementTime());
+            holiday.setToDate(message.getSupplementTimeEnd());
+            holiday.setTaskWorkerId(message.getWorkerTaskId());
+            holidayMapper.insertAllColumn(holiday);
+        } else if (!"0".equals(status)){
+            throw new ParamsException("参数错误");
+        }
+        return ResultDO.buildSuccess("处理成功");
     }
 
 }

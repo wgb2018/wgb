@@ -12,6 +12,7 @@ public class MyMetaObjectHandler extends MetaObjectHandler {
     public void insertFill(MetaObject metaObject) {
         metaObject.setValue("createTime", OffsetDateTime.now());
         metaObject.setValue("modifyTime", OffsetDateTime.now());
+        System.out.println("------------++++++");
     }
 
     @Override

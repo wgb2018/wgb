@@ -31,7 +31,7 @@ public class TaskController {
      */
     @PostMapping("/tasks")
     public ResultDO createCompany(@RequestBody CreateTaskRequest createTaskRequest) {
-        log.info("createCompany:" + createTaskRequest.toString());
+
         return taskService.createTask(createTaskRequest);
     }
     /**
@@ -39,7 +39,7 @@ public class TaskController {
      */
     @GetMapping("/tasks/{id}")
     public ResultDO getTaskById(@PathVariable String id) {
-        log.info("getTaskById" + id);
+
         return taskService.getTaskById(id);
     }
     /**
@@ -77,5 +77,16 @@ public class TaskController {
     @GetMapping("/tasks/{taskId}/update/{status}")
     public ResultDO updateTaskStatus(@PathVariable String taskId,@PathVariable Integer status) {
         return ResultDO.buildSuccess(taskService.updateTaskStatus(taskId, status));
+    }
+
+    /**
+     * 酒店再次派发任务
+     * @param createTaskRequest
+     * @return
+     */
+    @PostMapping("/tasks/again/hotelSend")
+    public ResultDO hotelAgainSendTask(@RequestBody CreateTaskRequest createTaskRequest) {
+
+        return taskService.hotelAgainSendTask(createTaskRequest);
     }
 }

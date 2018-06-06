@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.microdev.common.ResultDO;
+import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.DateUtil;
@@ -138,6 +139,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
                 dto.setDistributedList(distributedList);
             }
         }
+
+
         return ResultDO.buildSuccess(taskViewDTO);
     }
 
@@ -272,6 +275,42 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         }
         taskMapper.updateTaskCheckSign(taskId, status);
         return "成功";
+    }
+
+    /**
+     * 酒店再次派发任务
+     * @param request
+     * @return
+     */
+    @Override
+    public ResultDO hotelAgainSendTask(CreateTaskRequest request) {
+        if (request == null) {
+            throw new ParamsException("参数不能未空");
+        }
+        if (StringUtils.isEmpty(request.getTaskId())  || request.getHrCompanySet().size() == 0) {
+            throw new ParamsException("参数错误");
+        }
+        Task task = taskMapper.selectById(request.getTaskId());
+        if (task == null) {
+            throw new BusinessException("任务找不到");
+        }
+        Company hotel=companyMapper.findCompanyById(task.getHotelId());
+        if (hotel == null || !StringUtils.hasLength(hotel.getPid()) ) {
+            throw new ParamsException("酒店不存在");
+        }
+        // 判断酒店状态
+        if(hotel.getStatus()==null ||hotel.getStatus()!=1){
+            throw new ParamsException("酒店状态不是已审核,无法发布任务");
+        }
+        int needAllWorkers=0;
+        for (TaskHrCompanyDTO item : request.getHrCompanySet()) {
+            needAllWorkers=needAllWorkers+item.getNeedWorkers();
+        }
+
+        AddHrTask(task,request);
+        messageService.hotelDistributeTask(request, hotel, "workTaskMessage", request.getTaskId());
+        //TaskViewDTO taskDto= taskConverter.toViewDTOWithOutSet(task);
+        return ResultDO.buildSuccess("任务发布成功");
     }
 
     //循环添加人力资源任务
