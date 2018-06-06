@@ -1,5 +1,6 @@
 package com.microdev.param;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
@@ -21,7 +22,7 @@ public class TaskHrCompanyViewDTO {
     /**
      * 人力公司每小时薪资
      */
-    private double HourlyPay;
+    private double hourlyPay;
     /**
      * 需要的人数
      */
@@ -60,7 +61,7 @@ public class TaskHrCompanyViewDTO {
     /**
      * 酒店名称
      */
-    private String HotelName;
+    private String hotelName;
     /**
      * 酒店地址
      */
@@ -80,10 +81,12 @@ public class TaskHrCompanyViewDTO {
     /**
      * 开始时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private OffsetDateTime fromDate;
     /**
      * 截止时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private OffsetDateTime toDate;
 
 
@@ -158,14 +161,6 @@ public class TaskHrCompanyViewDTO {
         this.hrCompanyName = hrCompanyName;
     }
 
-    public double getHourlyPay() {
-        return HourlyPay;
-    }
-
-    public void setHourlyPay(double hourlyPay) {
-        HourlyPay = hourlyPay;
-    }
-
     public Integer getNeedWorkers() {
         return needWorkers;
     }
@@ -212,14 +207,6 @@ public class TaskHrCompanyViewDTO {
 
     public void setHotelTaskId(String hotelTaskId) {
         this.hotelTaskId = hotelTaskId;
-    }
-
-    public String getHotelName() {
-        return HotelName;
-    }
-
-    public void setHotelName(String hotelName) {
-        HotelName = hotelName;
     }
 
     public String getAddress() {

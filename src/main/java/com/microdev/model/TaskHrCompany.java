@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -26,7 +27,7 @@ public class TaskHrCompany extends BaseEntity {
     /**
      * 人力公司每小时薪资
      */
-    private double HourlyPay;
+    private double hourlyPay;
     /**
      * 需要的人数
      */
@@ -79,7 +80,7 @@ public class TaskHrCompany extends BaseEntity {
      * 人力资源公司对应多个TaskWorker
      */
     @TableField(exist = false)
-    private List<String> listWorkerTask = new ArrayList<String>();
+    private List<Map<String,Object>> listWorkerTask = new ArrayList<Map<String,Object>>();
     /**
      * 就餐次数。就餐打卡累积这个数字（应该注意：就餐打卡的时间太近是按一次计算还是两次计算）
      */
@@ -122,15 +123,6 @@ public class TaskHrCompany extends BaseEntity {
     public void setStatus(Integer status) {
         this.status = status;
     }
-
-    public List<String> getListWorkerTask() {
-        return listWorkerTask;
-    }
-
-    public void setListWorkerTask(List<String> listWorkerTask) {
-        this.listWorkerTask = listWorkerTask;
-    }
-
 
     public Integer getMinutes() {
         return minutes;

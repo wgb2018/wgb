@@ -16,7 +16,7 @@
         <result column="repastTimes" jdbcType="INTEGER" property="repastTimes"/>
         <result column="refusedWorkers" jdbcType="INTEGER" property="refusedWorkers"/>
         <result column="hourlyPay" jdbcType="DOUBLE" property="hourlyPay"/>
-        <result column="HotelName" jdbcType="VARCHAR" property="hotelName"/>
+        <result column="hotelName" jdbcType="VARCHAR" property="hotelName"/>
         <result column="address" jdbcType="VARCHAR" property="address"/>
         <result column="taskTypeText" jdbcType="VARCHAR" property="taskTypeText"/>
         <result column="taskContent" jdbcType="VARCHAR" property="taskContent"/>
@@ -139,8 +139,8 @@
     </select>
     <select id="findTaskAndHrInfoById" parameterType="java.lang.String"
             resultMap="dotMap">
-        SELECT t.id AS id, t.task_type_text AS taskTypeText,t.`task_content` AS
-        taskContent,t.`from_date` AS fromDate, t.`to_date` AS toDate,
+        SELECT t.id AS pid, t.task_type_text AS taskTypeText,t.`task_content` AS
+        taskContent,t.`from_date` AS fromDate, t.`to_date` AS toDate,t.status,
         t.`hourly_pay` AS hourlyPay,t.`need_workers` AS
         needWorkers,t.`hotel_name` AS HotelName,t.`confirmed_workers` AS
         confirmedWorkers,

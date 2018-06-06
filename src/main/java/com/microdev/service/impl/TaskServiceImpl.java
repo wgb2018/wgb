@@ -53,15 +53,19 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         System.out.println ("param:"+request);
         if(request.getFromDateL ()!=null){
             request.setFromDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getFromDateL ()),ZoneOffset.systemDefault ()));
+            System.out.println (request.getFromDate ());
         }
         if(request.getToDateL ()!=null){
             request.setToDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getToDateL ()),ZoneOffset.systemDefault ()));
+            System.out.println (request.getToDate ());
         }
         if(request.getDayStartTimeL ()!=null){
             request.setDayStartTime (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getDayStartTimeL ()),ZoneOffset.systemDefault ()).toOffsetTime ());
+            System.out.println (request.getDayStartTime ());
         }
         if(request.getDayEndTimeL ()!=null){
             request.setDayEndTime (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getDayEndTimeL ()),ZoneOffset.systemDefault ()).toOffsetTime ());
+            System.out.println (request.getDayEndTime ());
         }
         Company hotel=companyMapper.findCompanyById(request.getHotelId());
         if (hotel == null || !StringUtils.hasLength(hotel.getPid()) ) {

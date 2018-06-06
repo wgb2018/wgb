@@ -3,6 +3,7 @@ package com.microdev.model;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
@@ -32,18 +33,22 @@ public class Task extends BaseEntity {
     /**
      * 开始时间
      */
+    @JsonFormat(pattern="yyyy-MM-dd")
     private OffsetDateTime fromDate;
     /**
      * 截止时间
      */
+    @JsonFormat(pattern="yyyy-MM-dd")
     private OffsetDateTime toDate;
     /**
      * 任务每日开始时间
      */
+    @JsonFormat(pattern="HH:mm:ss")
     private OffsetTime dayStartTime;
     /**
      * 任务每日截止时间
      */
+    @JsonFormat(pattern="HH:mm:ss")
     private OffsetTime dayEndTime;
     /**
      * 每小时薪资

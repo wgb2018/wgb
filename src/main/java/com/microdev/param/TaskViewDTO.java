@@ -1,5 +1,6 @@
 package com.microdev.param;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
@@ -14,7 +15,7 @@ public class TaskViewDTO {
     /**
      * 主键
      */
-    private String id;
+    private String pid;
     /**
      * 酒店名称
      */
@@ -34,10 +35,12 @@ public class TaskViewDTO {
     /**
      * 开始时间
      */
+    @JsonFormat(pattern="yyyy-MM-dd")
     private OffsetDateTime fromDate;
     /**
      * 截止时间
      */
+    @JsonFormat(pattern="yyyy-MM-dd")
     private OffsetDateTime toDate;
     /**
      * 每小时薪资
@@ -74,10 +77,12 @@ public class TaskViewDTO {
     /**
      * 日任务开始时间
      */
+    @JsonFormat(pattern="HH:mm:ss")
     private OffsetTime dayStartTime;
     /**
      * 日任务结束时间
      */
+    @JsonFormat(pattern="HH:mm:ss")
     private OffsetTime dayEndTime;
     /**
      *  应付金额  [  工作时间(时) * 时薪  ]

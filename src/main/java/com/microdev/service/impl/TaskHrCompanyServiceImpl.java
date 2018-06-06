@@ -189,13 +189,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         }
         //查询数据集合
         List<TaskHrCompany> list = taskHrCompanyMapper.queryHrCompanyTasks(taskHrQueryDTO);
-        PageInfo<TaskHrCompany> pageInfo = new PageInfo<>(list);
-        HashMap<String,Object> result = new HashMap<>();
-        //设置获取到的总记录数total：
-        result.put("total",pageInfo.getTotal());
-        //设置数据集合rows：
-        result.put("result",pageInfo.getList());
-        result.put("page",paginator.getPage());
         HashMap<String,Object> extra = new HashMap<>();
         Double shouldPayMoney = 0.0;
         Double havePayMoney=0.0;
@@ -207,7 +200,15 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             havePayMoney += task.getHavePayMoney();
             workersShouldPay += task.getWorkersShouldPay();
             workersHavePay += task.getWorkersHavePay();
+            taskWorkerMapper.selectTaskWorkById (task.getPid ());
         }
+        PageInfo<TaskHrCompany> pageInfo = new PageInfo<>(list);
+        HashMap<String,Object> result = new HashMap<>();
+        //设置获取到的总记录数total：
+        result.put("total",pageInfo.getTotal());
+        //设置数据集合rows：
+        result.put("result",pageInfo.getList());
+        result.put("page",paginator.getPage());
         extra.put("shouldPayMoney",shouldPayMoney);
         extra.put("havePayMoney",havePayMoney);
         extra.put("workersShouldPay",workersShouldPay);
@@ -349,6 +350,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         }
         map.put("shouldPayMoney",should_pay_money);
         map.put("havePayMoney",have_pay_money);
+        map.put("paidPayMoney",should_pay_money-have_pay_money);
         return ResultDO.buildSuccess(null,result,map,null);
     }
     /**
@@ -359,6 +361,18 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         //查询数据集合
         List<TaskHrCompany> list = taskHrCompanyMapper.queryHrCompanyBill(request);
+        Map<String,Object> map = new HashMap<>();
+        Double should_pay_money = 0.0;
+        Double have_pay_money  = 0.0;
+        for (TaskHrCompany item:list) {
+            should_pay_money += item.getShouldPayMoney();
+            have_pay_money += item.getHavePayMoney();
+            System.out.println ("horelID:"+item.getHotelId ());
+            item.setHotel (companyMapper.selectById (item.getHotelId ()));
+        }
+        map.put("shouldPayMoney",should_pay_money);
+        map.put("havePayMoney",have_pay_money);
+        map.put("paidPayMoney",should_pay_money-have_pay_money);
         PageInfo<TaskHrCompany> pageInfo = new PageInfo<>(list);
         HashMap<String,Object> result = new HashMap<>();
         //设置获取到的总记录数total：
@@ -366,16 +380,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         //设置数据集合rows：
         result.put("result",pageInfo.getList());
         result.put("page",paginator.getPage());
-        Map<String,Object> map = new HashMap<>();
-        Double should_pay_money = 0.0;
-        Double have_pay_money  = 0.0;
-        for (TaskHrCompany item:list) {
-            should_pay_money += item.getShouldPayMoney();
-            have_pay_money += item.getHavePayMoney();
-            item.setHotel (companyMapper.selectById (item.getHotelId ()));
-        }
-        map.put("shouldPayMoney",should_pay_money);
-        map.put("havePayMoney",have_pay_money);
         return ResultDO.buildSuccess(null,result,map,null);
     }
     /**
@@ -403,6 +407,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         }
         map.put("shouldPayMoney",should_pay_money);
         map.put("havePayMoney",have_pay_money);
+        map.put("paidPayMoney",should_pay_money-have_pay_money);
         return ResultDO.buildSuccess(null,result,map,null);
     }
     /**
@@ -431,6 +436,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         }
         map.put("shouldPayMoney",should_pay_money);
         map.put("havePayMoney",have_pay_money);
+        map.put("paidPayMoney",should_pay_money-have_pay_money);
         return ResultDO.buildSuccess(null,result,map,null);
     }
     /**

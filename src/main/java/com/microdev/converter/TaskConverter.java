@@ -31,6 +31,8 @@ public class TaskConverter {
         task.setToDate(request.getToDate());
         task.setFromDate(request.getFromDate());
         task.setHourlyPay(request.getHourlyPay());
+        task.setDayStartTime (request.getDayStartTime ());
+        task.setDayEndTime (request.getDayEndTime ());
         return task;
     }
     //包含人力公司任务集合同时包含人力公司派发任务人员的集合的查询
@@ -120,7 +122,7 @@ public class TaskConverter {
         if(task==null){
             return null;
         }
-        viewDTO.setId(task.getPid());
+        viewDTO.setPid(task.getPid());
         viewDTO.setTaskTypeText(task.getTaskTypeText());
         viewDTO.setTaskContent(task.getTaskContent());
         viewDTO.setFromDate(task.getFromDate());

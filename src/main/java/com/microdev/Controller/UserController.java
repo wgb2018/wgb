@@ -228,6 +228,7 @@ public class UserController {
 //        test = userMapper.selectById("f1f33e09884c4b06b8fbe77465bd208d");
         OffsetDateTime of = OffsetDateTime. ofInstant (Instant.ofEpochMilli (new Date().getTime ()),ZoneOffset.systemDefault ());
         System.out.println (of);
+        System.out.println (new Date().getTime ());
         User test = userMapper.findByMobile("15601173951");
         test.setDeleted(false);
         userMapper.updateById(test);
