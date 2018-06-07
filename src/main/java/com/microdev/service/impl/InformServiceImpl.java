@@ -58,7 +58,8 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
             param.put("receiveId", dto.getId());
             result.put("companyNum", informMapper.selectUnReadCount(param));
             param.put("sendType", 1);
-            
+            result.put("workerNum", informMapper.selectUnReadCount(param));
+            param.put("sendType", 4);
         } else if ("hotel".equals(dto.getRole())) {
 
         } else if ("worker".equals(dto.getRole())) {

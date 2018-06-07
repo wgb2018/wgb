@@ -119,9 +119,9 @@ public class WorkerController {
     /**
      * 查看小时工工作记录
      */
-    @PostMapping("/workers/{taskWorkerId}/getWorkerDetails/{userId}")
-    public ResultDO getWorkerDetails(@PathVariable String taskWorkerId,@PathVariable String userId) {
-        return ResultDO.buildSuccess(workerService.selectUserTaskInfo(taskWorkerId, userId));
+    @GetMapping("/workers/{taskWorkerId}/getWorkerDetails/{workerId}")
+    public ResultDO getWorkerDetails(@PathVariable String taskWorkerId,@PathVariable String workerId) {
+        return ResultDO.buildSuccess(workerService.selectUserTaskInfo(taskWorkerId, workerId));
     }
 	/**
      * 修改服务类型及地区

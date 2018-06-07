@@ -7,7 +7,7 @@ import java.time.OffsetDateTime;
 @Data
 public class MessageDetailsResponse {
 
-    private String id;
+    private String pid;
     private String name;
     private String companyName;
     private String mobile;
