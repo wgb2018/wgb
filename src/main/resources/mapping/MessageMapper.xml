@@ -537,4 +537,11 @@ ON t.id = tc.task_id
 INNER JOIN company c ON t.hotel_id = c.id
 WHERE m.id = #{messageId}
     </select>
+
+    <select id="hotelHrApplyCooperate" resultType="com.microdev.param.MessageDetailsResponse">
+      SELECT c.name AS companyName,c.leader AS NAME,c.leader_mobile AS mobile,c.address,c.area,m.message_type,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') AS createTime,c.logo,
+c.id AS pid FROM
+(SELECT * FROM message WHERE id = #{messageId}) m
+INNER JOIN company c ON m.hr_company_id = c.id
+    </select>
 </mapper>

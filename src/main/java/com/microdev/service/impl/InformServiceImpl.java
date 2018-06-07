@@ -64,24 +64,17 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
             result.put("workerNum", informMapper.selectUnReadCount(param));
             param.put("sendType", 4);
             result.put("systemNum", informMapper.selectUnReadCount(param));
-            //分页查询type类型的消息
             param.remove("status");
-            PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
             if (dto.getType() == 1) {
                 param.put("sendType", 1);
             } else if (dto.getType() == 3) {
                 param.put("sendType", 3);
-
             } else if (dto.getType() == 4) {
                 param.put("sendType", 4);
             } else {
                 throw new ParamsException("参数错误");
             }
-            List<Map<String, Object>> list = informMapper.selectInfromByParam(param);
-            PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
-            result.put("page", pageInfo.getPageNum());
-            result.put("pageSize", pageInfo.getPageSize());
-            result.put("companyList", list);
+
         } else if ("hotel".equals(dto.getRole())) {
             param.put("sendType", 2);
             param.put("acceptType", 3);
@@ -89,13 +82,47 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
             result.put("hrNum", informMapper.selectUnReadCount(param));
             param.put("sendType", 4);
             result.put("systemNum", informMapper.selectUnReadCount(param));
+            //页查询type类型的消息
+            param.remove("status");
 
+            if (dto.getType() == 2) {
+                param.put("sendType", 2);
+            } else if (dto.getType() == 4) {
+                param.put("sendType", 4);
+            } else {
+                throw new ParamsException("参数错误");
+            }
         } else if ("worker".equals(dto.getRole())) {
-
+            param.put("sendType", 3);
+            param.put("acceptType", 1);
+            param.put("receiveId", dto.getId());
+            result.put("companyNum", informMapper.selectUnReadCount(param));
+            param.put("sendType", 2);
+            result.put("hrNum", informMapper.selectUnReadCount(param));
+            param.put("sendType", 4);
+            result.put("systemNum", informMapper.selectUnReadCount(param));
+            param.remove("status");
+            if (dto.getType() == 2) {
+                param.put("sendType", 2);
+            } else if (dto.getType() == 3) {
+                param.put("sendType", 3);
+            } else if (dto.getType() == 4) {
+                param.put("sendType", 4);
+            } else {
+                throw new ParamsException("参数错误");
+            }
         } else {
             throw new ParamsException("参数错误");
         }
 
+        //分页查询type类型的消息
+
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+        List<Map<String, Object>> list = informMapper.selectInfromByParam(param);
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
+        result.put("page", pageInfo.getPageNum());
+        result.put("pageSize", pageInfo.getPageSize());
+        result.put("list", list);
         return result;
     }
 

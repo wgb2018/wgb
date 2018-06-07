@@ -49,4 +49,6 @@ public interface TaskWorkerMapper extends BaseMapper<TaskWorker> {
     int selectUnreadCount(String userId);
 
     int selectCompleteCount(String userId);
+
+    int selectWorkerUnreadCount(@Param("workerId") String workerId);
 }
