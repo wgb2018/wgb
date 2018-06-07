@@ -10,7 +10,7 @@
     </insert>
 
     <select id="selectUnReadCount" parameterType="java.util.Map" resultType="java.lang.Integer">
-      SELECT id,content,title FROM inform
+      SELECT count(1) FROM inform
       <where>
           <if test="status != null">
             and status = #{status}

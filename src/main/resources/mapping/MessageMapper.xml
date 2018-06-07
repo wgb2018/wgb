@@ -442,7 +442,7 @@ ON m.task_id = tc.task_id AND tc.hr_company_id = m.hr_company_id
     </select>
 
     <select id="selectPayConfirm" resultType="com.microdev.param.MessageDetailsResponse">
-      SELECT IFNULL(m.minutes,0) as money ,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') as createTime,c.name,c.logo,c.address,c.area,c.id FROM
+      SELECT IFNULL(m.minutes,0) as money ,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') as createTime,c.name,c.logo,c.address,c.area,c.id,c.name as companyName FROM
 (
 SELECT * FROM message WHERE id = #{messageId}
 ) m
