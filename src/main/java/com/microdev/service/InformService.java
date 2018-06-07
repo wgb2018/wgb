@@ -15,5 +15,5 @@ public interface InformService extends IService<Inform> {
      * 查询消息及未读消息
      * @return
      */
-    int selectMessageInfo(InformRequestDTO dto, Paginator paginator);
+    Map<String, Object> selectMessageInfo(InformRequestDTO dto, Paginator paginator);
 }

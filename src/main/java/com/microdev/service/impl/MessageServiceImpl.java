@@ -690,7 +690,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      */
     @Override
     public MessageDetailsResponse selectMessageDetails(String messageId, String messagetype, String type) {
-        System.out.println("------------cas:" + messageId + ";messagetype=" +messagetype+";type=" + type);
+
         if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(type)) {
             throw new ParamsException("参数不能为空");
         }
@@ -698,6 +698,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         //根据消息id和类型查询待处理信息
         if ("12".equals(messagetype)) {
             response = messageMapper.selectWorkerApply(messageId);
+            response.setOriginator(response.getName());
             if (response.getAge() < 0) response.setAge(0);
         } else if ("13".equals(type)) {
             if ("hr".equals(messagetype)) {
@@ -705,6 +706,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 response.setOriginator(response.getName());
             } else if ("hotel".equals(messagetype)) {
                 response = messageMapper.selectHotelApply(messageId);
+                response.setOriginator(response.getCompanyName());
             } else {
                 throw new ParamsException("用户类型错误");
             }
@@ -712,8 +714,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             if ("hr".equals(messagetype)) {
                 response = messageMapper.selectWorkerApply(messageId);
                 if (response.getAge() < 0) response.setAge(0);
+                response.setOriginator(response.getName());
             } else if ("worker".equals(messagetype)) {
                 response = messageMapper.selectHotelApply(messageId);
+                response.setOriginator(response.getCompanyName());
             } else {
                 throw new ParamsException("用户类型错误");
             }
@@ -723,6 +727,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             } else if ("hr".equals(messagetype)){
                 response = messageMapper.selectPayConfirm(messageId, "1");
             }
+            response.setOriginator(response.getCompanyName());
         } else if ("10".equals(type)) {
             if ("hotel".equals(messagetype)) {
                 response = messageMapper.selectHotelApply(messageId);
@@ -738,17 +743,22 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         } else if ("1".equals(type) ) {
             response = messageMapper.selectSupplementApply(messageId);
             if (response.getAge() < 0) response.setAge(0);
+            response.setOriginator(response.getName());
         } else if ("2".equals(type)){
             response = messageMapper.selectOvertimeApply(messageId);
             if (response.getAge() < 0) response.setAge(0);
+            response.setOriginator(response.getName());
         } else if ("3".equals(type)) {
             response = messageMapper.selectLeaveApply(messageId);
             if (response.getAge() < 0) response.setAge(0);
+            response.setOriginator(response.getName());
         } else if ("4".equals(type)) {
             response = messageMapper.selectApplyAllocate(messageId);
+            response.setOriginator(response.getCompanyName());
         } else if ("7".equals(type)) {
             response = messageMapper.selectWorkerApply(messageId);
             if (response.getAge() < 0) response.setAge(0);
+            response.setOriginator(response.getName());
         } else if ("9".equals(type)) {
             response = messageMapper.selectWorkerApply(messageId);
             if (response.getAge() < 0) response.setAge(0);
@@ -761,6 +771,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 response.setOriginator(response.getName());
             } else if ("hotel".equals(messagetype)) {
                 response = messageMapper.selectHotelApply(messageId);
+                response.setOriginator(response.getCompanyName());
             } else {
                 throw new ParamsException("用户类型错误");
             }
