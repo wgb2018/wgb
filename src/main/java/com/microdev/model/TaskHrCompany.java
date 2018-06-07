@@ -100,6 +100,10 @@ public class TaskHrCompany extends BaseEntity {
     /**
      *  人力公司付款给小时工金额  [  工作时间(时) * 时薪  ]
      */
+    private Double paidPaymoney=0.0;
+    /**
+     *  人力公司付款给小时工金额  [  工作时间(时) * 时薪  ]
+     */
     private Double workersShouldPay=0.0;
     /**
      *  人力公司已付小时工金额 (这个字段不清楚何时赋值,因为系统暂时是线下支付)

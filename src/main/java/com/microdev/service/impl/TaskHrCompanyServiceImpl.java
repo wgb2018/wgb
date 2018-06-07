@@ -9,6 +9,7 @@ import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.DateUtil;
+import com.microdev.common.utils.Maths;
 import com.microdev.common.utils.StringKit;
 import com.microdev.converter.TaskHrCompanyConverter;
 import com.microdev.mapper.*;
@@ -56,6 +57,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
     private MessageService messageService;
     @Autowired
     private InformMapper informMapper;
+
     /**
      * 查看人力资源公司的任务
      */
@@ -345,13 +347,13 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         Double should_pay_money = 0.0;
         Double have_pay_money  = 0.0;
         for (TaskHrCompany item:list) {
-            should_pay_money += item.getShouldPayMoney();
-            have_pay_money += item.getHavePayMoney();
+            should_pay_money = Maths.add (should_pay_money,item.getShouldPayMoney());
+            have_pay_money = Maths.add (item.getHavePayMoney(),have_pay_money);
             item.setHrCompany (companyMapper.selectById (item.getHrCompanyId ()));
         }
-        map.put("shouldPayMoney",should_pay_money);
+        map.put("shouldPayMoney", should_pay_money);
         map.put("havePayMoney",have_pay_money);
-        map.put("paidPayMoney",should_pay_money-have_pay_money);
+        map.put("paidPayMoney",Maths.sub (should_pay_money,have_pay_money));
         return ResultDO.buildSuccess(null,result,map,null);
     }
     /**
@@ -366,14 +368,14 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         Double should_pay_money = 0.0;
         Double have_pay_money  = 0.0;
         for (TaskHrCompany item:list) {
-            should_pay_money += item.getShouldPayMoney();
-            have_pay_money += item.getHavePayMoney();
+            should_pay_money = Maths.add (should_pay_money,item.getShouldPayMoney());
+            have_pay_money = Maths.add (item.getHavePayMoney(),have_pay_money);
             System.out.println ("horelID:"+item.getHotelId ());
             item.setHotel (companyMapper.selectById (item.getHotelId ()));
         }
         map.put("shouldPayMoney",should_pay_money);
         map.put("havePayMoney",have_pay_money);
-        map.put("paidPayMoney",should_pay_money-have_pay_money);
+        map.put("paidPayMoney",Maths.sub (should_pay_money,have_pay_money));
         PageInfo<TaskHrCompany> pageInfo = new PageInfo<>(list);
         HashMap<String,Object> result = new HashMap<>();
         //设置获取到的总记录数total：
@@ -402,13 +404,13 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         Double should_pay_money = 0.0;
         Double have_pay_money  = 0.0;
         for (TaskWorker item:list) {
-            should_pay_money += item.getShouldPayMoney();
-            have_pay_money += item.getHavePayMoney();
+            should_pay_money = Maths.add (should_pay_money,item.getShouldPayMoney());
+            have_pay_money = Maths.add (item.getHavePayMoney(),have_pay_money);
             item.setUser (userMapper.queryByUserId (item.getUserId ()));
         }
         map.put("shouldPayMoney",should_pay_money);
         map.put("havePayMoney",have_pay_money);
-        map.put("paidPayMoney",should_pay_money-have_pay_money);
+        map.put("paidPayMoney",Maths.sub (should_pay_money,have_pay_money));
         return ResultDO.buildSuccess(null,result,map,null);
     }
     /**
@@ -431,13 +433,13 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         Double should_pay_money = 0.0;
         Double have_pay_money  = 0.0;
         for (TaskHrCompany item:list) {
-            should_pay_money += item.getShouldPayMoney();
-            have_pay_money += item.getHavePayMoney();
+            should_pay_money = Maths.add (should_pay_money,item.getShouldPayMoney());
+            have_pay_money = Maths.add (item.getHavePayMoney(),have_pay_money);
             item.setHrCompany (companyMapper.selectById (item.getHrCompanyId ()));
         }
         map.put("shouldPayMoney",should_pay_money);
         map.put("havePayMoney",have_pay_money);
-        map.put("paidPayMoney",should_pay_money-have_pay_money);
+        map.put("paidPayMoney",Maths.sub (should_pay_money,have_pay_money));
         return ResultDO.buildSuccess(null,result,map,null);
     }
     /**
