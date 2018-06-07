@@ -170,7 +170,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         if (taskWorker == null || !taskWorker.getUserId().equals(user.getId())) {
             throw new TaskWorkerNotFoundException("未找到小时工任务信息");
         }
-
+        //taskWorkerMapper.findFirstById (taskWorkerId).get
         WorkLog log = null;
         Task task = null;
         TaskHrCompany taskHrCompany = null;

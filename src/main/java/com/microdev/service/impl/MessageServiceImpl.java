@@ -601,7 +601,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         if (StringUtils.isEmpty(request.getId()) || StringUtils.isEmpty(request.getType())) {
             throw new ParamsException("参数错误");
         }
-        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+        //PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
         List<AwaitHandleInfo> list = null;
         if ("worker".equals(request.getType())) {
             list = messageMapper.selectWorkerAwaitHandleInfo(request.getId());
@@ -612,11 +612,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         } else {
             throw new ParamsException("参数传递错误");
         }
+        System.out.println ("list:"+list);
         PageInfo<AwaitHandleInfo> pageInfo = new PageInfo<>(list);
         Map<String, Object> map = new HashMap<>();
         map.put("page", pageInfo.getPageNum());
         map.put("total", pageInfo.getTotal());
         map.put("result", list);
+
         return ResultDO.buildSuccess(map);
     }
 

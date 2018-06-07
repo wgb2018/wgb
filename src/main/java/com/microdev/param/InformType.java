@@ -5,7 +5,8 @@ public enum InformType {
     exchange_worker("人力公司调换小时工"), register_worker("注册小时工"),hotel_bind_hr_success("酒店绑定人力公司"), replacement_success("酒店换人"), replacement_fail("酒店换人"), hotel_account_agree("酒店支付"),
     apply_for_leave_fail("申请请假"),hotel_account_refuse("酒店支付"),accept_hotel_task("酒店任务"),refuse_hotel_task("酒店任务"),register_hotel("注册酒店"),hr_bind_hotel_success("人力公司绑定酒店"),
     register_hr("注册人力公司"),hr_bind_worker_success("人力公司绑定小时工"),accept_hr_task("人力公司任务"),hr_account_agree("人力公司支付"),hr_account_refuse("人力公司支付"),apply_for_overtime_success("申请加时"),
-    apply_for_overtime_fail("申请加时"),apply_for_supplement_success("申请补签"),apply_for_supplement_fail("申请补签"),come_late("迟到通知"),absenteeism("矿工通知"),early_retreat("早退通知");
+    apply_for_overtime_fail("申请加时"),apply_for_supplement_success("申请补签"),apply_for_supplement_fail("申请补签"),come_late("迟到通知"),absenteeism("矿工通知"),early_retreat("早退通知"),hr_bind_worker_fail("人力绑定小时工"),
+    hotel_bind_hr_fail("酒店绑定人力公司"),hr_bind_hotel_fail("人力公司绑定酒店");
 
     String text;
 
