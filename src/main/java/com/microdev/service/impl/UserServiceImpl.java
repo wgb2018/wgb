@@ -142,7 +142,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         } else if(newUser.getUserType().name().equals("hotel")){
             Company company = new Company();
             company.setStatus(0);
+            company.setLeader (newUser.getNickname ());
             company.setLeaderMobile(register.getMobile());
+            company.setName ("wgb"+UUID.randomUUID ().toString ().toLowerCase ().substring (1,7));
             company.setCompanyType(1);
             companyMapper.insert(company);
             file = QRCodeUtil.createQRCode (company.getPid ()+"WGB"+register.getUserType());
@@ -155,7 +157,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             Company company = new Company();
             company.setStatus(0);
             company.setLeaderMobile(register.getMobile());
+            company.setLeader (newUser.getNickname ());
             company.setCompanyType(2);
+            company.setName ("wgb"+UUID.randomUUID ().toString ().toLowerCase ().substring (1,7));
             companyMapper.insert(company);
             file = QRCodeUtil.createQRCode (company.getPid ()+"WGB"+register.getUserType());
             filePath = "QRCode".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);

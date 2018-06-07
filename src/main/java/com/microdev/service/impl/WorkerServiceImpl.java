@@ -958,6 +958,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     @Override
     public Map<String, Object> queryWorker(String id) {
         Map<String, Object> map = workerMapper.queryWorker(id);
+        String str = map.get("birthday").toString ().substring (0,10);
+        map.put("birthday",str);
         List l1 = dictService.findServiceArea (id);
         List l2 = dictMapper.queryTypeByUserId (id);
         map.put("areaCode",l1==null?new ArrayList<>():l1);
