@@ -140,7 +140,7 @@
     <select id="findTaskAndHrInfoById" parameterType="java.lang.String"
             resultMap="dotMap">
         SELECT t.id AS pid, t.task_type_text AS taskTypeText,t.`task_content` AS
-        taskContent,t.`from_date` AS fromDate, t.`to_date` AS toDate,t.status,
+        taskContent,t.day_start_time as dayStartTime,day_end_time as dayEndTime,t.`from_date` AS fromDate, t.`to_date` AS toDate,t.status,
         t.`hourly_pay` AS hourlyPay,t.`need_workers` AS
         needWorkers,t.`hotel_name` AS HotelName,t.`confirmed_workers` AS
         confirmedWorkers,

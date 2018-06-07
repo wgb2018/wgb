@@ -26,4 +26,5 @@ public class AwaitHandleInfo {
     private String content;
     private String messageId;
     private Integer isTask;
+    private String area;
 }

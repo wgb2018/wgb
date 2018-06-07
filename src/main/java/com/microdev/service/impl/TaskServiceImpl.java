@@ -50,7 +50,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
      */
     @Override
     public ResultDO createTask(CreateTaskRequest request) {
-        System.out.println ("param:"+request);
+        System.out.println ("set:"+request.getHrCompanySet ());
         if(request.getFromDateL ()!=null){
             request.setFromDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getFromDateL ()),ZoneOffset.systemDefault ()));
             System.out.println (request.getFromDate ());
@@ -91,9 +91,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         task.setTaskTypeCode(request.getTaskTypeCode());
         task.setTaskContent(request.getTaskContent());
         task.setHourlyPay(request.getHourlyPay());
-
-        AddHrTask(task,request);
         taskMapper.insert(task);
+        AddHrTask(task,request);
+
         messageService.hotelDistributeTask(request, hotel, "workTaskMessage", task.getPid());
         TaskViewDTO taskDto= taskConverter.toViewDTOWithOutSet(task);
         return ResultDO.buildSuccess("任务发布成功",taskDto);
@@ -349,6 +349,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
             taskHrCompany.setTaskContent(createTaskRequest.getTaskContent());
 			taskHrCompany.setHourlyPayHotel(task.getHourlyPay());
             taskHrCompanyMapper.insert(taskHrCompany);
+            System.out.println (taskHrCompany.getPid ());
             setHrTask.add(taskHrCompany);
         }
         return setHrTask;

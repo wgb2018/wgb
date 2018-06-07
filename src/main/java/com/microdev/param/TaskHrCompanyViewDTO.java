@@ -81,12 +81,12 @@ public class TaskHrCompanyViewDTO {
     /**
      * 开始时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy.MM.dd")
     private OffsetDateTime fromDate;
     /**
      * 截止时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy.MM.dd")
     private OffsetDateTime toDate;
 
 
