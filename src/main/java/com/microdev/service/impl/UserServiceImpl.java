@@ -123,6 +123,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         newUser.setNickname (register.getMobile());
         newUser.setUserCode(register.getUserType()
                 .toString());
+        newUser.setSex (UserSex.UNKNOW);
         if (StringUtils.hasText(register.getPassword())) {
             newUser.setPassword(PasswordHash.createHash(register.getPassword()));
         }
@@ -345,7 +346,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         System.out.println ("userID:"+user);
         userMapper.updateById(user);
         if(user.getUserType () == UserType.worker){
-            Worker worker = new Worker ();
+            Worker worker = workerMapper.queryById (user.getWorkerId ());
             if(userDTO.getHealthCard ()!=null && userDTO.getHealthCard ()!="")worker.setHealthCard (userDTO.getHealthCard ());
             if(userDTO.getIdCardBack ()!=null && userDTO.getIdCardBack ()!="")worker.setIdcardBack (userDTO.getIdCardBack());
             if(userDTO.getIdCardFront ()!=null && userDTO.getIdCardFront ()!="")worker.setIdcardFront (userDTO.getIdCardFront ());
@@ -371,7 +372,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                 }
             }
             System.out.println ("company:"+company);
-            companyMapper.updateAllColumnById (company);
+            companyMapper.updateById (company);
         }
     }
     /**

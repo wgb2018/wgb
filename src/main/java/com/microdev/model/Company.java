@@ -82,7 +82,7 @@ public class Company extends BaseEntity {
     /**
      * 用户二维码
      */
-    private String qrCode ="";
+    private String qrCode;
     /**
      * 劳务派遣证
      */
