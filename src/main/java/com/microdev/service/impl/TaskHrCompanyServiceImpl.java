@@ -137,6 +137,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             userMapper.queryByWorkerId(id);
             User user = userMapper.queryByWorkerId(id);
             taskWorker.setUserId(user.getPid());
+            taskWorker.setWorkerId (user.getWorkerId ());
             taskWorker.setUserName(user.getUsername());
             taskWorker.setStatus(0);
             taskWorker.setFromDate(hotelTask.getFromDate());

@@ -50,6 +50,10 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
     TaskWorkerMapper taskWorkerMapper;
     @Autowired
     private InformMapper informMapper;
+    @Autowired
+    TaskHrCompanyMapper taskHrCompanyMapper;
+    @Autowired
+    TaskMapper taskMapper;
     /**
      * 小时工绑定人力公司
      */
@@ -181,7 +185,26 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             result.put("page",paginator.getPage());
             //list = userMapper.selectBatchIds(ids);
         }else{
+            boolean ifTimeConflict = false;
             list = userCompanyMapper.getSelectableWorker(queryDTO);
+            Task task = taskMapper.getFirstById (taskHrCompanyMapper.queryByTaskId (queryDTO.getTaskId()).getTaskId ());
+            Iterator<User> it = list.iterator ();
+            while(it.hasNext ()){
+                List<TaskWorker> li = taskWorkerMapper.findByUserId (it.next ().getPid ());
+                for (TaskWorker ts:li) {
+                    if(!(task.getDayStartTime ().isAfter (ts.getDayEndTime ()) || ts.getDayStartTime ().isAfter (task.getDayEndTime ()))){
+                        if(!(task.getFromDate ().isAfter (ts.getToDate ()) || ts.getFromDate ().isAfter (task.getToDate ()))){
+                            ifTimeConflict = true;
+                            break;
+                        }
+                    };
+                }
+                if(ifTimeConflict){
+                    System.out.println ("去除时间冲突的小时工："+it);
+                    it.remove ();
+                    ifTimeConflict = false;
+                }
+            }
             PageInfo<User> pageInfo = new PageInfo<User>(list);
             //设置获取到的总记录数total：
             result.put("total",pageInfo.getTotal());
