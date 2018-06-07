@@ -73,7 +73,7 @@
 
 	<select id="selectMessageDetails" parameterType="java.lang.String"
             resultType="java.util.Map">
-		SELECT u.`username` AS username, CASE u.`sex` WHEN 'MALE'
+		SELECT u.`nickname` AS username, CASE u.`sex` WHEN 'MALE'
 		THEN '男' WHEN
 		'FEMALE' THEN '女' ELSE '未知' END AS sex,
 		u.mobile AS
@@ -130,7 +130,7 @@
         m.minutes
         AS
         minutes, m.create_time AS createTime, m.content AS
-        reason, u.username AS
+        reason, u.nickname AS
         username, CASE u.`sex` WHEN 'MALE'
         THEN '男' WHEN
         'FEMALE' THEN '女' ELSE '未知' END AS sex,
@@ -419,7 +419,7 @@ ORDER BY create_time
     </select>
 
     <select id="selectWorkerApply" resultType="com.microdev.param.MessageDetailsResponse">
-      SELECT u.`username` as name,IFNULL(u.age,0) as age,u.`mobile`,u.`sex`,m.message_type,u.avatar as logo,m.content,u.`worker_id` as pid,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') as createTime,m.worker_task_id as workerTaskId  FROM
+      SELECT u.`nickname` as name,IFNULL(u.age,0) as age,u.`mobile`,u.`sex`,m.message_type,u.avatar as logo,m.content,u.`worker_id` as pid,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') as createTime,m.worker_task_id as workerTaskId  FROM
 (
 SELECT * FROM message WHERE id = #{messageId}
 ) m
@@ -500,7 +500,7 @@ where m.id = #{messageId}
     </select>
 
     <select id ="selectSupplementApply" resultType="com.microdev.param.MessageDetailsResponse">
-        SELECT u.`username` AS name,IFNULL(u.age,0) as age,u.`mobile`,u.`sex`,m.message_type,u.avatar AS logo,m.content,DATE_FORMAT(m.supplement_time,'%Y.%m.%d') AS retroactiveDate
+        SELECT u.`nickname` AS name,IFNULL(u.age,0) as age,u.`mobile`,u.`sex`,m.message_type,u.avatar AS logo,m.content,DATE_FORMAT(m.supplement_time,'%Y.%m.%d') AS retroactiveDate
 ,u.id,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') AS createTime, DATE_FORMAT(m.supplement_time,'%H:%m') AS retroactiveTime,u.`worker_id` as pid FROM
 (
 SELECT * FROM message WHERE id = #{messageId}
@@ -510,7 +510,7 @@ ON u.`worker_id` = m.`worker_id`
     </select>
 
     <select id = "selectOvertimeApply" resultType="com.microdev.param.MessageDetailsResponse">
-        SELECT u.`username` AS name,IFNULL(u.age,0) as age,u.`mobile`,u.`sex`,m.message_type,u.avatar AS logo,m.content,DATE_FORMAT(m.supplement_time,'%Y.%m.%d') AS overtimeDate
+        SELECT u.`nickname` AS name,IFNULL(u.age,0) as age,u.`mobile`,u.`sex`,m.message_type,u.avatar AS logo,m.content,DATE_FORMAT(m.supplement_time,'%Y.%m.%d') AS overtimeDate
 ,u.`worker_id` as pid,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') AS createTime,m.minutes AS overtimeLength  FROM
 (
 SELECT * FROM message WHERE id = #{messageId}
@@ -519,7 +519,7 @@ ON u.`worker_id` = m.`worker_id`
     </select>
 
     <select id="selectLeaveApply" resultType="com.microdev.param.MessageDetailsResponse">
-        SELECT u.`username` AS name,IFNULL(u.age,0) as age,u.`mobile`,u.`sex`,m.message_type,u.avatar AS logo,m.content,DATE_FORMAT(m.supplement_time,'%Y.%m.%d') AS leaveStartDate
+        SELECT u.`nickname` AS name,IFNULL(u.age,0) as age,u.`mobile`,u.`sex`,m.message_type,u.avatar AS logo,m.content,DATE_FORMAT(m.supplement_time,'%Y.%m.%d') AS leaveStartDate
 ,DATE_FORMAT(m.supplement_time_end,'%Y.%m.%d') AS leaveEndDate, DATE_FORMAT(m.supplement_time,'%H:%m') AS leaveStartTime,DATE_FORMAT(m.supplement_time_end,'%H:%m') AS leaveEndTime ,u.`worker_id` as pid,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') AS createTime  FROM
 (
 SELECT * FROM message WHERE id = #{messageId}
@@ -536,5 +536,12 @@ INNER JOIN task t
 ON t.id = tc.task_id
 INNER JOIN company c ON t.hotel_id = c.id
 WHERE m.id = #{messageId}
+    </select>
+
+    <select id="hotelHrApplyCooperate" resultType="com.microdev.param.MessageDetailsResponse">
+      SELECT c.name AS companyName,c.leader AS NAME,c.leader_mobile AS mobile,c.address,c.area,m.message_type,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') AS createTime,c.logo,
+c.id AS pid FROM
+(SELECT * FROM message WHERE id = #{messageId}) m
+INNER JOIN company c ON m.hr_company_id = c.id
     </select>
 </mapper>

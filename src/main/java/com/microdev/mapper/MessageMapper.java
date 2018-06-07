@@ -78,4 +78,6 @@ public interface MessageMapper extends BaseMapper<Message> {
     MessageDetailsResponse selectLeaveApply(@Param("messageId") String messageId);
 
     AwaitTaskResponse selectCancelApply(@Param("messageId") String messageId);
+
+    MessageDetailsResponse hotelHrApplyCooperate(String messageId);
 }

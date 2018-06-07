@@ -195,7 +195,7 @@
     </select>
 
     <select id = "selectCooperateWorker" resultType="java.util.Map" parameterType="com.microdev.param.QueryCooperateRequest">
-      SELECT u.activated,u.avatar,u.email,u.mobile,u.nickname,u.sex,u.username, uc.status AS bindType FROM (select * from USER
+      SELECT u.activated,u.avatar,u.email,u.mobile,u.nickname,u.sex,u.nickname, uc.status AS bindType FROM (select * from USER
       <where>
           <if test="nickname != null">
               and nickname like concat('%', #{nickname}, '%')

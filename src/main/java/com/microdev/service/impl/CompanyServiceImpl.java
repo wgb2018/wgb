@@ -648,6 +648,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         HotelHrCompany hotelHr = null;
         Company company = null;
         if (type == 1) {
+            //酒店加人力
             if (StringUtils.isEmpty(dto.getHotelId())) {
                 throw new ParamsException("参数hotelId为空");
             }
@@ -684,6 +685,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             company = companyMapper.selectById(dto.getHotelId());
 
         } else if (type == 2) {
+            //人力加酒店
             if (StringUtils.isEmpty(dto.getHrId())) {
                 throw new ParamsException("参数hrId为空");
             }
@@ -841,14 +843,15 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         inform.setSendType(2);
         inform.setAcceptType(3);
         inform.setReceiveId(message.getHotelId());
+        HotelHrCompany hotelHrCompany = hotelHrCompanyMapper.findOneHotelHr(message.getHotelId(), message.getHrCompanyId());
+        if (hotelHrCompany == null) {
+            throw new BusinessException("查询不到人力酒店关系");
+        }
+        Company company = null;
         if ("1".equals(status)) {
-            HotelHrCompany hotelHrCompany = hotelHrCompanyMapper.findOneHotelHr(message.getHotelId(), message.getHrCompanyId());
-            if (hotelHrCompany == null) {
-                throw new BusinessException("查询不到人力酒店关系");
-            }
+
             hotelHrCompany.setStatus(0);
             hotelHrCompanyMapper.update(hotelHrCompany);
-            Company company = null;
             inform.setTitle("绑定成功");
             if (message.getApplicantType() == 2) {
                 company = companyMapper.selectById(message.getHotelId());
@@ -862,7 +865,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
         } else if ("0".equals(status)) {
             inform.setTitle("绑定拒绝");
-            Company company = null;
+
             if (message.getApplicantType() == 2) {
                 company = companyMapper.selectById(message.getHotelId());
             } else if (message.getApplicantType() == 3) {
@@ -870,7 +873,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             } else {
                 throw new BusinessException("数据错误");
             }
-
+            hotelHrCompany.setStatus(4);
+            hotelHrCompanyMapper.update(hotelHrCompany);
             inform.setContent(company.getName() + "拒绝了你的绑定申请，等以后有机会希望可以再合作。");
         } else {
             throw new ParamsException("参数错误");

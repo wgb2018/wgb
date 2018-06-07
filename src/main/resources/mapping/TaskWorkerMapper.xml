@@ -153,7 +153,7 @@
         WHERE tw.id = #{taskWorkerId}
     </select>
     <select id="selectUserAndWorkerId" parameterType="java.lang.String" resultType="java.util.Map">
-        SELECT tw.`worker_id` AS workerId, u.`id` AS userId, u.`username` AS username, th.hotel_id AS hotelId,
+        SELECT tw.`worker_id` AS workerId, u.`id` AS userId, u.`nickname` AS username, th.hotel_id AS hotelId,
         th.hr_company_id as hrId
         FROM (SELECT * FROM task_worker WHERE id = #{id})tw
         INNER JOIN USER u ON tw.`user_id` = u.`id`
@@ -179,5 +179,10 @@
 
     <select id="selectCompleteCount" parameterType="java.lang.String" resultType="java.lang.Integer">
         SELECT COUNT(1) FROM task_worker WHERE user_id = #{userId} AND CURDATE() > to_date and check_sign <![CDATA[<>]]> 3
+    </select>
+
+    <select id="selectWorkerUnreadCount" resultType="java.lang.Integer">
+      SELECT COUNT(1) FROM task_worker
+WHERE check_sign = 0 AND DATE(to_date) >= DATE(NOW()) AND worker_id = #{workerId} AND STATUS = 1
     </select>
 </mapper>

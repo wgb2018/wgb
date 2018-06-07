@@ -151,7 +151,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         }
         Set<String> set = new HashSet<>();
         set.add(hrId);
-        messageService.bindHrCompany(user.getWorkerId(), set, user.getUsername(), "applyUnbindMessage");
+        messageService.bindHrCompany(user.getWorkerId(), set, user.getNickname(), "applyUnbindMessage");
         return    ResultDO.buildSuccess("解绑已提交");
     }
 

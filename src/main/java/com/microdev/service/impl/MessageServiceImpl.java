@@ -9,10 +9,8 @@ import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.StringKit;
 import com.microdev.mapper.MessageMapper;
 import com.microdev.mapper.MessageTemplateMapper;
-import com.microdev.model.Company;
-import com.microdev.model.Message;
-import com.microdev.model.MessageTemplate;
-import com.microdev.model.TaskHrCompany;
+import com.microdev.mapper.TaskWorkerMapper;
+import com.microdev.model.*;
 import com.microdev.param.*;
 import com.microdev.service.MessageService;
 import org.apache.ibatis.annotations.Param;
@@ -35,6 +33,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     MessageTemplateMapper messageTemplateMapper;
     @Autowired
     MessageMapper messageMapper;
+    @Autowired
+    private TaskWorkerMapper taskWorkerMapper;
     /**
      * 创建消息模板
      */
@@ -140,13 +140,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m.setIsTask(1);
             m.setContent(applyCompany.getName() + "向你发出了申请合作申请");
             if (type == 1) {
-                m.setApplyType(2);
-                m.setApplicantType(3);
+                m.setApplyType(3);
+                m.setApplicantType(2);
                 m.setHotelId(applyCompany.getPid());
                 m.setHrCompanyId(id);
             } else {
-                m.setApplyType(3);
-                m.setApplicantType(2);
+                m.setApplyType(2);
+                m.setApplicantType(3);
                 m.setHotelId(id);
                 m.setHrCompanyId(applyCompany.getPid());
             }
@@ -159,7 +159,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     }
 
     /**
-     * 小时工绑定或解绑人力公司
+     * 小时工绑定
      * @param workerId
      * @param hrCompanyId
      * @param userName
@@ -332,8 +332,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
 
     /**
      * 查询未读消息
-     * @param id
-     * @param applyType
+     * @param id            角色id
+     * @param applyType     角色类型小时工worker人力hr酒店hotel
      * @return
      */
     @Override
@@ -342,14 +342,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         if (StringUtils.isEmpty(id) || StringUtils.isEmpty(applyType)) {
             throw new ParamsException("参数不能为空");
         }
-        Map<String, Object> param = new HashMap<>();
+        /*Map<String, Object> param = new HashMap<>();
         param.put("applyType", applyType);
-        param.put("checkSign", 0);
-        if ("1".equals(applyType)) {
+        if ("worker".equals(applyType)) {
             param.put("workerId", id);
-        } else if ("2".equals(applyType)) {
+        } else if ("hr".equals(applyType)) {
             param.put("hrCompanyId", id);
-        } else if ("3".equals(applyType)) {
+        } else if ("hotel".equals(applyType)) {
             param.put("hotelId", id);
         } else {
             throw new ParamsException("参数applyType类型错误");
@@ -357,14 +356,14 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         List<Message> list = messageMapper.selectUnReadMessage(param);
         if (list == null || list.size() == 0) {
             return new ArrayList<>();
-        }
-        return list;
+        }*/
+        return null;
     }
 
     /**
      * 查询未读消息数量及各个类型的数量
      * @param id            用户id
-     * @param applyType     用户类型1小时工2人力公司3酒店
+     * @param applyType     用户类型worker小时工hr人力公司hotel酒店
      * @return
      */
     @Override
@@ -372,43 +371,19 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         if (StringUtils.isEmpty(id) || StringUtils.isEmpty(applyType)) {
             throw new ParamsException("参数不能为空");
         }
-        Map<String, Object> param = new HashMap<>();
-        param.put("applyType", applyType);
-        param.put("checkSign", 0);
-        if ("1".equals(applyType)) {
-            param.put("workerId", id);
-        } else if ("2".equals(applyType)) {
-            param.put("hrCompanyId", id);
-        } else if ("3".equals(applyType)) {
-            param.put("hotelId", id);
+        Map<String, Integer> param = new HashMap<>();
+        if ("worker".equals(applyType)) {
+
+            param.put("curTask", taskWorkerMapper.selectWorkerUnreadCount(id));
+        } else if ("hr".equals(applyType)) {
+
+        } else if ("hotel".equals(applyType)) {
+
         } else {
             throw new ParamsException("参数applyType类型错误");
         }
-        int total = messageMapper.selectUnReadCount(param);
-        Map<String, Integer> result = new HashMap<>();
-        result.put("total", total);
-        //查询补签申请数量
-        param.put("messageType", 1);
-        int supplementCount = messageMapper.selectUnReadCount(param);
-        result.put("supplementCount", supplementCount);
-        //查询加时申请
-        param.put("messageType", 2);
-        int extraCount = messageMapper.selectUnReadCount(param);
-        result.put("extraCount", extraCount);
-        //请假申请
-        param.put("messageType", 3);
-        int leaveCount = messageMapper.selectUnReadCount(param);
-        result.put("leaveCount", leaveCount);
-        //调配申请
-        param.put("messageType", 4);
-        int changeCount = messageMapper.selectUnReadCount(param);
-        result.put("changeCount", changeCount);
-        //绑定申请
-        param.put("messageType", 5);
-        int bindCount = messageMapper.selectUnReadCount(param);
-        result.put("bindCount", bindCount);
 
-        return result;
+        return param;
     }
 
     /**
@@ -706,9 +681,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         } else if ("13".equals(type)) {
             if ("hr".equals(messagetype)) {
                 response = messageMapper.selectCompanyApply(messageId);
-                response.setOriginator(response.getName());
+                response.setOriginator(response.getCompanyName());
             } else if ("hotel".equals(messagetype)) {
-                response = messageMapper.selectHotelApply(messageId);
+                response = messageMapper.hotelHrApplyCooperate(messageId);
                 response.setOriginator(response.getCompanyName());
             } else {
                 throw new ParamsException("用户类型错误");
@@ -719,7 +694,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 if (response.getAge() < 0) response.setAge(0);
                 response.setOriginator(response.getName());
             } else if ("worker".equals(messagetype)) {
-                response = messageMapper.selectHotelApply(messageId);
+                response = messageMapper.hotelHrApplyCooperate(messageId);
                 response.setOriginator(response.getCompanyName());
             } else {
                 throw new ParamsException("用户类型错误");
@@ -727,21 +702,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         } else if ("8".equals(type)) {
             if ("worker".equals(messagetype)) {
                 response = messageMapper.selectPayConfirm(messageId, "2");
+
             } else if ("hr".equals(messagetype)){
                 response = messageMapper.selectPayConfirm(messageId, "1");
             }
             response.setOriginator(response.getCompanyName());
-        } else if ("10".equals(type)) {
-            if ("hotel".equals(messagetype)) {
-                response = messageMapper.selectHotelApply(messageId);
-                response.setOriginator(response.getName());
-            } else if ("hr".equals(messagetype)) {
-                response = messageMapper.selectWorkerApply(messageId);
-                if (response.getAge() < 0) response.setAge(0);
-                response.setOriginator(response.getCompanyName());
-            } else {
-                throw new ParamsException("用户类型错误");
-            }
 
         } else if ("1".equals(type) ) {
             response = messageMapper.selectSupplementApply(messageId);

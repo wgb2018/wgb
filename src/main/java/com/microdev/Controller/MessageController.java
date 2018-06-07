@@ -62,7 +62,7 @@ public class MessageController {
     }
 
     /**
-     * 未读消息数量
+     * 查询未读数量
      * @param id
      * @param applyType
      * @return
