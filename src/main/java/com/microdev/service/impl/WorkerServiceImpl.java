@@ -11,6 +11,7 @@ import com.microdev.common.exception.TaskWorkerNotFoundException;
 import com.microdev.common.exception.WorkLogNotFoundException;
 import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.DateUtil;
+import com.microdev.common.utils.LocationUtils;
 import com.microdev.common.utils.StringKit;
 import com.microdev.converter.WorkLogConverter;
 import com.microdev.mapper.*;
@@ -163,14 +164,18 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     }
 
     @Override
-    public boolean punch(String taskWorkerId, PunchType punchType, OffsetDateTime punchTime) {
+    public boolean punch(String taskWorkerId, PunchType punchType, OffsetDateTime punchTime,Measure measure) {
         com.microdev.common.context.User user = ServiceContextHolder.getServiceContext().getUser();
 
         TaskWorker taskWorker = taskWorkerMapper.findFirstById(taskWorkerId);
         if (taskWorker == null || !taskWorker.getUserId().equals(user.getId())) {
             throw new TaskWorkerNotFoundException("未找到小时工任务信息");
         }
-        //taskWorkerMapper.findFirstById (taskWorkerId).get
+        Company hotel = companyMapper.findCompanyById (taskHrCompanyMapper.queryByTaskId (taskWorkerMapper.findFirstById (taskWorkerId).getTaskHrId ()).getHotelId ());
+        Double m = LocationUtils.getDistance (hotel.getLatitude (),hotel.getLongitude (),measure.getLatitude (),measure.getLongitude ());
+        if(m>500){
+            throw new TaskWorkerNotFoundException("打卡地点距离工作地超过500米");
+        }
         WorkLog log = null;
         Task task = null;
         TaskHrCompany taskHrCompany = null;

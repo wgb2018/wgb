@@ -1,5 +1,6 @@
 package com.microdev.param.api.request;
 
+import com.microdev.param.Measure;
 import com.microdev.param.PunchType;
 import lombok.Data;
 
@@ -19,4 +20,9 @@ public class PunchRequest {
      * 打卡时间
      */
     private OffsetDateTime punchTime;
+
+    private Long punchTimeL;
+
+    private Measure measure;
+
 }

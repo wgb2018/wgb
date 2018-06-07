@@ -261,6 +261,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
      */
     @Override
     public void TaskHraccept(String id, String messageId) {
+        System.out.println ("id:"+id+"messageId:"+messageId);
         if (StringUtils.isEmpty(id) || StringUtils.isEmpty(messageId)) {
             throw new ParamsException("参数不能为空");
         }

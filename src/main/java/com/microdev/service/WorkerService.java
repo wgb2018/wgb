@@ -31,7 +31,7 @@ public interface WorkerService extends IService<Worker> {
      * @param punchTime 打卡时间(为保证给用户展示的时间与服务器存储的时间一致 将打卡时间传入 或可用来进行补卡操作)
      * @return
      */
-    boolean punch(String taskWorkerId, PunchType punchType, OffsetDateTime punchTime);
+    boolean punch(String taskWorkerId, PunchType punchType, OffsetDateTime punchTime,Measure measure);
     /**
      * 获取小时工合作过的人力公司
      *

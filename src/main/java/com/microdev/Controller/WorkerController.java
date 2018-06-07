@@ -12,7 +12,9 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,8 +43,11 @@ public class WorkerController {
      */
     @PostMapping("/worker/punch")
     public ResultDO punch(@RequestBody PunchRequest request) {
+        if(request.getPunchTimeL ()!=null){
+            request.setPunchTime (OffsetDateTime.ofInstant(Instant.ofEpochMilli(request.getPunchTimeL ()), ZoneId.systemDefault()));
+        }
         return ResultDO.buildSuccess(workerService.punch(
-                request.getTaskWorkerId(), request.getPunchType(), OffsetDateTime.now()));
+                request.getTaskWorkerId(), request.getPunchType(), OffsetDateTime.now(), request.getMeasure ()));
         //打卡时间取系统时间 避免客户端差异 原:request.getPunchTime()
     }
     /**

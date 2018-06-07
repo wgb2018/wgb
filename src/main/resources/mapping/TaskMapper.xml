@@ -7,7 +7,7 @@
         status, task_content, task_type_code, task_type_text, to_date, hotel_id, day_start_time, day_end_time, hotel_name,check_sign
     </sql>
     <resultMap type="com.microdev.param.TaskViewDTO" id="dotMap">
-        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <id column="id" jdbcType="VARCHAR" property="pid"/>
         <result column="minutes" jdbcType="INTEGER" property="minutes"/>
         <result column="confirmedWorkers" jdbcType="INTEGER" property="confirmedWorkers"/>
         <result column="toDate" jdbcType="TIMESTAMP" property="toDate"/>

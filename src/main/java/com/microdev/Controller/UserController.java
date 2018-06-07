@@ -179,17 +179,16 @@ public class UserController {
      * 上传文件
      * 上传文件到服务器，比如：用户图像、营业执照 等等
      */
-    @GetMapping("/{fileType}/files/{fileAddress}")
+    /*@GetMapping("/{fileType}/files/{fileAddress}")*/
     //@GetMapping("/files")
-    //@RequestMapping(value = "/form", method = RequestMethod.POST, consumes = "multipart/form-data")
-    public ResultDO uploadFile1(@PathVariable String fileAddress,@PathVariable String fileType) throws Exception {
+    @RequestMapping(value = "/files", method = RequestMethod.POST, consumes = "multipart/form-data",name="fileRequest")
+    public ResultDO uploadFile1(FileRequest file) throws Exception {
         //File file = new File("C:\\D盘\\test.txt");
-        File file = new File(fileAddress);
-        System.out.println (file);
-        String filePath = "aaa".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
+       // System.out.println (file);
+        String filePath = file.getFileType ().toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file.getFile ());
 
         //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
-        String fileURI = objectStoreService.uploadFile (filePath, file);
+        String fileURI = objectStoreService.uploadObject (filePath, file.getFile ().getBytes ());
 
 
         //返回地址给前端
