@@ -9,10 +9,10 @@ public class AwaitHandleInfo {
 
     private String taskTypeText;
     private String hourlyPay;
-    private OffsetDateTime fromDate;
-    private OffsetDateTime toDate;
-    private OffsetDateTime dayStartTime;
-    private OffsetDateTime dayEndTime;
+    private String fromDate;
+    private String toDate;
+    private String dayStartTime;
+    private String dayEndTime;
     private String hotelName;
     private String address;
     private String confirmedWorkers;
@@ -27,4 +27,5 @@ public class AwaitHandleInfo {
     private String messageId;
     private Integer isTask;
     private String area;
+    private String taskHrId;//人力任务id
 }

@@ -60,11 +60,7 @@ public class Task extends BaseEntity {
     private double needWorkers=0;
     /**
      * 任务状态
-     * 1：人力未结单
-     * 2: 人力已结单
-     * 3: 人力派单中
-     * 4: 派单完成
-     * 5：等待做
+     * 1：人力未接单 ；2 ：人力已接单 ；3： 人力派单中； 4 ：派单完成； 5 ：正在做； 6 ：已完成。  8：人力公司拒绝接单
      */
     private Integer status;
 
