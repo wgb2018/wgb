@@ -648,6 +648,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         HotelHrCompany hotelHr = null;
         Company company = null;
         if (type == 1) {
+            //酒店加人力
             if (StringUtils.isEmpty(dto.getHotelId())) {
                 throw new ParamsException("参数hotelId为空");
             }
@@ -684,6 +685,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             company = companyMapper.selectById(dto.getHotelId());
 
         } else if (type == 2) {
+            //人力加酒店
             if (StringUtils.isEmpty(dto.getHrId())) {
                 throw new ParamsException("参数hrId为空");
             }

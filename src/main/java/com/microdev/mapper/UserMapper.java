@@ -5,7 +5,6 @@ import com.microdev.model.User;
 import com.microdev.param.UserDTO;
 import com.microdev.param.UserTaskResponse;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,9 +22,7 @@ public interface UserMapper extends BaseMapper<User> {
 
     void update(User user);
 
-    @Select("SELECT u.username AS username, u.sex AS sex,u.birthday AS birthday,u.mobile AS mobile,w.health_card AS healthCard"+
-            " FROM (SELECT * FROM USER WHERE id = #{id}) u INNER JOIN worker w ON u.worker_id = w.id")
-    UserTaskResponse selectUserInfo(String id);
+    UserTaskResponse selectUserInfo(@Param("workerId") String workerId);
 
     User selectByWorkerId(String workerId);
 

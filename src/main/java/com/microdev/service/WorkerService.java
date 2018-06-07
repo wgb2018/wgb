@@ -86,10 +86,10 @@ public interface WorkerService extends IService<Worker> {
     /**
      * 查询小时工工作记录
      * @param taskWorkerId
-     * @param userId
+     * @param workerId
      * @return
      */
-    UserTaskResponse selectUserTaskInfo(String taskWorkerId, String userId);
+    UserTaskResponse selectUserTaskInfo(String taskWorkerId, String workerId);
 
     /**
      * 查詢工作者信息

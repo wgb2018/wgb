@@ -26,4 +26,26 @@
           </if>
       </where>
     </select>
+
+    <select id="selectInfromByParam" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+        title,CASE WHEN
+        DATE_FORMAT(create_time,'%Y-%m-%d') = CURDATE() THEN '今天' WHEN
+        DATE_FORMAT(create_time,'%Y-%m-%d') = DATE_SUB(CURDATE(), INTERVAL 1
+        DAY) THEN '昨天' ELSE DATE_FORMAT(create_time,'%m-%d') END AS
+        dateinfo,content, id AS pid, DATE_FORMAT(create_time,'%H:%m') AS timeinfo
+        FROM inform
+        <where>
+            <if test="sendType != null">
+                and send_type = #{sendType}
+            </if>
+            <if test="acceptType != null">
+                and accept_type = #{acceptType}
+            </if>
+            <if test="receiveId != null and receiveId != ''">
+                and receive_id = #{receiveId}
+            </if>
+        </where>
+        order by status asc,create_time desc
+    </select>
 </mapper>

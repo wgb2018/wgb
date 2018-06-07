@@ -1,6 +1,8 @@
 package com.microdev.service.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.StringKit;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -60,15 +63,40 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
             param.put("sendType", 1);
             result.put("workerNum", informMapper.selectUnReadCount(param));
             param.put("sendType", 4);
+            result.put("systemNum", informMapper.selectUnReadCount(param));
+            //分页查询type类型的消息
+            param.remove("status");
+            PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+            if (dto.getType() == 1) {
+                param.put("sendType", 1);
+            } else if (dto.getType() == 3) {
+                param.put("sendType", 3);
+
+            } else if (dto.getType() == 4) {
+                param.put("sendType", 4);
+            } else {
+                throw new ParamsException("参数错误");
+            }
+            List<Map<String, Object>> list = informMapper.selectInfromByParam(param);
+            PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
+            result.put("page", pageInfo.getPageNum());
+            result.put("pageSize", pageInfo.getPageSize());
+            result.put("companyList", list);
         } else if ("hotel".equals(dto.getRole())) {
+            param.put("sendType", 2);
+            param.put("acceptType", 3);
+            param.put("receiveId", dto.getId());
+            result.put("hrNum", informMapper.selectUnReadCount(param));
+            param.put("sendType", 4);
+            result.put("systemNum", informMapper.selectUnReadCount(param));
 
         } else if ("worker".equals(dto.getRole())) {
 
         } else {
             throw new ParamsException("参数错误");
         }
-        param.put("status", 0);
-        return null;
+
+        return result;
     }
 
 

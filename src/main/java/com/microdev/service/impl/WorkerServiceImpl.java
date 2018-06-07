@@ -510,11 +510,11 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
      * 查询小时工工作记录
      */
     @Override
-    public UserTaskResponse selectUserTaskInfo(String taskWorkerId, String userId) {
-        if (StringUtils.isEmpty(taskWorkerId) || StringUtils.isEmpty(userId)) {
+    public UserTaskResponse selectUserTaskInfo(String taskWorkerId, String workerId) {
+        if (StringUtils.isEmpty(taskWorkerId) || StringUtils.isEmpty(workerId)) {
             throw new ParamsException("参数不能为空");
         }
-        UserTaskResponse response = selectWorkerInfo(userId);
+        UserTaskResponse response = selectWorkerInfo(workerId);
 
         // 查询用户工作记录
         TaskWorker taskWorker = taskWorkerMapper.selectById(taskWorkerId);
@@ -828,29 +828,29 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
     /**
      * 查詢工作者信息
-     * @param userId
+     * @param workerId
      * @return
      */
     @Override
-    public UserTaskResponse selectWorkerInfo(String userId) {
-        if (StringUtils.isEmpty(userId)) {
+    public UserTaskResponse selectWorkerInfo(String workerId) {
+        if (StringUtils.isEmpty(workerId)) {
             throw new ParamsException("參數userId不能为空");
         }
-        UserTaskResponse response = userMapper.selectUserInfo(userId);
+        UserTaskResponse response = userMapper.selectUserInfo(workerId);
         if (response == null) {
             throw new ParamsException("查询不到用户信息");
         }
         response.setAge(DateUtil.CaculateAge(response.getBirthday()));
         response.setBirthday(null);
         //查询服务区域
-        List<String> areaList = areaRelationMapper.selectAreaByUserId(userId);
+        List<String> areaList = areaRelationMapper.selectAreaByUserId(workerId);
         if (areaList != null) {
             response.setAreaList(areaList);
         } else {
             response.setAreaList(new ArrayList<>());
         }
         //查询服务类型
-        List<String> serviceList = dictService.selectServiceTypeByUserId(userId);
+        List<String> serviceList = dictService.selectServiceTypeByUserId(workerId);
         if (serviceList != null) {
             response.setServiceList(serviceList);
         } else {
