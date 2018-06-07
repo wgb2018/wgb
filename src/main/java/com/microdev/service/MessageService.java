@@ -178,5 +178,5 @@ public interface MessageService extends IService<Message> {
      * @param type              消息类型
      * @return
      */
-    AwaitTaskResponse selectAwaitTaskDetails(String messageId, String messagetype, String type);
+    AwaitTaskResponse selectAwaitTaskDetails(String messageId, String messagetype, String type, String taskHrId);
 }

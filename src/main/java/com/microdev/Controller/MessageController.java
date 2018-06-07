@@ -131,6 +131,6 @@ public class MessageController {
      */
     @PostMapping("/message/details/taskInfo")
     public ResultDO selectDetailTaskInfo(@RequestBody MessageDetailsDTO dto) {
-        return ResultDO.buildSuccess(messageService.selectAwaitTaskDetails(dto.getMessageId(), dto.getMessagetype(), dto.getType()));
+        return ResultDO.buildSuccess(messageService.selectAwaitTaskDetails(dto.getMessageId(), dto.getMessagetype(), dto.getType(), dto.getTaskHrId()));
     }
 }

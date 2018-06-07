@@ -7,10 +7,10 @@ import java.time.OffsetDateTime;
 @Data
 public class AwaitTaskResponse {
 
-    private OffsetDateTime fromDate;
-    private OffsetDateTime toDate;
-    private OffsetDateTime dayStartTime;
-    private OffsetDateTime dayEndTime;
+    private String fromDate;
+    private String toDate;
+    private String dayStartTime;
+    private String dayEndTime;
     private String taskContent;
     private String needWorkers;
     private String name;//酒店名称

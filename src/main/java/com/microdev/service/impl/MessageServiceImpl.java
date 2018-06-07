@@ -375,6 +375,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         if ("worker".equals(applyType)) {
 
             param.put("curTask", taskWorkerMapper.selectWorkerUnreadCount(id));
+
         } else if ("hr".equals(applyType)) {
 
         } else if ("hotel".equals(applyType)) {
@@ -757,7 +758,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      * @return
      */
     @Override
-    public AwaitTaskResponse selectAwaitTaskDetails(String messageId, String messagetype, String type) {
+    public AwaitTaskResponse selectAwaitTaskDetails(String messageId, String messagetype, String type,String taskHrId) {
         if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(messagetype) || StringUtils.isEmpty(type)) {
             throw new ParamsException("参数错误");
         }
@@ -766,13 +767,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             if ("worker".equals(messagetype)) {
                 response = messageMapper.selectWorkerAwaitHandleTask(messageId);
             } else if ("hr".equals(messagetype)) {
-                response = messageMapper.selectHrAwaitHandleTask(messageId);
+                response = messageMapper.selectHrAwaitHandleTask(messageId, taskHrId);
             }
         } else if ("1".equals(type) || "2".equals(type) || "3".equals(type) || "4".equals(type) || "11".equals(type)) {
-            response = messageMapper.selectHrAwaitHandleTask(messageId);
+            response = messageMapper.selectHrAwaitHandleTask(messageId, taskHrId);
         } else if ("10".equals(type)) {
             if ("hr".equals(type)) {
-                response = messageMapper.selectHrAwaitHandleTask(messageId);
+                response = messageMapper.selectHrAwaitHandleTask(messageId, taskHrId);
             } else if ("hotel".equals(type)) {
                 response = messageMapper.selectWorkerAwaitHandleTask(messageId);
             }

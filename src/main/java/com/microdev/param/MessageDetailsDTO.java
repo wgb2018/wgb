@@ -8,4 +8,5 @@ public class MessageDetailsDTO {
     private String messageId;
     private String messagetype;
     private String type;
+    private String taskHrId;
 }
