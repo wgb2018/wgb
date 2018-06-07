@@ -210,14 +210,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
 
     /**
      * 酒店向人力公司派发任务
-     * @param request
+     * @param set
      * @param hotel
      * @param pattern
-     * @param taskId
-     * @return
+     * @param request
      */
     @Override
-    public void hotelDistributeTask(CreateTaskRequest request, Company hotel, String pattern, String taskId) {
+    public void hotelDistributeTask(Set<TaskHrCompany> set, Company hotel, String pattern, CreateTaskRequest request) {
         if (request == null || hotel == null || StringUtils.isEmpty(pattern)) {
             throw new ParamsException("参数不能为空");
         }
@@ -234,19 +233,20 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         param.put("taskContent", request.getTaskContent());
 
         String c = StringKit.templateReplace(mess.getContent(), param);
-        for (TaskHrCompanyDTO dto : request.getHrCompanySet()) {
+        for (TaskHrCompany dto : set) {
             m = new Message();
             m.setDeleted(false);
             m.setMessageCode(mess.getCode());
-            m.setMessageTitle(mess.getTitle());
+            m.setMessageTitle(dto.getTaskTypeText());
             m.setStatus(0);
             m.setApplyType(2);
             m.setApplicantType(3);
             m.setMessageType(6);
             m.setHrCompanyId(dto.getHrCompanyId());
             m.setHotelId(hotel.getPid());
-            m.setTaskId(taskId);
+            m.setTaskId(dto.getTaskId());
             m.setMessageContent(c);
+            m.setHrTaskId(dto.getPid());
             list.add(m);
         }
         messageMapper.saveBatch(list);
@@ -602,7 +602,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         if (StringUtils.isEmpty(request.getId()) || StringUtils.isEmpty(request.getType())) {
             throw new ParamsException("参数错误");
         }
-        //PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
         List<AwaitHandleInfo> list = null;
         if ("worker".equals(request.getType())) {
             list = messageMapper.selectWorkerAwaitHandleInfo(request.getId());

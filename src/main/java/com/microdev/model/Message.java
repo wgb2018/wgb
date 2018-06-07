@@ -93,6 +93,10 @@ public class Message extends BaseEntity {
      * 任务id
      */
     private String taskId;
+    /**
+     * 人力任务id
+     */
+    private String hrTaskId;
     public Integer getStatus() {
         return status;
     }
