@@ -19,7 +19,7 @@ public class AwaitTaskResponse {
     private String leaderMobile;//负责人联系电话
     private String hourlyPay;//人力每小时支付
     private String hourlyPayHotel;//酒店每小时支付
-    private String messageTitle;
+    private String messageTitle;//服务类型
     private String messageType;
     private String hrName;
     private String hotelId;
@@ -28,5 +28,7 @@ public class AwaitTaskResponse {
     private String hrLeaderMobile;
     private String confirmedWorkers;//已报名人数
     private String area;//酒店区域
-    private String taskId;//任务id
+    private String messageId;
+    private String hrAddress;//人力地址
+    private String hrArea;//人力区域
 }

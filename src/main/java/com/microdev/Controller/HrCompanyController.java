@@ -4,21 +4,16 @@ import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.model.Company;
-import com.microdev.model.User;
 import com.microdev.param.CompanyQueryDTO;
 import com.microdev.param.HotelHrIdBindDTO;
 import com.microdev.param.QueryCooperateRequest;
+import com.microdev.param.AssignmentRequest;
 import com.microdev.service.CompanyService;
 import com.microdev.service.UserCompanyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * 人力公司信息相关的Api
@@ -174,5 +169,15 @@ public class HrCompanyController {
     public ResultDO hrcompaniesCooperateInfo(@RequestBody PagingDO<QueryCooperateRequest> page) {
 
         return companyService.hrQueryCooperatorHotel(page.getSelector(), page.getPaginator());
+    }
+
+    /**
+     * 人力再派单
+     * @return
+     */
+    @PostMapping("/hrcompanies/assignment/workers")
+    public ResultDO hrcompaniesAssignmentWorkers(@RequestBody AssignmentRequest request) {
+
+        return ResultDO.buildSuccess("");
     }
 }

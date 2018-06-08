@@ -45,22 +45,6 @@ public class WorkerTest {
         }
     }
 
-    @Test
-    public void threeTest() {
-        com.microdev.common.context.User user = new User();
-        user.setId("bb7d27e1-2d17-4868-bb1c-738d87a5fa50");
-        ServiceContext context = new ServiceContext();
-        context.setUser(user);
-        ServiceContextHolder.setServiceContext(context);
-        String taskWorkerId = "4cadc3dee17646febfccb59bbfe26aea";
-        PunchType punchType = PunchType.PUNCHIN;
-        OffsetDateTime punchTime = OffsetDateTime.now();
-        workerService.punch(taskWorkerId, punchType, punchTime);
-        //下班打卡
-        punchType = PunchType.PUNCHOUT;
-        punchTime = punchTime.plusHours(5);
-        workerService.punch(taskWorkerId, punchType, punchTime);
-    }
 
     @Test
     public void fourTest() {
@@ -71,14 +55,6 @@ public class WorkerTest {
         }
     }
 
-    @Test
-    public void fiveTest() {
-        String userId = "bb7d27e1-2d17-4868-bb1c-738d87a5fa50";
-        GetBalanceResponse response = workerService.getBalance(userId);
-        if (response != null) {
-            System.out.println(response.toString());
-        }
-    }
 
     @Test
     public void sixTest() {

@@ -563,4 +563,70 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         taskMapper.updateStatus (taskHrCompanyMapper.queryByTaskId (id).getTaskId (),8);
         return "成功";
     }
+
+    /**
+     * 人力再派发任务
+     * @param request  包含id(消息id,set小时工id集合)
+     * @return
+     */
+    @Override
+    public ResultDO hrAssignmentTask(AssignmentRequest request) {
+        if (request == null || StringUtils.isEmpty(request.getId()) || request.getSet() == null
+                || request.getSet().size() == 0) {
+            throw new ParamsException("参数错误");
+        }
+        Message message = messageMapper.selectById(request.getId());
+        if (message == null) {
+            throw new BusinessException("查询不到消息");
+        }
+        message.setStatus(1);
+        //消息发送者是酒店，将小时工任务状态设置为3终止，如果是小时工，将状态置为2
+        TaskWorker taskWorker = taskWorkerMapper.selectById(message.getWorkerTaskId());
+        if (taskWorker == null) {
+            throw new BusinessException("查询不到小时工工作任务");
+        }
+        if (message.getApplicantType() == 3) {
+            taskWorker.setStatus(3);
+        } else if (message.getApplicantType() == 1) {
+            taskWorker.setStatus(2);
+        } else {
+            throw new ParamsException("参数错误");
+        }
+        taskWorker.setRefusedReason(message.getContent());
+        taskWorkerMapper.updateAllColumnById(taskWorker);
+
+        //更新人力任务信息
+        TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(message.getHrTaskId());
+        if (taskHrCompany == null) {
+            throw new BusinessException("查询不到人力公司任务");
+        }
+        taskHrCompany.setConfirmedWorkers(taskHrCompany.getConfirmedWorkers() - 1);
+        if (message.getApplicantType() == 1) {
+            taskHrCompany.setRefusedWorkers(taskHrCompany.getRefusedWorkers() + 1);
+        }
+        taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
+
+        //插入小时工任务信息
+        TaskWorker workerTask = null;
+        for (String str : request.getSet()) {
+            workerTask = new TaskWorker();
+            workerTask.setStatus(0);
+            workerTask.setDayEndTime(taskWorker.getDayEndTime());
+            workerTask.setDayStartTime(taskWorker.getDayStartTime());
+            workerTask.setToDate(taskWorker.getToDate());
+            workerTask.setFromDate(taskWorker.getFromDate());
+            workerTask.setHotelName(taskHrCompany.getHotelName());
+            workerTask.setHourlyPay(taskHrCompany.getHourlyPay());
+            workerTask.setTaskContent(taskHrCompany.getTaskContent());
+            workerTask.setTaskTypeCode(taskHrCompany.getTaskTypeCode());
+            workerTask.setTaskTypeText(taskHrCompany.getTaskTypeText());
+            workerTask.setTaskHrId(taskHrCompany.getPid());
+            workerTask.setWorkerId(message.getWorkerId());
+            taskWorkerMapper.insertAllColumn(workerTask);
+        }
+
+        //给小时工发送消息
+        messageService.hrDistributeWorkerTask(new ArrayList<String>(request.getSet()), taskHrCompany);
+        return ResultDO.buildSuccess("派发完成");
+    }
 }

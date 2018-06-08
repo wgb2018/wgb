@@ -33,5 +33,6 @@ public class MessageDetailsResponse {
     private String retroactiveDate;//补签日期
     private String originator;//发起人
     private String taskHrId;//人力任务id
-    private String workerTaskId;//小时工人力id
+    private String workerTaskId;//小时工任务id
+    private String messageCode;//服务类型码
 }

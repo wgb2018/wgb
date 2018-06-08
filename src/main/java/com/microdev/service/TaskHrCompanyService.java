@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.model.TaskHrCompany;
-import com.microdev.param.BillRequest;
-import com.microdev.param.HrPayWorkerRequest;
-import com.microdev.param.HrTaskDistributeRequest;
-import com.microdev.param.TaskHrQueryDTO;
+import com.microdev.param.*;
 
 import java.util.Map;
 
@@ -99,4 +96,11 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
      * @return
      */
     String TaskHrrefusePC(String id);
+
+    /**
+     * 人力再派发任务
+     * @param request
+     * @return
+     */
+    ResultDO hrAssignmentTask(AssignmentRequest request);
 }

@@ -61,13 +61,12 @@ public interface MessageService extends IService<Message> {
 
     /**
      * 酒店向人力公司派发任务
-     * @param request
+     * @param set
      * @param hotel
      * @param pattern
-     * @param taskId
-     * @return
+     * @param request
      */
-    void hotelDistributeTask(CreateTaskRequest request, Company hotel, String pattern, String taskId);
+    void hotelDistributeTask(Set<TaskHrCompany> set, Company hotel, String pattern, CreateTaskRequest request);
 
     /**
      * 人力派发给小时工任务
@@ -179,4 +178,11 @@ public interface MessageService extends IService<Message> {
      * @return
      */
     AwaitTaskResponse selectAwaitTaskDetails(String messageId, String messagetype, String type, String taskHrId);
+
+    /**
+     * 人力派发任务给小时工
+     * @param list
+     * @param taskHrCompany
+     */
+    void hrDistributeWorkerTask(List<String> list, TaskHrCompany taskHrCompany);
 }

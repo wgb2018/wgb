@@ -399,7 +399,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applyChangeMessage");
         m.setMessageCode(mess.getCode());
-        m.setMessageTitle(mess.getTitle());
+        //m.setMessageTitle(mess.getTitle());
         m.setContent((String)map.get("reason"));
         m.setWorkerId(null);
         m.setHrCompanyId((String)map.get("hrCompanyId"));
@@ -548,6 +548,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         while (it.hasNext()) {
             param = it.next();
             Message message = new Message();
+            message.setMessageCode(mess.getCode());
             message.setApplyType(2);
             message.setContent(request.getTaskContent());
             message.setSupplementTime(request.getFromDate());

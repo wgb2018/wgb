@@ -92,9 +92,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         task.setTaskContent(request.getTaskContent());
         task.setHourlyPay(request.getHourlyPay());
         taskMapper.insert(task);
-        AddHrTask(task,request);
+        Set<TaskHrCompany> set = AddHrTask(task,request);
 
-        messageService.hotelDistributeTask(request, hotel, "workTaskMessage", task.getPid());
+        messageService.hotelDistributeTask(set, hotel, "workTaskMessage", request);
         TaskViewDTO taskDto= taskConverter.toViewDTOWithOutSet(task);
         return ResultDO.buildSuccess("任务发布成功",taskDto);
     }
@@ -311,8 +311,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
             needAllWorkers=needAllWorkers+item.getNeedWorkers();
         }
 
-        AddHrTask(task,request);
-        messageService.hotelDistributeTask(request, hotel, "workTaskMessage", request.getTaskId());
+        Set<TaskHrCompany> set = AddHrTask(task,request);
+        messageService.hotelDistributeTask(set, hotel, "workTaskMessage", request);
         //TaskViewDTO taskDto= taskConverter.toViewDTOWithOutSet(task);
         return ResultDO.buildSuccess("任务发布成功");
     }

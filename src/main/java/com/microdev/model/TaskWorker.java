@@ -45,6 +45,7 @@ public class TaskWorker extends BaseEntity {
      * 0：新任务等待确认
      * 1：接受
      * 2：拒绝
+     * 3: 终止
      * 11:违约
      */
     private Integer status=0;
