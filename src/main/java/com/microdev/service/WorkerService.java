@@ -111,5 +111,10 @@ public interface WorkerService extends IService<Worker> {
      */
     String workerApplybind(String workerId, List<String> set);
 
-
+    /**
+     * 小时工处理人力支付.
+     * @param param
+     * @return
+     */
+    ResultDO workerHandleHrPay(Map<String, String> param);
 }

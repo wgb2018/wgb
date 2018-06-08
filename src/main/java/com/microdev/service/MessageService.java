@@ -186,4 +186,18 @@ public interface MessageService extends IService<Message> {
      * @param taskHrCompany
      */
     void hrDistributeWorkerTask(List<TaskWorker> list, TaskHrCompany taskHrCompany);
+
+    /**
+     * 发送消息
+     * @param param
+     */
+    void sendMessageInfo(Map<String, Object> param);
+
+    /**
+     * 生成消息内容
+     * @param param
+     * @param pattern
+     * @return
+     */
+    String installContent(Map<String, String> param, String pattern);
 }

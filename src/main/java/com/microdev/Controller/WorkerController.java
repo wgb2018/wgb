@@ -173,4 +173,14 @@ public class WorkerController {
         return ResultDO.buildSuccess(workerService.workerApplybind((String) map.get("workerId"), (List<String>)map.get("set")));
     }
 
+    /**
+     * 小时工处理收入确认
+     * @param param
+     * @return
+     */
+    @PostMapping("/worker/handle/accont")
+    public ResultDO workerHandleAccount(@RequestBody Map<String, String> param) {
+
+        return workerService.workerHandleHrPay(param);
+    }
 }

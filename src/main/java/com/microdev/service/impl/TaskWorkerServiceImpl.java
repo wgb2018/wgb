@@ -12,6 +12,7 @@ import com.microdev.mapper.*;
 import com.microdev.model.*;
 import com.microdev.param.RefusedTaskRequest;
 import com.microdev.param.TaskWorkerQuery;
+import com.microdev.service.InformService;
 import com.microdev.service.TaskWorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
     UserMapper userMapper;
     @Autowired
     CompanyMapper companyMapper;
+
     /**
      * 设置违约的任务
      */
@@ -265,4 +267,5 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         taskWorkerMapper.updateByPrimaryKey(map);
         return null;
     }
+
 }
