@@ -99,7 +99,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         Integer hour = OffsetDateTime.now().getHour();
         Integer minute = OffsetDateTime.now().getMinute();
         Integer second = OffsetDateTime.now().getSecond();
-        OffsetDateTime time = OffsetDateTime.of(1970, 1, 1, hour, minute, second, 0, ZoneOffset.UTC);
+        OffsetTime time = OffsetTime.of(hour, minute, second, 0, ZoneOffset.UTC);
         //取进行中的任务
         TaskWorker taskWorker = taskWorkerMapper.findWorkerNowTask(
                 userId, TaskWorkerStatus.ACCEPTED.ordinal(),

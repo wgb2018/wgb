@@ -182,22 +182,22 @@ public class UserController {
     /*@GetMapping("/{fileType}/files/{fileAddress}")*/
     //@GetMapping("/files")
     @RequestMapping(value = "/files", method = RequestMethod.POST, consumes = "multipart/form-data",name="fileRequest")
-    public ResultDO uploadFile1(FileRequest file) throws Exception {
+    public ResultDO uploadFile1(MultipartFile file) throws Exception {
         //File file = new File("C:\\D盘\\test.txt");
        // System.out.println (file);
-        String filePath = file.getFileType ().toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file.getFile ());
+        String filePath = "aaa".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
 
         //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
-        String fileURI = objectStoreService.uploadObject (filePath, file.getFile ().getBytes ());
+        String fileURI = objectStoreService.uploadObject (filePath, file.getBytes ());
 
 
         //返回地址给前端
         return ResultDO.buildSuccess("上传文件成功", fileURI);
     }
     @PostMapping("/files/{fileType}")
-    public ResultDO uploadFile(@PathVariable String fileType, @RequestParam("file") MultipartFile file) throws Exception {
+    public ResultDO uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
 
-        String filePath = fileType.toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
+        String filePath = "avater".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
 
         //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
         String fileURI = objectStoreService.uploadObject(filePath, file.getBytes());

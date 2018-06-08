@@ -112,6 +112,10 @@ public class TaskWorker extends BaseEntity {
      */
     private String hotelName;
 
+    private String hotelId;
+    @TableField(exist = false)
+    private Company hotel;
+
     private OffsetTime dayStartTime;
 
     private OffsetTime dayEndTime;

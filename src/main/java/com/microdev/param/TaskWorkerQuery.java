@@ -9,6 +9,8 @@ import lombok.Data;
 @Data
 public class TaskWorkerQuery {
 
+    private String workerId;
+
     private String userId;
     /**
      * 任务状态

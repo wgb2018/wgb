@@ -72,11 +72,10 @@ public class WorkerController {
         return ResultDO.buildSuccess(workerService.update(userId, request.getName()));
     }*/
     /**
-     * 分页获取小时工下的所有任务/付款信息
+     * 分页获取小时工下的所有任务
      */
-    @PostMapping("/workers/{userId}/taskworkers")
-    public ResultDO getPageTaskWorker(@PathVariable String userId, @RequestBody PagingDO<TaskWorkerQuery> paging) {
-        paging.getSelector().setUserId(userId);
+    @PostMapping("/workers/taskworkers")
+    public ResultDO getPageTaskWorker(@RequestBody PagingDO<TaskWorkerQuery> paging) {
         return taskWorkerService.pagesTaskWorkers(paging.getPaginator(), paging.getSelector());
     }
     /**

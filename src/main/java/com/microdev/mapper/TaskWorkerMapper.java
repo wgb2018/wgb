@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +21,8 @@ public interface TaskWorkerMapper extends BaseMapper<TaskWorker> {
 
     void update(TaskWorker taskWorker);
 
-    TaskWorker findWorkerNowTask(@Param("userId") String userId, @Param("status") int status, @Param("nowTime") OffsetDateTime nowTime, @Param("Time") OffsetDateTime Time);
+    TaskWorker findWorkerNowTask(@Param("userId") String userId, @Param("status") int status, @Param("nowTime") OffsetDateTime nowTime, @Param("Time") OffsetTime Time);
+
 
     TaskWorker findWorkerNextTask(@Param("userId") String userId, @Param("status") int status, @Param("nowTime") OffsetDateTime nowTime);
 
