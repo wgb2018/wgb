@@ -33,7 +33,7 @@
         DATE_FORMAT(create_time,'%Y-%m-%d') = CURDATE() THEN '今天' WHEN
         DATE_FORMAT(create_time,'%Y-%m-%d') = DATE_SUB(CURDATE(), INTERVAL 1
         DAY) THEN '昨天' ELSE DATE_FORMAT(create_time,'%m-%d') END AS
-        dateinfo,content, id AS pid, DATE_FORMAT(create_time,'%H:%m') AS timeinfo
+        dateinfo,content, id AS pid, DATE_FORMAT(create_time,'%H:%i') AS timeinfo
         FROM inform
         <where>
             <if test="sendType != null">

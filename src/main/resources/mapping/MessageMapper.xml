@@ -111,7 +111,7 @@
     <select id="selectHrCooperateInfo" parameterType="java.lang.String"
             resultType="com.microdev.param.HrApply">
         SELECT m.message_title AS messageTitle,
-        DATE_FORMAT(m.create_time,'%Y-%m-%d %H:%m:%s') AS createTime,
+        DATE_FORMAT(m.create_time,'%Y-%m-%d %H:%i:%s') AS createTime,
         c.`name`  AS name, c.`leader` AS leader, c.`address` AS
         address,c.`leader_mobile` AS leaderMobile
         FROM (
@@ -198,7 +198,7 @@
     <select id="selectHrDeployInfo" parameterType="java.util.Map"
             resultType="com.microdev.param.HrDeployApply">
         SELECT m.`content` AS reason,m.message_title AS
-        messageTitle,DATE_FORMAT(m.create_time,'%Y-%m-%d %H:%m:%s') AS
+        messageTitle,DATE_FORMAT(m.create_time,'%Y-%m-%d %H:%i:%s') AS
         createTime,c.`name` AS NAME, c.`leader` AS leader, c.`address` AS
         address,c.`leader_mobile` AS leaderMobile,
         th.need_workers AS
@@ -338,7 +338,7 @@
         SELECT m.is_task,m.content,m.id AS messageId,m.create_time,IFNULL(c.address,'') as address,c.logo,t.*, message_type  AS TYPE, IFNULL(tw.hourly_pay,0) AS hourlyPay FROM message m
 INNER JOIN
 (
-	SELECT task_type_text,DATE_FORMAT(from_date,'%Y.%m.%d') AS fromDate,DATE_FORMAT(to_date, '%Y.%m.%d') AS toDate,DATE_FORMAT(day_start_time, '%H:%m') AS dayStartTime,DATE_FORMAT(day_end_time, '%H:%m') AS dayEndTime,hotel_name,confirmed_workers,need_workers,IFNULL(need_workers,0)-IFNULL(confirmed_workers,0) AS lackWorkers,hotel_id,id FROM task
+	SELECT task_type_text,DATE_FORMAT(from_date,'%Y.%m.%d') AS fromDate,DATE_FORMAT(to_date, '%Y.%m.%d') AS toDate,DATE_FORMAT(day_start_time, '%H:%i') AS dayStartTime,DATE_FORMAT(day_end_time, '%H:%i') AS dayEndTime,hotel_name,confirmed_workers,need_workers,IFNULL(need_workers,0)-IFNULL(confirmed_workers,0) AS lackWorkers,hotel_id,id FROM task
 ) t
 ON m.task_id = t.id
 INNER JOIN company c
@@ -361,11 +361,12 @@ ORDER BY create_time
     </select>
 
     <select id = "selectHrAwaitHandleInfo" resultType="com.microdev.param.AwaitHandleInfo">
-      SELECT m.is_task,m.content,m.id AS messageId,m.create_time,IFNULL(c.address,'') as address,c.logo,t.*,message_type AS TYPE,IFNULL(th.hourly_pay,0) AS hourlyPay,c.area FROM message m
+      SELECT m.is_task,m.content,m.id AS messageId,m.create_time,IFNULL(c.address,'') AS address,c.logo,t.*,message_type AS TYPE,c.area FROM message m
 INNER JOIN
 (
-SELECT task_type_text,DATE_FORMAT(from_date,'%Y.%m.%d') AS fromDate,DATE_FORMAT(to_date, '%Y.%m.%d') AS toDate,DATE_FORMAT(day_start_time, '%H:%m') AS dayStartTime,
-DATE_FORMAT(day_end_time, '%H:%m') AS dayEndTime,hotel_name,IFNULL(confirmed_workers,0),IFNULL(need_workers,0),IFNULL(need_workers,0)-IFNULL(confirmed_workers,0) AS lackWorkers,hotel_id,id FROM task
+SELECT task_type_text,DATE_FORMAT(from_date,'%Y.%m.%d') AS fromDate,DATE_FORMAT(to_date, '%Y.%m.%d') AS toDate,DATE_FORMAT(day_start_time, '%H:%i') AS dayStartTime,
+DATE_FORMAT(day_end_time, '%H:%i') AS dayEndTime,hotel_name,IFNULL(confirmed_workers,0) AS confirmedWorkers,IFNULL(need_workers,0) AS needWorkers,
+IFNULL(need_workers,0)-IFNULL(confirmed_workers,0) AS lackWorkers,hotel_id,id,IFNULL(hourly_pay,0) AS hourlyPay FROM task
 ) t
 ON m.task_id = t.id
 INNER JOIN company c
@@ -396,7 +397,7 @@ ORDER BY create_time
     </select>
 
     <select id="selectHotelAwaitHandleInfo" resultType="com.microdev.param.AwaitHandleInfo">
-        SELECT m.is_task,m.content,m.id AS messageId,m.create_time,IFNULL(c.address,''),c.logo,t.task_type_text,DATE_FORMAT(t.from_date, '%Y.%m.%d') as fromDate,DATE_FORMAT(t.to_date, '%Y.%m.%d') as toDate,DATE_FORMAT(t.day_start_time, '%H:%m') as dayStartTime,DATE_FORMAT(t.day_end_time, '%H:%m') as dayEndTime,t.hotel_name,IFNULL(t.confirmed_workers,0) as confirmedWorkers,IFNULL(t.need_workers,0) as needWorkers,
+        SELECT m.is_task,m.content,m.id AS messageId,m.create_time,IFNULL(c.address,''),c.logo,t.task_type_text,DATE_FORMAT(t.from_date, '%Y.%m.%d') as fromDate,DATE_FORMAT(t.to_date, '%Y.%m.%d') as toDate,DATE_FORMAT(t.day_start_time, '%H:%i') as dayStartTime,DATE_FORMAT(t.day_end_time, '%H:%i') as dayEndTime,t.hotel_name,IFNULL(t.confirmed_workers,0) as confirmedWorkers,IFNULL(t.need_workers,0) as needWorkers,
 t.lackWorkers,t.hotel_id,t.id,message_type AS type,IFNULL(t.hourly_pay,0) as hourlyPay,c.area FROM message m
 INNER JOIN
 (
@@ -420,7 +421,7 @@ ORDER BY create_time
     </select>
 
     <select id="selectWorkerApply" resultType="com.microdev.param.MessageDetailsResponse">
-      SELECT u.`nickname` as name,IFNULL(u.age,0) as age,u.`mobile`,u.`sex`,m.message_type,u.avatar as logo,m.content,u.`worker_id` as pid,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') as createTime,m.worker_task_id as workerTaskId,m.hr_task_id as taskHrId FROM
+      SELECT u.`nickname` as name,IFNULL(u.age,0) as age,u.`mobile`,u.`sex`,m.message_type,u.avatar as logo,m.content,u.`worker_id` as pid,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%i:%s') as createTime,m.worker_task_id as workerTaskId,m.hr_task_id as taskHrId FROM
 (
 SELECT * FROM message WHERE id = #{messageId}
 ) m
@@ -429,13 +430,13 @@ ON u.`worker_id` = m.`worker_id`
     </select>
 
     <select id="selectCompanyApply" resultType="com.microdev.param.MessageDetailsResponse">
-      SELECT c.name as companyName,c.leader as name,c.leader_mobile as mobile,c.address,c.area,m.message_type,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') as createTime,c.logo,m.content,c.id as pid,m.hr_task_id as taskHrId,m.worker_task_id as workerTaskId FROM
+      SELECT c.name as companyName,c.leader as name,c.leader_mobile as mobile,c.address,c.area,m.message_type,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%i:%s') as createTime,c.logo,m.content,c.id as pid,m.hr_task_id as taskHrId,m.worker_task_id as workerTaskId FROM
 (SELECT * FROM message WHERE id = #{messageId}) m
 INNER JOIN company c ON m.hotel_id = c.id
     </select>
 
     <select id="selectHotelApply" resultType="com.microdev.param.MessageDetailsResponse">
-        SELECT c.name AS companyName,c.leader AS NAME,c.leader_mobile AS mobile,c.address,c.area,m.message_type,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') AS createTime,c.logo,c.id AS pid,
+        SELECT c.name AS companyName,c.leader AS NAME,c.leader_mobile AS mobile,c.address,c.area,m.message_type,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%i:%s') AS createTime,c.logo,c.id AS pid,
 IFNULL(tc.need_workers,0) AS needWorkers,tc.id AS taskHrId FROM
 (SELECT * FROM message WHERE id = #{messageId}) m
 INNER JOIN company c ON m.hr_company_id = c.id
@@ -444,7 +445,7 @@ ON m.hr_task_id = tc.id AND tc.hr_company_id = m.hr_company_id
     </select>
 
     <select id="selectPayConfirm" resultType="com.microdev.param.MessageDetailsResponse">
-      SELECT IFNULL(m.minutes,0) as money ,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') as createTime,c.name,c.logo,c.address,c.area,c.id as pid,c.name as companyName,m.hr_task_id as taskHrId,m.worker_task_id as workerTaskId FROM
+      SELECT IFNULL(m.minutes,0) as money ,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%i:%s') as createTime,c.name,c.logo,c.address,c.area,c.id as pid,c.name as companyName,m.hr_task_id as taskHrId,m.worker_task_id as workerTaskId FROM
 (
 SELECT * FROM message WHERE id = #{messageId}
 ) m
@@ -458,7 +459,7 @@ INNER JOIN company c ON
     </select>
 
     <select id="selectApplyAllocate" resultType="com.microdev.param.MessageDetailsResponse">
-        SELECT c.name AS companyName,c.leader AS name,c.leader_mobile AS mobile,tc.need_workers,tc.confirmed_workers,m.message_type,m.minutes AS allocateNum,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') AS createTime,tc.id as taskHrId,
+        SELECT c.name AS companyName,c.leader AS name,c.leader_mobile AS mobile,tc.need_workers,tc.confirmed_workers,m.message_type,m.minutes AS allocateNum,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%i:%s') AS createTime,tc.id as taskHrId,
 m.content,c.address,c.area,c.id as pid,m.hr_task_id as taskHrId,m.worker_task_id as workerTaskId FROM
 (
 SELECT * FROM message WHERE id = #{messageId}
@@ -480,34 +481,39 @@ ON tc.task_id = m.task_id AND tc.hotel_id = m.hotel_id
 
     <select id="selectWorkerAwaitHandleTask" resultType="com.microdev.param.AwaitTaskResponse">
         SELECT t.from_date, t.to_date,t.day_start_time,t.day_end_time,t.task_content,c.id AS hotelId,c.area,
-c.name,c.address,c.leader,c.leader_mobile,m.message_type,t.id AS taskId,m.id as messageId
+c.name,c.address,c.leader,c.leader_mobile,m.message_type,t.id AS taskId,m.id AS messageId,IFNULL(k.need_workers,0) AS needWorkers,IFNULL(k.confirmed_workers,0) AS confirmedWorkers,
+k.hrName,k.hrId,k.hrLeader,IFNULL(k.hourly_pay,0) AS hourlyPay,k.messageTitle,k.hrLeaderMobile,k.messageCode
   FROM (SELECT * FROM message WHERE id = #{messageId}) m INNER JOIN task t ON m.task_id = t.id
 INNER JOIN company c ON t.hotel_id = c.id
 
 LEFT JOIN
 (
-SELECT IFNULL(tc.need_workers,0) AS needWorkers,IFNULL(confirmed_workers,0) AS confirmedWorkers,c2.name AS hrName,c2.id AS hrId,c2.leader AS hrLeader, IFNULL(tc.hourly_pay,0) AS hourlyPay,tc.task_type_text as messageTitle
-,c2.leader_mobile AS hrLeaderMobile,m2.id AS id,tc.task_type_code as messageCode FROM (SELECT * FROM message WHERE id = #{messageId}) m2 INNER JOIN 	task_hr_company tc ON m2.task_id = tc.task_id AND m2.hr_company_id = tc.hr_company_id INNER JOIN company c2
+SELECT tc.need_workers,confirmed_workers,c2.name AS hrName,c2.id AS hrId,c2.leader AS hrLeader,
+tc.hourly_pay,tc.task_type_text AS messageTitle
+,c2.leader_mobile AS hrLeaderMobile,m2.id AS id,tc.task_type_code AS messageCode FROM (SELECT * FROM message WHERE id = #{messageId}) m2 INNER JOIN
+task_hr_company tc ON m2.task_id = tc.task_id AND m2.hr_company_id = tc.hr_company_id INNER JOIN company c2
 ON c2.id = m2.hr_company_id
 ) k ON k.id = m.id
     </select>
 
     <select id="selectHrAwaitHandleTask" resultType="com.microdev.param.AwaitTaskResponse">
-        SELECT DATE_FORMAT(t.from_date,'%Y.%m.%d') AS fromDate, DATE_FORMAT(t.to_date,'%Y.%m.%d') AS toDate,DATE_FORMAT(t.day_start_time,'%H:%m') AS dayStartTime,DATE_FORMAT(t.day_end_time,'%H:%m') AS dayEndTime,t.task_content,
+        SELECT DATE_FORMAT(t.from_date,'%Y.%m.%d') AS fromDate, DATE_FORMAT(t.to_date,'%Y.%m.%d') AS toDate,DATE_FORMAT(t.day_start_time,'%H:%i') AS dayStartTime,DATE_FORMAT(t.day_end_time,'%H:%i') AS dayEndTime,
+t.task_content,
 c.name,IFNULL(c.address,'') AS address,c.leader,c.leader_mobile,IFNULL(t.hourly_pay,0) AS hourlyPayHotel,t.task_type_text AS messageTitle,m.message_type,c.id AS hotelId,c.area
- ,t.id AS taskId,m.id as messageId FROM
+ ,t.id AS taskId,m.id AS messageId,IFNULL(tc.need_workers,0) AS needWorkers,IFNULL(tc.confirmed_workers,0) AS confirmedWorkers,IFNULL(tc.hourly_pay,0) AS hourlyPay,tc.messageCode FROM
  (SELECT * FROM message WHERE id = #{messageId}) m INNER JOIN task t ON m.task_id = t.id
 INNER JOIN company c ON t.hotel_id = c.id
 
 LEFT JOIN (
-SELECT IFNULL(need_workers,0) AS needWorkers,IFNULL(confirmed_workers,0) AS confirmedWorkers,hr_company_id,task_id,IFNULL(hourly_pay,0) AS hourlyPay,hr_company_name AS hrName,id AS hrId,task_type_text as messageTitle,task_type_code as messageCode FROM task_hr_company  WHERE id = #{taskHrId}
+SELECT need_workers,confirmed_workers,hr_company_id,task_id,hourly_pay,hr_company_name AS hrName,id AS hrId,
+task_type_code AS messageCode,id AS pid FROM task_hr_company  WHERE id = #{taskHrId}
 ) tc
-ON tc.`hr_company_id` = m.`hr_company_id` AND m.`task_id` = tc.`task_id`
+ON tc.`hr_company_id` = m.`hr_company_id` AND m.`hr_task_id` = tc.pid
     </select>
 
     <select id ="selectSupplementApply" resultType="com.microdev.param.MessageDetailsResponse">
         SELECT u.`nickname` AS name,IFNULL(u.age,0) as age,u.`mobile`,u.`sex`,m.message_type,u.avatar AS logo,m.content,DATE_FORMAT(m.supplement_time,'%Y.%m.%d') AS retroactiveDate
-,u.id,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') AS createTime, DATE_FORMAT(m.supplement_time,'%H:%m') AS retroactiveTime,u.`worker_id` as pid,m.hr_task_id as taskHrId,m.worker_task_id as workerTaskId FROM
+,u.id,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%i:%s') AS createTime, DATE_FORMAT(m.supplement_time,'%H:%i') AS retroactiveTime,u.`worker_id` as pid,m.hr_task_id as taskHrId,m.worker_task_id as workerTaskId FROM
 (
 SELECT * FROM message WHERE id = #{messageId}
 ) m
@@ -517,7 +523,7 @@ ON u.`worker_id` = m.`worker_id`
 
     <select id = "selectOvertimeApply" resultType="com.microdev.param.MessageDetailsResponse">
         SELECT u.`nickname` AS name,IFNULL(u.age,0) as age,u.`mobile`,u.`sex`,m.message_type,u.avatar AS logo,m.content,DATE_FORMAT(m.supplement_time,'%Y.%m.%d') AS overtimeDate
-,u.`worker_id` as pid,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') AS createTime,m.minutes AS overtimeLength,m.hr_task_id as taskHrId,m.worker_task_id as workerTaskId  FROM
+,u.`worker_id` as pid,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%i:%s') AS createTime,m.minutes AS overtimeLength,m.hr_task_id as taskHrId,m.worker_task_id as workerTaskId  FROM
 (
 SELECT * FROM message WHERE id = #{messageId}
 ) m INNER JOIN USER u
@@ -526,7 +532,7 @@ ON u.`worker_id` = m.`worker_id`
 
     <select id="selectLeaveApply" resultType="com.microdev.param.MessageDetailsResponse">
         SELECT u.`nickname` AS name,IFNULL(u.age,0) as age,u.`mobile`,u.`sex`,m.message_type,u.avatar AS logo,m.content,DATE_FORMAT(m.supplement_time,'%Y.%m.%d') AS leaveStartDate
-,DATE_FORMAT(m.supplement_time_end,'%Y.%m.%d') AS leaveEndDate, DATE_FORMAT(m.supplement_time,'%H:%m') AS leaveStartTime,DATE_FORMAT(m.supplement_time_end,'%H:%m') AS leaveEndTime ,u.`worker_id` as pid,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') AS createTime,m.hr_task_id as taskHrId,m.worker_task_id as workerTaskId  FROM
+,DATE_FORMAT(m.supplement_time_end,'%Y.%m.%d') AS leaveEndDate, DATE_FORMAT(m.supplement_time,'%H:%i') AS leaveStartTime,DATE_FORMAT(m.supplement_time_end,'%H:%i') AS leaveEndTime ,u.`worker_id` as pid,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%i:%s') AS createTime,m.hr_task_id as taskHrId,m.worker_task_id as workerTaskId  FROM
 (
 SELECT * FROM message WHERE id = #{messageId}
 ) m INNER JOIN USER u
@@ -534,7 +540,7 @@ ON u.`worker_id` = m.`worker_id`
     </select>
 
     <select id="selectCancelApply" resultType="com.microdev.param.AwaitTaskResponse">
-      SELECT tc.need_workers,tc.confirmed_workers,IFNULL(tc.hourly_pay,0) AS hourlyPay,t.from_date, t.to_date,t.day_start_time,t.day_end_time,t.task_content,
+      SELECT IFNULL(tc.need_workers,0) AS needWorkers,IFNULL(tc.confirmed_workers,0) AS confirmedWorkers,IFNULL(tc.hourly_pay,0) AS hourlyPay,t.from_date, t.to_date,t.day_start_time,t.day_end_time,t.task_content,
 c.name,c.address,c.leader,c.leader_mobile,m.message_title,m.message_type,c.id AS hotelId,c.area,t.id as taskId,tc.task_type_text as messageTitle  FROM message m
 INNER JOIN task_hr_company tc
 ON m.`task_id` = tc.task_id AND m.`hr_task_id` = tc.id
@@ -545,7 +551,7 @@ WHERE m.id = #{messageId}
     </select>
 
     <select id="hotelHrApplyCooperate" resultType="com.microdev.param.MessageDetailsResponse">
-      SELECT c.name AS companyName,c.leader AS NAME,c.leader_mobile AS mobile,c.address,c.area,m.message_type,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%m:%s') AS createTime,c.logo,
+      SELECT c.name AS companyName,c.leader AS NAME,c.leader_mobile AS mobile,c.address,c.area,m.message_type,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%i:%s') AS createTime,c.logo,
 c.id AS pid,m.worker_task_id as workerTaskId,m.hr_task_id as taskHrId FROM
 (SELECT * FROM message WHERE id = #{messageId}) m
 INNER JOIN company c ON m.hr_company_id = c.id
@@ -553,7 +559,7 @@ INNER JOIN company c ON m.hr_company_id = c.id
 
     <select id="selectHrHotelDetails" resultType="com.microdev.param.AwaitTaskResponse">
         SELECT m.`hotel_id` AS hotelId,DATE_FORMAT(t.from_date, '%Y-%m-%d') AS fromDate,DATE_FORMAT(t.to_date,'%Y-%m-%d') AS toDate,
-DATE_FORMAT(t.`day_start_time`,'%H:%m') AS dayStartTime,DATE_FORMAT(t.`day_end_time`,'%H:%m') AS dayEndTime,IFNULL(t.`hourly_pay`,0) AS hourlyPayHotel
+DATE_FORMAT(t.`day_start_time`,'%H:%i') AS dayStartTime,DATE_FORMAT(t.`day_end_time`,'%H:%i') AS dayEndTime,IFNULL(t.`hourly_pay`,0) AS hourlyPayHotel
 ,IFNULL(tc.`hourly_pay`,0) AS hourlyPay,tc.`task_type_text` AS messageTitle,IFNULL(tc.`need_workers`,0) AS needWorkers,
 IFNULL(tc.`confirmed_workers`,0) AS confirmedWorkers,tc.id AS hrId,tc.hr_company_name AS hrName,tc.`task_content` AS taskContent,c2.`address` AS hrAddress
 ,c2.`area` AS hrArea,c.leader AS hrLeader FROM
