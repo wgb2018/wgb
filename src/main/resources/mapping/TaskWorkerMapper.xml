@@ -3,9 +3,9 @@
 <mapper namespace="com.microdev.mapper.TaskWorkerMapper">
     <sql id="TaskWorker_Query_List">
     id as pid, create_time, deleted, modify_time,
-    confirmed_date, from_date, have_pay_money, minutes, no_promise, refused_reason, repast_times,
-    settled, settled_date, should_pay_money, status, to_date, worker_id, task_hr_id, user_id, day_start_time, day_end_time, user_name,hourly_pay,hr_company_name,hotel_name, check_sign,
-        hotel_id
+    confirmed_date, have_pay_money, minutes, no_promise, refused_reason, repast_times,
+    settled, settled_date, should_pay_money, status, worker_id, task_hr_id, user_id, user_name,hourly_pay,hr_company_name,hotel_name, check_sign,
+        hotel_id,from_date,to_date,day_start_time,day_end_time,task_type_code,task_type_text,task_content,hr_company_id
 </sql>
     <select id="findFirstById" resultType="com.microdev.model.TaskWorker" parameterType="java.lang.String">
         select
@@ -97,12 +97,12 @@
         <include refid="TaskWorker_Query_List"/>
         from task_worker
         <where>
-            <if test="userId != null || userId !=''">
-                user_id = #{userId}
+            <if test="workerId != null || workerId !=''">
+                worker_id = #{workerId}
             </if>
             <if test="taskStatus != null || taskStatus !=''">
                 <if test="taskStatus &lt; 3">
-                    task_status = #{taskStatus}
+                   and  status = #{taskStatus}
                 </if>
                 <if test="taskStatus == 3">
                     and to_date &gt;= now() and from_date &lt;= now()

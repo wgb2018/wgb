@@ -75,17 +75,23 @@
             <if test="payStatus == 3">
                 and have_pay_money &gt;= 0 and should_pay_money = have_pay_money
             </if>
-            <if test="status !=null and status !=0  and status !=7 ">
+            <if test="status !=null and status !=0  and status !=7 and status !=6">
                 and status = #{status}
             </if>
             <if test="status == 0">
-                and status in (1,2,4,5,8)
-            </if>
-            <if test="status == 7">
-                and status in (3,6)
+                and status in (1,2,4,5) and to_date &gt; now()
             </if>
             <if test="status == 9">
-                and status in (2,4,5,6,8)
+                and ((status = 5 and to_date &gt; now()) or status = 3)
+            </if>
+            <if test="status == 6">
+                and status i= 5 and and to_date &gt; now() and from_date &lt; now()
+            </if>
+            <if test="status == 8">
+                and status in (4,5) and to_date &gt; now()
+            </if>
+            <if test="status == 7">
+                and status i= 5 and to_date &lt; now()
             </if>
         </where>
         order by create_time desc

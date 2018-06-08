@@ -18,6 +18,7 @@ import com.microdev.model.*;
 import com.microdev.param.*;
 import com.microdev.service.CompanyService;
 import com.microdev.service.DictService;
+import com.microdev.service.InformService;
 import com.microdev.service.MessageService;
 import com.microdev.type.UserType;
 import org.apache.ibatis.annotations.Param;
@@ -76,6 +77,10 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     private UserCompanyMapper userCompanyMapper;
     @Autowired
     private HolidayMapper holidayMapper;
+    @Autowired
+    InformTemplateMapper informTemplateMapper;
+    @Autowired
+    InformService informService;
 
     @Override
     public ResultDO pagingCompanys(Paginator paginator, CompanyQueryDTO queryDTO) {
@@ -954,6 +959,43 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         } else if (!"0".equals(status)){
             throw new ParamsException("参数错误");
         }
+        return ResultDO.buildSuccess("处理成功");
+    }
+
+    @Override
+    public ResultDO deploymentHandle(String messageId, String status,String reason) {
+
+        if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(status)) {
+            throw new ParamsException("参数错误");
+        }
+        Message message = messageMapper.selectById(messageId);
+
+        message.setStatus(1);
+        messageMapper.updateById(message);
+        if ("1".equals(status)) {
+            if(StringUtils.isEmpty(reason)){
+                throw new ParamsException("拒绝理由不能为空");
+            }
+            //申请调配被拒绝通知
+            InformTemplate inf = informTemplateMapper.selectByCode (InformType.hr_allocation_fail);
+            Map<String,String> map = new HashMap <> ();
+            map.put("hotel",companyMapper.findCompanyById (message.getHotelId ()).getName ());
+            map.put("reason",reason);
+            String content = StringKit.templateReplace(inf.getContent (), map);
+            informService.sendInformInfo (inf.getSendType (),2,content,message.getHrCompanyId (),inf.getTitle ());
+        } else if ("0".equals(status)){
+            //申请调配成功通知
+            InformTemplate inf = informTemplateMapper.selectByCode (InformType.hr_allocation_success);
+            Map<String,String> map = new HashMap <> ();
+            map.put("hotel",companyMapper.findCompanyById (message.getHotelId ()).getName ());
+            String content = StringKit.templateReplace(inf.getContent (), map);
+            informService.sendInformInfo (inf.getSendType (),2,content,message.getHrCompanyId (),inf.getTitle ());
+            TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId (message.getHrTaskId ());
+            taskHrCompany.setNeedWorkers (taskHrCompany.getNeedWorkers()-Integer.parseInt (message.getMinutes ()));
+        } else{
+            throw new ParamsException("参数错误");
+        }
+
         return ResultDO.buildSuccess("处理成功");
     }
 

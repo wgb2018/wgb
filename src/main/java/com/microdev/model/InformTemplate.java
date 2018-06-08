@@ -11,7 +11,7 @@ public class InformTemplate extends BaseEntity {
 
     private String content;
 
-    private String msgLink;
+    private Integer sendType;
 
     private String title;
 

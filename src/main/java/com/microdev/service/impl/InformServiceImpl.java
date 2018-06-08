@@ -29,19 +29,6 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
     @Autowired
     private InformMapper informMapper;
 
-    @Override
-    public void sendInform(String acceptype, String receiveTd, InformType informType,Map<String, String> templateParams) {
-        InformTemplate param = new InformTemplate ();
-        param.setCode (informType);
-        InformTemplate informTemplate = informTemplateMapper.selectOne (param);
-        if(informTemplate == null){
-            //throw  new Exception ("没有找到通知模板");
-        }
-        String content = StringKit.templateReplace(informTemplate.getContent(), templateParams);
-        Inform inform = new Inform();
-        //nform.
-
-    }
 
     /**
      *查询消息及未读消息

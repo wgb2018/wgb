@@ -348,6 +348,10 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
             taskHrCompany.setTaskTypeCode(createTaskRequest.getTaskTypeCode());
             taskHrCompany.setTaskContent(createTaskRequest.getTaskContent());
 			taskHrCompany.setHourlyPayHotel(task.getHourlyPay());
+			taskHrCompany.setFromDate (task.getFromDate ());
+			taskHrCompany.setToDate (task.getToDate ());
+			taskHrCompany.setDayStartTime (task.getDayStartTime ());
+			taskHrCompany.setDayEndTime (task.getDayEndTime ());
             taskHrCompanyMapper.insert(taskHrCompany);
             System.out.println (taskHrCompany.getPid ());
             setHrTask.add(taskHrCompany);

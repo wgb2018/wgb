@@ -30,7 +30,7 @@ public class TaskHrCompanyController {
      */
     @PostMapping("/hr-tasks/accept")
     public ResultDO accept(Map<String, String> map) {
-        taskHrCompanyService.TaskHraccept(map.get("id"), map.get("messageId"));
+        taskHrCompanyService.TaskHraccept(map.get("messageId"));
         return ResultDO.buildSuccess("接受任务成功");
     }
     /**
@@ -38,7 +38,7 @@ public class TaskHrCompanyController {
      */
     @PostMapping("/hr-tasks/refuse")
     public ResultDO refuse(Map<String, String> map) {
-        taskHrCompanyService.TaskHrrefuse(map.get("id"), map.get("messageId"), map.get("reason"));
+        taskHrCompanyService.TaskHrrefuse(map.get("messageId"), map.get("reason"));
         return ResultDO.buildSuccess("拒绝任务成功");
     }
     /**
@@ -105,7 +105,7 @@ public class TaskHrCompanyController {
      */
     @PostMapping("/hr-tasks/refuse/pc")
     public ResultDO pcRefuse(Map<String, String> param) {
-
         return ResultDO.buildSuccess(taskHrCompanyService.TaskHrrefusePC(param.get("id")));
     }
+
 }

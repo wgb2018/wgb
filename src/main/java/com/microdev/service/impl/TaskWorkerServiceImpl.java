@@ -118,7 +118,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         //TODO 人力公司人数加1
         taskHr.setConfirmedWorkers(confirmedWorkers+1);
         if(taskHr.getConfirmedWorkers() == taskHr.getNeedWorkers()){
-            taskHrCompanyMapper.updateStatus(taskHr.getPid(),6);
+            taskHrCompanyMapper.updateStatus(taskHr.getPid(),5);
         }
         taskWorker.setRefusedReason("");
         taskWorkerMapper.updateById(taskWorker);
@@ -169,7 +169,6 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
             refuseWorkers=0;
         }
         taskHr.setRefusedWorkers(refuseWorkers+1);
-        taskHr.setStatus (8);
         taskWorker.setStatus(2);
         taskWorker.setConfirmedDate(OffsetDateTime.now());
         taskWorker.setRefusedReason(refusedTaskReq.getRefusedReason());
@@ -210,6 +209,8 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
             }
             t.setUser (userMapper.queryByUserId (t.getUserId ()));
             t.setHotel (companyMapper.selectById (t.getHotelId ()));
+            t.setHrCompany (companyMapper.selectById (t.getHrCompanyId ()));
+
         }
         PageInfo<TaskWorker> pageInfo = new PageInfo<>(list);
         HashMap<String,Object> result = new HashMap<>();

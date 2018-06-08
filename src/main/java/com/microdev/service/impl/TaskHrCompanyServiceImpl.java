@@ -57,6 +57,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
     private InformMapper informMapper;
     @Autowired
     private InformService informService;
+    @Autowired
+    InformTemplateMapper informTemplateMapper;
 
     /**
      * 查看人力资源公司的任务
@@ -147,6 +149,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             taskWorker.setTaskContent(hrTask.getTaskContent());
             taskWorker.setTaskTypeText(hrTask.getTaskTypeText());
             taskWorker.setHrCompanyName (hrTask.getHrCompanyName ());
+            taskWorker.setHrCompanyId (hrTask.getHrCompanyId ());
             taskWorker.setHotelName(hrTask.getHotelName());
             taskWorker.setHotelId (hotelTask.getHotelId ());
             taskWorker.setDayStartTime(hotelTask.getDayStartTime());
@@ -207,6 +210,12 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             workersShouldPay += task.getWorkersShouldPay();
             workersHavePay += task.getWorkersHavePay();
             taskWorkerMapper.selectTaskWorkById (task.getPid ());
+            if(task.getStatus ()==5 && task.getFromDate ().isBefore (OffsetDateTime.now ())){
+                task.setStatus (6);
+            }
+            if(task.getStatus ()==6 && task.getToDate ().isBefore (OffsetDateTime.now ())){
+                task.setStatus (7);
+            }
         }
         PageInfo<TaskHrCompany> pageInfo = new PageInfo<>(list);
         HashMap<String,Object> result = new HashMap<>();
@@ -262,20 +271,16 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
      * 人力公司接受任务
      */
     @Override
-    public void TaskHraccept(String id, String messageId) {
-        System.out.println ("id:"+id+"messageId:"+messageId);
-        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(messageId)) {
-            throw new ParamsException("参数不能为空");
-        }
+    public void TaskHraccept(String messageId) {
         Message message = messageMapper.selectById(messageId);
         if (message == null || message.getStatus() == 1) {
             throw new BusinessException("消息已处理");
         }
         message.setStatus(1);
         messageMapper.updateById(message);
-        TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId(id);
+        TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId(message.getHrTaskId ());
         taskMapper.updateStatus(taskHrCompany.getTaskId(),2);
-        taskHrCompanyMapper.updateStatus(id,2);
+        taskHrCompanyMapper.updateStatus(message.getHrTaskId (),2);
 
         Inform inform = new Inform();
         inform.setTitle("任务已接受");
@@ -289,22 +294,19 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
      * 人力公司拒绝任务
      */
     @Override
-    public void TaskHrrefuse(String id, String messageId, String reason) {
-        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(messageId)) {
-            throw new ParamsException("参数不能为空");
-        }
+    public void TaskHrrefuse(String messageId, String reason) {
+
         Message message = messageMapper.selectById(messageId);
         if (message == null || message.getStatus() == 1) {
             throw new BusinessException("消息已处理");
         }
         message.setStatus(1);
         messageMapper.updateById(message);
-        TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId(id);
+        TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId(message.getHrTaskId ());
         if (taskHrCompany == null) {
             throw new BusinessException("查询不到人力任务数据");
         }
-        taskHrCompanyMapper.updateStatus(id,3);
-		taskMapper.updateStatus (taskHrCompanyMapper.queryByTaskId (id).getTaskId (),8);
+        taskHrCompanyMapper.updateStatus(message.getHrTaskId (),3);
 
 		//发送拒绝消息
         Map<String, String> param = new HashMap<>();
@@ -327,7 +329,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         if (t == null) {
             throw new BusinessException("查找不到人力资源任务");
         }
-        t.setStatus(5);
+        //t.setStatus(5);
         taskHrCompanyMapper.update(t);
         messageService.sendMessage(t, reason, String.valueOf(number), "applyChangeMessage");
 
@@ -452,24 +454,29 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
     @Override
     public ResultDO hrApplyChangeWorker(Map<String, Object> map) {
         if (StringUtils.isEmpty(map.get("hotelId"))) {
-            throw new ParamsException("参数不能为空");
+            throw new ParamsException("hotelId不能为空");
         }
         if (StringUtils.isEmpty(map.get("hrCompanyId"))) {
-            throw new ParamsException("参数不能为空");
+            throw new ParamsException("hrCompanyId不能为空");
         }
         if (StringUtils.isEmpty(map.get("number")) || (Integer) map.get("number") < 0) {
-            throw new ParamsException("参数不能小于0");
+            throw new ParamsException("number不能小于0");
         }
         if (StringUtils.isEmpty(map.get("reason"))) {
-            throw new ParamsException("参数不能为空");
+            throw new ParamsException("reason不能为空");
         }
-
+        if(StringUtils.isEmpty(map.get("hrTaskId"))) {
+            throw new ParamsException("hrTaskId不能为空");
+        }
         Message m = new Message();
         m.setContent((String)map.get("reason"));
         Company company = companyMapper.selectById(map.get("hrCompanyId").toString());
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applyChangeMessage");
         m.setMessageCode(mess.getCode());
         m.setMessageTitle(mess.getTitle());
+        m.setHotelId ((String)map.get("hotelId"));
+        m.setHrCompanyId ((String)map.get("hrCompanyId"));
+        m.setHrTaskId ((String)map.get("hrTaskId"));
         Map<String, String> param = new HashMap<>();
         param.put("hrCompanyName", company.getName());
         param.put("reason", (String)map.get("reason"));
@@ -477,7 +484,9 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         String c = StringKit.templateReplace(mess.getContent(), param);
         m.setMessageContent(c);
         m.setMessageType(4);
+        m.setApplicantType (2);
         m.setApplyType(3);
+        m.setMinutes ((String)map.get("number"));
         m.setStatus(0);
 
         messageMapper.insert(m);
@@ -697,4 +706,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         informService.sendInformInfo(2, 1, content, message.getWorkerId(), "申请取消被拒绝");
         return ResultDO.buildSuccess("成功");
     }
+
+
 }
