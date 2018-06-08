@@ -2,17 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="abcfbc0c-9d58-4ba6-9d04-969f0024c01f" name="Default" comment="111">
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microdev/Controller/HrCompanyController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microdev/Controller/HrCompanyController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microdev/mapper/MessageMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microdev/mapper/MessageMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microdev/model/Message.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microdev/model/Message.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/CompanyServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/CompanyServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/MessageServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/MessageServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/TaskHrCompanyServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/TaskHrCompanyServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/WorkerServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/WorkerServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microdev/Controller/TaskHrCompanyController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microdev/Controller/TaskHrCompanyController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/mapping/MessageMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mapping/MessageMapper.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wgb.iml" beforeDir="false" afterPath="$PROJECT_DIR$/wgb.iml" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -27,34 +19,39 @@
     <favorites_list name="gitwgb" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="HotelController.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/HotelController.java">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
+      <file leaf-file-name="MessageController.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/MessageController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="222">
-              <caret line="149" column="39" selection-start-line="149" selection-start-column="30" selection-end-line="149" selection-end-column="50" />
-              <folding>
-                <element signature="e#4811#4812#0" expanded="true" />
-                <element signature="e#4874#4875#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="472">
+              <caret line="133" column="68" selection-start-line="133" selection-start-column="52" selection-end-line="133" selection-end-column="74" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HrCompanyController.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/HrCompanyController.java">
+      <file leaf-file-name="MessageServiceImpl.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/MessageServiceImpl.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="249">
-              <caret line="109" column="37" selection-start-line="109" selection-start-column="30" selection-end-line="109" selection-end-column="50" />
+            <state relative-caret-position="218">
+              <caret line="783" column="51" selection-start-line="783" selection-start-column="41" selection-end-line="783" selection-end-column="61" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CompanyServiceImpl.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/CompanyServiceImpl.java">
+      <file leaf-file-name="MessageMapper.xml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/mapping/MessageMapper.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-129">
-              <caret line="621" column="20" selection-start-line="621" selection-start-column="20" selection-end-line="621" selection-end-column="20" />
+            <state relative-caret-position="299">
+              <caret line="563" column="25" selection-start-line="563" selection-start-column="25" selection-end-line="563" selection-end-column="25" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MessageMapper.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/mapper/MessageMapper.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="230">
+              <caret line="49" column="62" selection-start-line="49" selection-start-column="58" selection-end-line="49" selection-end-column="62" />
             </state>
           </provider>
         </entry>
@@ -71,38 +68,43 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>query/worker/</find>
-      <find />
-      <find>(0,3,4)</find>
-      <find />
-      <find>/hotels/hrcompanies</find>
-      <find>/hrcompanies/hotels</find>
-      <find>服务地区</find>
-      <find>/hr-workers/search</find>
-      <find>like</find>
-      <find>laborDispatchCard</find>
-      <find>/workers-hrs/search</find>
-      <find>发送短信</find>
-      <find>smsFacade</find>
-      <find>分页</find>
-      <find>分页查询</find>
-      <find>/hrcompanies/search</find>
-      <find>Page</find>
-      <find>修改服务</find>
-      <find />
-      <find>login</find>
-      <find>System</find>
-      <find>修改基础</find>
-      <find>/me</find>
-      <find />
-      <find>Company_Column_List</find>
-      <find>userMapper</find>
       <find>messageMapper</find>
       <find>hotelBindHrCompany</find>
-      <find>/hotels/apply/bindHrCompany</find>
-      <find>HotelHrIdBindDTO</find>
+      <find>/hrcompany/{messageId}/bind/{status}</find>
+      <find>/hrcompanies/apply/bindCompany</find>
+      <find>hotelHrApplyCooperate</find>
+      <find>申请</find>
+      <find>/message/details/applyInfo</find>
+      <find>派单</find>
+      <find>/hr-tasks/distribute</find>
+      <find>insert</find>
+      <find>申请取消</find>
+      <find>小时工接受</find>
+      <find>hrHandleWorkerTaskCancel</find>
+      <find>/worker/handle/accont</find>
+      <find>%m</find>
+      <find>selectHrAwaitHandleTask</find>
+      <find>selectWorkerAwaitHandleTask</find>
+      <find>%H:%m</find>
+      <find>调配</find>
+      <find>取消</find>
+      <find>applyCancelTask</find>
+      <find>hrApplyChangeWorker</find>
+      <find>workerHandleHrPay</find>
+      <find>/tasks</find>
+      <find>/workers/{taskWorkerId}/getWorkerDetails/{workerId}</find>
+      <find>/hr-tasks/accept</find>
+      <find>/message/await/handle</find>
+      <find>selectWorkerAwaitHandleInfo</find>
+      <find>selectHrAwaitHandleInfo</find>
+      <find>/message/details/taskInfo</find>
     </findStrings>
+    <replaceStrings>
+      <replace>%H:%i</replace>
+    </replaceStrings>
     <dirStrings>
+      <dir>D:\gitwgb\src\main\resources\mapping</dir>
+      <dir>D:\gitwgb</dir>
       <dir>D:\gitwgb\src\main\java\com\microdev\service\impl</dir>
       <dir>D:\gitwgb\src\main\java\com\microdev\Controller</dir>
     </dirStrings>
@@ -116,28 +118,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/pom.xml" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/common/utils/QRCode.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/common/oss/AliOssObjectStoreServiceImpl.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/param/HotelHrIdBindDTO.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/model/New.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/param/FileRequest.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/param/WorkerQueryDTO.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/WorkerService.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/mapper/WorkerMapper.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/Controller/WorkerController.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/UserCompanyServiceImpl.java" />
-        <option value="$PROJECT_DIR$/src/main/resources/mapping/UserMapper.xml" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/model/User.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/converter/UserConverter.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/param/UserDTO.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/common/utils/StringKit.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/SmsFacadeImpl.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/param/SmsType.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/param/ApplyRequest.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/param/CompanyQueryDTO.java" />
-        <option value="$PROJECT_DIR$/src/main/resources/mapping/WorkerMapper.xml" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/model/Company.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/microdev/converter/DictConverter.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/microdev/param/DictDTO.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/microdev/common/filter/SecurityFilter.java" />
@@ -147,7 +127,6 @@
         <option value="$PROJECT_DIR$/src/main/java/com/microdev/mapper/DictMapper.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/microdev/param/CompanyDTO.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/microdev/common/utils/QRCodeUtil.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/WorkerServiceImpl.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/microdev/Constant.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/microdev/Controller/DictAdminController.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/microdev/mapper/CompanyMapper.java" />
@@ -159,14 +138,37 @@
         <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/UserServiceImpl.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/microdev/CompanyTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/microdev/common/WorkerUnbind.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/Controller/MessageController.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/model/Message.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/param/AwaitHandleInfo.java" />
-        <option value="$PROJECT_DIR$/src/main/resources/mapping/MessageMapper.xml" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/mapper/MessageMapper.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/MessageServiceImpl.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/CompanyServiceImpl.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/model/Task.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/param/MessageDetailsDTO.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/Controller/MessageController.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/param/AwaitHandleInfo.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/model/Message.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/TaskServiceImpl.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/param/MessageDetailsResponse.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/mapper/MessageMapper.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/param/AwaitTaskResponse.java" />
+        <option value="$PROJECT_DIR$/src/test/java/com/microdev/WorkerTest.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/param/assignmentRequest.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/param/AssignmentRequest.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/model/TaskWorker.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/InformService.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/InformServiceImpl.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/MessageService.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/MessageServiceImpl.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/TaskHrCompanyService.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/HotelPayHrDetailsService.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/HotelPayHrDetailsServiceImpl.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/microdev/Controller/HrCompanyController.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/Controller/TaskWorkerController.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/TaskWorkerService.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/TaskWorkerServiceImpl.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/Controller/WorkerController.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/TaskHrCompanyServiceImpl.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/WorkerService.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/service/impl/WorkerServiceImpl.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/microdev/Controller/TaskHrCompanyController.java" />
+        <option value="$PROJECT_DIR$/src/main/resources/mapping/MessageMapper.xml" />
       </list>
     </option>
   </component>
@@ -201,9 +203,9 @@
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths />
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
+  <component name="ProjectFrameBounds" extendedState="7">
+    <option name="x" value="485" />
+    <option name="y" value="19" />
     <option name="width" value="1936" />
     <option name="height" value="1056" />
   </component>
@@ -216,9 +218,6 @@
       <foldersAlwaysOnTop value="false" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="AndroidView" />
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -250,7 +249,23 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="Controller" type="462c0819:PsiDirectoryNode" />
+              <item name="mapper" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="gitwgb" type="b2602c69:ProjectViewProjectNode" />
+              <item name="gitwgb" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="service" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="gitwgb" type="b2602c69:ProjectViewProjectNode" />
+              <item name="gitwgb" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="impl" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="gitwgb" type="b2602c69:ProjectViewProjectNode" />
@@ -272,6 +287,9 @@
         </subPane>
         <option name="show-excluded-files" value="false" />
       </pane>
+      <pane id="AndroidView" />
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -279,6 +297,7 @@
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="$USER_HOME$/IdeaProjects/wgb-api" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -297,7 +316,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Maven.wgb [clean]">
+  <component name="RunManager" selected="Maven.wgb [compile]">
     <configuration default="true" type="Applet" factoryName="Applet">
       <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
     </configuration>
@@ -441,9 +460,9 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Maven.wgb [compile]" />
         <item itemvalue="Maven.wgb [clean]" />
         <item itemvalue="Application.WgbApplication" />
-        <item itemvalue="Maven.wgb [compile]" />
       </list>
     </recent_temporary>
   </component>
@@ -479,43 +498,71 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="8500000" />
+    <option name="totallyTimeSpent" value="62262000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5010776" side_tool="true" weight="0.19955654" />
-      <window_info anchor="right" id="Maven Projects" order="9" visible="true" weight="0.18103448" />
+      <window_info anchor="right" id="Maven Projects" order="9" visible="true" weight="0.1255388" />
       <window_info anchor="bottom" id="Database Changes" order="12" show_stripe_button="false" />
       <window_info id="Capture Tool" order="7" />
       <window_info id="Designer" order="2" />
       <window_info anchor="right" id="Database" order="7" weight="0.12715517" />
-      <window_info id="Structure" order="1" sideWeight="0.3067227" side_tool="true" weight="0.25808188" />
+      <window_info id="Structure" order="1" sideWeight="0.28057554" side_tool="true" weight="0.2672414" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info id="UI Designer" order="4" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.40576497" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.2572062" />
       <window_info anchor="bottom" x="1" y="739" width="1920" height="309" id="TODO" order="6" weight="0.12195122" />
-      <window_info anchor="bottom" id="Messages" order="8" weight="0.5088692" />
+      <window_info anchor="bottom" id="Messages" order="8" weight="0.3292683" />
       <window_info anchor="right" id="Palette&#9;" order="5" />
       <window_info id="Image Layers" order="3" />
       <window_info anchor="bottom" id="Java Enterprise" order="13" weight="0.22394678" />
       <window_info anchor="right" id="Capture Analysis" order="4" />
       <window_info anchor="bottom" id="Version Control" order="9" weight="0.28713968" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4989224" weight="0.28381374" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4989224" visible="true" weight="0.11751663" />
       <window_info anchor="bottom" id="Spring" order="11" weight="0.3292683" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.3292683" />
-      <window_info content_ui="combo" x="-4" y="136" width="454" height="872" id="Project" order="0" sideWeight="0.6932773" visible="true" weight="0.2963362" />
+      <window_info active="true" content_ui="combo" x="-4" y="136" width="454" height="872" id="Project" order="0" sideWeight="0.7194245" visible="true" weight="0.23329741" />
       <window_info anchor="right" id="Bean Validation" order="8" />
-      <window_info id="Web" order="6" side_tool="true" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.5232816" />
+      <window_info id="Web" order="6" sideWeight="0.41983697" side_tool="true" weight="0.30010775" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.38248336" />
       <window_info anchor="right" id="Theme Preview" order="6" />
       <window_info id="Favorites" order="5" sideWeight="0.7809798" side_tool="true" weight="0.24515086" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4989224" weight="0.28381374" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5010776" side_tool="true" weight="0.19955654" />
+      <window_info content_ui="combo" x="-4" y="136" width="454" height="872" id="Project" order="0" sideWeight="0.6932773" visible="true" weight="0.2963362" />
+      <window_info id="Favorites" order="5" sideWeight="0.7809798" side_tool="true" weight="0.24515086" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="bottom" id="Java Enterprise" order="13" weight="0.22394678" />
+      <window_info anchor="right" id="Theme Preview" order="6" />
+      <window_info id="Structure" order="1" sideWeight="0.3067227" side_tool="true" weight="0.25808188" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Palette&#9;" order="5" />
+      <window_info anchor="right" id="Maven Projects" order="9" visible="true" weight="0.18103448" />
+      <window_info id="Web" order="6" side_tool="true" />
+      <window_info anchor="bottom" id="Database Changes" order="12" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Spring" order="11" weight="0.3292683" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info id="Image Layers" order="3" />
+      <window_info anchor="right" id="Bean Validation" order="8" />
+      <window_info anchor="right" id="Database" order="7" weight="0.12715517" />
+      <window_info id="Capture Tool" order="7" />
+      <window_info anchor="bottom" id="Version Control" order="9" weight="0.28713968" />
+      <window_info anchor="right" id="Capture Analysis" order="4" />
+      <window_info anchor="bottom" x="1" y="739" width="1920" height="309" id="TODO" order="6" weight="0.12195122" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.5232816" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info id="UI Designer" order="4" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.3292683" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.40576497" />
+      <window_info anchor="bottom" id="Messages" order="8" weight="0.5088692" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info id="Designer" order="2" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -568,332 +615,388 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/JwtTokenServiceImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="46" column="20" selection-start-line="46" selection-start-column="20" selection-end-line="46" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/mapping/UserMapper.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-276">
-          <caret line="12" column="39" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/application.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="41" column="36" selection-start-line="41" selection-start-column="36" selection-end-line="41" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/mapper/DictMapper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="34" column="8" lean-forward="true" selection-start-line="34" selection-start-column="3" selection-end-line="34" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/mapping/DictMapper.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="156">
-          <caret line="72" column="4" selection-start-line="72" selection-start-column="4" selection-end-line="72" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/static/CooperationBetweenHumanCompaniesAndHotels.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/static/workContract.txt" />
-    <entry file="file://$PROJECT_DIR$/src/main/resources/static/UserProtocolAndPrivacyClause.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/param/UserDTO.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="235">
-          <caret line="115" column="23" selection-start-line="115" selection-start-column="23" selection-end-line="115" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_161/src.zip!/java/util/List.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/WorkerServiceImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="899" column="31" selection-start-line="899" selection-start-column="31" selection-end-line="899" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Constant.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="399">
-          <caret line="59" column="30" selection-start-line="59" selection-start-column="30" selection-end-line="59" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/mapper/CompanyMapper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="35" column="65" selection-start-line="35" selection-start-column="65" selection-end-line="35" selection-end-column="65" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/static/userPrivacy.txt" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/DictServiceImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="115">
-          <caret line="165" column="25" lean-forward="true" selection-start-line="165" selection-start-column="25" selection-end-line="165" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/DictAdminController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="349">
-          <caret line="109" lean-forward="true" selection-start-line="109" selection-end-line="109" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/static/bindProtocol.txt" />
-    <entry file="file://$PROJECT_DIR$/src/main/resources/static/CooperationAgreement.txt" />
-    <entry file="file://$PROJECT_DIR$/src/main/resources/static/IntroductionOfNewFunctions.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="16" lean-forward="true" selection-start-column="16" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/static/BindingsOfHRAndHourlyWorkers.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="7" selection-start-column="7" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/UserController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5832">
-          <caret line="244" column="107" selection-start-line="244" selection-start-column="79" selection-end-line="244" selection-end-column="107" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/WorkerCompanyController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="16" column="13" selection-start-line="16" selection-start-column="13" selection-end-line="16" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/TaskWorkerController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="189">
-          <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/TaskHrCompanyController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/TaskController.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/param/TaskHrCompanyDTO.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="243">
-          <caret line="20" column="13" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
+          <caret line="9" column="30" selection-start-line="9" selection-start-column="19" selection-end-line="9" selection-end-column="30" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/param/ApplyRequest.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/param/MessageDetailsDTO.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="10" column="27" selection-start-line="10" selection-start-column="19" selection-end-line="10" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/param/QueryCooperateRequest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
           <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/param/CompanyDTO.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/param/SmsType.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="486">
-          <caret line="45" column="28" selection-start-line="45" selection-start-column="19" selection-end-line="45" selection-end-column="28" />
+        <state relative-caret-position="189">
+          <caret line="7" column="28" selection-start-line="7" selection-start-column="28" selection-end-line="7" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/model/Inform.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-162">
+          <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/mapping/CompanyMapper.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2079">
-          <caret line="23" column="18" selection-start-line="24" selection-end-line="25" />
+        <state relative-caret-position="210">
+          <caret line="156" column="16" selection-start-line="156" selection-start-column="16" selection-end-line="156" selection-end-column="16" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/WorkerService.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/mapper/CompanyMapper.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="388">
-          <caret line="102" column="14" selection-start-line="102" selection-start-column="14" selection-end-line="102" selection-end-column="14" />
+        <state relative-caret-position="351">
+          <caret line="24" column="20" selection-start-line="24" selection-start-column="20" selection-end-line="24" selection-end-column="20" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/model/Company.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/mapper/UserMapper.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="160">
-          <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
+        <state relative-caret-position="297">
+          <caret line="18" column="24" selection-start-line="18" selection-start-column="24" selection-end-line="18" selection-end-column="24" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/converter/UserConverter.java">
+    <entry file="file://$PROJECT_DIR$/src/main/resources/mapping/UserMapper.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="160">
-          <caret line="67" column="52" selection-start-line="67" selection-start-column="52" selection-end-line="67" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/TaskHrCompanyServiceImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="100" column="59" selection-start-line="100" selection-start-column="59" selection-end-line="100" selection-end-column="59" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/com/microdev/CompanyTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="437">
-          <caret line="127" selection-start-line="127" selection-end-line="127" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/common/WorkerUnbind.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="18" column="40" lean-forward="true" selection-start-line="18" selection-start-column="40" selection-end-line="18" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/common/utils/QRCodeUtil.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="54">
-          <caret line="21" column="13" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/common/utils/StringKit.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="189">
-          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/WorkerController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-394">
-          <caret line="133" column="7" lean-forward="true" selection-start-line="133" selection-start-column="7" selection-end-line="133" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/param/QueryCooperateRequest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="14" column="23" selection-start-line="14" selection-start-column="19" selection-end-line="14" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/param/AwaitHandleInfo.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="99">
-          <caret line="7" column="28" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="28" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/mapper/MessageMapper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="837">
-          <caret line="39" lean-forward="true" selection-start-line="39" selection-end-line="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/model/Message.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="207">
-          <caret line="92" column="25" lean-forward="true" selection-start-line="92" selection-start-column="13" selection-end-line="92" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/MessageServiceImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="613" column="39" selection-start-line="613" selection-start-column="39" selection-end-line="613" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/MessageController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="518">
-          <caret line="116" column="38" selection-start-line="116" selection-start-column="30" selection-end-line="116" selection-end-column="48" />
+        <state relative-caret-position="220">
+          <caret line="15" column="16" selection-start-line="15" selection-start-column="16" selection-end-line="15" selection-end-column="16" />
         </state>
       </provider>
     </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/com/baomidou/mybatis-plus/2.0.7/mybatis-plus-2.0.7-sources.jar!/com/baomidou/mybatisplus/mapper/BaseMapper.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="213">
-          <caret line="46" column="12" selection-start-line="46" selection-start-column="12" selection-end-line="46" selection-end-column="12" />
+          <caret line="112" column="12" selection-start-line="112" selection-start-column="12" selection-end-line="112" selection-end-column="12" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/model/User.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/model/HotelPayHrDetails.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1377">
-          <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+        <state relative-caret-position="189">
+          <caret line="8" column="30" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="30" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/UserServiceImpl.java">
+    <entry file="file://$PROJECT_DIR$/src/main/resources/mapping/HotelPayDetailsMapper.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="119" column="10" selection-start-line="119" selection-start-column="10" selection-end-line="119" selection-end-column="10" />
+        <state relative-caret-position="162">
+          <caret line="6" column="16" selection-start-line="6" selection-start-column="16" selection-end-line="6" selection-end-column="16" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/param/HotelHrIdBindDTO.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/DictServiceImpl.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="343">
-          <caret line="40" column="24" selection-start-line="40" selection-start-column="24" selection-end-line="40" selection-end-column="24" />
+        <state relative-caret-position="162">
+          <caret line="26" column="48" selection-start-line="26" selection-start-column="29" selection-end-line="26" selection-end-column="48" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/mapping/MessageMapper.xml">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/model/Task.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="175">
-          <caret line="405" column="64" selection-start-line="405" selection-start-column="57" selection-end-line="405" selection-end-column="64" />
+        <state relative-caret-position="410">
+          <caret line="101" column="31" selection-start-line="101" selection-start-column="19" selection-end-line="101" selection-end-column="31" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/HrCompanyController.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/InformService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="249">
-          <caret line="109" column="37" selection-start-line="109" selection-start-column="30" selection-end-line="109" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/HotelController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="222">
-          <caret line="149" column="39" selection-start-line="149" selection-start-column="30" selection-end-line="149" selection-end-column="50" />
-          <folding>
-            <element signature="e#4811#4812#0" expanded="true" />
-            <element signature="e#4874#4875#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="108">
+          <caret line="10" column="47" selection-start-line="10" selection-start-column="31" selection-end-line="10" selection-end-column="47" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/CompanyServiceImpl.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-129">
-          <caret line="621" column="20" selection-start-line="621" selection-start-column="20" selection-end-line="621" selection-end-column="20" />
+        <state relative-caret-position="135">
+          <caret line="40" lean-forward="true" selection-start-line="40" selection-end-line="41" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/HotelPayHrDetailsServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="11" column="8" lean-forward="true" selection-start-line="11" selection-start-column="8" selection-end-line="11" selection-end-column="8" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#655#656#0" expanded="true" />
+            <element signature="e#691#692#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/mapper/HotelPayDetailsMapper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="8" column="11" selection-start-line="8" selection-start-column="11" selection-end-line="8" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/MessageService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="409">
+          <caret line="196" column="13" lean-forward="true" selection-start-line="196" selection-start-column="7" selection-end-line="196" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/model/User.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/model/TaskWorker.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="486">
+          <caret line="92" column="31" selection-start-line="92" selection-start-column="19" selection-end-line="92" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/model/TaskHrCompany.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="111" column="33" selection-start-line="111" selection-start-column="19" selection-end-line="111" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/TaskWorkerServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="380">
+          <caret line="48" selection-start-line="48" selection-end-line="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/param/AssignmentRequest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="8" column="13" selection-start-line="11" selection-start-column="24" selection-end-line="11" selection-end-column="27" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/InformServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-540">
+          <caret line="50" column="31" selection-start-line="50" selection-start-column="31" selection-end-line="50" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/param/InformRequestDTO.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/InformController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="23" column="66" selection-start-line="23" selection-start-column="66" selection-end-line="23" selection-end-column="66" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/HotelController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1063">
+          <caret line="108" column="58" selection-start-line="108" selection-start-column="52" selection-end-line="108" selection-end-column="64" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/param/AwaitTaskResponse.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="28" column="35" selection-start-line="28" selection-start-column="19" selection-end-line="28" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/param/WorkerSupplementRequest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="20" column="27" selection-start-line="20" selection-start-column="20" selection-end-line="20" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/common/ResultDO.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="567">
+          <caret line="27" column="23" selection-start-line="27" selection-start-column="19" selection-end-line="27" selection-end-column="23" />
+          <folding>
+            <element signature="e#1475#1476#0" expanded="true" />
+            <element signature="e#1536#1537#0" expanded="true" />
+            <element signature="e#1592#1593#0" expanded="true" />
+            <element signature="e#1650#1651#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/HrCompanyController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1566">
+          <caret line="190" column="18" selection-start-line="190" selection-start-column="7" selection-end-line="190" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/WorkerCompanyController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1375">
+          <caret line="89" column="44" selection-start-line="89" selection-start-column="44" selection-end-line="89" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/UserController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="27">
+          <caret line="39" column="13" selection-start-line="39" selection-start-column="13" selection-end-line="39" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/TaskWorkerController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="457">
+          <caret line="69" selection-start-line="69" selection-end-line="69" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/TaskWorkerService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="746">
+          <caret line="55" selection-start-line="55" selection-end-line="55" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/HotelPayHrDetailsService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="243">
+          <caret line="9" column="16" lean-forward="true" selection-start-line="9" selection-start-column="16" selection-end-line="9" selection-end-column="16" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/CompanyService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1188">
+          <caret line="145" column="15" selection-start-line="145" selection-start-column="15" selection-end-line="145" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/TaskHrCompanyService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2727">
+          <caret line="107" column="21" selection-start-line="107" selection-start-column="7" selection-end-line="107" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/param/CreateTaskRequest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-552">
+          <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/TaskController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-999">
+          <caret line="32" column="56" selection-start-line="32" selection-start-column="56" selection-end-line="32" selection-end-column="56" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/WorkerService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="486">
+          <caret line="111" column="30" selection-start-line="111" selection-start-column="13" selection-end-line="111" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/WorkerServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="524" column="50" selection-start-line="524" selection-start-column="50" selection-end-line="524" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/WorkerController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-830">
+          <caret line="127" column="56" lean-forward="true" selection-start-line="127" selection-start-column="51" selection-end-line="127" selection-end-column="69" />
+          <folding>
+            <element signature="e#3326#3327#0" expanded="true" />
+            <element signature="e#3407#3408#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/TaskHrCompanyServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1476">
+          <caret line="267" column="16" selection-start-line="267" selection-start-column="16" selection-end-line="267" selection-end-column="16" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/TaskHrCompanyController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="324">
+          <caret line="80" lean-forward="true" selection-start-line="80" selection-end-line="80" />
+          <folding>
+            <element signature="e#2509#2510#0" expanded="true" />
+            <element signature="e#2577#2578#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/param/AwaitHandleInfo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="10" column="28" selection-start-line="10" selection-start-column="19" selection-end-line="10" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/mapper/MessageMapper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="230">
+          <caret line="49" column="62" selection-start-line="49" selection-start-column="58" selection-end-line="49" selection-end-column="62" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/Controller/MessageController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="472">
+          <caret line="133" column="68" selection-start-line="133" selection-start-column="52" selection-end-line="133" selection-end-column="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/microdev/service/impl/MessageServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="218">
+          <caret line="783" column="51" selection-start-line="783" selection-start-column="41" selection-end-line="783" selection-end-column="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/mapping/MessageMapper.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="563" column="25" selection-start-line="563" selection-start-column="25" selection-end-line="563" selection-end-column="25" />
         </state>
       </provider>
     </entry>
