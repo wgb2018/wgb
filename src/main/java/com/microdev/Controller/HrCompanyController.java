@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 /**
  * 人力公司信息相关的Api
  */
@@ -205,5 +207,27 @@ public class HrCompanyController {
     public ResultDO hrHandleWorkerCancelTask(@PathVariable String messageId) {
 
         return taskHrCompanyService.hrHandleWorkerTaskCancel(messageId);
+    }
+
+    /**
+     * 人力同意小时工取消任务并派发新任务
+     * @param messageId
+     * @param workerId
+     * @return
+     */
+    @GetMapping("/hrcompanies/agree/{messageId}/cancel/{workerId}")
+    public ResultDO hrAgreeWorkerCancelTask(@PathVariable String messageId,@PathVariable String workerId) {
+
+        return taskHrCompanyService.hrAgrreWorkerTaskCancel(messageId, workerId);
+    }
+
+    /**
+     * 人力处理酒店付款.
+     * @param param
+     * @return
+     */
+    @PostMapping("/hrcompanies/handle/account")
+    public ResultDO hrcompaniesHandleAccount(Map<String, String> param) {
+        return taskHrCompanyService.hrHandleIncome(param.get("messageId"), param.get("status"), param.get("reason"));
     }
 }

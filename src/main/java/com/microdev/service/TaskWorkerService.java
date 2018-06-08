@@ -7,6 +7,8 @@ import com.microdev.model.TaskWorker;
 import com.microdev.param.RefusedTaskRequest;
 import com.microdev.param.TaskWorkerQuery;
 
+import java.util.Map;
+
 public interface TaskWorkerService extends IService<TaskWorker> {
     /**
      * 设置违约的人员
@@ -50,4 +52,6 @@ public interface TaskWorkerService extends IService<TaskWorker> {
      * @return
      */
     String updateTaskWorkerStatus(String taskWorkerId, Integer status);
+
+
 }

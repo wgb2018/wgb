@@ -21,6 +21,7 @@ import com.microdev.param.AreaAndServiceRequest;
 import com.microdev.param.api.response.GetBalanceResponse;
 import com.microdev.param.api.response.GetCurrentTaskResponse;
 import com.microdev.service.DictService;
+import com.microdev.service.InformService;
 import com.microdev.service.MessageService;
 import com.microdev.service.WorkerService;
 import com.microdev.type.UserType;
@@ -77,6 +78,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     private UserCompanyMapper userCompanyMapper;
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private InformService informService;
 
     @Override
     public GetCurrentTaskResponse getCurrentTask(String workerId) {
@@ -1105,5 +1108,55 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             leaveTime += end - d.parse(str[i]).getLong(ChronoField.MINUTE_OF_DAY);
         }
         return leaveTime > (end - start);
+    }
+
+    /**
+     * 小时工处理人力支付
+     * @param param
+     * @return
+     */
+    @Override
+    public ResultDO workerHandleHrPay(Map<String, String> param) {
+        if (StringUtils.isEmpty(param.get("messageId")) || StringUtils.isEmpty(param.get("status"))) {
+            throw new ParamsException("参数不能为空");
+        }
+        String status = param.get("status");
+        String messageId = param.get("messageId");
+        String reason = param.get("reason");
+        Message message = messageMapper.selectById(messageId);
+        if (message == null) {
+            throw new ParamsException("查询不到消息");
+        }
+        message.setStatus(1);
+        messageMapper.updateAllColumnById(message);
+
+        User user = userMapper.selectByWorkerId(message.getWorkerId());
+        if (user == null) {
+            throw new BusinessException("查询不到小时工信息");
+        }
+        if ("0".equals(status)) {
+            //拒绝
+            String content = "小时工" + user.getNickname() + "拒绝了你发起的一笔支付信息，金额为" + Double.valueOf(message.getMinutes()) + ",拒绝理由为" + reason;
+            informService.sendInformInfo(1, 2, content, message.getHrCompanyId(), "账目被拒绝");
+        } else if ("1".equals(status)) {
+            //同意
+            TaskWorker taskWorker = taskWorkerMapper.selectById(message.getWorkerTaskId());
+            if (taskWorker == null) {
+                throw new ParamsException("查询不到小时工任务信息");
+            }
+            taskWorker.setHavePayMoney(taskWorker.getHavePayMoney() + Double.valueOf(message.getMinutes()));
+            taskWorkerMapper.updateAllColumnById(taskWorker);
+            TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(message.getHrTaskId());
+            if (taskHrCompany == null) {
+                throw new ParamsException("查询不到人力任务");
+            }
+            taskHrCompany.setWorkersHavePay(taskHrCompany.getWorkersHavePay() + Double.valueOf(message.getMinutes()));
+            taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
+
+            //发送通知
+            String content = "小时工" + user.getNickname() + "同意了你发起的一笔支付信息，金额为" + message.getMinutes();
+            informService.sendInformInfo(1, 2, content, message.getHrCompanyId(), "账目已同意");
+        }
+        return ResultDO.buildSuccess("成功");
     }
 }

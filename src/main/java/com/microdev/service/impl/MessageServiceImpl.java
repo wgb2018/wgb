@@ -834,4 +834,61 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
 
     }
 
+    /**
+     * 发送消息
+     * @param param
+     */
+    @Override
+    public void sendMessageInfo(Map<String, Object> param) {
+        if (param == null) {
+            throw new ParamsException("参数不能为空");
+        }
+        Message message = new Message();
+        message.setStatus(0);
+        message.setIsTask(0);
+        if (param.get("hrCompanyId") != null)
+            message.setHrCompanyId((String)param.get("hrCompanyId"));
+        if (param.get("workerTaskId") != null)
+            message.setWorkerTaskId((String)param.get("workerTaskId"));
+        if (param.get("workerId") != null)
+            message.setWorkerId((String)param.get("workerId"));
+        if (param.get("hotelId") != null)
+            message.setHotelId((String)param.get("hotelId"));
+        message.setApplicantType((Integer)param.get("applicantType"));
+        message.setApplyType((Integer)param.get("applyType"));
+        message.setMessageContent((String)param.get("messageContent"));
+        message.setContent((String)param.get("content"));
+        if (param.get("hrTaskId") != null)
+            message.setHrTaskId((String)param.get("hrTaskId"));
+        if (param.get("minutes") != null)
+            message.setMinutes((String)param.get("minutes"));
+        if (param.get("supplementTime") != null) {
+            message.setSupplementTime((OffsetDateTime) param.get("supplementTime"));
+        }
+        if (param.get("supplementTimeEnd") != null)
+            message.setSupplementTimeEnd((OffsetDateTime) param.get("supplementTimeEnd"));
+        if (param.get("messageType") != null)
+            message.setMessageType((Integer)param.get("messageType"));
+        messageMapper.insertAllColumn(message);
+    }
+
+    /**
+     * 生成消息内容
+     * @param param
+     * @param pattern
+     * @return
+     */
+    @Override
+    public String installContent(Map<String, String> param, String pattern) {
+
+        if (param == null || StringUtils.isEmpty(pattern)) {
+            throw new ParamsException("参数错误");
+        }
+        MessageTemplate template = messageTemplateMapper.findFirstByCode(pattern);
+        if (template == null) {
+            throw new ParamsException("查询不到消息模板.");
+        }
+        return StringKit.templateReplace(template.getContent(), param);
+    }
+
 }

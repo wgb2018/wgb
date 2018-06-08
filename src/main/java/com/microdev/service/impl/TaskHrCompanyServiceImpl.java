@@ -14,6 +14,7 @@ import com.microdev.converter.TaskHrCompanyConverter;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
 import com.microdev.param.*;
+import com.microdev.service.HotelPayHrDetailsService;
 import com.microdev.service.InformService;
 import com.microdev.service.MessageService;
 import com.microdev.service.TaskHrCompanyService;
@@ -57,6 +58,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
     private InformMapper informMapper;
     @Autowired
     private InformService informService;
+    @Autowired
+    private HotelPayHrDetailsService hotelPayHrDetailsService;
 
     /**
      * 查看人力资源公司的任务
@@ -693,8 +696,131 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             throw new ParamsException("参数错误");
         }
 
-        String content = taskWorker.getHrCompanyName() + "拒绝了你的申请取消申请，希望你能完成该任务。";
+        String content = taskWorker.getHrCompanyName() + "拒绝了你的取消任务申请，希望你能完成该任务。";
         informService.sendInformInfo(2, 1, content, message.getWorkerId(), "申请取消被拒绝");
+        return ResultDO.buildSuccess("成功");
+    }
+
+    /**
+     * 人力同意小时工取消任务并派发新任务
+     * @param messageId
+     * @param workerId
+     * @return
+     */
+    @Override
+    public ResultDO hrAgrreWorkerTaskCancel(String messageId, String workerId) {
+        if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(workerId)) {
+            throw new ParamsException("参数错误");
+        }
+        Message message = messageMapper.selectById(messageId);
+        if (message == null) {
+            throw new ParamsException("参数错误");
+        }
+        message.setStatus(1);
+        messageMapper.updateById(message);
+
+        TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(message.getHrTaskId());
+        if (taskHrCompany == null) {
+            throw new ParamsException("人力任务查询不到.");
+        }
+        //更新人力任务
+        taskHrCompany.setRefusedWorkers(taskHrCompany.getRefusedWorkers() + 1);
+        taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
+        //更新小时工任务
+        TaskWorker taskWorker = taskWorkerMapper.selectById(message.getWorkerTaskId());
+        if (taskWorker == null) {
+            throw new ParamsException("小时工任务查询不到");
+        }
+        taskWorker.setStatus(2);
+        taskWorker.setRefusedReason(message.getContent());
+        taskWorkerMapper.updateAllColumnById(taskWorker);
+        //给取消任务的小时工发送通知
+        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        DateTimeFormatter time = DateTimeFormatter.ofPattern("HH:mm");
+        String content = taskWorker.getHrCompanyName() + "同意了你的取消任务申请，申请取消的任务日期是"
+                + date.format(message.getSupplementTime()) + ",时间为" + time.format(message.getSupplementTime()) + "-" + time.format(message.getSupplementTimeEnd()) + ",申请理由" + message.getMessageContent();
+        informService.sendInformInfo(2, 1, content, message.getWorkerId(), "申请取消成功");
+
+        //给新的小时工派发任务
+        TaskWorker workerTask = new TaskWorker();
+        workerTask.setStatus(0);
+        workerTask.setDayEndTime(taskWorker.getDayEndTime());
+        workerTask.setDayStartTime(taskWorker.getDayStartTime());
+        workerTask.setToDate(taskWorker.getToDate());
+        workerTask.setFromDate(taskWorker.getFromDate());
+        workerTask.setHotelName(taskHrCompany.getHotelName());
+        workerTask.setHourlyPay(taskHrCompany.getHourlyPay());
+        workerTask.setTaskContent(taskHrCompany.getTaskContent());
+        workerTask.setTaskTypeCode(taskHrCompany.getTaskTypeCode());
+        workerTask.setTaskTypeText(taskHrCompany.getTaskTypeText());
+        workerTask.setTaskHrId(taskHrCompany.getPid());
+        workerTask.setWorkerId(message.getWorkerId());
+        taskWorkerMapper.insertAllColumn(workerTask);
+
+        //发送消息
+        Map<String, String> param = new HashMap<>();
+        param.put("hrCompanyName", taskWorker.getHrCompanyName());
+        String notice = messageService.installContent(param, "workTaskMessage");
+        Map<String, Object> result = new HashMap<>();
+        result.put("hrCompanyId", message.getHrCompanyId());
+        result.put("taskHrId", message.getHrTaskId());
+        result.put("workerId", workerId);
+        result.put("workerTaskId", workerTask.getPid());
+        result.put("hotelId", message.getHotelId());
+        result.put("applicantType", 2);
+        result.put("applyType", 0);
+        result.put("messageContent", notice);
+        result.put("messageType", 6);
+        messageService.sendMessageInfo(result);
+        return ResultDO.buildSuccess("成功");
+    }
+
+    /**
+     * 人力公司处理酒店支付
+     * @param messageId
+     * @param status        0拒绝1同意
+     * @param reason
+     * @return
+     */
+    @Override
+    public ResultDO hrHandleIncome(String messageId, String status, String reason) {
+        if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(status)) {
+            throw new ParamsException("参数不能为空");
+        }
+        Message message = messageMapper.selectById(messageId);
+        if (message == null) {
+            throw new ParamsException("查询不到消息");
+        }
+        message.setStatus(1);
+        messageMapper.updateAllColumnById(message);
+
+        TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(message.getHrTaskId());
+        if (taskHrCompany == null) {
+            throw new ParamsException("查询不到人力任务信息");
+        }
+        if ("0".equals(status)) {
+            String content = taskHrCompany.getHrCompanyName() + "拒绝了你发起的一笔支付信息，金额为" + message.getMinutes() + "，拒绝理由为" + message.getContent();
+            informService.sendInformInfo(2, 3, content, message.getHotelId(), "账目被拒绝");
+        } else if ("1".equals(status)) {
+            //确认收入
+            taskHrCompany.setHavePayMoney(taskHrCompany.getHavePayMoney() + Double.valueOf(message.getMinutes()));
+            taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
+            Task task = taskMapper.selectById(taskHrCompany.getTaskId());
+            if (task == null) {
+                throw new ParamsException("找不到任务信息");
+            }
+            task.setHavePayMoney(task.getHavePayMoney() + Double.valueOf(message.getMinutes()));
+            taskMapper.updateAllColumnById(task);
+            //新增酒店支付人力明细
+            HotelPayHrDetails details = new HotelPayHrDetails();
+            details.setTaskHrId(taskHrCompany.getPid());
+            details.setThisPayMoney(Double.valueOf(message.getMinutes()));
+            hotelPayHrDetailsService.saveBean(details);
+            String content = taskHrCompany.getHrCompanyName() + "同意了你发起的一笔支付信息，金额为" + Double.valueOf(message.getMinutes());
+            informService.sendInformInfo(2, 3, content, message.getHotelId(), "账目已同意");
+        } else {
+            throw new ParamsException("参数错误");
+        }
         return ResultDO.buildSuccess("成功");
     }
 }
