@@ -1,7 +1,6 @@
 package com.microdev.service.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.microdev.common.ResultDO;
@@ -15,20 +14,19 @@ import com.microdev.converter.TaskHrCompanyConverter;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
 import com.microdev.param.*;
+import com.microdev.service.InformService;
 import com.microdev.service.MessageService;
 import com.microdev.service.TaskHrCompanyService;
-import org.apache.commons.collections.map.HashedMap;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
-import java.time.Clock;
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Transactional
@@ -57,6 +55,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
     private MessageService messageService;
     @Autowired
     private InformMapper informMapper;
+    @Autowired
+    private InformService informService;
 
     /**
      * 查看人力资源公司的任务
@@ -606,6 +606,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
 
         //插入小时工任务信息
         TaskWorker workerTask = null;
+        List<TaskWorker> list = new ArrayList<>();
         for (String str : request.getSet()) {
             workerTask = new TaskWorker();
             workerTask.setStatus(0);
@@ -621,10 +622,77 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             workerTask.setTaskHrId(taskHrCompany.getPid());
             workerTask.setWorkerId(message.getWorkerId());
             taskWorkerMapper.insertAllColumn(workerTask);
+            list.add(workerTask);
         }
 
         //给小时工发送消息
-        messageService.hrDistributeWorkerTask(new ArrayList<String>(request.getSet()), taskHrCompany);
+        messageService.hrDistributeWorkerTask(list, taskHrCompany);
+
+        if (message.getApplicantType() == 3) {
+            //给酒店发送通知
+            //被替换的小时工
+            User oldUser = userMapper.selectByWorkerId(taskWorker.getWorkerId());
+            User newUser = userMapper.selectByWorkerId(list.get(0).getWorkerId());
+            String content = taskHrCompany.getHrCompanyName() + "同意了你的换人申请，将任务里的小时工" + oldUser.getNickname() + "换成了" + newUser.getNickname();
+            informService.sendInformInfo(2, 3, content, message.getHotelId(), "换人成功");
+
+            //给被替换的小时工发通知
+            content = message.getMessageContent() + " 。任务重新调配了一个小时工，希望你下次能认真对待工作，这会影响你的信用。";
+            informService.sendInformInfo(2, 1, content, message.getWorkerId(), "调换通知");
+        }
         return ResultDO.buildSuccess("派发完成");
+    }
+
+    /**
+     * 人力拒绝酒店调换小时工的申请
+     * @param messageId
+     * @return
+     */
+    @Override
+    public ResultDO hrRefuseHotelSwapWorker(String messageId) {
+        if (StringUtils.isEmpty(messageId)) {
+            throw new ParamsException("参数错误");
+        }
+        Message message = messageMapper.selectById(messageId);
+        if (message == null) {
+            throw new ParamsException("查找不到消息");
+        }
+        message.setStatus(1);
+        messageMapper.updateById(message);
+
+        //给酒店发送一条通知
+        Company company = companyMapper.findCompanyById(message.getHrCompanyId());
+        if (company == null) {
+            throw new BusinessException("人力公司查询不到");
+        }
+        String content = company.getName() + "拒绝了你的换人申请。";
+        informService.sendInformInfo(2, 3, content, message.getHotelId(), "换人被拒绝");
+        return ResultDO.buildSuccess("成功");
+    }
+
+    /**
+     * 人力拒绝小时工取消任务
+     * @param messageId
+     * @return
+     */
+    @Override
+    public ResultDO hrHandleWorkerTaskCancel(String messageId) {
+        if (StringUtils.isEmpty(messageId)) {
+            throw new ParamsException("参数错误");
+        }
+        Message message = messageMapper.selectById(messageId);
+        if (message == null) {
+            throw new ParamsException("参数错误");
+        }
+        message.setStatus(1);
+        messageMapper.updateById(message);
+        TaskWorker taskWorker = taskWorkerMapper.selectById(message.getWorkerTaskId());
+        if (taskWorker == null) {
+            throw new ParamsException("参数错误");
+        }
+
+        String content = taskWorker.getHrCompanyName() + "拒绝了你的申请取消申请，希望你能完成该任务。";
+        informService.sendInformInfo(2, 1, content, message.getWorkerId(), "申请取消被拒绝");
+        return ResultDO.buildSuccess("成功");
     }
 }

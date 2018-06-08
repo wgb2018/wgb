@@ -103,4 +103,18 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
      * @return
      */
     ResultDO hrAssignmentTask(AssignmentRequest request);
+
+    /**
+     * 人力拒绝酒店调换小时工的申请
+     * @param messageId
+     * @return
+     */
+    ResultDO hrRefuseHotelSwapWorker(String messageId);
+
+    /**
+     * 人力处理小时工取消任务
+     * @param messageId
+     * @return
+     */
+    ResultDO hrHandleWorkerTaskCancel(String messageId);
 }

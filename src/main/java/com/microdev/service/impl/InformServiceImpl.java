@@ -126,5 +126,28 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
         return result;
     }
 
+    /**
+     * 发送通知
+     * @param sendType      发送类型1小时工2人力3酒店4系统
+     * @param acceptType    接收类型1小时工2人力3酒店
+     * @param content       通知内容
+     * @param receiveId     接收方id
+     * @param title         消息标题
+     */
+    @Override
+    public void sendInformInfo(int sendType, int acceptType, String content, String receiveId, String title) {
+        if (StringUtils.isEmpty(content) || StringUtils.isEmpty(receiveId) || StringUtils.isEmpty(title)) {
+            throw new ParamsException("参数不能为空");
+        }
+        Inform inform = new Inform();
+        inform.setTitle(title);
+        inform.setContent(content);
+        inform.setAcceptType(acceptType);
+        inform.setSendType(sendType);
+        inform.setStatus(0);
+        inform.setReceiveId(receiveId);
+        informMapper.insertAllColumn(inform);
+    }
+
 
 }

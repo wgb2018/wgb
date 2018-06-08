@@ -6,6 +6,7 @@ import com.microdev.common.paging.Paginator;
 import com.microdev.model.Company;
 import com.microdev.model.Message;
 import com.microdev.model.TaskHrCompany;
+import com.microdev.model.TaskWorker;
 import com.microdev.param.*;
 
 import java.util.List;
@@ -184,5 +185,5 @@ public interface MessageService extends IService<Message> {
      * @param list
      * @param taskHrCompany
      */
-    void hrDistributeWorkerTask(List<String> list, TaskHrCompany taskHrCompany);
+    void hrDistributeWorkerTask(List<TaskWorker> list, TaskHrCompany taskHrCompany);
 }

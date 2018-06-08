@@ -9,7 +9,9 @@ import com.microdev.param.HotelHrIdBindDTO;
 import com.microdev.param.QueryCooperateRequest;
 import com.microdev.param.AssignmentRequest;
 import com.microdev.service.CompanyService;
+import com.microdev.service.TaskHrCompanyService;
 import com.microdev.service.UserCompanyService;
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,8 @@ public class HrCompanyController {
     CompanyService companyService;
     @Autowired
     private UserCompanyService userCompanyService;
+    @Autowired
+    private TaskHrCompanyService taskHrCompanyService;
     /**
      * 分页查询人力资源公司
      */
@@ -178,6 +182,28 @@ public class HrCompanyController {
     @PostMapping("/hrcompanies/assignment/workers")
     public ResultDO hrcompaniesAssignmentWorkers(@RequestBody AssignmentRequest request) {
 
-        return ResultDO.buildSuccess("");
+        return taskHrCompanyService.hrAssignmentTask(request);
+    }
+
+    /**
+     * 人力拒绝酒店的申请调换
+     * @param messageId
+     * @return
+     */
+    @GetMapping("/hrcompanies/refuse/hotel/{messageId}")
+    public ResultDO refuseWorkersRefuseTask(@PathVariable String messageId) {
+
+        return taskHrCompanyService.hrRefuseHotelSwapWorker(messageId);
+    }
+
+    /**
+     * 人力处理小时工取消任务
+     * @param messageId
+     * @return
+     */
+    @GetMapping("/hrcompanies/refuse/{messageId}/worker/cancel")
+    public ResultDO hrHandleWorkerCancelTask(@PathVariable String messageId) {
+
+        return taskHrCompanyService.hrHandleWorkerTaskCancel(messageId);
     }
 }

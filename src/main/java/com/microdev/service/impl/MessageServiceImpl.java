@@ -803,9 +803,33 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      * @param taskHrCompany
      */
     @Override
-    public void hrDistributeWorkerTask(List<String> list, TaskHrCompany taskHrCompany) {
+    public void hrDistributeWorkerTask(List<TaskWorker> list, TaskHrCompany taskHrCompany) {
         if (list == null || list.size() == 0 || taskHrCompany == null) {
             throw new ParamsException("消息发送的参数错误");
+        }
+
+        MessageTemplate template = messageTemplateMapper.findFirstByCode("workTaskMessage");
+        if (template == null) {
+            throw new ParamsException("找不到消息模板");
+        }
+        Map<String, String> param = new HashMap<>();
+        param.put("hrCompanyName", taskHrCompany.getHrCompanyName());
+        String str = StringKit.templateReplace(template.getContent(), param);
+        Message message = null;
+        for (TaskWorker worker : list) {
+            message = new Message();
+            message.setStatus(0);
+            message.setMessageCode(template.getCode());
+            message.setMessageTitle(taskHrCompany.getTaskTypeText());
+            message.setContent(str);
+            message.setMessageContent(str);
+            message.setHrTaskId(taskHrCompany.getPid());
+            message.setApplyType(0);
+            message.setApplicantType(2);
+            message.setHotelId(taskHrCompany.getHotelId());
+            message.setHrCompanyId(taskHrCompany.getHrCompanyId());
+            message.setIsTask(0);
+            messageMapper.insert(message);
         }
 
     }
