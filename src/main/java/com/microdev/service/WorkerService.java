@@ -91,13 +91,6 @@ public interface WorkerService extends IService<Worker> {
      */
     UserTaskResponse selectUserTaskInfo(String taskWorkerId, String workerId);
 
-    /**
-     * 查詢工作者信息
-     * @param userId
-     * @return
-     */
-    UserTaskResponse selectWorkerInfo(String userId);
-
 	void mpdifyAreaAndService(AreaAndServiceRequest request);
 
     Map<String, Object> queryWorker(String id);

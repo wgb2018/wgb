@@ -104,10 +104,10 @@
 		hotelName,DATE_FORMAT(tw.from_date,'%Y.%m.%d')
 		AS
 		workFromDate,DATE_FORMAT(tw.to_date,'%Y.%m.%d') AS workToDate,
-		DATE_FORMAT(tw.day_start_time,'%H:%m') AS dayStartTime,
-		DATE_FORMAT(tw.day_end_time,'%H:%m') AS dayEndTime,th.task_type_text
-		AS taskTypeText,GROUP_CONCAT(DATE_FORMAT(wl.`from_date`,'%H:%m')) AS fromDate,
-		GROUP_CONCAT(DATE_FORMAT(wl.`to_date`,'%H:%m')) AS toDate,
+		DATE_FORMAT(tw.day_start_time,'%H:%i') AS dayStartTime,
+		DATE_FORMAT(tw.day_end_time,'%H:%i') AS dayEndTime,th.task_type_text
+		AS taskTypeText,GROUP_CONCAT(DATE_FORMAT(wl.`from_date`,'%H:%i')) AS fromDate,
+		GROUP_CONCAT(DATE_FORMAT(wl.`to_date`,'%H:%i')) AS toDate,
 		th.`hotel_id` AS hotelId,tw.id AS taskWorkerId,SUM(IFNULL(wl.check_sign,0)) AS checkSign,
 		DATE_FORMAT(wl.`create_time`,'%Y/%m/%d') AS current
 		FROM (SELECT * FROM work_log WHERE to_date IS NULL AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <![CDATA[>=]]> date(create_time)) wl
@@ -123,11 +123,11 @@
             resultType="com.microdev.param.SupplementResponse">
         SELECT DATE_FORMAT(tw.from_date,'%Y.%m.%d') AS
 		workFromDate,DATE_FORMAT(tw.to_date,'%Y.%m.%d') AS workToDate,
-		DATE_FORMAT(tw.day_start_time,'%H:%m') AS
-		dayStartTime,DATE_FORMAT(wl.`from_date`,'%H:%m') AS fromDate,
-		DATE_FORMAT(wl.`to_date`,'%H:%m') AS
+		DATE_FORMAT(tw.day_start_time,'%H:%i') AS
+		dayStartTime,DATE_FORMAT(wl.`from_date`,'%H:%i') AS fromDate,
+		DATE_FORMAT(wl.`to_date`,'%H:%i') AS
 		toDate,DATE_FORMAT(wl.`create_time`,'%Y/%m/%d') AS current,
-		DATE_FORMAT(tw.day_end_time,'%H:%m') AS dayEndTime,tw.hourly_pay AS
+		DATE_FORMAT(tw.day_end_time,'%H:%i') AS dayEndTime,tw.hourly_pay AS
 		hourlyPay, th.task_type_text AS taskTypeText, th.`task_content` AS
 		taskContent,
 		c.name AS hotelName, c.address AS address,c.leader AS

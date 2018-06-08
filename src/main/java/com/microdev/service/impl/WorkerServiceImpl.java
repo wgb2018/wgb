@@ -522,8 +522,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         if (StringUtils.isEmpty(taskWorkerId) || StringUtils.isEmpty(workerId)) {
             throw new ParamsException("参数不能为空");
         }
-        UserTaskResponse response = selectWorkerInfo(workerId);
-
+        UserTaskResponse response = new UserTaskResponse();
         // 查询用户工作记录
         TaskWorker taskWorker = taskWorkerMapper.selectById(taskWorkerId);
         if (taskWorker == null) {
@@ -831,39 +830,6 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             }
         }
         response.setList(detailList);
-        return response;
-    }
-
-    /**
-     * 查詢工作者信息
-     * @param workerId
-     * @return
-     */
-    @Override
-    public UserTaskResponse selectWorkerInfo(String workerId) {
-        if (StringUtils.isEmpty(workerId)) {
-            throw new ParamsException("參數userId不能为空");
-        }
-        UserTaskResponse response = userMapper.selectUserInfo(workerId);
-        if (response == null) {
-            throw new ParamsException("查询不到用户信息");
-        }
-        response.setAge(DateUtil.CaculateAge(response.getBirthday()));
-        response.setBirthday(null);
-        //查询服务区域
-        List<String> areaList = areaRelationMapper.selectAreaByUserId(workerId);
-        if (areaList != null) {
-            response.setAreaList(areaList);
-        } else {
-            response.setAreaList(new ArrayList<>());
-        }
-        //查询服务类型
-        List<String> serviceList = dictService.selectServiceTypeByUserId(workerId);
-        if (serviceList != null) {
-            response.setServiceList(serviceList);
-        } else {
-            response.setAreaList(new ArrayList<>());
-        }
         return response;
     }
 
