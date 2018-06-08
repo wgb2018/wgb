@@ -178,4 +178,11 @@ public interface MessageService extends IService<Message> {
      * @return
      */
     AwaitTaskResponse selectAwaitTaskDetails(String messageId, String messagetype, String type, String taskHrId);
+
+    /**
+     * 人力派发任务给小时工
+     * @param list
+     * @param taskHrCompany
+     */
+    void hrDistributeWorkerTask(List<String> list, TaskHrCompany taskHrCompany);
 }

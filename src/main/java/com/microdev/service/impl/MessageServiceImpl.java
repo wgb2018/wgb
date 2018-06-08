@@ -188,7 +188,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m = new Message();
             m.setDeleted(false);
             m.setMessageCode(mess.getCode());
-            m.setMessageTitle(mess.getTitle());
+            //m.setMessageTitle(mess.getTitle());
             m.setStatus(0);
             m.setApplicantType(1);
             m.setWorkerId(workerId);
@@ -313,7 +313,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         Message m = new Message();
         m.setDeleted(false);
         m.setMessageCode(mess.getCode());
-        m.setMessageTitle(mess.getTitle());
+        m.setMessageTitle(c.getTaskTypeText());
         m.setStatus(0);
         m.setApplyType(3);
         m.setMessageType(4);
@@ -779,8 +779,35 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             }
         } else if ("7".equals(type)) {
             response = messageMapper.selectCancelApply(messageId);
+        } else if ("8".equals(type)) {
+            if ("hr".equals(messagetype)) {
+                response = messageMapper.selectHrHotelDetails(messageId);
+            } else if ("worker".equals(messagetype)) {
+                response = messageMapper.selectHrHotelDetails(messageId);
+            } else {
+                throw new ParamsException("参数错误");
+            }
+        } else if ("9".equals(type)) {
+            response = messageMapper.selectHrHotelDetails(messageId);
+        } else if ("10".equals(type)) {
+            response = messageMapper.selectHrHotelDetails(messageId);
+        } else if ("11".equals(type)) {
+            response = messageMapper.selectHrHotelDetails(messageId);
         }
         return response;
+    }
+
+    /**
+     * 人力派发任务给小时工
+     * @param list
+     * @param taskHrCompany
+     */
+    @Override
+    public void hrDistributeWorkerTask(List<String> list, TaskHrCompany taskHrCompany) {
+        if (list == null || list.size() == 0 || taskHrCompany == null) {
+            throw new ParamsException("消息发送的参数错误");
+        }
+
     }
 
 }
