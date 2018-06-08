@@ -29,6 +29,9 @@
         company_id = #{hrId} and user_id not in (select
         user_id from
         task_worker where task_hr_id = #{taskId}))
+        <if test="userName !=null and userName !=''"  >
+            and nickname like concat('%', #{userName},'%')
+        </if>
     </select>
     <select id="getUnSelectableWorker" resultType="com.microdev.model.TaskWorker" parameterType="com.microdev.param.HrQueryWorkerDTO">
         select <include refid="TaskWorker_Query_List"/> from task_worker where task_hr_id = #{taskId}
@@ -96,5 +99,12 @@
         SELECT COUNT(1) FROM user_company WHERE STATUS IN (1,3) AND user_id = (
 SELECT id FROM USER WHERE worker_id = #{workerId}
 )
+    </select>
+    <select id="selectAllWorker" resultType="com.microdev.model.UserCompany">
+        select c.* from user_company c left join user u on c.user_id = u.id
+        where c.status = 1 and c.company_id = #{hrId}
+        <if test="userName !=null and userName !=''"  >
+            and nickname like concat('%', #{userName},'%')
+        </if>
     </select>
 </mapper>

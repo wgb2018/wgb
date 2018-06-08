@@ -29,6 +29,9 @@ public class PunchCount {
 	@Scheduled(cron = "0 0 4 * * ?")
 	public void startCountPunchInfo() {
 		Integer count = workerLogMapper.countPunchInfoNumber();
+		if(count == null){
+			count = 0 ;
+		}
 		if (count == 0) {
 			log.info("定时扫描打卡信息没有扫描到数据。");
 		} else {

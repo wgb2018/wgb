@@ -140,13 +140,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m.setIsTask(1);
             m.setContent(applyCompany.getName() + "向你发出了申请合作申请");
             if (type == 1) {
-                m.setApplyType(3);
-                m.setApplicantType(2);
+                m.setApplyType(2);
+                m.setApplicantType(3);
                 m.setHotelId(applyCompany.getPid());
                 m.setHrCompanyId(id);
             } else {
-                m.setApplyType(2);
-                m.setApplicantType(3);
+                m.setApplyType(3);
+                m.setApplicantType(2);
                 m.setHotelId(id);
                 m.setHrCompanyId(applyCompany.getPid());
             }

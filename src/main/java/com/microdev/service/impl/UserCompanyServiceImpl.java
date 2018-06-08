@@ -165,18 +165,26 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         Map<String,Object> map = new HashMap<>();
         /*map.put("company_id",queryDTO.getHrId());
         map.put("status","1 or status = 3");*/
-        Wrapper<UserCompany> et = new EntityWrapper<UserCompany> ().where("company_id={0}",queryDTO.getHrId()).in("status","1,3");
+        Wrapper<UserCompany> et = null;
+
+        if(queryDTO.getUserName ()!=null){
+            et = new EntityWrapper<UserCompany> ().where("company_id={0}",queryDTO.getHrId()).in("status","1,3");
+        }else{
+            et = new EntityWrapper<UserCompany> ().where("company_id={0}",queryDTO.getHrId()).in("status","1,3");
+        }
+
         List<User> list = null;
         User us = null;
         //List<String> ids = new ArrayList<>();
         HashMap<String,Object> result = new HashMap<>();
         if(queryDTO.getTaskId()==null) {
-            List<UserCompany> list1 = userCompanyMapper.selectList (et);
+            List<UserCompany> list1 = userCompanyMapper.selectAllWorker(queryDTO);
             for (UserCompany u:list1) {
                 us = userMapper.selectById(u.getUserId());
                 us.setAge(DateUtil.CaculateAge(us.getBirthday()));
                 u.setUser(us);
             }
+            System.out.println ("queryDTO:"+queryDTO);
             PageInfo<UserCompany> pageInfo = new PageInfo<UserCompany>(list1);
             //设置获取到的总记录数total：
             result.put("total",pageInfo.getTotal());

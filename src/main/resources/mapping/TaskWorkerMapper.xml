@@ -4,7 +4,8 @@
     <sql id="TaskWorker_Query_List">
     id as pid, create_time, deleted, modify_time,
     confirmed_date, from_date, have_pay_money, minutes, no_promise, refused_reason, repast_times,
-    settled, settled_date, should_pay_money, status, to_date, worker_id, task_hr_id, user_id, day_start_time, day_end_time, user_name,hourly_pay,hr_company_name,hotel_name, check_sign
+    settled, settled_date, should_pay_money, status, to_date, worker_id, task_hr_id, user_id, day_start_time, day_end_time, user_name,hourly_pay,hr_company_name,hotel_name, check_sign,
+        hotel_id
 </sql>
     <select id="findFirstById" resultType="com.microdev.model.TaskWorker" parameterType="java.lang.String">
         select
@@ -64,22 +65,22 @@
         select
         <include refid="TaskWorker_Query_List"/>
         from task_worker
-        where user_id = #{userId} and status = #{status} and to_date &gt;= #{nowTime,jdbcType=TIMESTAMP}
-        and day_start_time &lt;= #{Time,jdbcType=TIMESTAMP} and day_end_time &gt;= #{Time,jdbcType=TIMESTAMP} and deleted = 0
+        where user_id = #{userId} and status = 1 and to_date &gt;= #{nowTime} and from_date &lt;= #{nowTime}
+        and deleted = 0
         order by create_time desc limit 1
     </select>
     <select id="findWorkerNextTask" resultType="com.microdev.model.TaskWorker">
         select
         <include refid="TaskWorker_Query_List"/>
         from task_worker
-        where user_id = #{userId} and status = #{status} and from_date &gt;= #{nowTime,jdbcType=TIMESTAMP} and deleted = 0
+        where user_id = #{userId} and status = 1 and from_date &gt;= #{nowTime,jdbcType=TIMESTAMP} and deleted = 0
         order by from_date asc limit 1
     </select>
     <select id="findWorkerBeforeTask" resultType="com.microdev.model.TaskWorker">
         select
         <include refid="TaskWorker_Query_List"/>
         from task_worker
-        where user_id = #{userId} and status = #{status} and to_date &lt;= #{nowTime,jdbcType=TIMESTAMP} and deleted = 0
+        where user_id = #{userId} and status = 1 and to_date &lt;= #{nowTime,jdbcType=TIMESTAMP} and deleted = 0
         order by to_date desc limit 1
     </select>
     <update id="addMinutes">

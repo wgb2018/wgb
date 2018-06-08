@@ -41,6 +41,10 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
     private MessageMapper messageMapper;
     @Autowired
     private InformMapper informMapper;
+    @Autowired
+    UserMapper userMapper;
+    @Autowired
+    CompanyMapper companyMapper;
     /**
      * 设置违约的任务
      */
@@ -197,6 +201,16 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         //查询数据集合
         List<TaskWorker> list = taskWorkerMapper.findAll(taskQueryDTO);
+        for (TaskWorker t:list) {
+            if(t.getToDate ().isAfter (OffsetDateTime.now ()) && t.getFromDate ().isBefore (OffsetDateTime.now ())){
+                t.setStatus (3);
+            }
+            if(t.getToDate ().isBefore (OffsetDateTime.now ())){
+                t.setStatus (4);
+            }
+            t.setUser (userMapper.queryByUserId (t.getUserId ()));
+            t.setHotel (companyMapper.selectById (t.getHotelId ()));
+        }
         PageInfo<TaskWorker> pageInfo = new PageInfo<>(list);
         HashMap<String,Object> result = new HashMap<>();
         //设置获取到的总记录数total：
