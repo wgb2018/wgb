@@ -31,4 +31,7 @@ public class AwaitTaskResponse {
     private String messageId;
     private String hrAddress;//人力地址
     private String hrArea;//人力区域
+    private String taskHotelId;//酒店任务id
+    private String taskHrId;//人力任务id
+    private String workerTaskId;//小时工任务id
 }

@@ -13,7 +13,7 @@ public class HrTaskDistributeRequest {
     /**
      * 主键
      */
-    private String id;
+    private String messageId;
     /**
      * 人力公司每小时薪资
      */

@@ -35,4 +35,5 @@ public class MessageDetailsResponse {
     private String taskHrId;//人力任务id
     private String workerTaskId;//小时工任务id
     private String messageCode;//服务类型码
+    private String taskHotelId;//酒店任务id
 }

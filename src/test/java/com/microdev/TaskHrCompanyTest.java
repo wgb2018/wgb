@@ -47,22 +47,6 @@ public class TaskHrCompanyTest {
 		System.out.println(r.toString());
 	}
 
-	@Test
-	public void threeTest() {
-		HrTaskDistributeRequest hrTaskDis = new HrTaskDistributeRequest();
-		hrTaskDis.setId("0a8054c4-408c-4090-b6e3-357c31c4196f");
-		hrTaskDis.setHourlyPay(22d);
-		Set<String> set = new HashSet<>();
-		set.add("6642fb92-4e89-4d12-828a-8f42f9223b9b");
-		set.add("4c2a2f69-1008-4c23-aa6d-e9c493e8ce31");
-		set.add("50f7f6bd-5f78-48da-bddd-800ca3c30154");
-		hrTaskDis.setWorkerIds(set);
-		ResultDO r = taskHrCompanyService.TaskHrDistribute(hrTaskDis);
-		JSONObject json = JSONObject.fromObject(r);
-		if (r != null) {
-			System.out.println(json);
-		}
-	}
 
 	/*@Test
 	public void fourTest() {
