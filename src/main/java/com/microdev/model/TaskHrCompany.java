@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import lombok.Data;
 
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +81,10 @@ public class TaskHrCompany extends BaseEntity {
     /**
      * 人力资源公司对应多个TaskWorker
      */
+    private OffsetDateTime fromDate;
+    private OffsetDateTime toDate;
+    private OffsetTime dayStartTime;
+    private OffsetTime dayEndTime;
     @TableField(exist = false)
     private List<Map<String,Object>> listWorkerTask = new ArrayList<Map<String,Object>>();
     /**

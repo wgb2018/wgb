@@ -247,6 +247,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m.setTaskId(dto.getTaskId());
             m.setMessageContent(c);
             m.setHrTaskId(dto.getPid());
+            m.setHrCompanyId (dto.getHrCompanyId ());
             list.add(m);
         }
         messageMapper.saveBatch(list);

@@ -3,6 +3,7 @@ package com.microdev.model;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
@@ -39,6 +40,7 @@ public class TaskWorker extends BaseEntity {
     /**
      * ybx 确定任务时间（接收或拒绝）
      */
+    @JsonFormat(pattern="yyyy.MM.dd")
     private OffsetDateTime confirmedDate;
     /**
      * ybx 任务状态
@@ -61,10 +63,12 @@ public class TaskWorker extends BaseEntity {
     /**
      * ybx 开始时间(重复字段，方便判断任务时间是否冲突)
      */
+    @JsonFormat(pattern="yyyy.MM.dd")
     private OffsetDateTime fromDate;
     /**
      * ybx 截止时间（(重复字段，方便判断任务时间是否冲突)）
      */
+    @JsonFormat(pattern="yyyy.MM.dd")
     private OffsetDateTime toDate;
 
     /**
@@ -98,7 +102,10 @@ public class TaskWorker extends BaseEntity {
     /**
      *  人力公司名称
      */
+    private String hrCompanyId;
     private String hrCompanyName;
+    @TableField(exist = false)
+    private Company hrCompany;
     /**
      * 任务内容
      */
@@ -115,9 +122,9 @@ public class TaskWorker extends BaseEntity {
     private String hotelId;
     @TableField(exist = false)
     private Company hotel;
-
+    @JsonFormat(pattern="HH:mm")
     private OffsetTime dayStartTime;
-
+    @JsonFormat(pattern="HH:mm")
     private OffsetTime dayEndTime;
 
     /**

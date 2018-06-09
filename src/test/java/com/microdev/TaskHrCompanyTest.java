@@ -64,7 +64,7 @@ public class TaskHrCompanyTest {
 		}
 	}
 
-	@Test
+	/*@Test
 	public void fourTest() {
 		String id = "0012c7dd-bb27-4475-b197-c2e870275653";
 		String messageId = "dd750ed6dc444b16a4eb7369bdb3f6bc";
@@ -76,5 +76,5 @@ public class TaskHrCompanyTest {
 		String id = "0012c7dd-bb27-4475-b197-c2e870275653";
 		String messageId = "3e8960615d704ec8acd0f94facc5e67f";
 		taskHrCompanyService.TaskHraccept(id, messageId);
-	}
+	}*/
 }

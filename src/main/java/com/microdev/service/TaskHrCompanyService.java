@@ -28,11 +28,11 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
     /**
      * 人力公司接受任务
      */
-    void TaskHraccept(String id, String messageId);
+    void TaskHraccept(String messageId);
     /**
      * 人力公司拒绝任务
      */
-    void TaskHrrefuse(String id, String messageId, String reason);
+    void TaskHrrefuse(String messageId, String reason);
     /**
      * 人力公司申请调配
      */
@@ -112,7 +112,7 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
     ResultDO hrRefuseHotelSwapWorker(String messageId);
 
     /**
-     * 人力拒绝小时工取消任务
+     * 人力处理小时工取消任务
      * @param messageId
      * @return
      */

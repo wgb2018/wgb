@@ -157,4 +157,6 @@ public interface CompanyService extends IService<Company> {
      * @return
      */
     ResultDO hotelHandleLeave(String messageId, String status);
+
+    ResultDO deploymentHandle(String messageId, String status,String reason);
 }
