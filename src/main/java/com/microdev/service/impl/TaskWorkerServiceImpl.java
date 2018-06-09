@@ -77,7 +77,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
      * 领取任务
      */
     @Override
-    public ResultDO receivedTask(String workerId, String workerTaskId, String messageId) {
+    public ResultDO receivedTask(String messageId) {
         if (StringUtils.isEmpty(messageId)) {
             throw new ParamsException("参数messageId不能为空");
         }
@@ -87,7 +87,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         }
         message.setStatus(1);
         messageMapper.updateAllColumnById(message);
-        TaskWorker taskWorker = taskWorkerMapper.findFirstById(workerTaskId);
+        TaskWorker taskWorker = taskWorkerMapper.findFirstById(message.getWorkerTaskId());
         if (taskWorker.getStatus() > 0) {
             throw new BusinessException("任务状态不是新派发,无法接受任务");
         }
@@ -146,12 +146,6 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         if (!StringUtils.hasLength(refusedTaskReq.getRefusedReason())) {
             throw new ParamsException("拒绝理由不能为空");
         }
-        if (!StringUtils.hasLength(refusedTaskReq.getWorkerId())) {
-            throw new ParamsException("小时工不能为空");
-        }
-        if (!StringUtils.hasLength(refusedTaskReq.getWorkerTaskId())) {
-            throw new ParamsException("任务不能为空");
-        }
         if (StringUtils.isEmpty(refusedTaskReq.getMessageId())) {
             throw new ParamsException("消息id不能为空");
         }
@@ -208,6 +202,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         param.put("content", refusedTaskReq.getRefusedReason());
         String c = StringKit.templateReplace(mess.getContent(), param);
         m.setMessageContent(c);
+        m.setHrTaskId(message.getHrTaskId());
         m.setApplyType(2);
         m.setStatus(0);
         m.setIsTask(0);

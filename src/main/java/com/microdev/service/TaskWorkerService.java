@@ -21,7 +21,7 @@ public interface TaskWorkerService extends IService<TaskWorker> {
     /**
      * 接受任务
      */
-    ResultDO receivedTask(String workerId, String workerTaskId, String messageId);
+    ResultDO receivedTask(String messageId);
     /**
      * 拒绝任务
      */

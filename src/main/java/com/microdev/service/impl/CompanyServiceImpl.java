@@ -421,6 +421,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         m.setStatus(0);
         m.setIsTask(0);
         m.setMessageType(9);
+        m.setHrTaskId(param.get("hrTaskId"));
         messageMapper.insert(m);
         return true;
     }

@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+
 /**
  * 小时工任务相关的Api
  */
@@ -35,8 +37,8 @@ public class TaskWorkerController {
      * 小时工接受任务
      */
     @PostMapping("/worker-tasks/accept")
-    public ResultDO getById(String workerId, String workerTaskId, String messageId) {
-        return taskWorkerService.receivedTask(workerId, workerTaskId, messageId);
+    public ResultDO workerAcceptTask(@RequestBody RefusedTaskRequest refusedReq) {
+        return taskWorkerService.receivedTask(refusedReq.getMessageId());
     }
     /**
      * 小时工拒绝任务

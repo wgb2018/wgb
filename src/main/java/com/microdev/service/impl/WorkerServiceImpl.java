@@ -549,10 +549,11 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         endDay = OffsetDateTime.of(endDay.getYear(), endDay.getMonthValue(), endDay.getDayOfMonth(), dayEnd.getHour(), dayEnd.getMinute(), dayEnd.getSecond(),0, ZoneOffset.UTC);
         long start = dayStart.getLong(ChronoField.MINUTE_OF_DAY);
         long end = dayEnd.getLong(ChronoField.MINUTE_OF_DAY);
-        int expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  > 168 ? 1 : 0;
+        boolean expire;
         long workDay = endDay.getLong(ChronoField.EPOCH_DAY) - startDay.getLong(ChronoField.EPOCH_DAY);
         // 查询打卡记录
         DateTimeFormatter d = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
         List<WorkerDetail> detailList = new ArrayList<>();//存放小时工所有打卡记录
         List<WorkerOneDayInfo> list = workLogMapper.selectUserPunchDetail(taskWorkerId);
         List<Holiday> holidayList = holidayMapper.selectHolidayByTaskWorkId(taskWorkerId);
@@ -569,11 +570,18 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     workLog = new PunchInfo();
                     hotelStatus = new HashMap<>();
                     sysStatus = new HashMap<>();
-                    sysStatus.put("", );
-                    workLog.setStatus("3");
-                    workLog.setEmployerConfirmStatus(0);
-                    if (nowDate.getDayOfYear() - startDay.getDayOfYear() > 7) {
-                        workLog.setExpire(1);
+                    initMapStatus(hotelStatus, 4);
+                    initMapStatus(sysStatus, 5);
+                    sysStatus.put("stay", 1);
+
+                    detail.setEmployerConfirmStatus(0);
+                    detail.setHotelStatus(hotelStatus);
+                    detail.setSysStatus(sysStatus);
+                    expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
+                    if (expire) {
+                        detail.setExpire("0");
+                    } else  {
+                        detail.setExpire("1");
                     }
                     workList.add(workLog);
                     detail.setTime(startDay.format(d));
@@ -587,6 +595,10 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     detail = new WorkerDetail();
                     workList = new ArrayList<>();
                     workLog = new PunchInfo();
+                    hotelStatus = new HashMap<>();
+                    sysStatus = new HashMap<>();
+                    initMapStatus(hotelStatus, 4);
+                    initMapStatus(sysStatus, 5);
                     long time = 0L;
                     boolean flag = false;
                     int num = 0;
@@ -596,12 +608,16 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
                                 if (startDay.getLong(ChronoField.MINUTE_OF_DAY) >= holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY)) {
 
-                                    workLog.setStatus("5");
-                                    workLog.setEmployerConfirmStatus(0);
-                                    workLog.setStartTime(startDay.toOffsetTime());
-                                    workLog.setEndTime(endDay.toOffsetTime());
-                                    if (nowDate.getDayOfYear() - startDay.getDayOfYear() > 7) {
-                                        workLog.setExpire(1);
+                                    sysStatus.put("comeLate", 1);
+                                    sysStatus.put("leave", 1);
+                                    hotelStatus.put("leave", 1);
+                                    workLog.setStartTime(startDay.format(timeFormat));
+                                    workLog.setEndTime(endDay.format(timeFormat));
+                                    expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
+                                    if (expire) {
+                                        detail.setExpire("0");
+                                    } else  {
+                                        detail.setExpire("1");
                                     }
                                     workList.add(workLog);
                                     detail.setTime(startDay.format(d));
@@ -610,12 +626,16 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
                                 } else {
                                     if (!flag) {
-                                        workLog.setStatus("5");
-                                        workLog.setEmployerConfirmStatus(0);
-                                        workLog.setStartTime(startDay.toOffsetTime());
-                                        workLog.setEndTime(holiday.getFromDate().toOffsetTime());
-                                        if (nowDate.getDayOfYear() - startDay.getDayOfYear() > 7) {
-                                            workLog.setExpire(1);
+                                        expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
+                                        sysStatus.put("stay", 1);
+                                        hotelStatus.put("leave", 1);
+                                        detail.setEmployerConfirmStatus(0);
+                                        workLog.setStartTime("--");
+                                        workLog.setEndTime("--");
+                                        if (expire) {
+                                            detail.setExpire("0");
+                                        } else  {
+                                            detail.setExpire("1");
                                         }
                                         workList.add(workLog);
                                         detail.setTime(startDay.format(d));
@@ -627,12 +647,16 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                             } else {
                                 //当天请假
                                 if (!flag) {
-                                    workLog.setStatus("5");
-                                    workLog.setEmployerConfirmStatus(0);
-                                    workLog.setStartTime(holiday.getFromDate().toOffsetTime());
-                                    workLog.setEndTime(holiday.getToDate().toOffsetTime());
-                                    if (nowDate.getDayOfYear() - startDay.getDayOfYear() > 7) {
-                                        workLog.setExpire(1);
+                                    expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
+                                    sysStatus.put("stay", 1);
+                                    detail.setEmployerConfirmStatus(0);
+                                    hotelStatus.put("leave", 1);
+                                    workLog.setStartTime("--");
+                                    workLog.setEndTime("--");
+                                    if (expire) {
+                                        detail.setExpire("0");
+                                    } else  {
+                                        detail.setExpire("1");
                                     }
                                     workList.add(workLog);
                                     detail.setTime(startDay.format(d));
@@ -642,14 +666,17 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                             }
                         } else if (holiday.getFromDate().getDayOfYear() < startDay.getDayOfYear()){
                             //请假是从当天之前开始计算
+                            expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
                             if (holiday.getToDate().getDayOfYear() == startDay.getDayOfYear()) {
                                 if (holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) >= endDay.getLong(ChronoField.MINUTE_OF_DAY)) {
-                                    workLog.setStatus("5");
-                                    workLog.setEmployerConfirmStatus(0);
-                                    workLog.setStartTime(startDay.toOffsetTime());
-                                    workLog.setEndTime(endDay.toOffsetTime());
-                                    if (nowDate.getDayOfYear() - startDay.getDayOfYear() > 7) {
-                                        workLog.setExpire(1);
+                                    sysStatus.put("stay", 1);
+                                    detail.setEmployerConfirmStatus(0);
+                                    workLog.setStartTime("--");
+                                    workLog.setEndTime("--");
+                                    if (expire) {
+                                        detail.setExpire("0");
+                                    } else  {
+                                        detail.setExpire("1");
                                     }
                                     workList.add(workLog);
                                     detail.setTime(startDay.format(d));
@@ -843,6 +870,22 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         return response;
     }
 
+    /**
+     * 初始化小时工工作记录打卡状态
+     * @param map
+     */
+    private void initMapStatus(Map<String, Integer> map, int num) {
+        if (map == null) {
+            throw new ParamsException("参数错误");
+        }
+        map.put("comeLate", 0);//迟到0否1是
+        map.put("earlier", 0);//早退0否1是
+        map.put("stay", 0);//旷工0否1是
+        map.put("leave", 0);//请假0否1是
+        if (num == 5)
+            map.put("forget", 0);//忘打卡0否1是
+    }
+
 	/**
      *  修改服务类型及服务地区
      */    public void mpdifyAreaAndService(AreaAndServiceRequest request) {
@@ -942,7 +985,11 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     @Override
     public Map<String, Object> queryWorker(String id) {
         Map<String, Object> map = workerMapper.queryWorker(id);
-        String str = map.get("birthday").toString ().substring (0,10);
+        String str = "";
+        if (map.get("birthday") != null) {
+            str = map.get("birthday").toString ().substring (0,10);
+        }
+
         map.put("birthday",str);
         List l1 = dictService.findServiceArea (id);
         List l2 = dictMapper.queryTypeByUserId (id);
@@ -1003,7 +1050,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         userCompanyMapper.saveBatch(userCompanyList);
         //发送消息
-        messageService.bindUserHrCompany(user.getUsername(), workerId, set, 1);
+        messageService.bindUserHrCompany(user.getNickname(), workerId, set, 1);
         return "申请成功";
     }
 
