@@ -109,15 +109,21 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         if (!StringUtils.hasLength(String.valueOf(hrTaskDis.getHourlyPay()))) {
             throw new ParamsException("人力公司每小时工钱不能为空");
         }
-        if (!StringUtils.hasLength(hrTaskDis.getId())) {
+        if (!StringUtils.hasLength(hrTaskDis.getMessageId())) {
             throw new ParamsException("人力公司id不能为空");
         }
         if (hrTaskDis.getWorkerIds().size()==0) {
             throw new ParamsException("请选择派发的员工");
         }
 
+        Message message = messageMapper.selectById(hrTaskDis.getMessageId());
+        if (message == null) {
+            throw new ParamsException("查询不到消息");
+        }
+        message.setStatus(1);
+        messageMapper.updateAllColumnById(message);
         // 获取人力公司任务和酒店任务信息
-        TaskHrCompany hrTask= taskHrCompanyMapper.queryByTaskId(hrTaskDis.getId());
+        TaskHrCompany hrTask= taskHrCompanyMapper.queryByTaskId(message.getHrTaskId());
         if(hrTask==null){
             throw new ParamsException("人力公司参数有误");
         }
@@ -162,7 +168,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             list.add(m);
         }
         taskHrCompanyMapper.updateById(hrTask);
-        messageService.hrDistributeTask(list, hrTask.getHrCompanyId(), hrTask.getHrCompanyName(), "workTaskMessage", hotelTask.getPid());
+        messageService.hrDistributeTask(list, hrTask.getHrCompanyId(), hrTask.getHrCompanyName(), "workTaskMessage", hotelTask.getPid(), hrTask.getPid());
         //短信发送
         /*CreateMessageDTO createMessageDTO =new CreateMessageDTO();
         createMessageDTO.setHotelName(hotel.getName());
@@ -285,6 +291,18 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         inform.setAcceptType(3);
         inform.setSendType(2);
         informMapper.insertInform(inform);
+
+        //生成一个待派发的消息
+        Map<String, Object> param = new HashMap<>();
+        param.put("hrCompanyId", taskHrCompany.getHrCompanyId());
+        param.put("hotelId", taskHrCompany.getHotelId());
+        param.put("applicantType", 2);
+        param.put("applyType", 2);
+        param.put("hrTaskId", taskHrCompany.getPid());
+        param.put("taskId", taskHrCompany.getTaskId());
+        param.put("messageType", 11);
+        param.put("messageCode", "awaitSendMessage");
+        messageService.sendMessageInfo(param);
     }
     /**
      * 人力公司拒绝任务

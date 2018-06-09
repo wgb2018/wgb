@@ -544,22 +544,27 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         endDay = OffsetDateTime.of(endDay.getYear(), endDay.getMonthValue(), endDay.getDayOfMonth(), dayEnd.getHour(), dayEnd.getMinute(), dayEnd.getSecond(),0, ZoneOffset.UTC);
         long start = dayStart.getLong(ChronoField.MINUTE_OF_DAY);
         long end = dayEnd.getLong(ChronoField.MINUTE_OF_DAY);
-        int expire = nowDate.getDayOfYear() - startDay.getDayOfYear() > 7 ? 1 : 0;
+        int expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  > 168 ? 1 : 0;
         long workDay = endDay.getLong(ChronoField.EPOCH_DAY) - startDay.getLong(ChronoField.EPOCH_DAY);
         // 查询打卡记录
-        DateTimeFormatter d = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        List<WorkerDetail> detailList = new ArrayList<>();
+        DateTimeFormatter d = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        List<WorkerDetail> detailList = new ArrayList<>();//存放小时工所有打卡记录
         List<WorkerOneDayInfo> list = workLogMapper.selectUserPunchDetail(taskWorkerId);
         List<Holiday> holidayList = holidayMapper.selectHolidayByTaskWorkId(taskWorkerId);
         PunchInfo workLog = null;
         WorkerDetail detail = null;
         List<PunchInfo> workList = null;
-        if (list == null || list.size() == 0) {
+        Map<String, Integer> hotelStatus = null;
+        Map<String, Integer> sysStatus = null;
+        /*if (list == null || list.size() == 0) {
             if (holidayList == null || holidayList.size() == 0) {
                 while (startDay.compareTo(nowDate) > 0) {
                     detail = new WorkerDetail();
                     workList = new ArrayList<>();
                     workLog = new PunchInfo();
+                    hotelStatus = new HashMap<>();
+                    sysStatus = new HashMap<>();
+                    sysStatus.put("", );
                     workLog.setStatus("3");
                     workLog.setEmployerConfirmStatus(0);
                     if (nowDate.getDayOfYear() - startDay.getDayOfYear() > 7) {
@@ -828,7 +833,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 detail.setTime(startDay.format(d));
                 detailList.add(detail);
             }
-        }
+        }*/
         response.setList(detailList);
         return response;
     }

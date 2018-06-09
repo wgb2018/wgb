@@ -13,17 +13,12 @@ import com.microdev.mapper.TaskWorkerMapper;
 import com.microdev.model.*;
 import com.microdev.param.*;
 import com.microdev.service.MessageService;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-
-import java.time.Clock;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Transactional
@@ -260,9 +255,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      * @param hrName
      * @param pattern
      * @param taskId
+     * @param hrTaskId
      */
     @Override
-    public void hrDistributeTask(List<Map<String, String>> list, String hrId, String hrName, String pattern, String taskId) {
+    public void hrDistributeTask(List<Map<String, String>> list, String hrId, String hrName, String pattern, String taskId, String hrTaskId) {
         if (list == null || list.size() == 0 || StringUtils.isEmpty(hrId) || StringUtils.isEmpty(pattern)) {
             throw new ParamsException("参数不能为空");
         }
@@ -288,6 +284,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m.setWorkerId(param.get("workerId"));
             m.setWorkerTaskId(param.get("workerTaskId"));
             m.setTaskId(taskId);
+            m.setIsTask(0);
+            m.setHrTaskId(hrTaskId);
 
             m.setMessageContent(c);
             messageList.add(m);
@@ -759,7 +757,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      * @return
      */
     @Override
-    public AwaitTaskResponse selectAwaitTaskDetails(String messageId, String messagetype, String type,String taskHrId) {
+    public AwaitTaskResponse selectAwaitTaskDetails(String messageId, String messagetype, String type) {
         if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(messagetype) || StringUtils.isEmpty(type)) {
             throw new ParamsException("参数错误");
         }
@@ -767,14 +765,15 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         if ("6".equals(type)) {
             if ("worker".equals(messagetype)) {
                 response = messageMapper.selectWorkerAwaitHandleTask(messageId);
+
             } else if ("hr".equals(messagetype)) {
-                response = messageMapper.selectHrAwaitHandleTask(messageId, taskHrId);
+                response = messageMapper.selectHrAwaitHandleTask(messageId);
             }
         } else if ("1".equals(type) || "2".equals(type) || "3".equals(type) || "4".equals(type) || "11".equals(type)) {
-            response = messageMapper.selectHrAwaitHandleTask(messageId, taskHrId);
+            response = messageMapper.selectHrAwaitHandleTask(messageId);
         } else if ("10".equals(type)) {
             if ("hr".equals(type)) {
-                response = messageMapper.selectHrAwaitHandleTask(messageId, taskHrId);
+                response = messageMapper.selectHrAwaitHandleTask(messageId);
             } else if ("hotel".equals(type)) {
                 response = messageMapper.selectWorkerAwaitHandleTask(messageId);
             }
@@ -794,6 +793,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             response = messageMapper.selectHrHotelDetails(messageId);
         } else if ("11".equals(type)) {
             response = messageMapper.selectHrHotelDetails(messageId);
+        }
+        if ("0".equals(response.getHourlyPay())) {
+            response.setHourlyPay("");
         }
         return response;
     }
@@ -859,6 +861,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         message.setApplyType((Integer)param.get("applyType"));
         message.setMessageContent((String)param.get("messageContent"));
         message.setContent((String)param.get("content"));
+        message.setTaskId((String)param.get("taskId"));
+        message.setMessageCode((String)param.get("messageCode"));
+        message.setMessageTitle((String)param.get("messageTitle"));
         if (param.get("hrTaskId") != null)
             message.setHrTaskId((String)param.get("hrTaskId"));
         if (param.get("minutes") != null)

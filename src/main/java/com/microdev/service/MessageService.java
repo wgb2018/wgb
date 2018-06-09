@@ -76,8 +76,9 @@ public interface MessageService extends IService<Message> {
      * @param hrName
      * @param pattern
      * @param taskId
+     * @param hrTaskId
      */
-    void hrDistributeTask(List<Map<String, String>> list, String hrId, String hrName, String pattern, String taskId);
+    void hrDistributeTask(List<Map<String, String>> list, String hrId, String hrName, String pattern, String taskId, String hrTaskId);
 
     /**
      * 人力申请调配消息
@@ -178,7 +179,7 @@ public interface MessageService extends IService<Message> {
      * @param type              消息类型
      * @return
      */
-    AwaitTaskResponse selectAwaitTaskDetails(String messageId, String messagetype, String type, String taskHrId);
+    AwaitTaskResponse selectAwaitTaskDetails(String messageId, String messagetype, String type);
 
     /**
      * 人力派发任务给小时工

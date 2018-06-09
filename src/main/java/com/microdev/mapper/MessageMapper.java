@@ -69,7 +69,7 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     AwaitTaskResponse selectWorkerAwaitHandleTask(@Param("messageId") String messageId);
 
-    AwaitTaskResponse selectHrAwaitHandleTask(@Param("messageId") String messageId,@Param("taskHrId") String taskHrId);
+    AwaitTaskResponse selectHrAwaitHandleTask(@Param("messageId") String messageId);
 
     MessageDetailsResponse selectSupplementApply(@Param("messageId") String messageId);
 
