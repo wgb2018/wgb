@@ -191,7 +191,7 @@
 
     <select id="selectExamineCompanies" resultType="java.util.Map">
         SELECT c.name,c.address,c.logo,c.leader,c.leader_mobile,c.status,m.id AS messageId FROM company c INNER JOIN
-(SELECT id,hotel_id,create_time FROM message WHERE STATUS = 0 AND hr_company_id = #{hrCompanyId} AND apply_type = 2 AND applicant_type = 3) m ON c.id = m.hotel_id ORDER BY m.create_time DESC
+(SELECT id,hotel_id,create_time FROM message WHERE STATUS = 0 AND hr_company_id = #{hrCompanyId} AND apply_type = 2 AND applicant_type = 3 and message_code = 'applyBindMessage') m ON c.id = m.hotel_id ORDER BY m.create_time DESC
     </select>
 
     <select id = "selectCooperateWorker" resultType="java.util.Map" parameterType="com.microdev.param.QueryCooperateRequest">
@@ -253,6 +253,6 @@ union
             </if>
         </where>
       ) c INNER JOIN
-(SELECT id,hr_company_id,create_time FROM message WHERE STATUS = 0 AND hotel_id = #{hotelId} AND apply_type = 3 AND applicant_type = 2) m ON c.id = m.hr_company_id ORDER BY m.create_time DESC
+(SELECT id,hr_company_id,create_time FROM message WHERE STATUS = 0 AND hotel_id = #{hotelId} AND apply_type = 3 AND applicant_type = 2 and message_code = 'applyBindMessage') m ON c.id = m.hr_company_id ORDER BY m.create_time DESC
     </select>
 </mapper>
