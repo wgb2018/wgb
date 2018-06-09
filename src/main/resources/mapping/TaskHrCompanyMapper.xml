@@ -75,7 +75,7 @@
             <if test="payStatus == 3">
                 and have_pay_money &gt;= 0 and should_pay_money = have_pay_money
             </if>
-            <if test="status !=null and status !=0  and status !=7 and status !=6">
+            <if test="status !=null and status !=0  and status !=6 and status !=7 and status !=8 and status !=9">
                 and status = #{status}
             </if>
             <if test="status == 0">

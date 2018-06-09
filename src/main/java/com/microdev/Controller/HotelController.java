@@ -98,14 +98,14 @@ public class HotelController {
      * 酒店反馈补签
      */
     @PostMapping("/hotels/supplementResponse")
-    public ResultDO supplementResponse(Map<String, String> param) {
+    public ResultDO supplementResponse(@RequestBody Map<String, String> param) {
         return ResultDO.buildSuccess(companyService.supplementResponse(param.get("messageId"), param.get("status")));
     }
     /**
      * 酒店申请替换小时工
      */
     @PostMapping("/hotels/changeWorker")
-    public ResultDO changeWorker(Map<String, Object> map) {
+    public ResultDO changeWorker(@RequestBody Map<String, Object> map) {
         return ResultDO.buildSuccess(companyService.changeWorker(map));
     }
     /**
@@ -119,7 +119,7 @@ public class HotelController {
      * 酒店待处理事务分页信息
      */
     @PostMapping("/hotels/hotelWaitTaskPage")
-    public ResultDO hotelWaitTaskPage(MessageRequest request) {
+    public ResultDO hotelWaitTaskPage(@RequestBody MessageRequest request) {
         return ResultDO.buildSuccess(companyService.hotelWaitTaskDetails(request));
     }
     /**
@@ -140,7 +140,7 @@ public class HotelController {
      * 酒店处理小时工加时
      */
     @PostMapping("/hotels/handleExpandWork")
-    public ResultDO handleExpandWork(Map<String, String> param) {
+    public ResultDO handleExpandWork(@RequestBody Map<String, String> param) {
         return ResultDO.buildSuccess(companyService.workExpand(param.get("messageId"), param.get("status")));
     }
     /**
@@ -179,7 +179,7 @@ public class HotelController {
      * @return
      */
     @PostMapping("/hotels/handle/workerLeave")
-    public ResultDO hotelsHandleWorkerLeave(Map<String, String> param) {
+    public ResultDO hotelsHandleWorkerLeave(@RequestBody Map<String, String> param) {
 
         return companyService.hotelHandleLeave(param.get("messageId"), param.get("status"));
     }
@@ -189,7 +189,7 @@ public class HotelController {
      * @return
      */
     @PostMapping("/apply/for/deployment/handle")
-    public ResultDO applyfordeploymenthandle(Map<String, String> param) {
+    public ResultDO applyfordeploymenthandle(@RequestBody Map<String, String> param) {
 
         return companyService.deploymentHandle(param.get("messageId"), param.get("status"),param.get("reason"));
     }

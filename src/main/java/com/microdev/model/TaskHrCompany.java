@@ -47,9 +47,10 @@ public class TaskHrCompany extends BaseEntity {
      * 1：新任务等待确认
      * 2: 接受任务
      * 3: 拒绝任务
-     * 4：派发中
-     * 5: 申请调配
-     * 6: 等待做
+     * 4：已派发
+     * 5: 派单完成
+     * 6.执行中
+     * 7.已完成
      */
     private Integer status;
     /**
