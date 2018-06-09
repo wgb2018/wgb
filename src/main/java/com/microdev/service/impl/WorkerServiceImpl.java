@@ -556,7 +556,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         List<PunchInfo> workList = null;
         Map<String, Integer> hotelStatus = null;
         Map<String, Integer> sysStatus = null;
-        if (list == null || list.size() == 0) {
+        /*if (list == null || list.size() == 0) {
             if (holidayList == null || holidayList.size() == 0) {
                 while (startDay.compareTo(nowDate) > 0) {
                     detail = new WorkerDetail();
@@ -833,7 +833,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 detail.setTime(startDay.format(d));
                 detailList.add(detail);
             }
-        }
+        }*/
         response.setList(detailList);
         return response;
     }
