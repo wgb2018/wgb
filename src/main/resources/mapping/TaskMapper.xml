@@ -129,10 +129,10 @@
         as messageCode,
         m.id as messageId
         from
-        (select * from task where hotel_id=#{hotelId}) t
-        inner join
         (select * from message where apply_type=3 and status = #{status} and deleted= #{deleted}) m
-        on t.hotel_id = m.`hotel_id`
+        left join
+        (select * from task where hotel_id=#{hotelId}) t
+        on t.id = m.task_id
     </select>
     <select id="findTaskAndHrInfoById" parameterType="java.lang.String"
             resultMap="dotMap">

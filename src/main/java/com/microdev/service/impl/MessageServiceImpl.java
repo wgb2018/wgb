@@ -319,7 +319,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         m.setApplicantType(2);
         m.setIsTask(0);
         m.setHrCompanyId(c.getHrCompanyId());
+        m.setHrTaskId (c.getPid ());
         m.setHotelId(c.getHotelId());
+        m.setTaskId (c.getTaskId ());
         Map<String, String> map = new HashMap<>();
         map.put("hrCompanyName", c.getHrCompanyName());
         map.put("reason", reason);

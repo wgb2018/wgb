@@ -408,6 +408,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         m.setContent((String)map.get("reason"));
         m.setWorkerId(null);
         m.setHrCompanyId((String)map.get("hrCompanyId"));
+        m.setHrTaskId (tp.get("hrTaskId").toString ());
         m.setHotelId((String)map.get("hotelId"));
         m.setWorkerTaskId((String)map.get("taskWorkerId"));
         Map<String, String> param = new HashMap<>();
@@ -977,7 +978,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 throw new ParamsException("拒绝理由不能为空");
             }
             //申请调配被拒绝通知
-            InformTemplate inf = informTemplateMapper.selectByCode (InformType.hr_allocation_fail);
+            InformTemplate inf = informTemplateMapper.selectByCode (InformType.hr_allocation_fail.name ());
             Map<String,String> map = new HashMap <> ();
             map.put("hotel",companyMapper.findCompanyById (message.getHotelId ()).getName ());
             map.put("reason",reason);
@@ -985,7 +986,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             informService.sendInformInfo (inf.getSendType (),2,content,message.getHrCompanyId (),inf.getTitle ());
         } else if ("0".equals(status)){
             //申请调配成功通知
-            InformTemplate inf = informTemplateMapper.selectByCode (InformType.hr_allocation_success);
+            InformTemplate inf = informTemplateMapper.selectByCode (InformType.hr_allocation_success.name ());
             Map<String,String> map = new HashMap <> ();
             map.put("hotel",companyMapper.findCompanyById (message.getHotelId ()).getName ());
             String content = StringKit.templateReplace(inf.getContent (), map);

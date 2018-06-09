@@ -162,6 +162,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             taskWorker.setHotelId (hotelTask.getHotelId ());
             taskWorker.setDayStartTime(hotelTask.getDayStartTime());
             taskWorker.setDayEndTime(hotelTask.getDayEndTime());
+            taskWorker.setHotelTaskId (hotelTask.getPid ());
             taskWorkerMapper.insert(taskWorker);
             m.put("workerId", id);
             m.put("workerTaskId", pid);
@@ -325,7 +326,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         taskHrCompanyMapper.updateById (taskHrCompany);
 
 		//发送拒绝通知
-        InformTemplate inf = informTemplateMapper.selectByCode (InformType.refuse_hotel_task);
+        InformTemplate inf = informTemplateMapper.selectByCode (InformType.refuse_hotel_task.name ());
         Map<String,String> map = new HashMap<>();
         map.put("hr",taskHrCompany.getHrCompanyName ());
         map.put ("reason",reason);
@@ -625,7 +626,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         //taskMapper.updateStatus (taskHrCompanyMapper.queryByTaskId (id).getTaskId (),8);
 
         //发送拒绝通知
-        InformTemplate inf = informTemplateMapper.selectByCode (InformType.refuse_hotel_task);
+        InformTemplate inf = informTemplateMapper.selectByCode (InformType.refuse_hotel_task.name ());
         Map<String,String> map = new HashMap<>();
         map.put("hr",taskHrCompany.getHrCompanyName ());
         map.put ("reason",reason);

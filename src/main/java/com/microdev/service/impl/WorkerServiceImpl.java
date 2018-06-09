@@ -316,6 +316,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setWorkerId(tp.get("workerId"));
         m.setWorkerTaskId(info.getTaskWorkerId());
         m.setHotelId(tp.get("hotelId"));
+        m.setTaskId (taskWorkerMapper.findFirstById (info.getTaskWorkerId()).getHotelTaskId ());
         Map<String, String> param = new HashMap<>();
         param.put("userName", tp.get("username"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -365,6 +366,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setWorkerId(tp.get("workerId"));
         m.setWorkerTaskId(info.getTaskWorkerId());
         m.setHotelId(tp.get("hotelId"));
+        m.setTaskId (tp.get("hotelTaskId"));
         Map<String, String> param = new HashMap<>();
         param.put("userName", tp.get("username"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -406,6 +408,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setWorkerId(tp.get("workerId"));
         m.setWorkerTaskId(info.getTaskWorkerId());
         m.setHrCompanyId(tp.get("hrId"));
+        m.setHrTaskId (tp.get("taskHrId"));
         Map<String, String> param = new HashMap<>();
         param.put("userName",  tp.get("username"));
         param.put("taskContent", info.getReason());
@@ -495,10 +498,12 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setMessageCode(mess.getCode());
         m.setMessageTitle(mess.getTitle());
         m.setWorkerId( tp.get("workerId"));
+        m.setWorkerTaskId (info.getTaskWorkerId());
         m.setMessageType(1);
         m.setApplicantType(1);
         m.setWorkerTaskId(info.getTaskWorkerId());
         m.setHotelId(tp.get("hotelId"));
+        m.setTaskId (tp.get("hotelTaskId"));
         Map<String, String> param = new HashMap<>();
         param.put("userName",  tp.get("username"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

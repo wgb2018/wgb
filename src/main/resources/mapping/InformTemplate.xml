@@ -4,8 +4,8 @@
     <sql id="Basic_Column_List">
         id as pid,create_time,deleted,modify_time,code,content,send_type,title
     </sql>
-    <select id="selectByCode" resultType="com.microdev.model.InformTemplate" parameterType="com.microdev.param.InformType">
-        select <include refid="Basic_Column_List"/> where code = #{code}
+    <select id="selectByCode" resultType="com.microdev.model.InformTemplate" parameterType="java.lang.String">
+        select <include refid="Basic_Column_List"/> from inform_template where code = #{code}
     </select>
 
 </mapper>

@@ -5,7 +5,7 @@
     id as pid, create_time, deleted, modify_time,
     confirmed_date, have_pay_money, minutes, no_promise, refused_reason, repast_times,
     settled, settled_date, should_pay_money, status, worker_id, task_hr_id, user_id, user_name,hourly_pay,hr_company_name,hotel_name, check_sign,
-        hotel_id,from_date,to_date,day_start_time,day_end_time,task_type_code,task_type_text,task_content,hr_company_id
+        hotel_id,from_date,to_date,day_start_time,day_end_time,task_type_code,task_type_text,task_content,hr_company_id,hotel_task_id
 </sql>
     <select id="findFirstById" resultType="com.microdev.model.TaskWorker" parameterType="java.lang.String">
         select
@@ -147,7 +147,7 @@
         </if>
     </select>
     <select id="selectHrId" parameterType="java.lang.String" resultType="java.util.Map">
-        SELECT th.`hotel_id` AS hotelId, th.`hr_company_id` AS hrCompanyId, tw.`hotel_name` AS hotelName
+        SELECT th.`hotel_id` AS hotelId, th.`hr_company_id` AS hrCompanyId, tw.`hotel_name` AS hotelName,th.id as hrTaskId
         FROM task_worker tw
         INNER JOIN task_hr_company th
         ON tw.`task_hr_id` = th.`id`
@@ -155,7 +155,7 @@
     </select>
     <select id="selectUserAndWorkerId" parameterType="java.lang.String" resultType="java.util.Map">
         SELECT tw.`worker_id` AS workerId, u.`id` AS userId, u.`nickname` AS username, th.hotel_id AS hotelId,
-        th.hr_company_id as hrId
+        th.hr_company_id as hrId,tw.hotel_task_id as hotelTaskId,task_hr_id as taskHrId
         FROM (SELECT * FROM task_worker WHERE id = #{id})tw
         INNER JOIN USER u ON tw.`user_id` = u.`id`
         INNER JOIN task_hr_company th ON th.id = tw.task_hr_id
