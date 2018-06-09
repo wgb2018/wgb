@@ -54,6 +54,8 @@ public class Task extends BaseEntity {
      * 每小时薪资
      */
     private double hourlyPay;
+
+    private double hourlyPayHotel;
     /**
      * 需要的总人数
      */

@@ -666,7 +666,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             num = hotelHrCompanyMapper.selectIsBind(dto);
             if (num > 0) {
                 for (String hrId : hrSet) {
-                    hotelHr = hotelHrCompanyMapper.selectByHrHotelId(dto.getHotelId(), hrId);
+                    hotelHr = hotelHrCompanyMapper.selectByHrHotelId(hrId,dto.getHotelId());
                     if (hotelHr == null) {
                         hotelHr = new HotelHrCompany();
                         hotelHr.setStatus(3);
@@ -703,7 +703,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             num = hotelHrCompanyMapper.selectIsBIndByCompanyId(dto);
             if (num > 0) {
                 for (String hotelId : hrSet) {
-                    hotelHr = hotelHrCompanyMapper.selectByHrHotelId(hotelId, dto.getHrId());
+                    hotelHr = hotelHrCompanyMapper.selectByHrHotelId(dto.getHrId(),hotelId);
                     if (hotelHr == null) {
                         hotelHr = new HotelHrCompany();
                         hotelHr.setBindType(2);

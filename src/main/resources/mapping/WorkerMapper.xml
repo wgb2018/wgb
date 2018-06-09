@@ -3,7 +3,7 @@
 <mapper namespace="com.microdev.mapper.WorkerMapper">
     <sql id="Worker_Column_List">
         id as pid, create_time, deleted, modify_time,
-        idcard_back, idcard_front, idcard_number, health_card
+        idcard_back, idcard_front, idcard_number, health_card,qr_code
     </sql>
     <insert id="save" parameterType="com.microdev.model.Worker">
         insert into worker values(#{pid},#{createTime},#{deleted},#{modifyTime},#{idcardBack},#{idcardFront},

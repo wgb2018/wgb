@@ -4,7 +4,7 @@
     <sql id="TaskHrCompany_Query_List">
         id as pid, create_time, deleted, modify_time,
         hourly_pay, confirmed_workers, have_pay_money, minutes, need_workers, refused_workers, repast_times, should_pay_money, status, workers_have_pay, workers_should_pay,
-        hr_company_id, task_id, hotel_id, hr_company_name, hotel_name, task_type_code, task_type_text, task_content, refused_reason,check_sign
+        hr_company_id, task_id, hotel_id, hr_company_name, hotel_name, task_type_code, task_type_text, task_content, refused_reason,check_sign,from_date,to_date,day_start_time,day_end_time,hourly_pay_hotel
     </sql>
     <insert id="save" parameterType="com.microdev.model.TaskHrCompany">
         insert into task_hr_company values(#{pid},#{createTime},#{deleted},#{modifyTime},
@@ -34,8 +34,7 @@
     <select id="queryHrCompanyTasks" parameterType="com.microdev.param.TaskHrQueryDTO"
             resultType="com.microdev.model.TaskHrCompany">
         select
-        <include
-                refid="TaskHrCompany_Query_List"/>
+        <include refid="TaskHrCompany_Query_List"/>
         from task_hr_company
         <where>
             <if test="hrCompanyId != null and hrCompanyId != ''">
@@ -75,7 +74,7 @@
             <if test="payStatus == 3">
                 and have_pay_money &gt;= 0 and should_pay_money = have_pay_money
             </if>
-            <if test="status !=null and status !=0  and status !=7 and status !=6">
+            <if test="status !=null and status !=0  and status !=6 and status !=7 and status !=8 and status !=9">
                 and status = #{status}
             </if>
             <if test="status == 0">
@@ -127,7 +126,7 @@
     </update>
     <select id="selectByTaskId" parameterType="java.lang.String" resultType="java.util.Map">
         SELECT th.hourly_pay_hotel AS hourlyPayHotel,t.hotel_id AS hotelId,t.hotel_name AS
-        hotelName,t.id AS hotelTaskId,t.task_type_text AS taskTypeText,
+        hotelName,t.id AS hotelTaskId,t.task_type_text AS taskTypeText,t.day_start_time as dayStartTime,t.day_end_time as dayEndTime,
         t.task_content AS taskContent, t.`from_date` AS fromDate, t.`to_date` AS toDate
         , c.`address` AS hotelAddress,IFNULL(t.`hourly_pay`, 0) AS hotelHourlyPay,
         th.hr_company_id AS hrCompanyId, th.hr_company_name AS hrCompanyName, th.id AS id,IFNULL(th.`hourly_pay`,0) AS hourlyPay,

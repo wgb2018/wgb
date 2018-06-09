@@ -569,6 +569,6 @@ LEFT JOIN company c2
 ON m.hr_company_id = c2.id
     </select>
     <select id="selectByHrId" resultType="com.microdev.model.Message">
-       select <include refid="Message_Column_List"/> from message where hr_task_id = #{id}
+       select <include refid="Message_Column_List"/> from message where hr_task_id = #{id} and status = 0
     </select>
 </mapper>

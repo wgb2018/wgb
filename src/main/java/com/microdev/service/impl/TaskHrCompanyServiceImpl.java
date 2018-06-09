@@ -109,14 +109,18 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         if (!StringUtils.hasLength(String.valueOf(hrTaskDis.getHourlyPay()))) {
             throw new ParamsException("人力公司每小时工钱不能为空");
         }
-        if (!StringUtils.hasLength(hrTaskDis.getMessageId())) {
-            throw new ParamsException("人力公司id不能为空");
-        }
+        /*if (!StringUtils.hasLength(hrTaskDis.getMessageId())) {
+            throw new ParamsException("messageId不能为空");
+        }*/
         if (hrTaskDis.getWorkerIds().size()==0) {
             throw new ParamsException("请选择派发的员工");
         }
-
-        Message message = messageMapper.selectById(hrTaskDis.getMessageId());
+        Message message = null;
+        if(StringUtils.hasLength(hrTaskDis.getMessageId())){
+            message = messageMapper.selectById(hrTaskDis.getMessageId());
+        }else{
+            message = messageMapper.selectByHrId (hrTaskDis.getHrTaskId ());
+        }
         if (message == null) {
             throw new ParamsException("查询不到消息");
         }
@@ -140,6 +144,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         List<Map<String, String>> list = new ArrayList<>();
         Map<String, String> m = null;
         for (String id:hrTaskDis.getWorkerIds()){
+            System.out.println (id);
             m = new HashMap<>();
             TaskWorker taskWorker=new TaskWorker();
             String pid = UUID.randomUUID().toString();
@@ -219,6 +224,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             workersShouldPay += task.getWorkersShouldPay();
             workersHavePay += task.getWorkersHavePay();
             taskWorkerMapper.selectTaskWorkById (task.getPid ());
+            task.setHotel (companyMapper.findCompanyById (task.getHotelId ()));
         }
         PageInfo<TaskHrCompany> pageInfo = new PageInfo<>(list);
         HashMap<String,Object> result = new HashMap<>();

@@ -10,6 +10,7 @@ import java.util.Set;
  */
 @Data
 public class HrTaskDistributeRequest {
+    private String hrTaskId;
     /**
      * 主键
      */

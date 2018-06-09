@@ -171,6 +171,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         }
         //查询数据集合
         List<Task> list = taskMapper.queryTasks(taskQueryDTO);
+        System.out.println (list);
         List<TaskViewDTO> data = new ArrayList<>();
         for (Task task:list) {
             data.add(taskConverter.toViewDTOWithOutSet(task));
