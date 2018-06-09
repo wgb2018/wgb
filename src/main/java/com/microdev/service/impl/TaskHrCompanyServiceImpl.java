@@ -116,18 +116,21 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             throw new ParamsException("请选择派发的员工");
         }
         Message message = null;
+        TaskHrCompany hrTask= null;
         if(StringUtils.hasLength(hrTaskDis.getMessageId())){
             message = messageMapper.selectById(hrTaskDis.getMessageId());
+            message.setStatus(1);
+            messageMapper.updateAllColumnById(message);
+            hrTask = taskHrCompanyMapper.queryByTaskId(message.getHrTaskId());
+            hrTask.setHourlyPay(hrTaskDis.getHourlyPay());
         }else{
-            message = messageMapper.selectByHrId (hrTaskDis.getHrTaskId ());
+            hrTask = taskHrCompanyMapper.queryByTaskId(hrTaskDis.getHrTaskId ());
         }
-        if (message == null) {
+       /* if (message == null) {
             throw new ParamsException("查询不到消息");
-        }
-        message.setStatus(1);
-        messageMapper.updateAllColumnById(message);
+        }*/
+
         // 获取人力公司任务和酒店任务信息
-        TaskHrCompany hrTask= taskHrCompanyMapper.queryByTaskId(message.getHrTaskId());
         if(hrTask==null){
             throw new ParamsException("人力公司参数有误");
         }
@@ -135,7 +138,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         taskMapper.updateStatus(hrTask.getTaskId(),3);
         Company hrCompany=companyMapper.findCompanyById(hrTask.getHrCompanyId());
         hrTask.setStatus(4);
-        hrTask.setHourlyPay(hrTaskDis.getHourlyPay());
         Task hotelTask=taskMapper.getFirstById(hrTask.getTaskId());
         if(hotelTask==null){
             throw new BusinessException("任务派发失败：未获取酒店到任务");
@@ -173,6 +175,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             m.put("workerTaskId", pid);
             list.add(m);
         }
+        hrTask.setDistributeWorkers (hrTask.getDistributeWorkers ()+hrTaskDis.getWorkerIds ().size ());
         taskHrCompanyMapper.updateById(hrTask);
         messageService.hrDistributeTask(list, hrTask.getHrCompanyId(), hrTask.getHrCompanyName(), "workTaskMessage", hotelTask.getPid(), hrTask.getPid());
         //短信发送
@@ -184,6 +187,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         createMessageDTO.setTaskType(hotelTask.getTaskTypeText());
         createMessageDTO.setTaskContent(hotelTask.getTaskContent());
         SendMessage(hrTask.getListWorkerTask(),createMessageDTO,setTaskWorkId);*/
+
         return ResultDO.buildSuccess("分发成功");
     }
     /**

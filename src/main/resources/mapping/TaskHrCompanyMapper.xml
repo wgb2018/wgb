@@ -4,7 +4,8 @@
     <sql id="TaskHrCompany_Query_List">
         id as pid, create_time, deleted, modify_time,
         hourly_pay, confirmed_workers, have_pay_money, minutes, need_workers, refused_workers, repast_times, should_pay_money, status, workers_have_pay, workers_should_pay,
-        hr_company_id, task_id, hotel_id, hr_company_name, hotel_name, task_type_code, task_type_text, task_content, refused_reason,check_sign,from_date,to_date,day_start_time,day_end_time,hourly_pay_hotel
+        hr_company_id, task_id, hotel_id, hr_company_name, hotel_name, task_type_code, task_type_text, task_content, refused_reason,check_sign,from_date,to_date,day_start_time,day_end_time,hourly_pay_hotel,
+        distribute_workers
     </sql>
     <insert id="save" parameterType="com.microdev.model.TaskHrCompany">
         insert into task_hr_company values(#{pid},#{createTime},#{deleted},#{modifyTime},

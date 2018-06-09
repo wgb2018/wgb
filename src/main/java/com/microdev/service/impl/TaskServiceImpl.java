@@ -352,7 +352,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
 			taskHrCompany.setToDate (task.getToDate ());
 			taskHrCompany.setDayStartTime (task.getDayStartTime ());
 			taskHrCompany.setDayEndTime (task.getDayEndTime ());
+			taskHrCompany.setDistributeWorkers (0);
             taskHrCompanyMapper.insert(taskHrCompany);
+
             System.out.println (taskHrCompany.getPid ());
             setHrTask.add(taskHrCompany);
         }

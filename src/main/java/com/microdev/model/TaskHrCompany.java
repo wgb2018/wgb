@@ -126,6 +126,10 @@ public class TaskHrCompany extends BaseEntity {
      *  任务描述
      */
     private String taskContent;
+    /**
+     *  已分配人数
+     */
+    private Integer distributeWorkers;
 
     /**
      * 是否已查看0未读1未完成已读3已完成已读
