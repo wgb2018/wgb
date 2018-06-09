@@ -204,7 +204,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
             throw new ParamsException("支付的人力公司列表不能为空");
         }
         Task task=  taskMapper.getFirstById(payHrRequest.getTaskId());
-
         //List<TaskHrCompany> listHrTask = taskHrCompanyMapper.queryByHotelTaskId(payHrRequest.getTaskId());
             double thisPayMoney=0.0;
             for (HrPayDetailRequest payHr:paySet){
