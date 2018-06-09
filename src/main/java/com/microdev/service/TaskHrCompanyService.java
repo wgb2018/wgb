@@ -95,7 +95,7 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
      * @param id
      * @return
      */
-    String TaskHrrefusePC(String id);
+    String TaskHrrefusePC(String id,String reason);
 
     /**
      * 人力再派发任务

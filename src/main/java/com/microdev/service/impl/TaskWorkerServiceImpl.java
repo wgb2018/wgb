@@ -7,6 +7,7 @@ import com.microdev.common.ResultDO;
 import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
+import com.microdev.common.utils.StringKit;
 import com.microdev.converter.TaskWorkerConverter;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
@@ -46,6 +47,8 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
     UserMapper userMapper;
     @Autowired
     CompanyMapper companyMapper;
+    @Autowired
+    MessageTemplateMapper messageTemplateMapper;
 
     /**
      * 设置违约的任务
@@ -100,8 +103,6 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         if (confirmedWorkers + 1 > taskHr.getNeedWorkers()) {
             throw new BusinessException("人数已满,无法接受任务");
         }
-
-        //TODO 是否和已有任务时间冲突
 
         taskWorker.setStatus(1);
         taskWorker.setConfirmedDate(OffsetDateTime.now());
@@ -162,7 +163,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         messageMapper.updateAllColumnById(message);
         TaskWorker taskWorker = taskWorkerMapper.findFirstById(refusedTaskReq.getWorkerTaskId());
         if(taskWorker.getStatus()>0){
-            throw new BusinessException("任务状态不是新派发,无法接受任务");
+            throw new BusinessException("任务状态不是新派发,无法拒绝任务");
         }
         //TODO 人力公司人数判断
         TaskHrCompany taskHr= taskHrCompanyMapper.queryByTaskId(taskWorker.getTaskHrId());
@@ -192,6 +193,26 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         notice.setTitle("任务被拒绝");
         notice.setContent("小时工" + taskWorker.getUserName() + "拒绝了你派发的任务");
         informMapper.insertInform(notice);
+
+        Message m = new Message();
+        m.setContent(refusedTaskReq.getRefusedReason());
+        MessageTemplate mess = messageTemplateMapper.findFirstByCode ("refuseTaskMessage");
+        m.setMessageCode(mess.getCode());
+        m.setMessageType(10);
+        m.setMessageTitle(mess.getTitle());
+        m.setWorkerId (taskWorker.getWorkerId ());
+        m.setWorkerTaskId (taskWorker.getPid ());
+        m.setHrCompanyId (taskHr.getPid ());
+        Map<String, String> param = new HashMap<>();
+        param.put("userName", userMapper.selectByWorkerId (taskWorker.getWorkerId ()).getNickname ());
+        param.put("content", refusedTaskReq.getRefusedReason());
+        String c = StringKit.templateReplace(mess.getContent(), param);
+        m.setMessageContent(c);
+        m.setApplyType(2);
+        m.setStatus(0);
+        m.setIsTask(0);
+        messageMapper.insert(m);
+
         return ResultDO.buildSuccess("拒绝任务成功");
     }
     /**

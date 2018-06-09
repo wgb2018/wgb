@@ -302,16 +302,38 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         if (taskHrCompany == null) {
             throw new BusinessException("查询不到人力任务数据");
         }
-        taskHrCompanyMapper.updateStatus(message.getHrTaskId (),3);
+        taskHrCompany.setStatus (3);
+        taskHrCompany.setRefusedReason (reason);
+        taskHrCompanyMapper.updateById (taskHrCompany);
 
-		//发送拒绝消息
+		//发送拒绝通知
+        InformTemplate inf = informTemplateMapper.selectByCode (InformType.refuse_hotel_task);
+        Map<String,String> map = new HashMap<>();
+        map.put("hr",taskHrCompany.getHrCompanyName ());
+        map.put ("reason",reason);
+        String content = StringKit.templateReplace(inf.getContent (), map);
+        informService.sendInformInfo (inf.getSendType (),3,content,taskHrCompany.getHotelId (),inf.getTitle ());
+        //发送拒绝消息
+
+        Message m = new Message();
+        m.setContent(reason);
+        MessageTemplate mess = messageTemplateMapper.findFirstByCode ("refuseTaskMessage");
+        m.setMessageCode(mess.getCode());
+        m.setMessageType(10);
+        m.setMessageTitle(mess.getTitle());
+        m.setHrCompanyId (taskHrCompany.getHrCompanyId ());
+        m.setHrTaskId (taskHrCompany.getPid ());
+        m.setHotelId(taskHrCompany.getHotelId ());
         Map<String, String> param = new HashMap<>();
-        param.put("userName", taskHrCompany.getHrCompanyName());
-        param.put("startId", taskHrCompany.getHrCompanyId());
-        param.put("endId", taskHrCompany.getHotelId());
-        param.put("type", "1");
-        param.put("reason", reason);
-        messageService.refuseTask(param);
+        param.put("userName", taskHrCompany.getHrCompanyName ());
+        param.put("content", reason);
+        String c = StringKit.templateReplace(mess.getContent(), param);
+        m.setMessageContent(c);
+        m.setApplyType(2);
+        m.setStatus(0);
+        m.setIsTask(0);
+        messageMapper.insert(m);
+
     }
     /**
      * 人力公司任务调配
@@ -544,10 +566,18 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         if (StringUtils.isEmpty(id) ) {
             throw new ParamsException("参数不能为空");
         }
-
+        Message message = messageMapper.selectByHrId(id);
+        messageMapper.updateStatus (message.getPid ());
         TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId(id);
         taskMapper.updateStatus(taskHrCompany.getTaskId(),2);
         taskHrCompanyMapper.updateStatus(id,2);
+        Inform inform = new Inform();
+        inform.setTitle("任务已接受");
+        inform.setContent(taskHrCompany.getHrCompanyName() + "接受了派发的任务。");
+        inform.setReceiveId(taskHrCompany.getHotelId());
+        inform.setAcceptType(3);
+        inform.setSendType(2);
+        informMapper.insertInform(inform);
         return "成功";
     }
 
@@ -557,18 +587,53 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
      * @return
      */
     @Override
-    public String TaskHrrefusePC(String id) {
+    public String TaskHrrefusePC(String id,String reason) {
 
         if (StringUtils.isEmpty(id) ) {
             throw new ParamsException("参数不能为空");
         }
-
+        Message message = messageMapper.selectByHrId(id);
+        if (message == null || message.getStatus() == 1) {
+            throw new BusinessException("消息已处理");
+        }
+        messageMapper.updateStatus (message.getPid ());
         TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId(id);
         if (taskHrCompany == null) {
             throw new BusinessException("查询不到人力任务数据");
         }
-        taskHrCompanyMapper.updateStatus(id,3);
-        taskMapper.updateStatus (taskHrCompanyMapper.queryByTaskId (id).getTaskId (),8);
+        taskHrCompany.setRefusedReason (reason);
+        taskHrCompany.setStatus (3);
+        taskHrCompanyMapper.updateById (taskHrCompany);
+        //taskMapper.updateStatus (taskHrCompanyMapper.queryByTaskId (id).getTaskId (),8);
+
+        //发送拒绝通知
+        InformTemplate inf = informTemplateMapper.selectByCode (InformType.refuse_hotel_task);
+        Map<String,String> map = new HashMap<>();
+        map.put("hr",taskHrCompany.getHrCompanyName ());
+        map.put ("reason",reason);
+        String content = StringKit.templateReplace(inf.getContent (), map);
+        informService.sendInformInfo (inf.getSendType (),3,content,taskHrCompany.getHotelId (),inf.getTitle ());
+        //发送拒绝消息
+
+        Message m = new Message();
+        m.setContent(reason);
+        MessageTemplate mess = messageTemplateMapper.findFirstByCode ("refuseTaskMessage");
+        m.setMessageCode(mess.getCode());
+        m.setMessageType(10);
+        m.setMessageTitle(mess.getTitle());
+        m.setHrCompanyId (taskHrCompany.getHrCompanyId ());
+        m.setHrTaskId (taskHrCompany.getPid ());
+        m.setHotelId(taskHrCompany.getHotelId ());
+        Map<String, String> param = new HashMap<>();
+        param.put("userName", taskHrCompany.getHrCompanyName ());
+        param.put("content", reason);
+        String c = StringKit.templateReplace(mess.getContent(), param);
+        m.setMessageContent(c);
+        m.setApplyType(2);
+        m.setStatus(0);
+        m.setIsTask(0);
+        messageMapper.insert(m);
+
         return "成功";
     }
 

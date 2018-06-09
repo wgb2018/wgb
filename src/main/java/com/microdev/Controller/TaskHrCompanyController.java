@@ -29,7 +29,8 @@ public class TaskHrCompanyController {
      * 接受任务
      */
     @PostMapping("/hr-tasks/accept")
-    public ResultDO accept(Map<String, String> map) {
+    public ResultDO accept(@RequestBody  Map<String, String> map) {
+        System.out.println (map);
         taskHrCompanyService.TaskHraccept(map.get("messageId"));
         return ResultDO.buildSuccess("接受任务成功");
     }
@@ -37,7 +38,7 @@ public class TaskHrCompanyController {
      * 拒绝任务
      */
     @PostMapping("/hr-tasks/refuse")
-    public ResultDO refuse(Map<String, String> map) {
+    public ResultDO refuse(@RequestBody  Map<String, String> map) {
         taskHrCompanyService.TaskHrrefuse(map.get("messageId"), map.get("reason"));
         return ResultDO.buildSuccess("拒绝任务成功");
     }
@@ -75,7 +76,7 @@ public class TaskHrCompanyController {
      * 人力公司申请调配
      */
     @PostMapping("/hr-tasks/swapWorker")
-    public ResultDO swapWorker(Map<String, Object> map) {
+    public ResultDO swapWorker(@RequestBody Map<String, Object> map) {
         return taskHrCompanyService.hrApplyChangeWorker(map);
     }
 
@@ -95,7 +96,7 @@ public class TaskHrCompanyController {
      * PC端人力接受任务
      */
     @PostMapping("/hr-tasks/accept/pc")
-    public ResultDO pcAccept(Map<String, String> param) {
+    public ResultDO pcAccept(@RequestBody Map<String, String> param) {
 
         return ResultDO.buildSuccess(taskHrCompanyService.taskHracceptPC(param.get("id")));
     }
@@ -104,8 +105,8 @@ public class TaskHrCompanyController {
      * PC端人力拒绝任务
      */
     @PostMapping("/hr-tasks/refuse/pc")
-    public ResultDO pcRefuse(Map<String, String> param) {
-        return ResultDO.buildSuccess(taskHrCompanyService.TaskHrrefusePC(param.get("id")));
+    public ResultDO pcRefuse(@RequestBody Map<String, String> param) {
+        return ResultDO.buildSuccess(taskHrCompanyService.TaskHrrefusePC(param.get("id"),param.get("reason")));
     }
 
 }
