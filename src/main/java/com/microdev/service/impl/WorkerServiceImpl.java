@@ -586,6 +586,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     workList.add(workLog);
                     detail.setTime(startDay.format(d));
                     detailList.add(detail);
+                    detail.setSysStatus(sysStatus);
+                    detail.setHotelStatus(hotelStatus);
                     startDay = startDay.plusDays(1);
                 }
 
@@ -602,6 +604,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     long time = 0L;
                     boolean flag = false;
                     int num = 0;
+                    expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
                     for (Holiday holiday : holidayList) {
                         if (holiday.getFromDate().getDayOfYear() == startDay.getDayOfYear()) {
                             if (holiday.getToDate().getDayOfYear() > startDay.getDayOfYear()) {
@@ -613,7 +616,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                                     hotelStatus.put("leave", 1);
                                     workLog.setStartTime(startDay.format(timeFormat));
                                     workLog.setEndTime(endDay.format(timeFormat));
-                                    expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
+
                                     if (expire) {
                                         detail.setExpire("0");
                                     } else  {
@@ -622,6 +625,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                                     workList.add(workLog);
                                     detail.setTime(startDay.format(d));
                                     detailList.add(detail);
+                                    detail.setSysStatus(sysStatus);
+                                    detail.setHotelStatus(hotelStatus);
                                     break;
 
                                 } else {
@@ -638,6 +643,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                                             detail.setExpire("1");
                                         }
                                         workList.add(workLog);
+                                        detail.setSysStatus(sysStatus);
+                                        detail.setHotelStatus(hotelStatus);
                                         detail.setTime(startDay.format(d));
                                     }
                                     num++;
@@ -659,6 +666,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                                         detail.setExpire("1");
                                     }
                                     workList.add(workLog);
+                                    detail.setSysStatus(sysStatus);
+                                    detail.setHotelStatus(hotelStatus);
                                     detail.setTime(startDay.format(d));
                                 }
                                 num++;
@@ -666,10 +675,11 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                             }
                         } else if (holiday.getFromDate().getDayOfYear() < startDay.getDayOfYear()){
                             //请假是从当天之前开始计算
-                            expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
+
                             if (holiday.getToDate().getDayOfYear() == startDay.getDayOfYear()) {
                                 if (holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) >= endDay.getLong(ChronoField.MINUTE_OF_DAY)) {
-                                    sysStatus.put("stay", 1);
+                                    sysStatus.put("leave", 1);
+                                    hotelStatus.put("leave", 1);
                                     detail.setEmployerConfirmStatus(0);
                                     workLog.setStartTime("--");
                                     workLog.setEndTime("--");
@@ -681,32 +691,45 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                                     workList.add(workLog);
                                     detail.setTime(startDay.format(d));
                                     detailList.add(detail);
+                                    detail.setSysStatus(sysStatus);
+                                    detail.setHotelStatus(hotelStatus);
                                     break;
                                 } else {
                                     if (!flag) {
-                                        workLog.setStatus("5");
-                                        workLog.setEmployerConfirmStatus(0);
-                                        workLog.setStartTime(startDay.toOffsetTime());
-                                        workLog.setEndTime(endDay.toOffsetTime());
-                                        if (nowDate.getDayOfYear() - startDay.getDayOfYear() > 7) {
-                                            workLog.setExpire(1);
+                                        sysStatus.put("leave", 1);
+                                        sysStatus.put("stay", 1);
+                                        hotelStatus.put("leave", 1);
+                                        detail.setEmployerConfirmStatus(0);
+                                        workLog.setStartTime("--");
+                                        workLog.setEndTime("--");
+                                        if (expire) {
+                                            detail.setExpire("0");
+                                        } else  {
+                                            detail.setExpire("1");
                                         }
                                         workList.add(workLog);
                                         detail.setTime(startDay.format(d));
                                         detailList.add(detail);
+                                        detail.setSysStatus(sysStatus);
+                                        detail.setHotelStatus(hotelStatus);
                                     }
                                     num++;
                                     time += holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) - startDay.getLong(ChronoField.MINUTE_OF_DAY);
                                 }
                             } else if (holiday.getToDate().getDayOfYear() > startDay.getDayOfYear()) {
-                                workLog.setStatus("5");
-                                workLog.setEmployerConfirmStatus(0);
-                                workLog.setStartTime(startDay.toOffsetTime());
-                                workLog.setEndTime(endDay.toOffsetTime());
-                                if (nowDate.getDayOfYear() - startDay.getDayOfYear() > 7) {
-                                    workLog.setExpire(1);
+                                sysStatus.put("leave", 1);
+                                hotelStatus.put("leave", 1);
+                                detail.setEmployerConfirmStatus(0);
+                                workLog.setStartTime("--");
+                                workLog.setEndTime("--");
+                                if (expire) {
+                                    detail.setExpire("0");
+                                } else  {
+                                    detail.setExpire("1");
                                 }
                                 workList.add(workLog);
+                                detail.setSysStatus(sysStatus);
+                                detail.setHotelStatus(hotelStatus);
                                 detail.setTime(startDay.format(d));
                                 detailList.add(detail);
                                 break;
@@ -716,15 +739,20 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     }
                     if (num > 0  && time < (end - start)) {
                         workLog = new PunchInfo();
-                        if (nowDate.getDayOfYear() - startDay.getDayOfYear() > 7) {
-                            workLog.setExpire(1);
+                        if (expire) {
+                            detail.setExpire("0");
+                        } else  {
+                            detail.setExpire("1");
                         }
-                        workLog.setStatus("3");
+                        sysStatus.put("leave", 1);
+                        sysStatus.put("comeLate", 1);
+                        hotelStatus.put("leave", 1);
+                        detail.setSysStatus(sysStatus);
+                        detail.setHotelStatus(hotelStatus);
                         workList.add(workLog);
                         detail.setTime(startDay.format(d));
                         detailList.add(detail);
                     }
-
                     startDay = startDay.plusDays(1);
                 }
             }
