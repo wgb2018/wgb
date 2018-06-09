@@ -76,6 +76,7 @@ public class TaskHrCompanyController {
      * 人力公司申请调配
      */
     @PostMapping("/hr-tasks/swapWorker")
+
     public ResultDO swapWorker(@RequestBody Map<String, Object> map) {
         return taskHrCompanyService.hrApplyChangeWorker(map);
     }
