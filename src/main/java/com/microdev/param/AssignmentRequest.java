@@ -8,6 +8,6 @@ import java.util.Set;
 @Data
 public class AssignmentRequest {
 
-    private String id;
+    private String messageId;
     private Set<String> set = new HashSet<>();
 }

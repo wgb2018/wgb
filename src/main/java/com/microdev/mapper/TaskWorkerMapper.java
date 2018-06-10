@@ -46,6 +46,8 @@ public interface TaskWorkerMapper extends BaseMapper<TaskWorker> {
 
     List<Map<String, Object>> selectTaskWorkById(String taskHrId);
 
+    List<Map<String, Object>> selectTaskWorkCById(String taskHrId);
+
     int updateByPrimaryKey(Map<String, Object> map);
 
     int selectUnreadCount(String userId);
@@ -53,4 +55,6 @@ public interface TaskWorkerMapper extends BaseMapper<TaskWorker> {
     int selectCompleteCount(String userId);
 
     int selectWorkerUnreadCount(@Param("workerId") String workerId);
+
+    void updateStatus(@Param("workerTaskId") String workerTaskId,@Param("status") Integer status);
 }

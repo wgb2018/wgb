@@ -387,7 +387,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
      * 小时工申请取消任务
      */
     @Override
-    public boolean applyCancelTask(WorkerSupplementRequest info) {
+    public String applyCancelTask(WorkerSupplementRequest info) {
         if (info == null) {
             throw new ParamsException("参数不能为空");
         }
@@ -409,6 +409,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setWorkerTaskId(info.getTaskWorkerId());
         m.setHrCompanyId(tp.get("hrId"));
         m.setHrTaskId (tp.get("taskHrId"));
+        m.setTaskId (tp.get("taskId"));
         Map<String, String> param = new HashMap<>();
         param.put("userName",  tp.get("username"));
         param.put("taskContent", info.getReason());
@@ -419,7 +420,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setIsTask(0);
         messageMapper.insert(m);
 
-        return true;
+        return "申请取消发送成功";
     }
 
     /**

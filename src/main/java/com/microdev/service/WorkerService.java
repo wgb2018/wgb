@@ -62,7 +62,7 @@ public interface WorkerService extends IService<Worker> {
      * @param info
      * @return
      */
-    boolean applyCancelTask(WorkerSupplementRequest info);
+    String applyCancelTask(WorkerSupplementRequest info);
     /**
      * 查询补签的记录
      * @param page

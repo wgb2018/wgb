@@ -117,34 +117,28 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         }
         List<TaskHrCompanyViewDTO> taskHrList = taskViewDTO.getListTaskHr();
         if (taskHrList != null) {
-            Iterator<TaskHrCompanyViewDTO> it = taskHrList.iterator();
-            TaskHrCompanyViewDTO dto;
             List<Map<String, Object>> list = null;
-            while (it.hasNext()) {
-                dto = it.next();
-                list = taskWorkerMapper.selectTaskWorkById(dto.getPid());
+            for(int i = 0;i<taskHrList.size ();i++){
+                list = taskWorkerMapper.selectTaskWorkById(taskHrList.get (i).getPid());
                 List<Map<String, Object>> confirmedList = new ArrayList<>();
                 List<Map<String, Object>> refusedList = new ArrayList<>();
                 List<Map<String, Object>> distributedList = new ArrayList<>();
                 for (Map<String, Object> m : list) {
-                    m.put("Age", DateUtil.CaculateAge((OffsetDateTime) m.get("birthday")));
+                    m.put("age", DateUtil.CaculateAge((OffsetDateTime) m.get("birthday")));
                     distributedList.add(m);
                     if (m.get("taskStatus") == null)
                         continue;
-                    if ((Integer) m.get("taskStatus") == 1) {
+                    if ((Integer) m.get("taskStatus") == 1 || (Integer) m.get("taskStatus") == 3) {
                         confirmedList.add(m);
                     } else if ((Integer) m.get("taskStatus") == 2) {
                         refusedList.add(m);
                     }
-
                 }
-                dto.setRefusedList(refusedList);
-                dto.setConfirmedList(confirmedList);
-                dto.setDistributedList(distributedList);
+                //taskHrList.get (i).setRefusedList(refusedList);
+                taskHrList.get (i).setConfirmedList(confirmedList);
+                //taskHrList.get (i).setDistributedList(distributedList);
             }
         }
-
-
         return ResultDO.buildSuccess(taskViewDTO);
     }
 

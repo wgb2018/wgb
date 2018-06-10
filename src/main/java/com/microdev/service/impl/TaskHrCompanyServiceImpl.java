@@ -81,16 +81,17 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
                 && ((Double) map.get("workersShouldPay") - (Double) map.get("workersHavePay") <= 0)) {
             map.put("payStatus", "已结算");
         }
-        List<Map<String, Object>> list = taskWorkerMapper.selectTaskWorkById((String) map.get("id"));
+
+        List<Map<String, Object>> list = taskWorkerMapper.selectTaskWorkById((String) map.get("pid"));
         List<Map<String, Object>> confirmedList = new ArrayList<>();
         List<Map<String, Object>> refusedList = new ArrayList<>();
         List<Map<String, Object>> distributedList = new ArrayList<>();
         for (Map<String, Object> m : list) {
-            m.put("Age", DateUtil.caculateAge((Timestamp) m.get("birthday")));
+            m.put("age", DateUtil.caculateAge((Timestamp) m.get("birthday")));
             distributedList.add(m);
             if (m.get("taskStatus") == null)
                 continue;
-            if ((Integer) m.get("taskStatus") == 1) {
+            if ((Integer) m.get("taskStatus") == 1 || (Integer) m.get("taskStatus") == 3) {
                 confirmedList.add(m);
             } else if ((Integer) m.get("taskStatus") == 2) {
                 refusedList.add(m);
@@ -231,8 +232,9 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             havePayMoney += task.getHavePayMoney();
             workersShouldPay += task.getWorkersShouldPay();
             workersHavePay += task.getWorkersHavePay();
-            taskWorkerMapper.selectTaskWorkById (task.getPid ());
             task.setHotel (companyMapper.findCompanyById (task.getHotelId ()));
+            List<Map<String, Object>> lis = taskWorkerMapper.selectTaskWorkCById (task.getPid ());
+            task.setListWorkerTask (lis);
         }
         PageInfo<TaskHrCompany> pageInfo = new PageInfo<>(list);
         HashMap<String,Object> result = new HashMap<>();
@@ -510,9 +512,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         if (StringUtils.isEmpty(map.get("hrCompanyId"))) {
             throw new ParamsException("hrCompanyId不能为空");
         }
-        if (StringUtils.isEmpty(map.get("number")) || (Integer) map.get("number") < 0) {
-            throw new ParamsException("number不能小于0");
-        }
         if (StringUtils.isEmpty(map.get("reason"))) {
             throw new ParamsException("reason不能为空");
         }
@@ -537,12 +536,13 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         m.setMessageType(4);
         m.setApplicantType (2);
         m.setApplyType(3);
-		m.setMinutes ((String)map.get("number"));        m.setStatus(0);
+		m.setMinutes ((String)map.get("number"));
+		m.setStatus(0);
         m.setIsTask(0);
         m.setHotelId((String)map.get("hotelId"));
         m.setHrCompanyId((String)map.get("hrCompanyId"));
         m.setHrTaskId((String)map.get("hrTaskId"));
-
+        m.setTaskId (taskHrCompanyMapper.queryByTaskId ((String)map.get("hrTaskId")).getTaskId ());
         messageMapper.insert(m);
         return ResultDO.buildSuccess("成功");
     }
@@ -677,11 +677,11 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
      */
     @Override
     public ResultDO hrAssignmentTask(AssignmentRequest request) {
-        if (request == null || StringUtils.isEmpty(request.getId()) || request.getSet() == null
+        if (request == null || StringUtils.isEmpty(request.getMessageId()) || request.getSet() == null
                 || request.getSet().size() == 0) {
             throw new ParamsException("参数错误");
         }
-        Message message = messageMapper.selectById(request.getId());
+        Message message = messageMapper.selectById(request.getMessageId());
         if (message == null) {
             throw new BusinessException("查询不到消息");
         }
@@ -740,6 +740,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             //给酒店发送通知
             //被替换的小时工
             User oldUser = userMapper.selectByWorkerId(taskWorker.getWorkerId());
+            taskWorkerMapper.updateStatus(taskWorker.getWorkerId(),3);
             User newUser = userMapper.selectByWorkerId(list.get(0).getWorkerId());
             String content = taskHrCompany.getHrCompanyName() + "同意了你的换人申请，将任务里的小时工" + oldUser.getNickname() + "换成了" + newUser.getNickname();
             informService.sendInformInfo(2, 3, content, message.getHotelId(), "换人成功");

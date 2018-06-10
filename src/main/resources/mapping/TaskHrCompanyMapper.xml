@@ -127,7 +127,7 @@
     </update>
     <select id="selectByTaskId" parameterType="java.lang.String" resultType="java.util.Map">
         SELECT th.hourly_pay_hotel AS hourlyPayHotel,t.hotel_id AS hotelId,t.hotel_name AS
-        hotelName,t.id AS hotelTaskId,t.task_type_text AS taskTypeText,DATE_FORMAT(t.day_start_time,'%H:%i') as dayStartTime,DATE_FORMAT(t.day_end_time,'%H:%i') as dayEndTime,
+        hotelName,c.leader_mobile as leaderMobile,c.leader as leader,t.id AS hotelTaskId,t.task_type_text AS taskTypeText,DATE_FORMAT(t.day_start_time,'%H:%i') as dayStartTime,DATE_FORMAT(t.day_end_time,'%H:%i') as dayEndTime,
         t.task_content AS taskContent, DATE_FORMAT(t.`from_date`,'%Y.%m.%d') AS fromDate, DATE_FORMAT(t.`to_date`,'%Y.%m.%d') AS toDate
         , c.`address` AS hotelAddress,IFNULL(t.`hourly_pay`, 0) AS hotelHourlyPay,
         th.hr_company_id AS hrCompanyId, th.hr_company_name AS hrCompanyName, th.id AS pid,IFNULL(th.`hourly_pay`,0) AS hourlyPay,

@@ -86,6 +86,9 @@
     <update id="addMinutes">
         UPDATE task_worker SET minutes = minutes + #{minutes}, should_pay_money = should_pay_money + #{shouldPayMoney} Where id = #{taskWorkerId}
     </update>
+    <update id="updateStatus">
+        update task_worker set status = #{status} where id = #{workerTaskId}
+    </update>
     <select id="findByUserId" resultType="com.microdev.model.TaskWorker" parameterType="java.lang.String">
         select
         <include refid="TaskWorker_Query_List"/>
@@ -147,7 +150,7 @@
         </if>
     </select>
     <select id="selectHrId" parameterType="java.lang.String" resultType="java.util.Map">
-        SELECT th.`hotel_id` AS hotelId, th.`hr_company_id` AS hrCompanyId, tw.`hotel_name` AS hotelName,th.id as hrTaskId
+        SELECT th.`hotel_id` AS hotelId, th.`hr_company_id` AS hrCompanyId, tw.`hotel_name` AS hotelName,th.id as hrTaskId,th.task_id as taskId
         FROM task_worker tw
         INNER JOIN task_hr_company th
         ON tw.`task_hr_id` = th.`id`
@@ -155,20 +158,34 @@
     </select>
     <select id="selectUserAndWorkerId" parameterType="java.lang.String" resultType="java.util.Map">
         SELECT tw.`worker_id` AS workerId, u.`id` AS userId, u.`nickname` AS username, th.hotel_id AS hotelId,
-        th.hr_company_id as hrId,tw.hotel_task_id as hotelTaskId,task_hr_id as taskHrId
+        th.hr_company_id as hrId,tw.hotel_task_id as hotelTaskId,task_hr_id as taskHrId,th.task_id as taskId
         FROM (SELECT * FROM task_worker WHERE id = #{id})tw
         INNER JOIN USER u ON tw.`user_id` = u.`id`
         INNER JOIN task_hr_company th ON th.id = tw.task_hr_id
     </select>
     <select id="selectTaskWorkById" parameterType="java.lang.String" resultType="java.util.Map">
-        SELECT u.`id` AS workerId, u.`nickname` AS workerName, CASE u.`sex` WHEN 'MALE' THEN '男' WHEN 'FEMALE' THEN '女' ELSE '未知' END AS Gender,
-        IFNULL(u.avatar, '') AS headImage,u.mobile AS mobile, u.birthday AS birthday,
+        SELECT u.worker_id AS workerId, u.`nickname` AS workerName, CASE u.`sex` WHEN 'MALE' THEN 'MALE' WHEN 'FEMALE' THEN 'FEMALE' ELSE 'UNKNOWN' END AS gender,
+        IFNULL(u.avatar, '') AS headImage,u.mobile AS mobile, u.birthday AS birthday,tw.refused_reason as refusedReason,
         tw.refused_reason AS refusedReason,tw.status AS taskStatus,tw.repast_times AS repastTimes, tw.minutes AS minutes,
         IFNULL(tw.have_pay_money,0) AS havePayMoney, IFNULL(tw.should_pay_money,0) AS shouldPayMoney, IFNULL(tw.should_pay_money - tw.have_pay_money,0) AS waitPayMoney,
         tw.id AS taskWorkerId
         FROM (
         SELECT * FROM task_worker
         WHERE `task_hr_id` = #{taskHrId}
+        ) tw
+        INNER JOIN USER u
+        ON tw.`user_id` = u.`id`
+    </select>
+
+    <select id="selectTaskWorkCById" parameterType="java.lang.String" resultType="java.util.Map">
+        SELECT u.worker_id AS workerId, u.`nickname` AS workerName, CASE u.`sex` WHEN 'MALE' THEN 'MALE' WHEN 'FEMALE' THEN 'FEMALE' ELSE 'UNKNOWN' END AS gender,
+        IFNULL(u.avatar, '') AS headImage,u.mobile AS mobile, u.birthday AS birthday,tw.refused_reason as refusedReason,u.age as age,
+        tw.refused_reason AS refusedReason,tw.status AS taskStatus,tw.repast_times AS repastTimes, tw.minutes AS minutes,
+        IFNULL(tw.have_pay_money,0) AS havePayMoney, IFNULL(tw.should_pay_money,0) AS shouldPayMoney, IFNULL(tw.should_pay_money - tw.have_pay_money,0) AS waitPayMoney,
+        tw.id AS taskWorkerId
+        FROM (
+        SELECT * FROM task_worker
+        WHERE `task_hr_id` = #{taskHrId} and (status = 1 or status = 3)
         ) tw
         INNER JOIN USER u
         ON tw.`user_id` = u.`id`

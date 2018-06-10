@@ -572,6 +572,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             message.setMessageTitle(template.getTitle());
             message.setIsTask(1);
             message.setStatus(0);
+            message.setMessageCode ("applyBindMessage");
             if (type == 1) {
                 message.setWorkerId(id);
                 message.setHrCompanyId(s);
@@ -834,6 +835,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             message.setHotelId(taskHrCompany.getHotelId());
             message.setHrCompanyId(taskHrCompany.getHrCompanyId());
             message.setIsTask(0);
+            message.setTaskId (taskHrCompany.getTaskId ());
             messageMapper.insert(message);
         }
 

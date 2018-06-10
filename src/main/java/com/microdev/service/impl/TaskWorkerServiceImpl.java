@@ -100,10 +100,6 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         if (confirmedWorkers == null) {
             confirmedWorkers = 0;
         }
-        if (confirmedWorkers + 1 > taskHr.getNeedWorkers()) {
-            throw new BusinessException("人数已满,无法接受任务");
-        }
-
         taskWorker.setStatus(1);
         taskWorker.setConfirmedDate(OffsetDateTime.now());
         //TODO 酒店人数加1
@@ -112,14 +108,18 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         if(hotelConfirmedWorkers==null){
             hotelConfirmedWorkers=0;
         }
-        hotelTask.setConfirmedWorkers(hotelConfirmedWorkers+1);
+        if(hotelTask.getConfirmedWorkers ()+1<=hotelTask.getNeedWorkers ()){
+            hotelTask.setConfirmedWorkers(hotelConfirmedWorkers+1);
+        }
         if(hotelTask.getConfirmedWorkers() == hotelTask.getNeedWorkers()){
             taskMapper.updateStatus(hotelTask.getPid(),4);
         }else{
             taskMapper.updateStatus(hotelTask.getPid(),3);
         }
         //TODO 人力公司人数加1
-        taskHr.setConfirmedWorkers(confirmedWorkers+1);
+        if (confirmedWorkers + 1 <= taskHr.getNeedWorkers()) {
+             taskHr.setConfirmedWorkers(confirmedWorkers+1);
+        }
         if(taskHr.getConfirmedWorkers() == taskHr.getNeedWorkers()){
             taskHrCompanyMapper.updateStatus(taskHr.getPid(),5);
         }
@@ -155,7 +155,8 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         }
         message.setStatus(1);
         messageMapper.updateAllColumnById(message);
-        TaskWorker taskWorker = taskWorkerMapper.findFirstById(refusedTaskReq.getWorkerTaskId());
+
+        TaskWorker taskWorker = taskWorkerMapper.findFirstById(message.getWorkerTaskId());
         if(taskWorker.getStatus()>0){
             throw new BusinessException("任务状态不是新派发,无法拒绝任务");
         }
@@ -170,7 +171,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         taskWorker.setConfirmedDate(OffsetDateTime.now());
         taskWorker.setRefusedReason(refusedTaskReq.getRefusedReason());
         //TODO 酒店人数
-        Task hotelTask=taskMapper.getFirstById(taskHr.getHotelId());
+        Task hotelTask=taskMapper.getFirstById(taskHr.getTaskId ());
         Integer hotelRefuseWorkers=hotelTask.getRefusedWorkers();
         if(hotelRefuseWorkers==null){
             hotelRefuseWorkers=0;

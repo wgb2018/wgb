@@ -199,7 +199,7 @@ public class HrCompanyController {
     }
 
     /**
-     * 人力处理小时工取消任务
+     * 人力拒绝小时工取消任务
      * @param messageId
      * @return
      */
