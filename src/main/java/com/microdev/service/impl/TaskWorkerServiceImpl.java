@@ -107,7 +107,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         taskWorker.setStatus(1);
         taskWorker.setConfirmedDate(OffsetDateTime.now());
         //TODO 酒店人数加1
-        Task hotelTask=taskMapper.getFirstById(taskHr.getHotelId());
+        Task hotelTask=taskMapper.getFirstById(taskHr.getTaskId());
         Integer hotelConfirmedWorkers=hotelTask.getConfirmedWorkers();
         if(hotelConfirmedWorkers==null){
             hotelConfirmedWorkers=0;
