@@ -356,7 +356,7 @@ UNION
  SELECT m2.is_task,m2.content,m2.id AS messageId,m2.`create_time`,IFNULL(c2.address,'') AS address,c2.logo,NULL AS task_type_text,NULL AS from_date, NULL AS to_date,NULL AS day_start_time,
  m2.message_type AS type,0 AS hourlyPay,NULL AS day_end_time,
  NULL AS hotel_name, 0 AS confirmed_workers,0 AS need_workers,
-  0 AS lackWorkers,NULL AS hotel_id, NULL AS id
+  0 AS lackWorkers,NULL AS hotel_id, NULL AS id,c2.`area`
  FROM message m2
  INNER JOIN company c2 ON (m2.hotel_id = c2.id OR m2.`hr_company_id` = c2.`id`)
  WHERE m2.apply_type IN (0,1) AND m2.is_task = 1 AND m2.status = 0 AND worker_id= #{workerId}
@@ -487,7 +487,7 @@ LEFT JOIN
 (
 SELECT tc.need_workers,confirmed_workers,c2.name AS hrName,c2.id AS hrId,c2.leader AS hrLeader,
 tc.hourly_pay,tc.task_type_text AS messageTitle
-,c2.leader_mobile AS hrLeaderMobile,m2.id AS id,tc.task_type_code AS messageCode FROM (SELECT * FROM message WHERE id = '') m2 INNER JOIN
+,c2.leader_mobile AS hrLeaderMobile,m2.id AS id,tc.task_type_code AS messageCode FROM (SELECT * FROM message WHERE id = #{messageId}) m2 INNER JOIN
 task_hr_company tc ON m2.task_id = tc.task_id AND m2.hr_company_id = tc.hr_company_id INNER JOIN company c2
 ON c2.id = m2.hr_company_id
 ) k ON k.id = m.id

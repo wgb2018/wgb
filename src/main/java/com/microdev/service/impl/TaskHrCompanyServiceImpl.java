@@ -170,6 +170,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             taskWorker.setDayStartTime(hotelTask.getDayStartTime());
             taskWorker.setDayEndTime(hotelTask.getDayEndTime());
             taskWorker.setHotelTaskId (hotelTask.getPid ());
+            taskWorker.setHrCompanyId(hrTask.getHrCompanyId());
             taskWorkerMapper.insert(taskWorker);
             m.put("workerId", id);
             m.put("workerTaskId", pid);

@@ -85,13 +85,13 @@
                 and ((status = 5 and to_date &gt; now()) or status = 3)
             </if>
             <if test="status == 6">
-                and status i= 5 and and to_date &gt; now() and from_date &lt; now()
+                and status = 5 and and to_date &gt; now() and from_date &lt; now()
             </if>
             <if test="status == 8">
                 and status in (4,5) and to_date &gt; now()
             </if>
             <if test="status == 7">
-                and status i= 5 and to_date &lt; now()
+                and status = 5 and to_date &lt; now()
             </if>
         </where>
         order by create_time desc
