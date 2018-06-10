@@ -65,6 +65,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
 
     /**
      * 查看人力资源公司的任务
+     * @param id     人力任务id
      */
     @Override
     public ResultDO getTaskHrCompanyById(String id) {
@@ -96,6 +97,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             }
 
         }
+        map.put("distributeWorkers", list.size());
         map.put("confirmedSet", confirmedList);
         map.put("refusedSet", refusedList);
         map.put("distributedSet", distributedList);
