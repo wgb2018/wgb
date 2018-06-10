@@ -3,16 +3,20 @@ package com.microdev.service.impl;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.StringKit;
 import com.microdev.mapper.MessageMapper;
 import com.microdev.mapper.MessageTemplateMapper;
+import com.microdev.mapper.TaskHrCompanyMapper;
 import com.microdev.mapper.TaskWorkerMapper;
 import com.microdev.model.*;
 import com.microdev.param.*;
 import com.microdev.service.MessageService;
+import com.microdev.service.TaskHrCompanyService;
+import com.microdev.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +34,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     MessageMapper messageMapper;
     @Autowired
     private TaskWorkerMapper taskWorkerMapper;
+    @Autowired
+    private TaskHrCompanyService taskHrCompanyService;
+    @Autowired
+    private TaskService taskService;
+
     /**
      * 创建消息模板
      */
@@ -363,7 +372,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
 
     /**
      * 查询未读消息数量及各个类型的数量
-     * @param id            用户id
+     * @param id            用户角色id
      * @param applyType     用户类型worker小时工hr人力公司hotel酒店
      * @return
      */
@@ -373,14 +382,30 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             throw new ParamsException("参数不能为空");
         }
         Map<String, Integer> param = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         if ("worker".equals(applyType)) {
-
+            //查询当前任务未读数量
             param.put("curTask", taskWorkerMapper.selectWorkerUnreadCount(id));
-
+            map.put("workerId", id);
+            map.put("roleName", "worker");
+            //查询未读待处理事物数量
+            param.put("pendingTask", messageMapper.selectUnReadMessage(map));
+            //查询未读通知数量
+            param.put("notice", 0);
         } else if ("hr".equals(applyType)) {
 
+            param.put("curTask", taskHrCompanyService.selectUnreadCount(id));
+            map.put("hrId", id);
+            map.put("roleName", "hr");
+            param.put("pendingTask", messageMapper.selectUnReadMessage(map));
+            param.put("notice", 0);
         } else if ("hotel".equals(applyType)) {
 
+            param.put("curTask", taskService.selectUnReadAmount(id));
+            map.put("hotelId", id);
+            map.put("roleName", "hotel");
+            param.put("pendingTask", messageMapper.selectUnReadMessage(map));
+            param.put("notice", 0);
         } else {
             throw new ParamsException("参数applyType类型错误");
         }
@@ -899,6 +924,36 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             throw new ParamsException("查询不到消息模板.");
         }
         return StringKit.templateReplace(template.getContent(), param);
+    }
+
+    /**
+     * 查询申请调配信息
+     * @param paging
+     * @return
+     */
+    @Override
+    public Map<String, Object> selectDeployApply(PagingDO<ApplyParamDTO> paging) {
+        ApplyParamDTO applyParamDTO = paging.getSelector();
+        if (applyParamDTO == null || StringUtils.isEmpty(applyParamDTO.getId()) || StringUtils.isEmpty(applyParamDTO.getRoleType())) {
+            throw new ParamsException("参数不能为空");
+        }
+
+        List<ApplyResponseDTO> list = null;
+        PageHelper.startPage(paging.getPaginator().getPage(), paging.getPaginator().getPageSize(), true);
+        if ("hotel".equals(applyParamDTO.getRoleType())) {
+            list = messageMapper.selectHotelDeploy(applyParamDTO.getId());
+        } else if ("hr".equals(applyParamDTO.getRoleType())) {
+            list = messageMapper.selectHrDeploy(applyParamDTO.getId());
+        } else {
+            throw new ParamsException("用户类型错误");
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        PageInfo<ApplyResponseDTO> pageInfo = new PageInfo<>(list);
+        result.put("page", pageInfo.getPageNum());
+        result.put("total", pageInfo.getTotal());
+        result.put("list", list);
+        return result;
     }
 
 }

@@ -62,7 +62,7 @@ public class MessageController {
     }
 
     /**
-     * 查询未读数量
+     * 查询未读数量(删除掉，不用)
      * @param id
      * @param applyType
      * @return
@@ -91,7 +91,7 @@ public class MessageController {
      * @return
      */
     @PostMapping("/messages/select/messsageInfo")
-    public ResultDO getMessageInfo(PageRequest request) {
+    public ResultDO getMessageInfo(@RequestBody PageRequest request) {
 
         return ResultDO.buildSuccess(messageService.selectMessage(request.getId(), request.getRole(), request.getType(), request.getPage(), request.getPage()));
     }
@@ -132,5 +132,16 @@ public class MessageController {
     @PostMapping("/message/details/taskInfo")
     public ResultDO selectDetailTaskInfo(@RequestBody MessageDetailsDTO dto) {
         return ResultDO.buildSuccess(messageService.selectAwaitTaskDetails(dto.getMessageId(), dto.getMessagetype(), dto.getType()));
+    }
+
+    /**
+     * pc端查询申请调配信息.
+     * @param paging
+     * @return
+     */
+    @PostMapping("/message/deploy/apply")
+    public ResultDO selectDeployApply(@RequestBody PagingDO<ApplyParamDTO> paging) {
+
+        return ResultDO.buildSuccess(messageService.selectDeployApply(paging));
     }
 }

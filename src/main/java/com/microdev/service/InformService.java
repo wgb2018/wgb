@@ -25,4 +25,11 @@ public interface InformService extends IService<Inform> {
      * @param title         消息标题
      */
     void sendInformInfo(int sendType, int acceptType, String content, String receiveId, String title);
+
+    /**
+     * 根据接收方id查询通知数量
+     * @param param
+     * @return
+     */
+    int selectNoticeCountByReceiveId(Map<String, Object> param);
 }

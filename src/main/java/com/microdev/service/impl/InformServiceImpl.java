@@ -136,5 +136,15 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
         informMapper.insertAllColumn(inform);
     }
 
+    /**
+     * 根据接受方id查询未读通知数量
+     * @param param
+     * @return
+     */
+    @Override
+    public int selectNoticeCountByReceiveId(Map<String, Object> param) {
+        return 0;
+    }
+
 
 }

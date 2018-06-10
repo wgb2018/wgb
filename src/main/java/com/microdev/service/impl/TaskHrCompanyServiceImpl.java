@@ -81,9 +81,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
                 && ((Double) map.get("workersShouldPay") - (Double) map.get("workersHavePay") <= 0)) {
             map.put("payStatus", "已结算");
         }
-
         List<Map<String, Object>> list = taskWorkerMapper.selectTaskWorkById((String) map.get("pid"));
-        List<Map<String, Object>> confirmedList = new ArrayList<>();
+		List<Map<String, Object>> confirmedList = new ArrayList<>();
         List<Map<String, Object>> refusedList = new ArrayList<>();
         List<Map<String, Object>> distributedList = new ArrayList<>();
         for (Map<String, Object> m : list) {
@@ -677,10 +676,12 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
      */
     @Override
     public ResultDO hrAssignmentTask(AssignmentRequest request) {
+
         if (request == null || StringUtils.isEmpty(request.getMessageId()) || request.getSet() == null
                 || request.getSet().size() == 0) {
             throw new ParamsException("参数错误");
         }
+
         Message message = messageMapper.selectById(request.getMessageId());
         if (message == null) {
             throw new BusinessException("查询不到消息");

@@ -247,28 +247,6 @@
         ORDER BY STATUS ASC ,create_time DESC
     </select>
 
-    <select id="selectUnReadMessage" resultType="com.microdev.model.Message" parameterType="java.util.Map">
-        SELECT CASE message_type WHEN 1 THEN '补签申请' WHEN 2 THEN '加时申请' WHEN 3 THEN '请假申请'
-        WHEN 4 THEN '调配申请' WHEN 5 THEN '绑定申请' WHEN 6 THEN '任务推荐' END AS messageCode,create_time,message_content FROM message
-        WHERE STATUS = 0 AND deleted = 0
-        <if test="workerId != null">
-            and worker_id = #{workerId}
-        </if>
-        <if test="hotelId != null">
-            and hotel_id = #{hotelId}
-        </if>
-        <if test="hrCompanyId != null">
-            and hr_company_id = #{hrCompanyId}
-        </if>
-        <if test="applyType != null">
-            <if test="applyType == 1 ">
-                and apply_type in (0, 1)
-            </if>
-            <if test="applyType != 1 ">
-                and apply_type = #{applyType}
-            </if>
-        </if>
-    </select>
 
     <select id="selectUnReadCount" parameterType="java.util.Map" resultType="java.lang.Integer">
       SELECT COUNT(1) FROM message WHERE deleted = 0
@@ -579,5 +557,50 @@ ON m.hr_company_id = c2.id
     </select>
     <select id="selectByHrId" resultType="com.microdev.model.Message">
        select <include refid="Message_Column_List"/> from message where hr_task_id = #{id} and status = 0
+    </select>
+
+    <select id="selectUnReadMessage" resultType="java.lang.Integer" parameterType="java.util.Map">
+      select count(1) from message where deleted = 0 and status = 0
+      <if test="hrId != null and hrId != ''">
+           and hr_company_id = #{hrId}
+      </if>
+      <if test="workerId != null and workerId != ''">
+           and worker_id = #{workerId}
+      </if>
+      <if test="hotelId != null and hotelId != ''">
+           and hotel_id = #{hotelId}
+      </if>
+      <if test="roleName == 'hr">
+          and apply_type = 2
+      </if>
+      <if test="roleName == 'worker">
+          and apply_type in (0,1)
+      </if>
+      <if test="roleName == 'hotel">
+           and apply_type = 3
+      </if>
+    </select>
+
+    <select id="selectHotelDeploy" resultType="com.microdev.param.ApplyResponseDTO">
+      SELECT m.id AS messageId,m.`content`,m.`minutes` AS amount,t.`from_date`,t.`to_date`,t.`day_start_time`,t.`day_end_time`,t.`task_type_text`,t.`task_content`,t.`status`,t.`hourly_pay` as hourlyPayHotel,
+c.`name` as hrName,c.`leader` as hrLeader,c.`leader_mobile` as hrLeaderMobile,c.`logo`,c.`address`,c.`area` FROM message m
+INNER JOIN task t
+ON t.id = m.`task_id`
+INNER JOIN company c
+ON c.id = m.`hr_company_id`
+WHERE m.`status` = 0 AND m.`message_type` = 4 AND m.`apply_type` = 3 AND m.`hotel_id` = #{hotelId}
+    </select>
+
+    <select id = "selectHrDeploy" resultType="com.microdev.param.ApplyResponseDTO">
+        SELECT m.id AS messageId,m.`content`,m.`minutes` AS amount,t.`from_date`,t.`to_date`,t.`day_start_time`,t.`day_end_time`,t.`task_type_text`,t.`task_content`,t.`status`,t.`hourly_pay` AS hourlyPayHotel,
+        c.`name` AS hotelName,c.`leader` AS hotelLeader,c.`leader_mobile` AS hotelLeaderMobile,c.`logo`,c.`address`,c.`area`, u.`nickname` AS username,IF(u.age &lt; 1, 0, u.age) AS age,u.`mobile` AS userMobile,
+        u.sex FROM message m
+        INNER JOIN task t
+        ON t.id = m.`task_id`
+        INNER JOIN company c
+        ON c.id = m.`hotel_id`
+        INNER JOIN USER u
+        ON u.`worker_id` = m.`worker_task_id`
+        WHERE m.`status` = 0 AND m.`message_type` = 4 AND m.`apply_type` = 2 AND m.`hr_company_id` = #{hrId}
     </select>
 </mapper>
