@@ -397,7 +397,13 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         if (!StringUtils.hasLength(info.getTaskWorkerId())) {
             throw new ParamsException("参数taskWorkerId不能为空");
         }
-
+        Map map = new HashMap<String,Object> ();
+        map.put("message_type",7);
+        map.put("worker_task_id",info.getTaskWorkerId());
+        map.put("status",0);
+        if(messageMapper.selectByMap (map).size ()>0){
+            return "你已提交过申请";
+        }
         Message m = new Message();
         Map<String, String> tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
         m.setContent(info.getReason());
@@ -476,7 +482,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
      * 小时工发起补签
      */
     @Override
-    public boolean supplementWork(WorkerSupplementRequest info) {
+    public String supplementWork(WorkerSupplementRequest info) {
         if (info == null) {
             throw new ParamsException("参数不能为空");
         }
@@ -494,8 +500,21 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setSupplementTime(info.getTime());
         m.setContent(info.getReason());
         Map<String, String> tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
-
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applySupplementMessage");
+        Map map = new HashMap<String,Object> ();
+        map.put("message_type",1);
+        map.put("worker_task_id",info.getTaskWorkerId());
+        map.put("status",0);
+        Map<String, String> param = new HashMap<>();
+        param.put("userName",  tp.get("username"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        param.put("time", info.getTime().format(formatter));
+        param.put("taskContent", info.getReason());
+        String c = StringKit.templateReplace(mess.getContent(), param);
+        map.put("message_content",c);
+        if(messageMapper.selectByMap (map).size ()>0){
+            return "你已提交过申请";
+        }
         m.setMessageCode(mess.getCode());
         m.setMessageTitle(mess.getTitle());
         m.setWorkerId( tp.get("workerId"));
@@ -505,19 +524,13 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setWorkerTaskId(info.getTaskWorkerId());
         m.setHotelId(tp.get("hotelId"));
         m.setTaskId (tp.get("hotelTaskId"));
-        Map<String, String> param = new HashMap<>();
-        param.put("userName",  tp.get("username"));
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        param.put("time", info.getTime().format(formatter));
-        param.put("taskContent", info.getReason());
-        String c = StringKit.templateReplace(mess.getContent(), param);
         m.setMessageContent(c);
         m.setApplyType(3);
         m.setStatus(0);
         m.setIsTask(0);
 
         messageMapper.insert(m);
-        return true;
+        return "申请补签提交成功";
     }
 
     /**

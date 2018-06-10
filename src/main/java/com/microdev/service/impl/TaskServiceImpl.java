@@ -134,11 +134,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
                         refusedList.add(m);
                     }
                 }
-                //taskHrList.get (i).setRefusedList(refusedList);
+                taskHrList.get (i).setRefusedList(refusedList);
                 taskHrList.get (i).setConfirmedList(confirmedList);
-                //taskHrList.get (i).setDistributedList(distributedList);
+                taskHrList.get (i).setDistributedList(distributedList);
             }
         }
+        taskViewDTO.setListTaskHr (taskHrList);
         return ResultDO.buildSuccess(taskViewDTO);
     }
 

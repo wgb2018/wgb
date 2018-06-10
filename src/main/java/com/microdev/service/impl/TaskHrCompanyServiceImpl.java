@@ -374,7 +374,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
      * 人力公司任务调配
      */
     @Override
-    public void TaskHrallocate(String id, String reason, Integer number) {
+    public String TaskHrallocate(String id, String reason, Integer number) {
         if (number == null || number < 1 || StringUtils.isEmpty(id)) {
             throw new ParamsException("参数错误");
         }
@@ -383,8 +383,16 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             throw new BusinessException("查找不到人力资源任务");
         }
         //t.setStatus(5);
+        Map map = new HashMap<String,Object> ();
+        map.put("message_type",4);
+        map.put("hr_task_id",t.getPid ());
+        map.put("status",0);
+        if(messageMapper.selectByMap (map).size ()>0){
+            return "你已提交过申请";
+        }
         taskHrCompanyMapper.update(t);
         messageService.sendMessage(t, reason, String.valueOf(number), "applyChangeMessage");
+        return "发送成功";
 
     }
     /**
