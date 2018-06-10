@@ -39,7 +39,7 @@
     </select>
     <select id="queryTasks" parameterType="com.microdev.param.TaskQueryDTO" resultType="com.microdev.model.Task">
         select
-        <include refid="Task_Query_Param"/>,hourly_pay,hourlyPayHotel
+        <include refid="Task_Query_Param"/>,hourly_pay as hourlyPayHotel
         from task
         <where>
             <if test="taskTypeText != null and taskTypeText != ''">

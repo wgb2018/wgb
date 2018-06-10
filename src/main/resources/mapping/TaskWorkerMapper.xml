@@ -131,7 +131,7 @@
         where task_hr_id =#{HrTaskId}
     </select>
     <select id="queryHrCompanyBill" resultType="com.microdev.model.TaskWorker" parameterType="com.microdev.param.BillRequest">
-        select  sum(w.should_pay_money) as should_pay_money,sum(w.have_pay_money) as have_pay_money,sum(w.minutes) as minutes,
+        select  sum(w.should_pay_money) as should_pay_money,sum(w.have_pay_money) as have_pay_money,sum(w.minutes) as minutes,sum(w.should_pay_money) - sum(w.have_pay_money) as paidPayMpney,
         w.user_id,w.user_name from task_worker w left join task_hr_company h on w.task_hr_id = h.id
         where h.hr_company_id = #{id} group by w.user_id,w.user_name
         <if test = "name != null and name != ''">

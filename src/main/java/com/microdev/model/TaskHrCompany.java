@@ -113,7 +113,7 @@ public class TaskHrCompany extends BaseEntity {
      *  人力公司付款给小时工金额  [  工作时间(时) * 时薪  ]
      */
     @TableField(exist = false)
-    private Double paidPaymoney=0.0;
+    private Double paidPayMoney=0.0;
     /**
      *  人力公司付款给小时工金额  [  工作时间(时) * 时薪  ]
      */

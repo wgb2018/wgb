@@ -95,6 +95,9 @@ public class TaskWorker extends BaseEntity {
      *  已付金额 (这个字段不清楚何时赋值,因为系统暂时是线下支付)
      */
     private Double havePayMoney=0.0;
+
+    @TableField(exist = false)
+    private Double paidPayMpney=0.0;
     /**
      *  每小时支付给小时工价钱
      */

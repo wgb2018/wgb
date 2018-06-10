@@ -165,6 +165,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             taskWorker.setTaskContent(hrTask.getTaskContent());
             taskWorker.setTaskTypeText(hrTask.getTaskTypeText());
             taskWorker.setHrCompanyName (hrTask.getHrCompanyName ());
+            taskWorker.setHrCompanyId (hrTask.getHrCompanyId ());
             taskWorker.setHotelName(hrTask.getHotelName());
             taskWorker.setHotelId (hotelTask.getHotelId ());
             taskWorker.setDayStartTime(hotelTask.getDayStartTime());
