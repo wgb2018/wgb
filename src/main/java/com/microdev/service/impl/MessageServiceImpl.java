@@ -103,14 +103,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         result.put("page",paginator.getPage());
         return ResultDO.buildSuccess(result);
     }
-    /**
-     * 设置消息已读
-     */
-    @Override
-    public ResultDO updateMsgStatus(String id) {
-        messageMapper.updateStatus(id);
-        return ResultDO.buildSuccess("消息已读");
-    }
+
     /**
      * 酒店绑定或解绑人力公司 人力解绑或绑定酒店
      */
@@ -805,6 +798,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 throw new ParamsException("用户类型错误");
             }
         }
+        response.setMessageTextType(transMessageType(response.getMessageType()));
         return response;
     }
 
@@ -831,9 +825,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         } else if ("1".equals(type) || "2".equals(type) || "3".equals(type) || "4".equals(type) || "11".equals(type)) {
             response = messageMapper.selectHrAwaitHandleTask(messageId);
         } else if ("10".equals(type)) {
-            if ("hr".equals(type)) {
+            if ("hr".equals(messagetype)) {
                 response = messageMapper.selectHrAwaitHandleTask(messageId);
-            } else if ("hotel".equals(type)) {
+            } else if ("hotel".equals(messagetype)) {
                 response = messageMapper.selectWorkerAwaitHandleTask(messageId);
             }
         } else if ("7".equals(type)) {
@@ -989,4 +983,124 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         return result;
     }
 
+    /**
+     * PC查询申请补签
+     * @param paging
+     * @return
+     */
+    @Override
+    public ResultDO selectPcSupplement(PagingDO<ApplyParamDTO> paging) {
+
+        if (paging == null || paging.getSelector() == null || StringUtils.isEmpty(paging.getSelector().getId())) {
+            throw new ParamsException("参数错误");
+        }
+        Paginator paginator = paging.getPaginator();
+        Map<String, Object> result = new HashMap<>();
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+
+        List<ApplySupplementRequest> list = messageMapper.selectPcLeaveApply(paging.getSelector().getId(), "1");
+        PageInfo<ApplySupplementRequest> pageInfo = new PageInfo<>(list);
+        result.put("page", pageInfo.getPageNum());
+        result.put("total", pageInfo.getTotal());
+        result.put("list", list);
+        return ResultDO.buildSuccess(result);
+    }
+
+    /**
+     * pc查询请假申请
+     * @param dto
+     * @param paginator     分页参数
+     * @return
+     */
+    @Override
+    public ResultDO selectPcLeaveApply(ApplyParamDTO dto, Paginator paginator) {
+
+        if (dto == null || StringUtils.isEmpty(dto.getId())) {
+            throw new ParamsException("参数错误");
+        }
+        Map<String, Object> result = new HashMap<>();
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+        List<ApplySupplementRequest> list = messageMapper.selectPcLeaveApply(dto.getId(), "3");
+        PageInfo<ApplySupplementRequest> pageInfo = new PageInfo<>(list);
+        result.put("page", pageInfo.getPageNum());
+        result.put("total", pageInfo.getTotal());
+        result.put("list", list);
+        return ResultDO.buildSuccess(result);
+    }
+
+    /**
+     *  pc查询加班申请
+     * @param dto
+     * @param paginator
+     * @return
+     */
+    @Override
+    public ResultDO selectPcExtraApply(ApplyParamDTO dto, Paginator paginator) {
+
+        if (dto == null || StringUtils.isEmpty(dto.getId())) {
+            throw new ParamsException("参数错误");
+        }
+        Map<String, Object> result = new HashMap<>();
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+        List<ApplySupplementRequest> list = messageMapper.selectPcLeaveApply(dto.getId(), "2");
+        PageInfo<ApplySupplementRequest> pageInfo = new PageInfo<>(list);
+        result.put("page", pageInfo.getPageNum());
+        result.put("total", pageInfo.getTotal());
+        result.put("list", list);
+        return ResultDO.buildSuccess(result);
+    }
+
+    /**
+     *pc查询解绑申请
+     * @param dto
+     * @param paginator
+     * @return
+     */
+    @Override
+    public ResultDO selectPcBindApply(ApplyParamDTO dto, Paginator paginator) {
+
+        if (dto == null || StringUtils.isEmpty(dto.getId())) {
+            throw new ParamsException("参数错误");
+        }
+        Map<String, Object> result = new HashMap<>();
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+        List<BindPcResponse> list = messageMapper.selectPcBindApply(dto.getId());
+        PageInfo<BindPcResponse> pageInfo = new PageInfo<>(list);
+        result.put("page", pageInfo.getPageNum());
+        result.put("total", pageInfo.getTotal());
+        result.put("list", list);
+        return ResultDO.buildSuccess(result);
+    }
+
+    private String transMessageType(String messageType) {
+        if (StringUtils.isEmpty(messageType)) return messageType;
+        if ("1".equals(messageType)) {
+            return "申请补签";
+        } else if ("2".equals(messageType)) {
+            return "申请加时";
+        } else if ("3".equals(messageType)) {
+            return "申请请假";
+        } else if ("4".equals(messageType)) {
+            return "申请调配";
+        } else if ("5".equals(messageType)) {
+            return "申请绑定";
+        } else if ("6".equals(messageType)) {
+            return "新任务";
+        } else if ("7".equals(messageType)) {
+            return "申请取消任务";
+        } else if ("8".equals(messageType)) {
+            return "收入确认";
+        } else if ("9".equals(messageType)) {
+            return "申请替换";
+        } else if ("10".equals(messageType)) {
+            return "拒绝接单";
+        } else if ("11".equals(messageType)) {
+            return "待派单";
+        } else if ("12".equals(messageType)) {
+            return "申请解绑";
+        } else if ("12".equals(messageType)) {
+            return "申请合作";
+        }
+        return messageType;
+    }
 }

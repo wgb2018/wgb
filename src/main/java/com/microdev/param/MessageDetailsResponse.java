@@ -13,6 +13,7 @@ public class MessageDetailsResponse {
     private String mobile;
     private int age;
     private String messageType;
+    private String messageTextType;//申请类型名称
     private String createTime;
     private String area;
     private String logo;

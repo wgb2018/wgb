@@ -53,13 +53,7 @@ public class MessageController {
     public ResultDO getPageData(@RequestBody PagingDO<MessageQuery> paging) {
         return messageService.getPageMessages(paging.getPaginator(),paging.getSelector());
     }
-    /**
-     * 修改消息为已读状态
-     */
-    @PutMapping("/messages/{id}/status")
-    public ResultDO editMessageStatus(@PathVariable String id) {
-        return messageService.updateMsgStatus(id);
-    }
+
 
     /**
      * 查询未读数量(删除掉，不用)
@@ -96,15 +90,6 @@ public class MessageController {
         return ResultDO.buildSuccess(messageService.selectMessage(request.getId(), request.getRole(), request.getType(), request.getPage(), request.getPage()));
     }
 
-    /**
-     * 更新消息的已读标识
-     * @param id        消息id
-     * @return
-     */
-    @GetMapping("/messages/{id}/checkSign")
-    public ResultDO updateMessageCheckSign(@PathVariable String id) {
-        return ResultDO.buildSuccess(messageService.updateMsgStatus(id));
-    }
 
     /**
      *分页查询待处理事务
@@ -155,5 +140,49 @@ public class MessageController {
     public ResultDO selectMessageAmount(@PathVariable String id,@PathVariable String applyType) {
 
         return ResultDO.buildSuccess(messageService.selectUnReadCount(id, applyType));
+    }
+
+    /**
+     * PC查询申请补签
+     * @param paging
+     * @return
+     */
+    @PostMapping("/message/pc/supplement")
+    public ResultDO selectPcSupplementInfo(@RequestBody PagingDO<ApplyParamDTO> paging) {
+
+        return messageService.selectPcSupplement(paging);
+    }
+
+    /**
+     *pc查询请假申请
+     * @param paging
+     * @return
+     */
+    @PostMapping("/message/pc/leave")
+    public ResultDO selectPcLeaveInfo(@RequestBody PagingDO<ApplyParamDTO> paging) {
+
+        return messageService.selectPcLeaveApply(paging.getSelector(), paging.getPaginator());
+    }
+
+    /**
+     * pc查询加班申请
+     * @param paging
+     * @return
+     */
+    @PostMapping("/message/pc/extra/apply")
+    public ResultDO selectPcExtraApply(@RequestBody PagingDO<ApplyParamDTO> paging) {
+
+        return messageService.selectPcExtraApply(paging.getSelector(), paging.getPaginator());
+    }
+
+    /**
+     * pc查询解绑申请
+     * @param paging
+     * @return
+     */
+    @PostMapping("/message/pc/unbind/apply")
+    public ResultDO selectPcUnbind(@RequestBody PagingDO<ApplyParamDTO> paging) {
+
+        return messageService.selectPcBindApply(paging.getSelector(), paging.getPaginator());
     }
 }
