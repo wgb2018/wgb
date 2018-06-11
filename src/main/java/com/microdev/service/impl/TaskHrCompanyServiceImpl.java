@@ -876,8 +876,15 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         workerTask.setTaskTypeCode(taskHrCompany.getTaskTypeCode());
         workerTask.setTaskTypeText(taskHrCompany.getTaskTypeText());
         workerTask.setTaskHrId(taskHrCompany.getPid());
-        workerTask.setWorkerId(message.getWorkerId());
-        taskWorkerMapper.insertAllColumn(workerTask);
+        workerTask.setWorkerId(workerId);
+        User us = userMapper.selectByWorkerId (workerId);
+        workerTask.setUserId (us.getPid ());
+        workerTask.setUserName (us.getNickname ());
+        workerTask.setHrCompanyName (taskHrCompany.getHrCompanyName ());
+        workerTask.setHotelId (taskHrCompany.getHotelId ());
+        workerTask.setHrCompanyId (taskHrCompany.getHrCompanyId ());
+        workerTask.setHotelTaskId (taskHrCompany.getTaskId ());
+        taskWorkerMapper.insert(workerTask);
 
         //发送消息
         Map<String, String> param = new HashMap<>();
