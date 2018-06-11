@@ -254,7 +254,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m.setTaskId(dto.getTaskId());
             m.setMessageContent(c);
             m.setHrTaskId(dto.getPid());
-            m.setHrCompanyId (dto.getHrCompanyId ());
+
             list.add(m);
         }
         messageMapper.saveBatch(list);
@@ -295,7 +295,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m.setHrCompanyId(hrId);
             m.setWorkerId(param.get("workerId"));
             m.setWorkerTaskId(param.get("workerTaskId"));
-            System.out.println("workerTaskId:" + param.get("workerTaskId"));
+
             m.setTaskId(taskId);
             m.setIsTask(0);
             m.setHotelId(param.get("hotelId"));
@@ -891,6 +891,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             message.setHotelId(taskHrCompany.getHotelId());
             message.setHrCompanyId(taskHrCompany.getHrCompanyId());
             message.setIsTask(0);
+            message.setWorkerId(worker.getWorkerId());
+            message.setWorkerTaskId(worker.getPid());
             message.setTaskId (taskHrCompany.getTaskId ());
             messageMapper.insert(message);
         }

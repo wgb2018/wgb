@@ -199,6 +199,8 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         m.setWorkerId (taskWorker.getWorkerId ());
         m.setWorkerTaskId (taskWorker.getPid ());
         m.setHrCompanyId (taskHr.getPid ());
+        m.setTaskId(hotelTask.getPid());
+        m.setHotelId(hotelTask.getHotelId());
         Map<String, String> param = new HashMap<>();
         param.put("userName", userMapper.selectByWorkerId (taskWorker.getWorkerId ()).getNickname ());
         param.put("content", refusedTaskReq.getRefusedReason());
@@ -206,6 +208,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         m.setMessageContent(c);
         m.setHrTaskId(message.getHrTaskId());
         m.setApplyType(2);
+        m.setApplicantType(1);
         m.setStatus(0);
         m.setIsTask(0);
         messageMapper.insert(m);
