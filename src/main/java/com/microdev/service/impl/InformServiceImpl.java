@@ -133,7 +133,7 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
         inform.setSendType(sendType);
         inform.setStatus(0);
         inform.setReceiveId(receiveId);
-        informMapper.insertAllColumn(inform);
+        informMapper.insert(inform);
     }
 
     /**

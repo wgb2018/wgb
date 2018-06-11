@@ -417,4 +417,6 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         informMapper.insertInform(inform);
         return ResultDO.buildSuccess("绑定成功");
     }
+
+
 }

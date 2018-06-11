@@ -139,7 +139,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         return ResultDO.buildSuccess("任务领取成功");
     }
     /**
-     * 拒绝任务
+     * 小时工拒绝任务
      */
     @Override
     public ResultDO refusedTask(RefusedTaskRequest refusedTaskReq) {
@@ -189,6 +189,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         notice.setContent("小时工" + taskWorker.getUserName() + "拒绝了你派发的任务");
         informMapper.insertInform(notice);
 
+        //发送消息
         Message m = new Message();
         m.setContent(refusedTaskReq.getRefusedReason());
         MessageTemplate mess = messageTemplateMapper.findFirstByCode ("refuseTaskMessage");

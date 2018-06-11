@@ -4,10 +4,7 @@ import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.model.Company;
-import com.microdev.param.CompanyQueryDTO;
-import com.microdev.param.HotelHrIdBindDTO;
-import com.microdev.param.QueryCooperateRequest;
-import com.microdev.param.AssignmentRequest;
+import com.microdev.param.*;
 import com.microdev.service.CompanyService;
 import com.microdev.service.TaskHrCompanyService;
 import com.microdev.service.UserCompanyService;
@@ -227,7 +224,18 @@ public class HrCompanyController {
      * @return
      */
     @PostMapping("/hrcompanies/handle/account")
-    public ResultDO hrcompaniesHandleAccount(Map<String, String> param) {
+    public ResultDO hrcompaniesHandleAccount(@RequestBody Map<String, String> param) {
         return taskHrCompanyService.hrHandleIncome(param.get("messageId"), param.get("status"), param.get("reason"));
+    }
+
+    /**
+     * 人力同意小时工拒绝任务并派发任务
+     * @param messageParamDTO
+     * @return
+     */
+    @PostMapping("/hrcompanies/agree/distribute")
+    public ResultDO hrcompaniesAgreePost(@RequestBody MessageParamDTO messageParamDTO) {
+
+        return taskHrCompanyService.hrAgreeWorkerRefuseAndPost(messageParamDTO);
     }
 }

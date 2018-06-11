@@ -743,7 +743,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             workerTask.setTaskTypeText(taskHrCompany.getTaskTypeText());
             workerTask.setTaskHrId(taskHrCompany.getPid());
             workerTask.setWorkerId(message.getWorkerId());
-            taskWorkerMapper.insertAllColumn(workerTask);
+            taskWorkerMapper.insert(workerTask);
             list.add(workerTask);
         }
 
@@ -855,7 +855,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         }
         taskWorker.setStatus(2);
         taskWorker.setRefusedReason(message.getContent());
-        taskWorkerMapper.updateAllColumnById(taskWorker);
+        taskWorkerMapper.update(taskWorker);
         //给取消任务的小时工发送通知
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy.MM.dd");
         DateTimeFormatter time = DateTimeFormatter.ofPattern("HH:mm");
@@ -877,7 +877,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         workerTask.setTaskTypeText(taskHrCompany.getTaskTypeText());
         workerTask.setTaskHrId(taskHrCompany.getPid());
         workerTask.setWorkerId(message.getWorkerId());
-        taskWorkerMapper.insertAllColumn(workerTask);
+        taskWorkerMapper.insert(workerTask);
 
         //发送消息
         Map<String, String> param = new HashMap<>();
@@ -945,5 +945,82 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             throw new ParamsException("参数错误");
         }
         return ResultDO.buildSuccess("成功");
+    }
+
+    /**
+     * 人力同意小时工拒绝任务并派发任务
+     * @param messageParamDTO
+     * @return
+     */
+    @Override
+    public ResultDO hrAgreeWorkerRefuseAndPost(MessageParamDTO messageParamDTO) {
+        if (messageParamDTO == null || StringUtils.isEmpty(messageParamDTO.getMessgeId())
+                || messageParamDTO.getSet() == null || messageParamDTO.getSet().size() == 0) {
+            throw new ParamsException("参数不能为空");
+        }
+
+        Message message = messageMapper.selectById(messageParamDTO.getMessgeId());
+        if (message == null) {
+            throw new ParamsException("查询不到消息");
+        }
+        message.setStatus(1);
+        messageMapper.updateAllColumnById(message);
+
+        TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(message.getHrTaskId());
+        if (taskHrCompany == null) {
+            throw new ParamsException("查询不到人力任务信息");
+        }
+        //更新人力任务的拒绝人数
+        taskHrCompany.setRefusedWorkers(taskHrCompany.getRefusedWorkers() - 1);
+        taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
+
+        Task task = taskMapper.selectById(taskHrCompany.getTaskId());
+        if (task == null) {
+            throw new ParamsException("查询不到酒店任务");
+        }
+
+        //发送通知给拒绝任务的小时工
+        String content = taskHrCompany.getHrCompanyName() + "同意了你的拒绝任务申请,拒绝原因：" + message.getContent();
+        informService.sendInformInfo(2, 1, content, message.getWorkerId(), "拒绝任务");
+
+        //派发小时工任务
+        List<Map<String, String>> list = new ArrayList<>();
+        Map<String, String> m = null;
+        for (String id : messageParamDTO.getSet()){
+            System.out.println (id);
+            m = new HashMap<>();
+            TaskWorker taskWorker=new TaskWorker();
+            taskWorker.setTaskHrId(taskHrCompany.getPid());;
+
+            User user = userMapper.queryByWorkerId(id);
+            taskWorker.setUserId(user.getPid());
+            taskWorker.setWorkerId (user.getWorkerId ());
+            taskWorker.setUserName(user.getUsername());
+            taskWorker.setStatus(0);
+            taskWorker.setFromDate(taskHrCompany.getFromDate());
+            taskWorker.setToDate(taskHrCompany.getToDate());
+            taskWorker.setHourlyPay(taskHrCompany.getHourlyPay());
+            taskWorker.setTaskTypeCode(taskHrCompany.getTaskTypeCode());
+            taskWorker.setTaskContent(taskHrCompany.getTaskContent());
+            taskWorker.setTaskTypeText(taskHrCompany.getTaskTypeText());
+            taskWorker.setHrCompanyName (taskHrCompany.getHrCompanyName ());
+            taskWorker.setHrCompanyId (taskHrCompany.getHrCompanyId ());
+            taskWorker.setHotelName(taskHrCompany.getHotelName());
+            taskWorker.setHotelId (task.getHotelId());
+            taskWorker.setDayStartTime(task.getDayStartTime());
+            taskWorker.setDayEndTime(task.getDayEndTime());
+            taskWorker.setHotelTaskId (task.getPid());
+            taskWorker.setHrCompanyId(taskHrCompany.getHrCompanyId());
+            taskWorkerMapper.insert(taskWorker);
+            m.put("workerId", id);
+            m.put("workerTaskId", taskWorker.getPid());
+            m.put("hotelId", taskWorker.getHotelId());
+            list.add(m);
+        }
+
+        //发送消息
+        messageService.hrDistributeTask(list, taskHrCompany.getHrCompanyId(), taskHrCompany.getHrCompanyName(), "workTaskMessage", task.getPid(), taskHrCompany.getPid());
+        return ResultDO.buildSuccess("派发成功");
+
     }
 }

@@ -16,7 +16,7 @@ public class InformController {
     private InformService informService;
 
     /**
-     * 查询消息
+     * 查询角色通知
      * @param paging
      * @return
      */
