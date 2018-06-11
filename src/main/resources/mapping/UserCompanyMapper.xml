@@ -26,9 +26,7 @@
 	<select id="getSelectableWorker" resultType="com.microdev.model.User" parameterType="com.microdev.param.HrQueryWorkerDTO">
         select <include refid="User_Query_List"/> FROM user where id in (select user_id
         from  user_company where status = 1 and
-        company_id = #{hrId} and user_id not in (select
-        user_id from
-        task_worker where task_hr_id = #{taskId}))
+        company_id = #{hrId} and user_id not in (select	IFNULL(u.id,'0') as user_id FROM	task_worker t left join user u on t.worker_id = u.worker_id WHERE t.task_hr_id = #{taskId} and t.status in(0,1)))
         <if test="userName !=null and userName !=''"  >
             and nickname like concat('%', #{userName},'%')
         </if>

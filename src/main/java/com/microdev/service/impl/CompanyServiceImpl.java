@@ -989,7 +989,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         String content = StringKit.templateReplace(inf.getContent (), map);
         informService.sendInformInfo (inf.getSendType (),2,content,message.getHrCompanyId (),inf.getTitle ());
         TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId (message.getHrTaskId ());
-        taskHrCompany.setNeedWorkers (taskHrCompany.getNeedWorkers()-Integer.parseInt (message.getMinutes ()));
+        //taskHrCompany.setNeedWorkers (taskHrCompany.getNeedWorkers()-Integer.parseInt (message.getMinutes ()));
+        taskHrCompany.setStatus (5);
+        taskHrCompanyMapper.updateById (taskHrCompany);
         return ResultDO.buildSuccess("处理成功");
     }
 
