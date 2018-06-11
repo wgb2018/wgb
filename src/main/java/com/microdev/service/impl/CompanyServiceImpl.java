@@ -962,6 +962,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         return ResultDO.buildSuccess("处理成功");
     }
 
+    /**
+     * 酒店同意人力公司申请调配并派发任务
+     * @param request
+     * @return
+     */
     @Override
     public ResultDO deploymentHandle(CreateTaskRequest request) {
 
@@ -981,6 +986,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
         request.setTaskId(message.getTaskId());
         request.setTaskHrId(message.getHrTaskId());
+
+        //酒店再派发
+
         taskService.hotelAgainSendTask(request);
         //申请调配成功通知
         InformTemplate inf = informTemplateMapper.selectByCode (InformType.hr_allocation_success.name ());
@@ -988,8 +996,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         map.put("hotel",companyMapper.findCompanyById (message.getHotelId ()).getName ());
         String content = StringKit.templateReplace(inf.getContent (), map);
         informService.sendInformInfo (inf.getSendType (),2,content,message.getHrCompanyId (),inf.getTitle ());
-        TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId (message.getHrTaskId ());
-        taskHrCompany.setNeedWorkers (taskHrCompany.getNeedWorkers()-Integer.parseInt (message.getMinutes ()));
+
         return ResultDO.buildSuccess("处理成功");
     }
 

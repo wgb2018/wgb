@@ -546,7 +546,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         m.setIsTask(0);
         m.setHotelId((String)map.get("hotelId"));
         m.setHrCompanyId((String)map.get("hrCompanyId"));
-        m.setHrTaskId((String)map.get("hrTaskId"));
         m.setTaskId (taskHrCompanyMapper.queryByTaskId ((String)map.get("hrTaskId")).getTaskId ());
         messageMapper.insert(m);
         return ResultDO.buildSuccess("成功");

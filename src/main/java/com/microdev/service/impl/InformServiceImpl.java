@@ -146,5 +146,15 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
         return 0;
     }
 
+    /**
+     * 根据条件查询数量
+     * @param param
+     * @return
+     */
+    @Override
+    public int selectCountByParam(Map<String, Object> param) {
+        return informMapper.selectUnReadCount(param);
+    }
+
 
 }

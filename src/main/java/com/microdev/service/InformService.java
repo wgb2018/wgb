@@ -32,4 +32,11 @@ public interface InformService extends IService<Inform> {
      * @return
      */
     int selectNoticeCountByReceiveId(Map<String, Object> param);
+
+    /**
+     * 根据条件查询数量
+     * @param param
+     * @return
+     */
+    int selectCountByParam(Map<String, Object> param);
 }

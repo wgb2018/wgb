@@ -74,7 +74,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         return ResultDO.buildSuccess(taskWorkerConverter.toViewModel(taskWorker));
     }
     /**
-     * 领取任务
+     * 小时工领取任务
      */
     @Override
     public ResultDO receivedTask(String messageId) {

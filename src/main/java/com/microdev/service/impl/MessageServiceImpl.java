@@ -14,6 +14,7 @@ import com.microdev.mapper.TaskHrCompanyMapper;
 import com.microdev.mapper.TaskWorkerMapper;
 import com.microdev.model.*;
 import com.microdev.param.*;
+import com.microdev.service.InformService;
 import com.microdev.service.MessageService;
 import com.microdev.service.TaskHrCompanyService;
 import com.microdev.service.TaskService;
@@ -38,6 +39,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     private TaskHrCompanyService taskHrCompanyService;
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private InformService informService;
 
     /**
      * 创建消息模板
@@ -139,6 +142,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m = new Message();
             m.setMessageCode(mess.getCode());
             m.setMessageTitle(mess.getTitle());
+
             m.setStatus(0);
             m.setMessageType(13);
             m.setIsTask(1);
@@ -393,21 +397,35 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             //查询未读待处理事物数量
             param.put("pendingTask", messageMapper.selectUnReadMessage(map));
             //查询未读通知数量
-            param.put("notice", 0);
+            map = new HashMap<>();
+            map.put("status", 0);
+            map.put("acceptType", 1);
+            map.put("receiveId", id);
+            param.put("notice", informService.selectCountByParam(map));
+            //查询已完成事物未读数量
+            param.put("completeTask", taskWorkerMapper.selectCompleteCount(id));
         } else if ("hr".equals(applyType)) {
 
             param.put("curTask", taskHrCompanyService.selectUnreadCount(id));
             map.put("hrId", id);
             map.put("roleName", "hr");
             param.put("pendingTask", messageMapper.selectUnReadMessage(map));
-            param.put("notice", 0);
+            map = new HashMap<>();
+            map.put("status", 0);
+            map.put("acceptType", 2);
+            map.put("receiveId", id);
+            param.put("notice", informService.selectCountByParam(map));
         } else if ("hotel".equals(applyType)) {
 
             param.put("curTask", taskService.selectUnReadAmount(id));
             map.put("hotelId", id);
             map.put("roleName", "hotel");
             param.put("pendingTask", messageMapper.selectUnReadMessage(map));
-            param.put("notice", 0);
+            map = new HashMap<>();
+            map.put("status", 0);
+            map.put("acceptType", 3);
+            map.put("receiveId", id);
+            param.put("notice", informService.selectCountByParam(map));
         } else {
             throw new ParamsException("参数applyType类型错误");
         }
