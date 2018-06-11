@@ -855,6 +855,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         }
         taskWorker.setStatus(2);
         taskWorker.setRefusedReason(message.getContent());
+        taskWorkerMapper.updateById (taskWorker);
 
         //给取消任务的小时工发送通知
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy.MM.dd");
@@ -977,7 +978,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             throw new ParamsException("查询不到人力任务信息");
         }
         //更新人力任务的拒绝人数
-        taskHrCompany.setRefusedWorkers(taskHrCompany.getRefusedWorkers() - 1);
+        taskHrCompany.setRefusedWorkers(taskHrCompany.getRefusedWorkers() + 1);
         taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
 
         Task task = taskMapper.selectById(taskHrCompany.getTaskId());
