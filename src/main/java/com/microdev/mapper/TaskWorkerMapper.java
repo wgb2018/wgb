@@ -22,10 +22,10 @@ public interface TaskWorkerMapper extends BaseMapper<TaskWorker> {
 
     void update(TaskWorker taskWorker);
 
-    TaskWorker findWorkerNowTask(@Param("userId") String userId, @Param("status") int status, @Param("nowTime") OffsetDateTime nowTime, @Param("Time") OffsetTime Time);
+    TaskWorker findWorkerNowTask(@Param("userId") String userId, @Param("status") int status, @Param("nowTime") OffsetDateTime nowTime, @Param("time") OffsetTime time, @Param("timeA") OffsetTime timeA);
 
 
-    TaskWorker findWorkerNextTask(@Param("userId") String userId, @Param("status") int status, @Param("nowTime") OffsetDateTime nowTime);
+    TaskWorker findWorkerNextTask(@Param("userId") String userId, @Param("status") int status, @Param("nowTime") OffsetDateTime nowTime, @Param("time") OffsetTime time);
 
     TaskWorker findWorkerBeforeTask(@Param("userId") String userId, @Param("status") int status, @Param("nowTime") OffsetDateTime nowTime);
 

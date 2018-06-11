@@ -49,14 +49,7 @@ public class TaskHrCompanyController {
     public ResultDO createCompany(@RequestBody HrTaskDistributeRequest request) {
         return taskHrCompanyService.TaskHrDistribute(request);
     }
-    /**
-     * 申请调配
-     */
-    @PostMapping("/hr-tasks/allocate/{id}")
-    public ResultDO allocate(@PathVariable String id, String reason, Integer number) {
-        taskHrCompanyService.TaskHrallocate(id, reason, number);
-        return ResultDO.buildSuccess("申请任务调配成功");
-    }
+
     /**
      * 分页查询人力公司的任务
      */

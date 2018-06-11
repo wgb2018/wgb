@@ -97,7 +97,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
             }
 
         }
-        map.put("distributeWorkers", list.size());
         map.put("confirmedSet", confirmedList);
         map.put("refusedSet", refusedList);
         map.put("distributedSet", distributedList);
@@ -376,31 +375,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
 
     }
     /**
-     * 人力公司任务调配
-     */
-    @Override
-    public String TaskHrallocate(String id, String reason, Integer number) {
-        if (number == null || number < 1 || StringUtils.isEmpty(id)) {
-            throw new ParamsException("参数错误");
-        }
-        TaskHrCompany t = taskHrCompanyMapper.selectById(id);
-        if (t == null) {
-            throw new BusinessException("查找不到人力资源任务");
-        }
-        //t.setStatus(5);
-        Map map = new HashMap<String,Object> ();
-        map.put("message_type",4);
-        map.put("hr_task_id",t.getPid ());
-        map.put("status",0);
-        if(messageMapper.selectByMap (map).size ()>0){
-            return "你已提交过申请";
-        }
-        taskHrCompanyMapper.update(t);
-        messageService.sendMessage(t, reason, String.valueOf(number), "applyChangeMessage");
-        return "发送成功";
-
-    }
-    /**
      * 酒店查询账目
      */
     @Override
@@ -545,6 +519,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         param.put("reason", (String)map.get("reason"));
         param.put("number", (String)map.get("number"));
         String c = StringKit.templateReplace(mess.getContent(), param);
+
         m.setMessageContent(c);
         m.setMessageType(4);
         m.setApplicantType (2);
@@ -555,6 +530,13 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         m.setHotelId((String)map.get("hotelId"));
         m.setHrCompanyId((String)map.get("hrCompanyId"));
         m.setTaskId (taskHrCompanyMapper.queryByTaskId ((String)map.get("hrTaskId")).getTaskId ());
+        Map map1 = new HashMap<String,Object> ();
+        map1.put("message_type",4);
+        map1.put("hr_task_id",(String)map.get("hrTaskId"));
+        map1.put("status",0);
+        if(messageMapper.selectByMap (map1).size ()>0){
+            return ResultDO.buildSuccess("你已提交过申请");
+        }
         messageMapper.insert(m);
         return ResultDO.buildSuccess("成功");
     }
@@ -900,6 +882,9 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         result.put("applyType", 0);
         result.put("messageContent", notice);
         result.put("messageType", 6);
+        result.put ("workTaskMessage","workTaskMessage");
+        result.put("messageTitle","人力公司派发任务通知书");
+        result.put("taskId",taskHrCompany.getTaskId ());
         result.put("hrTaskId", taskHrCompany.getPid());
         messageService.sendMessageInfo(result);
         return ResultDO.buildSuccess("成功");
