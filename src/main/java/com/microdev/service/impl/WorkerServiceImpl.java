@@ -510,7 +510,6 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             throw new ParamsException("参数time不能为空");
         }
 
-
         Message m = new Message();
         m.setSupplementTime(info.getTime());
         m.setContent(info.getReason());
