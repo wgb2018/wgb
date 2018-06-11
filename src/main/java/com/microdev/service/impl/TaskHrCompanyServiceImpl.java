@@ -855,7 +855,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         }
         taskWorker.setStatus(2);
         taskWorker.setRefusedReason(message.getContent());
-        taskWorkerMapper.update(taskWorker);
+
         //给取消任务的小时工发送通知
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy.MM.dd");
         DateTimeFormatter time = DateTimeFormatter.ofPattern("HH:mm");
@@ -876,9 +876,15 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         workerTask.setTaskTypeCode(taskHrCompany.getTaskTypeCode());
         workerTask.setTaskTypeText(taskHrCompany.getTaskTypeText());
         workerTask.setTaskHrId(taskHrCompany.getPid());
-        workerTask.setWorkerId(message.getWorkerId());
+        workerTask.setWorkerId(workerId);
+        User us = userMapper.selectByWorkerId (workerId);
+        workerTask.setUserId (us.getPid ());
+        workerTask.setUserName (us.getNickname ());
+        workerTask.setHrCompanyName (taskHrCompany.getHrCompanyName ());
+        workerTask.setHotelId (taskHrCompany.getHotelId ());
+        workerTask.setHrCompanyId (taskHrCompany.getHrCompanyId ());
+        workerTask.setHotelTaskId (taskHrCompany.getTaskId ());
         taskWorkerMapper.insert(workerTask);
-
         //发送消息
         Map<String, String> param = new HashMap<>();
         param.put("hrCompanyName", taskWorker.getHrCompanyName());
