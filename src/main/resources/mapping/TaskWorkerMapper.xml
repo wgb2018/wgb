@@ -156,9 +156,9 @@
         ON tw.`task_hr_id` = th.`id`
         WHERE tw.id = #{taskWorkerId}
     </select>
-    <select id="selectUserAndWorkerId" parameterType="java.lang.String" resultType="java.util.Map">
+    <select id="selectUserAndWorkerId" parameterType="java.lang.String" resultType="com.microdev.param.WorkerCancelTask">
         SELECT tw.`worker_id` AS workerId, u.`id` AS userId, u.`nickname` AS username, th.hotel_id AS hotelId,
-        th.hr_company_id as hrId,tw.hotel_task_id as hotelTaskId,task_hr_id as taskHrId,th.task_id as taskId
+        th.hr_company_id as hrId,tw.hotel_task_id as hotelTaskId,task_hr_id as taskHrId,th.task_id as taskId,tw.day_start_time,tw.day_end_time
         FROM (SELECT * FROM task_worker WHERE id = #{id})tw
         INNER JOIN USER u ON tw.`user_id` = u.`id`
         INNER JOIN task_hr_company th ON th.id = tw.task_hr_id

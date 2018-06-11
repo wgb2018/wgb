@@ -1,6 +1,7 @@
 package com.microdev.service;
 
 import com.baomidou.mybatisplus.service.IService;
+import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.model.Company;
@@ -201,4 +202,11 @@ public interface MessageService extends IService<Message> {
      * @return
      */
     String installContent(Map<String, String> param, String pattern);
+
+    /**
+     * 查询申请调配信息
+     * @param paging
+     * @return
+     */
+    Map<String, Object> selectDeployApply(PagingDO<ApplyParamDTO> paging);
 }

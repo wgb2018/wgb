@@ -25,6 +25,7 @@ import com.microdev.service.InformService;
 import com.microdev.service.MessageService;
 import com.microdev.service.WorkerService;
 import com.microdev.type.UserType;
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -307,18 +308,18 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setSupplementTime(info.getTime());
         m.setSupplementTimeEnd(info.getEndTime());
         m.setContent(info.getReason());
-        Map<String, String> tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
+        WorkerCancelTask tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
 
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applyLeaveMessage");
         m.setMessageCode(mess.getCode());
         m.setMessageType(3);
         m.setMessageTitle(mess.getTitle());
-        m.setWorkerId(tp.get("workerId"));
+        m.setWorkerId(tp.getWorkerId());
         m.setWorkerTaskId(info.getTaskWorkerId());
-        m.setHotelId(tp.get("hotelId"));
+        m.setHotelId(tp.getHotelId());
         m.setTaskId (taskWorkerMapper.findFirstById (info.getTaskWorkerId()).getHotelTaskId ());
         Map<String, String> param = new HashMap<>();
-        param.put("userName", tp.get("username"));
+        param.put("userName", tp.getUsername());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         param.put("startTime", info.getTime().format(formatter));
         param.put("taskContent", info.getReason());
@@ -357,18 +358,18 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setContent(info.getReason());
         m.setSupplementTime(info.getTime());
         m.setMinutes(info.getMinutes() + "");
-        Map<String, String> tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
+        WorkerCancelTask tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
 
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applyOvertimeMessage");
         m.setMessageCode(mess.getCode());
         m.setMessageType(2);
         m.setMessageTitle(mess.getTitle());
-        m.setWorkerId(tp.get("workerId"));
+        m.setWorkerId(tp.getWorkerId());
         m.setWorkerTaskId(info.getTaskWorkerId());
-        m.setHotelId(tp.get("hotelId"));
-        m.setTaskId (tp.get("hotelTaskId"));
+        m.setHotelId(tp.getHotelId());
+        m.setTaskId (tp.getHotelTaskId());
         Map<String, String> param = new HashMap<>();
-        param.put("userName", tp.get("username"));
+        param.put("userName", tp.getUsername());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         param.put("startTime", info.getTime().format(formatter));
         param.put("taskContent", info.getReason());
@@ -405,19 +406,22 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             return "你已提交过申请";
         }
         Message m = new Message();
-        Map<String, String> tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
+        WorkerCancelTask tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
         m.setContent(info.getReason());
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applyCancelTaskMessage");
+
+        m.setSupplementTime(tp.getDayStartTime());
+        m.setSupplementTimeEnd(tp.getDayEndTime());
         m.setMessageCode(mess.getCode());
         m.setMessageType(7);
         m.setMessageTitle(mess.getTitle());
-        m.setWorkerId(tp.get("workerId"));
+        m.setWorkerId(tp.getWorkerId());
         m.setWorkerTaskId(info.getTaskWorkerId());
-        m.setHrCompanyId(tp.get("hrId"));
-        m.setHrTaskId (tp.get("taskHrId"));
-        m.setTaskId (tp.get("taskId"));
+        m.setHrCompanyId(tp.getHrId());
+        m.setHrTaskId (tp.getTaskHrId());
+        m.setTaskId (tp.getTaskId());
         Map<String, String> param = new HashMap<>();
-        param.put("userName",  tp.get("username"));
+        param.put("userName",  tp.getUsername());
         param.put("taskContent", info.getReason());
         String c = StringKit.templateReplace(mess.getContent(), param);
         m.setMessageContent(c);
@@ -499,7 +503,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         Message m = new Message();
         m.setSupplementTime(info.getTime());
         m.setContent(info.getReason());
-        Map<String, String> tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
+        WorkerCancelTask tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applySupplementMessage");
         Map map = new HashMap<String,Object> ();
         map.put("message_type",1);
@@ -517,13 +521,13 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         m.setMessageCode(mess.getCode());
         m.setMessageTitle(mess.getTitle());
-        m.setWorkerId( tp.get("workerId"));
+        m.setWorkerId( tp.getWorkerId());
         m.setWorkerTaskId (info.getTaskWorkerId());
         m.setMessageType(1);
         m.setApplicantType(1);
         m.setWorkerTaskId(info.getTaskWorkerId());
-        m.setHotelId(tp.get("hotelId"));
-        m.setTaskId (tp.get("hotelTaskId"));
+        m.setHotelId(tp.getHotelId());
+        m.setTaskId (tp.getHotelTaskId());
         m.setMessageContent(c);
         m.setApplyType(3);
         m.setStatus(0);
@@ -576,12 +580,15 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         List<PunchInfo> workList = null;
         Map<String, Integer> hotelStatus = null;
         Map<String, Integer> sysStatus = null;
-        /*if (list == null || list.size() == 0) {
+        if (list == null || list.size() == 0) {
             if (holidayList == null || holidayList.size() == 0) {
-                while (startDay.compareTo(nowDate) > 0) {
+                //没有打卡也没有请假
+                while (startDay.compareTo(nowDate) <= 0) {
                     detail = new WorkerDetail();
                     workList = new ArrayList<>();
                     workLog = new PunchInfo();
+                    workLog.setStartTime("--");
+                    workLog.setEndTime("--");
                     hotelStatus = new HashMap<>();
                     sysStatus = new HashMap<>();
                     initMapStatus(hotelStatus, 4);
@@ -615,162 +622,85 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     initMapStatus(hotelStatus, 4);
                     initMapStatus(sysStatus, 5);
                     long time = 0L;
-                    boolean flag = false;
                     int num = 0;
                     expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
                     for (Holiday holiday : holidayList) {
                         if (holiday.getFromDate().getDayOfYear() == startDay.getDayOfYear()) {
-                            if (holiday.getToDate().getDayOfYear() > startDay.getDayOfYear()) {
+                            //当天请假
+                            sysStatus.put("leave", 1);
+                            hotelStatus.put("leave", 1);
+                            workLog.setEndTime("--");
+                            workLog.setStartTime("--");
+                            workList.add(workLog);
+                            if (holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY) <= startDay.getLong(ChronoField.MINUTE_OF_DAY)) {
 
-                                if (startDay.getLong(ChronoField.MINUTE_OF_DAY) >= holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY)) {
+                                if (holiday.getToDate().getDayOfYear() > startDay.getDayOfYear() || (holiday.getToDate().getDayOfYear() == startDay.getDayOfYear() && holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) >= end)) {
 
-                                    sysStatus.put("comeLate", 1);
-                                    sysStatus.put("leave", 1);
-                                    hotelStatus.put("leave", 1);
-                                    workLog.setStartTime(startDay.format(timeFormat));
-                                    workLog.setEndTime(endDay.format(timeFormat));
-
-                                    if (expire) {
-                                        detail.setExpire("0");
-                                    } else  {
-                                        detail.setExpire("1");
-                                    }
-                                    workList.add(workLog);
-                                    detail.setTime(startDay.format(d));
-                                    detailList.add(detail);
-                                    detail.setSysStatus(sysStatus);
-                                    detail.setHotelStatus(hotelStatus);
                                     break;
-
                                 } else {
-                                    if (!flag) {
-                                        expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
-                                        sysStatus.put("stay", 1);
-                                        hotelStatus.put("leave", 1);
-                                        workLog.setStartTime("--");
-                                        workLog.setEndTime("--");
-                                        if (expire) {
-                                            detail.setExpire("0");
-                                        } else  {
-                                            detail.setExpire("1");
-                                        }
-                                        workList.add(workLog);
-                                        detail.setSysStatus(sysStatus);
-                                        detail.setHotelStatus(hotelStatus);
-                                        detail.setTime(startDay.format(d));
-                                    }
+                                    //当天部分时间请假
                                     num++;
-                                    time += endDay.getLong(ChronoField.MINUTE_OF_DAY) - holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY);
+                                    time += holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) - start;
                                 }
-
                             } else {
-                                //当天请假
-                                if (!flag) {
-                                    expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
-                                    sysStatus.put("stay", 1);
-                                    hotelStatus.put("leave", 1);
-                                    workLog.setStartTime("--");
-                                    workLog.setEndTime("--");
-                                    if (expire) {
-                                        detail.setExpire("0");
-                                    } else  {
-                                        detail.setExpire("1");
+                                if (holiday.getToDate().getDayOfYear() == startDay.getDayOfYear()) {
+                                    if (holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) < end) {
+                                        num++;
+                                        time += holiday.getToDate().getLong(ChronoField.SECOND_OF_DAY) - holiday.getFromDate().getLong(ChronoField.SECOND_OF_DAY);
                                     }
-                                    workList.add(workLog);
-                                    detail.setSysStatus(sysStatus);
-                                    detail.setHotelStatus(hotelStatus);
-                                    detail.setTime(startDay.format(d));
+                                } else if (holiday.getToDate().getDayOfYear() > startDay.getDayOfYear()){
+                                    num++;
+                                    time += end - holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY);
+                                } else {
+                                    throw new ParamsException("请假时间错误");
                                 }
-                                num++;
-                                time += endDay.getLong(ChronoField.MINUTE_OF_DAY) - holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY);
                             }
+
                         } else if (holiday.getFromDate().getDayOfYear() < startDay.getDayOfYear()){
                             //请假是从当天之前开始计算
-
-                            if (holiday.getToDate().getDayOfYear() == startDay.getDayOfYear()) {
-                                if (holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) >= endDay.getLong(ChronoField.MINUTE_OF_DAY)) {
-                                    sysStatus.put("leave", 1);
-                                    hotelStatus.put("leave", 1);
-                                    workLog.setStartTime("--");
-                                    workLog.setEndTime("--");
-                                    if (expire) {
-                                        detail.setExpire("0");
-                                    } else  {
-                                        detail.setExpire("1");
-                                    }
-                                    workList.add(workLog);
-                                    detail.setTime(startDay.format(d));
-                                    detailList.add(detail);
-                                    detail.setSysStatus(sysStatus);
-                                    detail.setHotelStatus(hotelStatus);
+                            sysStatus.put("leave", 1);
+                            hotelStatus.put("leave", 1);
+                            workLog.setEndTime("--");
+                            workLog.setStartTime("--");
+                            workList.add(workLog);
+                            if (holiday.getToDate().getDayOfYear() > endDay.getDayOfYear()) {
+                                //全体请假
+                                break;
+                            } else if (holiday.getToDate().getDayOfYear() == endDay.getDayOfYear()){
+                                if (holiday.getToDate().getLong(ChronoField.SECOND_OF_DAY) >= end) {
                                     break;
                                 } else {
-                                    if (!flag) {
-                                        sysStatus.put("leave", 1);
-                                        sysStatus.put("stay", 1);
-                                        hotelStatus.put("leave", 1);
-                                        workLog.setStartTime("--");
-                                        workLog.setEndTime("--");
-                                        if (expire) {
-                                            detail.setExpire("0");
-                                        } else  {
-                                            detail.setExpire("1");
-                                        }
-                                        workList.add(workLog);
-                                        detail.setTime(startDay.format(d));
-                                        detailList.add(detail);
-                                        detail.setSysStatus(sysStatus);
-                                        detail.setHotelStatus(hotelStatus);
-                                    }
                                     num++;
-                                    time += holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) - startDay.getLong(ChronoField.MINUTE_OF_DAY);
+                                    time += holiday.getToDate().getLong(ChronoField.SECOND_OF_DAY) - start;
                                 }
-                            } else if (holiday.getToDate().getDayOfYear() > startDay.getDayOfYear()) {
-                                sysStatus.put("leave", 1);
-                                hotelStatus.put("leave", 1);
-                                workLog.setStartTime("--");
-                                workLog.setEndTime("--");
-                                if (expire) {
-                                    detail.setExpire("0");
-                                } else  {
-                                    detail.setExpire("1");
-                                }
-                                workList.add(workLog);
-                                detail.setSysStatus(sysStatus);
-                                detail.setHotelStatus(hotelStatus);
-                                detail.setTime(startDay.format(d));
-                                detailList.add(detail);
-                                break;
+                            } else {
+                                throw new ParamsException("请假时间错误");
                             }
-
                         }
                     }
                     if (num > 0  && time < (end - start)) {
                         workLog = new PunchInfo();
-                        if (expire) {
-                            detail.setExpire("0");
-                        } else  {
-                            detail.setExpire("1");
-                        }
-                        sysStatus.put("leave", 1);
                         sysStatus.put("comeLate", 1);
-                        hotelStatus.put("leave", 1);
                         workLog.setStartTime("--");
                         workLog.setEndTime("--");
-                        detail.setSysStatus(sysStatus);
-                        detail.setHotelStatus(hotelStatus);
+
                         workList.add(workLog);
-                        detail.setTime(startDay.format(d));
-                        detailList.add(detail);
                     }
+                    if (expire) {
+                        detail.setExpire("0");
+                    } else  {
+                        detail.setExpire("1");
+                    }
+                    detail.setTime(startDay.format(d));
                     startDay = startDay.plusDays(1);
+                    detail.setSysStatus(sysStatus);
+                    detail.setHotelStatus(hotelStatus);
+                    detailList.add(detail);
                 }
             }
         } else {
-            int size = list.size();
 
             for (WorkerOneDayInfo param : list) {
-                int totalTime = 0;
                 detail = new WorkerDetail();
                 workList = new ArrayList<>();
                 OffsetDateTime time = param.getTime();
@@ -783,9 +713,15 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 initMapStatus(sysStatus, 5);
 
                 //如果当天没有打卡记录
-                while (startDay.getDayOfYear() != time.getDayOfYear()) {
+                while (startDay.getDayOfYear() != time.getDayOfYear() && startDay.getLong(ChronoField.EPOCH_DAY) <= nowDate.getLong(ChronoField.EPOCH_DAY)) {
                     expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
                     int minutes = containsTime(startDay, endDay,  holidayList);
+                    if (hotelStatus == null || sysStatus == null) {
+                        hotelStatus = new HashMap<>();
+                        sysStatus = new HashMap<>();
+                        initMapStatus(hotelStatus, 4);
+                        initMapStatus(sysStatus, 5);
+                    }
                     //没有请假
                     if (minutes == 0) {
                         workLog = new PunchInfo();
@@ -812,6 +748,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                             workList.add(workLog);
                         }
                     }
+                    detail.setTime(startDay.format(d));
                     startDay = startDay.plusDays(1);
                     detail.setHotelStatus(hotelStatus);
                     detail.setSysStatus(sysStatus);
@@ -821,6 +758,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                         detail.setExpire("1");
                     }
                     detailList.add(detail);
+                    hotelStatus = null;
+                    sysStatus = null;
                 }
                 //有打卡记录
                 expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
@@ -835,6 +774,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     int minutes = containsTime(t, startDay,  holidayList);
                     if (minutes == 0) {
                         sysStatus.put("comeLate", 1);
+                        if ("1".equals(confirmStatus[0])) {
+                            sysStatus.put("comeLate", 1);
+                        }
                     } else {
                         sysStatus.put("leave", 1);
                         hotelStatus.put("leave", 1);
@@ -857,73 +799,73 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                             } else {
                                 int minutes = containsTime(OffsetDateTime.parse(currentEndTime[i - 1]), OffsetDateTime.parse(currentStartTime[i]),  holidayList);
                                 if (minutes == 0) {
-                                    sysStatus.put("", 1);
+                                    sysStatus.put("comeLate", 1);
+                                    if ("1".equals(confirmStatus[i])) {
+                                        hotelStatus.put("comeLate", 1);
+                                    }
                                 } else {
-                                    workLog.setStatus("1");
+                                    sysStatus.put("leave", 1);
+                                    hotelStatus.put("leave", 1);
                                 }
                             }
                             workList.add(workLog);
                         }
                         workLog = new PunchInfo();
-                        workLog.setExpire(expire);
-                        workLog.setEmployerConfirmStatus(Integer.valueOf(confirmStatus[i - 1]));
+
                         workLog.setStartTime(currentStartTime[i]);
                         if (currentEndTime.length == i + 1) {
 
                             workLog.setEndTime(currentEndTime[i]);
                             if (OffsetDateTime.parse(currentStartTime[i]).compareTo(OffsetDateTime.parse(currentEndTime[i - 1])) <= 0) {
                                 if (OffsetDateTime.parse(currentEndTime[i]).getLong(ChronoField.MINUTE_OF_DAY) >= endDay.getLong(ChronoField.MINUTE_OF_DAY)) {
-                                    workLog.setStatus("0");
+
                                 } else {
-                                    workLog.setStatus("2");
+                                   sysStatus.put("earlier", 1);
+                                   if ("1".equals(confirmStatus[i])) {
+                                       hotelStatus.put("earlier", 1);
+                                   }
                                 }
                             } else {
-                                workLog.setStatus("1");
-                                workList.add(workLog);
-                                int minutes = containsTime(OffsetDateTime.parse(currentEndTime[i - 1]), OffsetDateTime.parse(currentStartTime[i]),  holidayList);
-                                workLog = new PunchInfo();
-                                workLog.setExpire(expire);
-                                workLog.setEmployerConfirmStatus(0);
-                                workLog.setStatus("5");
-                                workList.add(workLog);
+                                sysStatus.put("comeLate", 1);
+                                if ("1".equals(confirmStatus[i])) {
+                                    hotelStatus.put("comeLate", 1);
+                                }
                             }
-                        } else {
-                            workLog.setStatus("4");
                             workList.add(workLog);
-                            int minutes = containsTime(OffsetDateTime.parse(currentEndTime[i]), endDay,  holidayList);
-                            if (minutes > 0) {
-                                workLog = new PunchInfo();
-                                workLog.setExpire(expire);
-                                workLog.setEmployerConfirmStatus(0);
-                                workLog.setStatus("5");
-                                workList.add(workLog);
+                        } else {
+                            workLog.setEndTime("--");
+                            sysStatus.put("forget", 1);
+                            if ("1".equals(confirmStatus[i])) {
+                                hotelStatus.put("forget", 1);
                             }
+                            workList.add(workLog);
                         }
                     }
                 } else {
                     //忘打卡
-                    workLog.setExpire(expire);
-                    workList.add(workLog);
-                    workLog = new PunchInfo();
-                    workLog.setStatus("4");
-                    workLog.setExpire(expire);
-                    workLog.setEmployerConfirmStatus(0);
+                    workLog.setEndTime("--");
+                    sysStatus.put("forget", 1);
+                    if ("1".equals(confirmStatus[0])) {
+                        hotelStatus.put("forget", 1);
+                    }
                     workList.add(workLog);
                     int minutes = containsTime(startDay, endDay,  holidayList);
                     //查询是否有请假
                     if (minutes > 0) {
                         workLog = new PunchInfo();
-                        workLog.setStatus("5");
-                        workLog.setEmployerConfirmStatus(0);
-                        workLog.setExpire(expire);
+                        sysStatus.put("leave", 1);
+                        hotelStatus.put("leave", 1);
                         workList.add(workLog);
                     }
                 }
                 detail.setWorkList(workList);
+                detail.setSysStatus(sysStatus);
+                detail.setHotelStatus(hotelStatus);
                 detail.setTime(startDay.format(d));
                 detailList.add(detail);
+                startDay = startDay.plusDays(1);
             }
-        }*/
+        }
         response.setList(detailList);
         return response;
     }

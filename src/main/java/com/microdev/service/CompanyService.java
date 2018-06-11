@@ -158,5 +158,5 @@ public interface CompanyService extends IService<Company> {
      */
     ResultDO hotelHandleLeave(String messageId, String status);
 
-    ResultDO deploymentHandle(String messageId, String status,String reason);
+    ResultDO deploymentHandle(CreateTaskRequest createTaskRequest);
 }

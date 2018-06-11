@@ -32,7 +32,7 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     List<MessageResponse> selectAllMessage(Map<String, Object> map);
 
-    List<Message> selectUnReadMessage(Map<String, Object> param);
+    int selectUnReadMessage(Map<String, Object> param);
 
     int selectUnReadCount(Map<String, Object> param);
 
@@ -84,4 +84,8 @@ public interface MessageMapper extends BaseMapper<Message> {
     AwaitTaskResponse selectHrHotelDetails(@Param("messageId") String messageId);
 
     Message selectByHrId(String id);
+
+    List<ApplyResponseDTO> selectHotelDeploy(@Param("hotelId") String hotelId);
+
+    List<ApplyResponseDTO> selectHrDeploy(@Param("hrId") String hrId);
 }

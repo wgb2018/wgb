@@ -5,6 +5,7 @@ import com.microdev.model.TaskHrCompany;
 import com.microdev.model.TaskWorker;
 import com.microdev.param.BillRequest;
 import com.microdev.param.TaskWorkerQuery;
+import com.microdev.param.WorkerCancelTask;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -42,7 +43,7 @@ public interface TaskWorkerMapper extends BaseMapper<TaskWorker> {
 
     Map<String, Object> selectHrId(String taskWorkerId);
 
-    Map<String, String> selectUserAndWorkerId(String id);
+    WorkerCancelTask selectUserAndWorkerId(String id);
 
     List<Map<String, Object>> selectTaskWorkById(String taskHrId);
 

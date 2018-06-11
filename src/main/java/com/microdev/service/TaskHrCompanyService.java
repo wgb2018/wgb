@@ -134,4 +134,6 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
      * @return
      */
     ResultDO hrHandleIncome(String messageId, String status, String reason);
+
+
 }

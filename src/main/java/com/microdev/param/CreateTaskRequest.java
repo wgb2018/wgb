@@ -63,4 +63,8 @@ public class CreateTaskRequest {
      * 任务id
      */
     private String taskId;
+
+    private String messageId;
+
+    private String taskHrId;
 }
