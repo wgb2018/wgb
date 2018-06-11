@@ -317,7 +317,13 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setWorkerId(tp.getWorkerId());
         m.setWorkerTaskId(info.getTaskWorkerId());
         m.setHotelId(tp.getHotelId());
-        m.setTaskId (taskWorkerMapper.findFirstById (info.getTaskWorkerId()).getHotelTaskId ());
+        TaskWorker taskWorker = taskWorkerMapper.findFirstById (info.getTaskWorkerId());
+        if (taskWorker == null) {
+            throw new ParamsException("参数错误");
+        }
+        m.setHrCompanyId(taskWorker.getHrCompanyId());
+        m.setHrTaskId(taskWorker.getTaskHrId());
+        m.setTaskId (taskWorker.getHotelTaskId());
         Map<String, String> param = new HashMap<>();
         param.put("userName", tp.getUsername());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -367,6 +373,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setWorkerId(tp.getWorkerId());
         m.setWorkerTaskId(info.getTaskWorkerId());
         m.setHotelId(tp.getHotelId());
+        m.setHrTaskId(tp.getTaskHrId());
         m.setTaskId (tp.getHotelTaskId());
         Map<String, String> param = new HashMap<>();
         param.put("userName", tp.getUsername());
