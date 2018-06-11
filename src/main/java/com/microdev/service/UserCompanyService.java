@@ -6,6 +6,7 @@ import com.microdev.common.paging.Paginator;
 import com.microdev.model.User;
 import com.microdev.model.UserCompany;
 import com.microdev.param.HrQueryWorkerDTO;
+import com.microdev.param.MessageParamDTO;
 import com.microdev.param.QueryCooperateRequest;
 import com.microdev.param.WokerQueryHrDTO;
 import java.util.List;
@@ -62,6 +63,7 @@ public interface UserCompanyService extends IService<UserCompany> {
      * @return
      */
     ResultDO hrRespondWorkerBind(String messageId, String status);
+
 
 
 }

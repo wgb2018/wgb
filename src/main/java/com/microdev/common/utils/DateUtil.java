@@ -63,7 +63,7 @@ public class DateUtil {
         int newYear = newDay.get(Calendar.YEAR);
         oldDay.set(Calendar.YEAR, newYear);
         if (oldDay.get(Calendar.DAY_OF_YEAR) > newDay.get(Calendar.DAY_OF_YEAR)) {
-            return newYear - oldYear - 1;
+            return newYear - oldYear - 1 < 0 ? 0 : newYear - oldYear - 1;
         } else {
             return newYear - oldYear;
         }

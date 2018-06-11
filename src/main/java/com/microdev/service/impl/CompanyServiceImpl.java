@@ -955,7 +955,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             holiday.setFromDate(message.getSupplementTime());
             holiday.setToDate(message.getSupplementTimeEnd());
             holiday.setTaskWorkerId(message.getWorkerTaskId());
-            holidayMapper.insertAllColumn(holiday);
+            holidayMapper.insert(holiday);
         } else if (!"0".equals(status)){
             throw new ParamsException("参数错误");
         }
