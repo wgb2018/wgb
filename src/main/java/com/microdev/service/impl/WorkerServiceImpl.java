@@ -100,48 +100,44 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         Task task = null;
         WorkLog log = null;
         TaskHrCompany taskHrCompany = null;
-        Integer hour = OffsetDateTime.now().getHour();
-        Integer minute = OffsetDateTime.now().getMinute();
-        Integer second = OffsetDateTime.now().getSecond();
-        OffsetTime time = OffsetTime.of(hour, minute, second, 0, ZoneOffset.UTC);
-        //取进行中的任务
+        OffsetTime time = OffsetDateTime.now ().toOffsetTime ();
+        OffsetTime timeA = time.minusMinutes (30);
+                //取进行中的任务
         TaskWorker taskWorker = taskWorkerMapper.findWorkerNowTask(
                 userId, TaskWorkerStatus.ACCEPTED.ordinal(),
                 //结束60分钟内的任务 仍然当作当前任务 以便进行打卡签退操作(如若改动 需与前端保持一致)
-                OffsetDateTime.now().plusMinutes(-1), time);
+                OffsetDateTime.now(), time,timeA);
         //如果没有当前进行中的任务 则获取最近的下一个任务
         if (taskWorker == null) {
-            taskWorker = taskWorkerMapper.findWorkerNextTask(userId, TaskWorkerStatus.ACCEPTED.ordinal(), OffsetDateTime.now());
+            taskWorker = taskWorkerMapper.findWorkerNextTask(userId, TaskWorkerStatus.ACCEPTED.ordinal(), OffsetDateTime.now(),time);
         }
-        //如果没有下一个任务(也没有进行中的任务) 取前一个任务
+        /*//如果没有下一个任务(也没有进行中的任务) 取前一个任务
         if (taskWorker == null) {
             taskWorker = taskWorkerMapper.findWorkerBeforeTask(userId, TaskWorkerStatus.ACCEPTED.ordinal(), OffsetDateTime.now());
         }
-
+*/      GetCurrentTaskResponse response = new GetCurrentTaskResponse();
         if (taskWorker != null) {
             taskHrCompany = taskHrCompanyMapper.queryByTaskId(taskWorker.getTaskHrId());
             task = taskMapper.getFirstById(taskHrCompany.getTaskId());
             //取最近的一条工作记录以获取打卡信息
             log = workLogMapper.findFirstByTaskWorkerId(taskWorker.getPid());
+        }else{
+            return response;
         }
-
-        GetCurrentTaskResponse response = new GetCurrentTaskResponse();
         if (task != null) {
             Company hotel = companyMapper.findCompanyById(task.getHotelId());
             response.setHotelId(task.getHotelId());
-            response.setHotelName(task.getHotelName());
+            /*response.setHotelName(task.getHotelName());
             response.setHotelLogo(hotel.getLogo());
             response.setHotelAddress(hotel.getAddress());
-
             response.setHrCompanyId(taskHrCompany.getHrCompanyId());
             response.setHrCompanyName(taskWorker.getHrCompanyName());
-
             response.setTaskId(task.getPid());
             response.setTaskType(task.getTaskTypeText());
             response.setTaskContent(task.getTaskContent());
-
             response.setFromDate(taskWorker.getFromDate());
-            response.setToDate(taskWorker.getToDate());
+            response.setToDate(taskWorker.getToDate());*/
+
 
             if (log == null) {//从来没有过打卡记录 则应签到
                 response.setNeedPunchType(PunchType.PUNCHIN);
@@ -153,32 +149,30 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     response.setNeedPunchType(PunchType.PUNCHIN);
                 }
             }
-
-            List<WorkLog> workLogs = workLogMapper.findByTaskWorkId(taskWorker.getPid());
-
-            response.setWorkLogs(workLogConverter.toResponse(workLogs));
-
             response.setTaskWorkerId(taskWorker.getPid());
+           /* List<WorkLog> workLogs = workLogMapper.findByTaskWorkId(taskWorker.getPid());
+            response.setWorkLogs(workLogConverter.toResponse(workLogs));
             response.setTaskWorkerHours(
                     new BigDecimal(taskWorker.getMinutes() / 60.00).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
-            response.setTaskWorkerStatus(taskWorker.getStatus());
+            response.setTaskWorkerStatus(taskWorker.getStatus());*/
         }
 
         return response;
     }
 
     @Override
-    public boolean punch(String taskWorkerId, PunchType punchType, OffsetDateTime punchTime,Measure measure) {
+    public String punch(String taskWorkerId, PunchType punchType, OffsetDateTime punchTime,Measure measure) {
         com.microdev.common.context.User user = ServiceContextHolder.getServiceContext().getUser();
 
         TaskWorker taskWorker = taskWorkerMapper.findFirstById(taskWorkerId);
         if (taskWorker == null || !taskWorker.getUserId().equals(user.getId())) {
-            throw new TaskWorkerNotFoundException("未找到小时工任务信息");
+            //未找到小时工任务信息
+            return "打卡失败";
         }
         Company hotel = companyMapper.findCompanyById (taskHrCompanyMapper.queryByTaskId (taskWorkerMapper.findFirstById (taskWorkerId).getTaskHrId ()).getHotelId ());
         Double m = LocationUtils.getDistance (hotel.getLatitude (),hotel.getLongitude (),measure.getLatitude (),measure.getLongitude ());
         if(m>500){
-            throw new TaskWorkerNotFoundException("打卡地点距离工作地超过500米");
+            return "打卡地点距离工作地超过500米";
         }
         WorkLog log = null;
         Task task = null;
@@ -233,13 +227,14 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     log.setMinutes(minutes.intValue());
                 }
             } else {
-                throw new WorkLogNotFoundException("无相应工作记录");
+                //无相应工作记录
+                return "无相应工作记录";
             }
             log.setPunchDate(OffsetDateTime.now());
             workLogMapper.updateById(log);
         }
 
-        return true;
+        return "打卡成功";
     }
 
     /**

@@ -34,10 +34,6 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
      */
     void TaskHrrefuse(String messageId, String reason);
     /**
-     * 人力公司申请调配
-     */
-    String TaskHrallocate(String id, String reason, Integer number);
-    /**
      * 酒店查询账目
      */
     ResultDO getHotelBill(Paginator paginator, BillRequest request);

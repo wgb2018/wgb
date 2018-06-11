@@ -931,6 +931,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             message.setSupplementTimeEnd((OffsetDateTime) param.get("supplementTimeEnd"));
         if (param.get("messageType") != null)
             message.setMessageType((Integer)param.get("messageType"));
+        if (param.get("taskId") != null)
+            message.setTaskId ((String)param.get("taskId"));
         messageMapper.insert(message);
     }
 
