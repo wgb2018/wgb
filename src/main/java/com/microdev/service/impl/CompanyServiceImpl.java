@@ -16,10 +16,7 @@ import com.microdev.converter.TaskConverter;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
 import com.microdev.param.*;
-import com.microdev.service.CompanyService;
-import com.microdev.service.DictService;
-import com.microdev.service.InformService;
-import com.microdev.service.MessageService;
+import com.microdev.service.*;
 import com.microdev.type.UserType;
 import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
@@ -81,6 +78,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     InformTemplateMapper informTemplateMapper;
     @Autowired
     InformService informService;
+    @Autowired
+    private TaskService taskService;
 
     @Override
     public ResultDO pagingCompanys(Paginator paginator, CompanyQueryDTO queryDTO) {
@@ -964,39 +963,33 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     }
 
     @Override
-    public ResultDO deploymentHandle(String messageId, String status,String reason) {
+    public ResultDO deploymentHandle(CreateTaskRequest request) {
 
-        if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(status)) {
+        if (request == null || StringUtils.isEmpty(request.getMessageId())) {
             throw new ParamsException("参数错误");
         }
-        Message message = messageMapper.selectById(messageId);
-
+        Set<TaskHrCompanyDTO> set = request.getHrCompanySet();
+        if (set == null || set.size() == 0) {
+            throw new ParamsException("派发的人力公司不能为空");
+        }
+        Message message = messageMapper.selectById(request.getMessageId());
+        if (message == null) {
+            throw new ParamsException("查询不到消息");
+        }
         message.setStatus(1);
         messageMapper.updateById(message);
-        if ("1".equals(status)) {
-            if(StringUtils.isEmpty(reason)){
-                throw new ParamsException("拒绝理由不能为空");
-            }
-            //申请调配被拒绝通知
-            InformTemplate inf = informTemplateMapper.selectByCode (InformType.hr_allocation_fail.name ());
-            Map<String,String> map = new HashMap <> ();
-            map.put("hotel",companyMapper.findCompanyById (message.getHotelId ()).getName ());
-            map.put("reason",reason);
-            String content = StringKit.templateReplace(inf.getContent (), map);
-            informService.sendInformInfo (inf.getSendType (),2,content,message.getHrCompanyId (),inf.getTitle ());
-        } else if ("0".equals(status)){
-            //申请调配成功通知
-            InformTemplate inf = informTemplateMapper.selectByCode (InformType.hr_allocation_success.name ());
-            Map<String,String> map = new HashMap <> ();
-            map.put("hotel",companyMapper.findCompanyById (message.getHotelId ()).getName ());
-            String content = StringKit.templateReplace(inf.getContent (), map);
-            informService.sendInformInfo (inf.getSendType (),2,content,message.getHrCompanyId (),inf.getTitle ());
-            TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId (message.getHrTaskId ());
-            taskHrCompany.setNeedWorkers (taskHrCompany.getNeedWorkers()-Integer.parseInt (message.getMinutes ()));
-        } else{
-            throw new ParamsException("参数错误");
-        }
 
+        request.setTaskId(message.getTaskId());
+        request.setTaskHrId(message.getHrTaskId());
+        taskService.hotelAgainSendTask(request);
+        //申请调配成功通知
+        InformTemplate inf = informTemplateMapper.selectByCode (InformType.hr_allocation_success.name ());
+        Map<String,String> map = new HashMap <> ();
+        map.put("hotel",companyMapper.findCompanyById (message.getHotelId ()).getName ());
+        String content = StringKit.templateReplace(inf.getContent (), map);
+        informService.sendInformInfo (inf.getSendType (),2,content,message.getHrCompanyId (),inf.getTitle ());
+        TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId (message.getHrTaskId ());
+        taskHrCompany.setNeedWorkers (taskHrCompany.getNeedWorkers()-Integer.parseInt (message.getMinutes ()));
         return ResultDO.buildSuccess("处理成功");
     }
 

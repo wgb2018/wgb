@@ -185,13 +185,12 @@ public class HotelController {
     }
     /**
      * 酒店处理人力公司申请调配
-     * @param param status 0同意 1拒绝
      * @return
      */
     @PostMapping("/apply/for/deployment/handle")
-    public ResultDO applyfordeploymenthandle(@RequestBody Map<String, String> param) {
+    public ResultDO applyfordeploymenthandle(@RequestBody CreateTaskRequest request) {
 
-        return companyService.deploymentHandle(param.get("messageId"), param.get("status"),param.get("reason"));
+        return companyService.deploymentHandle(request);
     }
 
 }

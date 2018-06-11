@@ -289,9 +289,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
             throw new ParamsException("参数错误");
         }
         Task task = taskMapper.selectById(request.getTaskId());
+
         if (task == null) {
             throw new BusinessException("任务找不到");
         }
+        request.setHotelId(task.getHotelId());
         Company hotel=companyMapper.findCompanyById(task.getHotelId());
         if (hotel == null || !StringUtils.hasLength(hotel.getPid()) ) {
             throw new ParamsException("酒店不存在");
@@ -305,7 +307,15 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
             needAllWorkers=needAllWorkers+item.getNeedWorkers();
         }
 
+        TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(request.getTaskHrId());
+        if (taskHrCompany == null) {
+            throw new ParamsException("查询不到人力任务信息");
+        }
+
         Set<TaskHrCompany> set = AddHrTask(task,request);
+
+        taskHrCompany.setNeedWorkers(taskHrCompany.getNeedWorkers() - set.size());
+        taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
         messageService.hotelDistributeTask(set, hotel, "workTaskMessage", request);
         //TaskViewDTO taskDto= taskConverter.toViewDTOWithOutSet(task);
         return ResultDO.buildSuccess("任务发布成功");

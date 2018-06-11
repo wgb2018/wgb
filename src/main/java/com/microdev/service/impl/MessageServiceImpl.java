@@ -292,8 +292,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m.setHrCompanyId(hrId);
             m.setWorkerId(param.get("workerId"));
             m.setWorkerTaskId(param.get("workerTaskId"));
+            System.out.println("workerTaskId:" + param.get("workerTaskId"));
             m.setTaskId(taskId);
             m.setIsTask(0);
+            m.setHotelId(param.get("hotelId"));
             m.setHrTaskId(hrTaskId);
 
             m.setMessageContent(c);

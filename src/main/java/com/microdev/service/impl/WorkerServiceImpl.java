@@ -308,18 +308,18 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setSupplementTime(info.getTime());
         m.setSupplementTimeEnd(info.getEndTime());
         m.setContent(info.getReason());
-        Map<String, String> tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
+        WorkerCancelTask tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
 
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applyLeaveMessage");
         m.setMessageCode(mess.getCode());
         m.setMessageType(3);
         m.setMessageTitle(mess.getTitle());
-        m.setWorkerId(tp.get("workerId"));
+        m.setWorkerId(tp.getWorkerId());
         m.setWorkerTaskId(info.getTaskWorkerId());
-        m.setHotelId(tp.get("hotelId"));
+        m.setHotelId(tp.getHotelId());
         m.setTaskId (taskWorkerMapper.findFirstById (info.getTaskWorkerId()).getHotelTaskId ());
         Map<String, String> param = new HashMap<>();
-        param.put("userName", tp.get("username"));
+        param.put("userName", tp.getUsername());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         param.put("startTime", info.getTime().format(formatter));
         param.put("taskContent", info.getReason());
@@ -358,18 +358,18 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setContent(info.getReason());
         m.setSupplementTime(info.getTime());
         m.setMinutes(info.getMinutes() + "");
-        Map<String, String> tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
+        WorkerCancelTask tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
 
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applyOvertimeMessage");
         m.setMessageCode(mess.getCode());
         m.setMessageType(2);
         m.setMessageTitle(mess.getTitle());
-        m.setWorkerId(tp.get("workerId"));
+        m.setWorkerId(tp.getWorkerId());
         m.setWorkerTaskId(info.getTaskWorkerId());
-        m.setHotelId(tp.get("hotelId"));
-        m.setTaskId (tp.get("hotelTaskId"));
+        m.setHotelId(tp.getHotelId());
+        m.setTaskId (tp.getHotelTaskId());
         Map<String, String> param = new HashMap<>();
-        param.put("userName", tp.get("username"));
+        param.put("userName", tp.getUsername());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         param.put("startTime", info.getTime().format(formatter));
         param.put("taskContent", info.getReason());
@@ -400,19 +400,22 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
 
         Message m = new Message();
-        Map<String, String> tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
+        WorkerCancelTask tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
         m.setContent(info.getReason());
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applyCancelTaskMessage");
+
+        m.setSupplementTime(tp.getDayStartTime());
+        m.setSupplementTimeEnd(tp.getDayEndTime());
         m.setMessageCode(mess.getCode());
         m.setMessageType(7);
         m.setMessageTitle(mess.getTitle());
-        m.setWorkerId(tp.get("workerId"));
+        m.setWorkerId(tp.getWorkerId());
         m.setWorkerTaskId(info.getTaskWorkerId());
-        m.setHrCompanyId(tp.get("hrId"));
-        m.setHrTaskId (tp.get("taskHrId"));
-        m.setTaskId (tp.get("taskId"));
+        m.setHrCompanyId(tp.getHrId());
+        m.setHrTaskId (tp.getTaskHrId());
+        m.setTaskId (tp.getTaskId());
         Map<String, String> param = new HashMap<>();
-        param.put("userName",  tp.get("username"));
+        param.put("userName",  tp.getUsername());
         param.put("taskContent", info.getReason());
         String c = StringKit.templateReplace(mess.getContent(), param);
         m.setMessageContent(c);
@@ -494,20 +497,20 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         Message m = new Message();
         m.setSupplementTime(info.getTime());
         m.setContent(info.getReason());
-        Map<String, String> tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
+        WorkerCancelTask tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
 
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applySupplementMessage");
         m.setMessageCode(mess.getCode());
         m.setMessageTitle(mess.getTitle());
-        m.setWorkerId( tp.get("workerId"));
+        m.setWorkerId( tp.getWorkerId());
         m.setWorkerTaskId (info.getTaskWorkerId());
         m.setMessageType(1);
         m.setApplicantType(1);
         m.setWorkerTaskId(info.getTaskWorkerId());
-        m.setHotelId(tp.get("hotelId"));
-        m.setTaskId (tp.get("hotelTaskId"));
+        m.setHotelId(tp.getHotelId());
+        m.setTaskId (tp.getHotelTaskId());
         Map<String, String> param = new HashMap<>();
-        param.put("userName",  tp.get("username"));
+        param.put("userName",  tp.getUsername());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         param.put("time", info.getTime().format(formatter));
         param.put("taskContent", info.getReason());

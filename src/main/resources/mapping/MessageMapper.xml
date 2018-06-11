@@ -355,7 +355,7 @@ FROM task ) t
 ON m.task_id = t.id
 INNER JOIN
 company c ON c.id = t.hotel_id
-INNER JOIN task_hr_company th ON th.task_id = m.task_id AND m.hr_company_id = th.hr_company_id
+INNER JOIN task_hr_company th ON th.id = m.`hr_task_id`
 WHERE m.apply_type=2
 AND m.is_task = 0 AND m.status = 0 AND m.hr_company_id= #{hrId}
 UNION
@@ -434,13 +434,13 @@ INNER JOIN company c ON
 
     <select id="selectApplyAllocate" resultType="com.microdev.param.MessageDetailsResponse">
         SELECT c.name AS companyName,c.leader AS name,c.leader_mobile AS mobile,tc.need_workers,tc.confirmed_workers,m.message_type,m.minutes AS allocateNum,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%i:%s') AS createTime,tc.id as taskHrId,
-m.content,c.address,c.area,c.id as pid,m.hr_task_id as taskHrId,m.worker_task_id as workerTaskId,m.task_id AS taskHotelId FROM
+m.content,c.address,c.area,c.id as pid,m.hr_task_id as taskHrId,m.worker_task_id as workerTaskId,m.task_id AS taskHotelId,c.logo FROM
 (
 SELECT * FROM message WHERE id = #{messageId}
 ) m
 INNER JOIN company c ON m.hr_company_id = c.id
 INNER JOIN task_hr_company tc
-ON tc.task_id = m.task_id AND tc.hotel_id = m.hotel_id
+ON tc.id = m.hr_task_id
     </select>
 
     <select id="selectCompanyNameByMessageId" parameterType="java.lang.String" resultType="java.lang.String">
@@ -457,7 +457,7 @@ ON tc.task_id = m.task_id AND tc.hotel_id = m.hotel_id
         SELECT DATE_FORMAT(t.from_date,'%Y.%m.%d') AS fromDate, DATE_FORMAT(t.to_date,'%Y.%m.%d') AS toDate,DATE_FORMAT(t.day_start_time,'%H:%i') AS dayStartTime,DATE_FORMAT(t.day_end_time,'%H:%i') AS dayEndTime,t.task_content,c.id AS hotelId,c.area,
 c.name,c.address,c.leader,c.leader_mobile,m.message_type,t.id AS taskId,m.id AS messageId,IFNULL(k.need_workers,0) AS needWorkers,IFNULL(k.confirmed_workers,0) AS confirmedWorkers,
 k.hrName,k.hrId,k.hrLeader,IFNULL(k.hourly_pay,'') AS hourlyPay,k.messageTitle,k.hrLeaderMobile,k.messageCode,m.task_id AS taskHotelId,m.hr_task_id AS taskHrId,
-m.worker_task_id AS workerTaskId,t.hourly_pay AS hourlyPayHotel
+m.worker_task_id AS workerTaskId,t.hourly_pay AS hourlyPayHotel,t.`task_type_code` AS taskTypeCode
   FROM (SELECT * FROM message WHERE id = #{messageId}) m INNER JOIN task t ON m.task_id = t.id
 INNER JOIN company c ON t.hotel_id = c.id
 
@@ -466,7 +466,7 @@ LEFT JOIN
 SELECT tc.need_workers,confirmed_workers,c2.name AS hrName,c2.id AS hrId,c2.leader AS hrLeader,
 tc.hourly_pay,tc.task_type_text AS messageTitle
 ,c2.leader_mobile AS hrLeaderMobile,m2.id AS id,tc.task_type_code AS messageCode FROM (SELECT * FROM message WHERE id = #{messageId}) m2 INNER JOIN
-task_hr_company tc ON m2.task_id = tc.task_id AND m2.hr_company_id = tc.hr_company_id INNER JOIN company c2
+task_hr_company tc ON m2.hr_task_id = tc.id INNER JOIN company c2
 ON c2.id = m2.hr_company_id
 ) k ON k.id = m.id
     </select>
@@ -476,14 +476,14 @@ ON c2.id = m2.hr_company_id
 DATE_FORMAT(t.day_end_time,'%H:%i') AS dayEndTime, t.task_content, c.name,IFNULL(c.address,'') AS address,c.leader,c.leader_mobile,IFNULL(t.hourly_pay,0) AS hourlyPayHotel,
 t.task_type_text AS messageTitle,m.message_type,c.id AS hotelId,c.area ,m.id AS messageId,IFNULL(tc.need_workers,0) AS needWorkers,IFNULL(tc.confirmed_workers,0) AS confirmedWorkers,
 IFNULL(tc.hourly_pay,'') AS hourlyPay,tc.messageCode,m.hr_company_id AS hrId ,m.task_id AS taskHotelId,m.hr_task_id AS taskHrId,
-m.worker_task_id AS workerTaskId
+m.worker_task_id AS workerTaskId,t.`task_type_code` AS taskTypeCode
 FROM
 (SELECT * FROM message WHERE id = #{messageId}) m
 INNER JOIN task t ON m.task_id = t.id INNER JOIN company c ON t.hotel_id = c.id
 LEFT JOIN (
 SELECT need_workers,confirmed_workers,hr_company_id,task_id,hourly_pay,hr_company_name AS hrName,id AS hrId,
 task_type_code AS messageCode,id AS pid FROM task_hr_company ) tc
-ON tc.`hr_company_id` = m.`hr_company_id` AND m.`hr_task_id` = tc.pid
+ON m.hr_task_id = tc.pid
     </select>
 
     <select id ="selectSupplementApply" resultType="com.microdev.param.MessageDetailsResponse">
@@ -518,10 +518,10 @@ ON u.`worker_id` = m.`worker_id`
       SELECT IFNULL(tc.need_workers,0) AS needWorkers,IFNULL(tc.confirmed_workers,0) AS confirmedWorkers,IFNULL(tc.hourly_pay,'') AS hourlyPay,t.from_date, DATE_FORMAT(t.from_date,'%Y.%m.%d') AS fromDate, DATE_FORMAT(t.to_date,'%Y.%m.%d') AS toDate,
 DATE_FORMAT(t.day_start_time,'%H:%i') AS dayStartTime,
 DATE_FORMAT(t.day_end_time,'%H:%i') AS dayEndTime,t.task_content,
-c.name,c.address,c.leader,c.leader_mobile,m.message_title,m.message_type,c.id AS hotelId,c.area,t.id AS taskId,tc.task_type_text AS messageTitle,m.`hr_company_id` AS hrId,m.task_id AS taskHotelId,m.hr_task_id AS taskHrId,m.worker_task_id AS workerTaskId,,t.hourly_pay AS hourlyPayHotel
+c.name,c.address,c.leader,c.leader_mobile,m.message_title,m.message_type,c.id AS hotelId,c.area,t.id AS taskId,tc.task_type_text AS messageTitle,m.`hr_company_id` AS hrId,m.task_id AS taskHotelId,m.hr_task_id AS taskHrId,m.worker_task_id AS workerTaskId,t.hourly_pay AS hourlyPayHotel,t.`task_type_code` AS taskTypeCode
 FROM message m
 INNER JOIN task_hr_company tc
-ON m.`task_id` = tc.task_id AND m.`hr_task_id` = tc.id
+ON m.hr_task_id = tc.id
 INNER JOIN task t
 ON t.id = tc.task_id
 INNER JOIN company c ON t.hotel_id = c.id
@@ -540,7 +540,7 @@ INNER JOIN company c ON m.hr_company_id = c.id
 DATE_FORMAT(t.`day_start_time`,'%H:%i') AS dayStartTime,DATE_FORMAT(t.`day_end_time`,'%H:%i') AS dayEndTime,IFNULL(t.`hourly_pay`,0) AS hourlyPayHotel
 ,IFNULL(tc.`hourly_pay`,'') AS hourlyPay,tc.`task_type_text` AS messageTitle,IFNULL(tc.`need_workers`,0) AS needWorkers,
 IFNULL(tc.`confirmed_workers`,0) AS confirmedWorkers,tc.id AS hrId,tc.hr_company_name AS hrName,tc.`task_content` AS taskContent,c2.`address` AS hrAddress
-,c2.`area` AS hrArea,c.leader AS hrLeader,m.task_id AS taskHotelId,m.hr_task_id AS taskHrId,m.worker_task_id AS workerTaskId
+,c2.`area` AS hrArea,c.leader AS hrLeader,m.task_id AS taskHotelId,m.hr_task_id AS taskHrId,m.worker_task_id AS workerTaskId,,t.`task_type_code` AS taskTypeCode
 FROM
 (SELECT * FROM message WHERE id= #{messageId}) m
 INNER JOIN task_hr_company tc
