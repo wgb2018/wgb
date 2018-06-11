@@ -27,6 +27,14 @@ public class WorkerTest {
     @Autowired
     private WorkerService workerService;
 
+   /* @Test
+    public void oneTest() {
+        String userId = "1f1fe691-9fd4-4197-986c-a75904993bd8";
+        UserTaskResponse response = workerService.selectWorkerInfo(userId);
+        if (response != null) {
+            System.out.println(response.toString());
+        }
+    }*/
 
     @Test
     public void twoTest() {

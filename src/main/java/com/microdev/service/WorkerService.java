@@ -82,7 +82,7 @@ public interface WorkerService extends IService<Worker> {
      * @param info
      * @return
      */
-    boolean supplementWork(WorkerSupplementRequest info);
+    String supplementWork(WorkerSupplementRequest info);
     /**
      * 查询小时工工作记录
      * @param taskWorkerId

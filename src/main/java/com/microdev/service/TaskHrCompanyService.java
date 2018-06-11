@@ -36,7 +36,7 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
     /**
      * 人力公司申请调配
      */
-    void TaskHrallocate(String id, String reason, Integer number);
+    String TaskHrallocate(String id, String reason, Integer number);
     /**
      * 酒店查询账目
      */

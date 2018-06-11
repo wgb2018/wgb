@@ -366,7 +366,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             }
 
             inform.setTitle("申请补签成功");
-            inform.setContent(c.getName() + "拒绝了你的补签申请。" + oldMsg.getMessageContent());
+            inform.setContent(c.getName() + "同意了你的补签申请。" + oldMsg.getMessageContent());
         } else if ("0".equals(status)) {
 
             inform.setTitle("申请补签被拒绝");
