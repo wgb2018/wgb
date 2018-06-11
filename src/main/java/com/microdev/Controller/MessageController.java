@@ -144,4 +144,16 @@ public class MessageController {
 
         return ResultDO.buildSuccess(messageService.selectDeployApply(paging));
     }
+
+    /**
+     * 手机端首页展示未读数量
+     * @param id            角色id
+     * @param applyType     角色类型小时工传worker,酒店传hotel，人力传hr
+     * @return
+     */
+    @GetMapping("/message/{id}/amount/{applyType}")
+    public ResultDO selectMessageAmount(@PathVariable String id,@PathVariable String applyType) {
+
+        return ResultDO.buildSuccess(messageService.selectUnReadCount(id, applyType));
+    }
 }

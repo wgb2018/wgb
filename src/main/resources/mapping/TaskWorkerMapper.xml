@@ -196,11 +196,11 @@
     </select>
 
     <select id="selectCompleteCount" parameterType="java.lang.String" resultType="java.lang.Integer">
-        SELECT COUNT(1) FROM task_worker WHERE user_id = #{userId} AND CURDATE() > to_date and check_sign <![CDATA[<>]]> 3
+        SELECT COUNT(1) FROM task_worker WHERE worker_id = #{workerId} AND CURDATE() > to_date and check_sign <![CDATA[<>]]> 3
     </select>
 
     <select id="selectWorkerUnreadCount" resultType="java.lang.Integer">
       SELECT COUNT(1) FROM task_worker
-WHERE check_sign = 0 AND DATE(to_date) >= DATE(NOW()) AND worker_id = #{workerId} AND STATUS = 1
+WHERE check_sign = 0 AND DATE(to_date) >= DATE(NOW()) AND worker_id = #{workerId}
     </select>
 </mapper>

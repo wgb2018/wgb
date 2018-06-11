@@ -314,9 +314,15 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         }
 
         Set<TaskHrCompany> set = AddHrTask(task,request);
-
-        taskHrCompany.setNeedWorkers(taskHrCompany.getNeedWorkers() - set.size());
+        //更新人力的状态为5: 派单完成
+        taskHrCompany.setStatus(5);
+        int number = 0;
+        for (TaskHrCompanyDTO d : request.getHrCompanySet()) {
+            number += d.getNeedWorkers();
+        }
+        taskHrCompany.setNeedWorkers(taskHrCompany.getNeedWorkers() - number);
         taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
+        //发送消息
         messageService.hotelDistributeTask(set, hotel, "workTaskMessage", request);
         //TaskViewDTO taskDto= taskConverter.toViewDTOWithOutSet(task);
         return ResultDO.buildSuccess("任务发布成功");

@@ -375,6 +375,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setHotelId(tp.getHotelId());
         m.setHrTaskId(tp.getTaskHrId());
         m.setTaskId (tp.getHotelTaskId());
+        m.setHrCompanyId(tp.getHrId());
+
         Map<String, String> param = new HashMap<>();
         param.put("userName", tp.getUsername());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -427,6 +429,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setHrCompanyId(tp.getHrId());
         m.setHrTaskId (tp.getTaskHrId());
         m.setTaskId (tp.getTaskId());
+        m.setHotelId(tp.getHotelId());
         Map<String, String> param = new HashMap<>();
         param.put("userName",  tp.getUsername());
         param.put("taskContent", info.getReason());
@@ -532,6 +535,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setWorkerTaskId (info.getTaskWorkerId());
         m.setMessageType(1);
         m.setApplicantType(1);
+        m.setHrTaskId(tp.getTaskHrId());
         m.setWorkerTaskId(info.getTaskWorkerId());
         m.setHotelId(tp.getHotelId());
         m.setTaskId (tp.getHotelTaskId());
