@@ -818,7 +818,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         } else if ("11".equals(type)) {
             response = messageMapper.selectHrHotelDetails(messageId);
         }
-        if ("0".equals(response.getHourlyPay())) {
+        if (response != null && "0".equals(response.getHourlyPay())) {
             response.setHourlyPay("");
         }
         return response;

@@ -34,6 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
@@ -574,7 +576,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         long start = dayStart.getLong(ChronoField.MINUTE_OF_DAY);
         long end = dayEnd.getLong(ChronoField.MINUTE_OF_DAY);
         boolean expire;
-        long workDay = endDay.getLong(ChronoField.EPOCH_DAY) - startDay.getLong(ChronoField.EPOCH_DAY);
+        //long workDay = endDay.getLong(ChronoField.EPOCH_DAY) - startDay.getLong(ChronoField.EPOCH_DAY);
         // 查询打卡记录
         DateTimeFormatter d = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
@@ -605,9 +607,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     detail.setSysStatus(sysStatus);
                     expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
                     if (expire) {
-                        detail.setExpire("0");
-                    } else  {
                         detail.setExpire("1");
+                    } else  {
+                        detail.setExpire("0");
                     }
                     workList.add(workLog);
                     detail.setTime(startDay.format(d));
@@ -693,9 +695,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                         workList.add(workLog);
                     }
                     if (expire) {
-                        detail.setExpire("0");
-                    } else  {
                         detail.setExpire("1");
+                    } else  {
+                        detail.setExpire("0");
                     }
                     detail.setTime(startDay.format(d));
                     startDay = startDay.plusDays(1);
@@ -759,9 +761,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     detail.setHotelStatus(hotelStatus);
                     detail.setSysStatus(sysStatus);
                     if (expire) {
-                        detail.setExpire("0");
-                    } else  {
                         detail.setExpire("1");
+                    } else  {
+                        detail.setExpire("0");
                     }
                     detailList.add(detail);
                     hotelStatus = null;
@@ -770,11 +772,12 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 //有打卡记录
                 expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
                 if (expire) {
-                    detail.setExpire("0");
-                } else  {
                     detail.setExpire("1");
+                } else  {
+                    detail.setExpire("0");
                 }
-                OffsetDateTime t = OffsetDateTime.parse(currentStartTime[0]);
+
+                OffsetDateTime t = DateUtil.strToOffSetDateTime(currentStartTime[0]);
                 workLog = new PunchInfo();
                 if (startDay.compareTo(t) < 0) {
                     int minutes = containsTime(t, startDay,  holidayList);
@@ -790,7 +793,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 }
                 workLog.setStartTime(t.format(timeFormat));
                 if (currentEndTime != null && currentEndTime.length > 0) {
-                    workLog.setEndTime(OffsetTime.parse(currentEndTime[0]).format(timeFormat));
+                    workLog.setEndTime(currentEndTime[0]);
 
                     workList.add(workLog);
                     if (currentStartTime.length > 1) {
@@ -800,10 +803,12 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
                             workLog.setStartTime(currentStartTime[i]);
                             workLog.setEndTime(currentEndTime[i]);
-                            if (OffsetDateTime.parse(currentStartTime[i]).compareTo(OffsetDateTime.parse(currentEndTime[i - 1])) <= 0) {
+                            OffsetDateTime start2 = DateUtil.strToOffSetDateTime(currentStartTime[i]);
+                            OffsetDateTime end1 = DateUtil.strToOffSetDateTime(currentEndTime[i - 1]);
+                            if (start2.compareTo(end1) <= 0) {
 
                             } else {
-                                int minutes = containsTime(OffsetDateTime.parse(currentEndTime[i - 1]), OffsetDateTime.parse(currentStartTime[i]),  holidayList);
+                                int minutes = containsTime(end1, start2,  holidayList);
                                 if (minutes == 0) {
                                     sysStatus.put("comeLate", 1);
                                     if ("1".equals(confirmStatus[i])) {
@@ -822,8 +827,10 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                         if (currentEndTime.length == i + 1) {
 
                             workLog.setEndTime(currentEndTime[i]);
-                            if (OffsetDateTime.parse(currentStartTime[i]).compareTo(OffsetDateTime.parse(currentEndTime[i - 1])) <= 0) {
-                                if (OffsetDateTime.parse(currentEndTime[i]).getLong(ChronoField.MINUTE_OF_DAY) >= endDay.getLong(ChronoField.MINUTE_OF_DAY)) {
+                            OffsetDateTime start2 = DateUtil.strToOffSetDateTime(currentStartTime[i]);
+                            OffsetDateTime end1 = DateUtil.strToOffSetDateTime(currentEndTime[i - 1]);
+                            if (start2.compareTo(end1) <= 0) {
+                                if (start2.getLong(ChronoField.MINUTE_OF_DAY) >= endDay.getLong(ChronoField.MINUTE_OF_DAY)) {
 
                                 } else {
                                    sysStatus.put("earlier", 1);
@@ -1125,16 +1132,20 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
      */
     private boolean isLeave(DateTimeFormatter d, long start, long end, String[] str, String[] str2) {
         long leaveTime = 0L;
-        leaveTime += d.parse(str2[0]).getLong(ChronoField.MINUTE_OF_DAY) - start;
+        OffsetDateTime time = DateUtil.strToOffSetDateTime(str2[0]);
+        leaveTime += time.getLong(ChronoField.MINUTE_OF_DAY) - start;
         int i = 0;
         for (; ; i++) {
             if (i >= str.length - 1) break;
-            long s = d.parse(str[i]).getLong(ChronoField.MINUTE_OF_DAY);
-            long t = d.parse(str2[i]).getLong(ChronoField.MINUTE_OF_DAY);
+            time = DateUtil.strToOffSetDateTime(str[i]);
+            long s = time.getLong(ChronoField.MINUTE_OF_DAY);
+            time = DateUtil.strToOffSetDateTime(str2[i]);
+            long t = time.getLong(ChronoField.MINUTE_OF_DAY);
             leaveTime += t - s;
         }
         if (i > 0) {
-            leaveTime += end - d.parse(str[i]).getLong(ChronoField.MINUTE_OF_DAY);
+            time = DateUtil.strToOffSetDateTime(str[i]);
+            leaveTime += end - time.getLong(ChronoField.MINUTE_OF_DAY);
         }
         return leaveTime > (end - start);
     }
@@ -1188,4 +1199,5 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         return ResultDO.buildSuccess("成功");
     }
+
 }

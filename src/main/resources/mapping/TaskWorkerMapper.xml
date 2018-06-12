@@ -206,4 +206,5 @@
       SELECT COUNT(1) FROM task_worker
 WHERE check_sign = 0 AND DATE(to_date) >= DATE(NOW()) AND worker_id = #{workerId}
     </select>
+
 </mapper>
