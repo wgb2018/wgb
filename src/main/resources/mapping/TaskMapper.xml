@@ -42,8 +42,14 @@
         <include refid="Task_Query_Param"/>,hourly_pay as hourlyPayHotel
         from task
         <where>
+            <if test="hrCompanyName !=null and hrCompanyName!=''">
+                id in (select task_id from task_hr_company t left join company c on t.hr_company_id = c.id  where t.hotel_id = #{hotelId} and c.name like '%${hrCompanyName}%')
+            </if>
             <if test="taskTypeText != null and taskTypeText != ''">
-                task_type_text = #{taskTypeText}
+                and task_type_text = #{taskTypeText}
+            </if>
+            <if test="taskTypeCode != null and taskTypeCode != ''">
+                and task_type_code = #{taskTypeCode}
             </if>
             <if test="hotelId != null and hotelId != ''">
                 and hotel_id = #{hotelId}

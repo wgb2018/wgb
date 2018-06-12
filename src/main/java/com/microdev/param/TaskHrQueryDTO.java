@@ -10,6 +10,8 @@ public class TaskHrQueryDTO {
      * 酒店ID
      */
     private String hotelId;
+
+    private String hotelName;
     /**
      * 人力资源公司
      */
@@ -30,7 +32,7 @@ public class TaskHrQueryDTO {
      * 任务状态
      * 0：新任务等待确认
      * 1: 接受任务
-     * 2: 决绝任务
+     * 2: 拒绝任务
      * 3：已派发
      */
     private Integer status;
@@ -52,5 +54,8 @@ public class TaskHrQueryDTO {
     private Double payDown;
 
     private String ofDate;
+
 	private String taskId;
+
+	private String taskTypeCode;
 }

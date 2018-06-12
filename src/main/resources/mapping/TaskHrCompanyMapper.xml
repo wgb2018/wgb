@@ -35,66 +35,72 @@
     <select id="queryHrCompanyTasks" parameterType="com.microdev.param.TaskHrQueryDTO"
             resultType="com.microdev.model.TaskHrCompany">
         select
-        <include refid="TaskHrCompany_Query_List"/>
-        from task_hr_company
+        t.id as pid, t.create_time, t.deleted, t.modify_time,
+        t.hourly_pay, t.confirmed_workers, t.have_pay_money, t.minutes, t.need_workers, t.refused_workers, t.repast_times, t.should_pay_money, t.status, t.workers_have_pay, t.workers_should_pay,
+        t.hr_company_id, t.task_id, t.hotel_id, t.hr_company_name, t.hotel_name, t.task_type_code, t.task_type_text, t.task_content, t.refused_reason,t.check_sign,t.from_date,t.to_date,t.day_start_time,t.day_end_time,t.hourly_pay_hotel,
+        t.distribute_workers
+        from task_hr_company t left join company c on t.hotel_id = c.id
         <where>
             <if test="hrCompanyId != null and hrCompanyId != ''">
-                hr_company_id = #{hrCompanyId}
+                and t.hr_company_id = #{hrCompanyId}
             </if>
 			<if test="taskId != null and taskId != ''">
-                task_id = #{taskId}
+                and t.task_id = #{taskId}
+            </if>
+            <if test="taskTypeCode != null and taskTypeCode != ''">
+                and t.task_type_code = #{taskTypeCode}
             </if>
             <if test="hotelId != null and hotelId != ''">
-                hotel_id = #{hotelId}
+                and t.hotel_id = #{hotelId}
             </if>
             <if test="taskTypeText != null and taskTypeText != ''">
-                and task_type_text like '%${taskTypeText}%'
+                and t.task_type_text like '%${taskTypeText}%'
             </if>
             <if test="fromDate != null">
-                and to_date &gt;= #{fromDate,jdbcType=TIMESTAMP}
+                and t.to_date &gt;= #{fromDate,jdbcType=TIMESTAMP}
             </if>
             <if test="payUp != null">
-                and hourly_pay &lt;= #{payUp}
+                and t.hourly_pay &lt;= #{payUp}
             </if>
             <if test="payDown != null">
-                and hourly_pay >= #{payDown}
+                and t.hourly_pay >= #{payDown}
             </if>
             <if test="toDate != null">
-                and from_date &lt;= #{toDate,jdbcType=TIMESTAMP}
+                and t.from_date &lt;= #{toDate,jdbcType=TIMESTAMP}
             </if>
 
             <if test="hrCompanyName != null and hrCompanyName != ''">
-                and hr_company_name like '%${hrCompanyName}%'
+                and c.hr_company_name like '%${hrCompanyName}%'
             </if>
             <if test="payStatus == 1">
-                and have_pay_money = 0
+                and t.have_pay_money = 0
             </if>
             <if test="payStatus == 2">
-                and have_pay_money &gt;= 0 and should_pay_money != have_pay_money
+                and t.have_pay_money &gt;= 0 and t.should_pay_money != t.have_pay_money
             </if>
             <if test="payStatus == 3">
-                and have_pay_money &gt;= 0 and should_pay_money = have_pay_money
+                and t.have_pay_money &gt;= 0 and t.should_pay_money = t.have_pay_money
             </if>
             <if test="status !=null and status !=0  and status !=6 and status !=7 and status !=8 and status !=9">
-                and status = #{status}
+                and t.status = #{status}
             </if>
             <if test="status == 0">
-                and status in (1,2,4,5) and to_date &gt; now()
+                and t.status in (1,2,4,5) and t.to_date &gt; now()
             </if>
             <if test="status == 9">
-                and ((status = 5 and to_date &gt; now()) or status = 3)
+                and ((t.status = 5 and t.to_date &gt; now()) or t.status = 3)
             </if>
             <if test="status == 6">
-                and status = 5 and and to_date &gt; now() and from_date &lt; now()
+                and t.status = 5 and t.and to_date &gt; now() and t.from_date &lt; now()
             </if>
             <if test="status == 8">
-                and status in (4,5) and to_date &gt; now()
+                and t.status in (4,5) and t.to_date &gt; now()
             </if>
             <if test="status == 7">
-                and status = 5 and to_date &lt; now()
+                and t.status = 5 and t.to_date &lt; now()
             </if>
         </where>
-        order by create_time desc
+        order by t.create_time desc
     </select>
     <select id="queryHotelBill" resultType="com.microdev.model.TaskHrCompany" parameterType="com.microdev.param.BillRequest">
         select  sum(should_pay_money) as should_pay_money,sum(have_pay_money) as have_pay_money, sum(minutes) as minutes,

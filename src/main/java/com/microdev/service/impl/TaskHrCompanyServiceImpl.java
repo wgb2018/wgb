@@ -857,6 +857,13 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             taskHrCompany.setStatus(4);
         }
         taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
+        //更新酒店任务
+        Task task = taskMapper.getFirstById (taskHrCompany.getTaskId ());
+        task.setConfirmedWorkers (task.getConfirmedWorkers ()-1);
+        if(task.getStatus () == 4){
+            task.setStatus (3);
+        }
+        taskMapper.updateById (task);
         //更新小时工任务
         TaskWorker taskWorker = taskWorkerMapper.selectById(message.getWorkerTaskId());
         if (taskWorker == null) {
@@ -989,9 +996,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         if (taskHrCompany == null) {
             throw new ParamsException("查询不到人力任务信息");
         }
-        //更新人力任务的拒绝人数
-        taskHrCompany.setRefusedWorkers(taskHrCompany.getRefusedWorkers() + 1);
-        taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
 
         Task task = taskMapper.selectById(taskHrCompany.getTaskId());
         if (task == null) {

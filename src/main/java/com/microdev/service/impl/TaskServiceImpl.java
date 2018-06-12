@@ -25,6 +25,8 @@ import org.springframework.util.StringUtils;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalField;
 import java.util.*;
 
 @Transactional
@@ -58,11 +60,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
     public ResultDO createTask(CreateTaskRequest request) {
         System.out.println ("set:"+request.getHrCompanySet ());
         if(request.getFromDateL ()!=null){
-            request.setFromDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getFromDateL ()),ZoneOffset.systemDefault ()));
+            request.setFromDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getFromDateL ()+OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getDayStartTimeL ()),ZoneOffset.systemDefault ()).toOffsetTime ().getLong (ChronoField.MINUTE_OF_DAY )),ZoneOffset.systemDefault ()));
             System.out.println (request.getFromDate ());
         }
         if(request.getToDateL ()!=null){
-            request.setToDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getToDateL ()),ZoneOffset.systemDefault ()));
+            request.setToDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getToDateL ()+OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getDayEndTimeL ()),ZoneOffset.systemDefault ()).toOffsetTime ().getLong (ChronoField.MINUTE_OF_DAY )),ZoneOffset.systemDefault ()));
             System.out.println (request.getToDate ());
         }
         if(request.getDayStartTimeL ()!=null){

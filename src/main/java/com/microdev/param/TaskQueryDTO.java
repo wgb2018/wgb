@@ -44,6 +44,8 @@ public class TaskQueryDTO {
      * 任务类型
      */
     private String tasktype;
+
+    private String taskTypeCode;
     /**
      * 任务时薪（上限和下限）
      */
@@ -52,6 +54,8 @@ public class TaskQueryDTO {
     private Double payDown;
 
     private String ofDate;
+
+    private String hrCompanyName;
 
 
 }

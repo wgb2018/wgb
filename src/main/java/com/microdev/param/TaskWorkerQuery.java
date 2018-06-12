@@ -2,6 +2,8 @@ package com.microdev.param;
 
 import lombok.Data;
 
+import java.time.OffsetDateTime;
+
 /**
  * @author yinbaoxin
  * 查找小时工任务的信息
@@ -17,8 +19,9 @@ public class TaskWorkerQuery {
      * 0：新任务等待确认
      * 1：已接受
      * 2：已拒绝
-     * 3：进行中，根据时间判断是否进行中
-     * 4：已结束，根据时间判断是否已结束
+     * 3  终止
+     * 4：进行中，根据时间判断是否进行中
+     * 5：已结束，根据时间判断是否已结束
      */
     private Integer taskStatus;
 
@@ -27,5 +30,15 @@ public class TaskWorkerQuery {
     //2 结算中
     //3 已结算
     private Integer payStatus;
+
+    private String ofDate;
+
+    private String taskTypeCode;
+
+    private String hrCompanyName;
+
+    private OffsetDateTime fromDate;
+
+    private OffsetDateTime toDate;
 
 }
