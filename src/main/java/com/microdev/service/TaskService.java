@@ -53,4 +53,11 @@ public interface TaskService extends IService<Task> {
      * @return
      */
     ResultDO hotelAgainSendTask(CreateTaskRequest request);
+
+    /**
+     * 酒店同意人力拒绝任务并再次派发
+     * @param request
+     * @return
+     */
+    ResultDO hotelAgreeAndSendTask(CreateTaskRequest request);
 }

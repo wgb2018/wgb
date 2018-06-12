@@ -87,6 +87,6 @@ public class TaskController {
     @PostMapping("/tasks/again/hotelSend")
     public ResultDO hotelAgainSendTask(@RequestBody CreateTaskRequest createTaskRequest) {
 
-        return taskService.hotelAgainSendTask(createTaskRequest);
+        return taskService.hotelAgreeAndSendTask(createTaskRequest);
     }
 }
