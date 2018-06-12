@@ -182,6 +182,7 @@ public class MessageController {
     @PostMapping("/message/pc/bind/apply")
     public ResultDO selectPcBind(@RequestBody PagingDO<ApplyParamDTO> paging) {
 
-        return ResultDO.buildSuccess("");
+        return messageService.selectPcBindApply(paging.getSelector(), paging.getPaginator());
     }
+
 }

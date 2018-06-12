@@ -857,6 +857,15 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             taskHrCompany.setStatus(4);
         }
         taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
+
+        //更新酒店任务的已确认小时工人数和拒绝小时工人数
+        Task task = taskMapper.selectById(taskHrCompany.getTaskId());
+        if (task == null) {
+            throw new ParamsException("查询不到酒店任务");
+        }
+        task.setConfirmedWorkers(task.getConfirmedWorkers() - 1);
+        task.setRefusedWorkers(task.getRefusedWorkers() + 1);
+        taskMapper.updateAllColumnById(task);
         //更新小时工任务
         TaskWorker taskWorker = taskWorkerMapper.selectById(message.getWorkerTaskId());
         if (taskWorker == null) {

@@ -709,7 +709,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             for (WorkerOneDayInfo param : list) {
                 detail = new WorkerDetail();
                 workList = new ArrayList<>();
-                OffsetDateTime time = param.getTime();
+                OffsetDateTime time = param.getCreateTime();
                 String[] currentStartTime = param.getFromDate().split(",");
                 String[] currentEndTime = param.getToDate().split(",");
                 String[] confirmStatus = param.getEmployerConfirmStatus().split(",");

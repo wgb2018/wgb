@@ -1059,18 +1059,20 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         }
 
         Map<String, Object> result = new HashMap<>();
-        List<BindPcResponse> list = null;
+        List<ApplyBindResponse> list = null;
         PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
-        if ("worker".equals(dto.getRoleType())) {
-            list = messageMapper.selectPcWorkerBindApply(dto.getId());
-        } else if ("hotel".equals(dto.getRoleType())) {
-            messageMapper.selectPcHotelBind(dto.getId());
+        if ("hotel".equals(dto.getRoleType())) {
+            list = messageMapper.selectPcHotelBind(dto.getId());
         } else if ("hr".equals(dto.getRoleType())) {
-
+            list = messageMapper.selectPcHrBind(dto.getId());
         } else {
             throw new ParamsException("参数错误");
         }
-        return null;
+        PageInfo<ApplyBindResponse> pageInfo = new PageInfo<>(list);
+        result.put("page", pageInfo.getPageNum());
+        result.put("total", pageInfo.getTotal());
+        result.put("list", list);
+        return ResultDO.buildSuccess(result);
     }
 
     private String transMessageType(String messageType) {
