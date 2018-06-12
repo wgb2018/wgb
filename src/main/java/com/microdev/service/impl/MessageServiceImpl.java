@@ -717,7 +717,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         } else if ("5".equals(type)) {
             if ("hr".equals(messagetype)) {
                 response = messageMapper.selectWorkerApply(messageId);
-                if (response.getAge() < 0) response.setAge(0);
                 response.setOriginator(response.getName());
             } else if ("worker".equals(messagetype)) {
                 response = messageMapper.hotelHrApplyCooperate(messageId);
@@ -1058,10 +1057,14 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         if (StringUtils.isEmpty(dto.getId()) || StringUtils.isEmpty(dto.getRoleType())) {
             throw new ParamsException("参数不能为空");
         }
+
+        Map<String, Object> result = new HashMap<>();
+        List<BindPcResponse> list = null;
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
         if ("worker".equals(dto.getRoleType())) {
-
+            list = messageMapper.selectPcWorkerBindApply(dto.getId());
         } else if ("hotel".equals(dto.getRoleType())) {
-
+            messageMapper.selectPcHotelBind(dto.getId());
         } else if ("hr".equals(dto.getRoleType())) {
 
         } else {

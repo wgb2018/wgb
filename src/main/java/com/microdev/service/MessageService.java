@@ -237,4 +237,6 @@ public interface MessageService extends IService<Message> {
      * @return
      */
     ResultDO selectPcBindApply(ApplyParamDTO dto, Paginator paginator);
+
+
 }

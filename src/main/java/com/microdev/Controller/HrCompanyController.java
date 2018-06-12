@@ -230,12 +230,13 @@ public class HrCompanyController {
 
     /**
      * 人力同意小时工拒绝任务并派发任务
-     * @param messageParamDTO
+     * @param messageId
+     * @param workerId
      * @return
      */
-    @PostMapping("/hrcompanies/agree/distribute")
-    public ResultDO hrcompaniesAgreePost(@RequestBody MessageParamDTO messageParamDTO) {
+    @GetMapping("/hrcompanies/agree/{messageId}/distribute/{workerId}")
+    public ResultDO hrcompaniesAgreePost(@PathVariable String messageId,@PathVariable String workerId) {
 
-        return taskHrCompanyService.hrAgreeWorkerRefuseAndPost(messageParamDTO);
+        return taskHrCompanyService.hrAgreeWorkerRefuseAndPost(messageId, workerId);
     }
 }

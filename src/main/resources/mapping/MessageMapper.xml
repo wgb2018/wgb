@@ -631,10 +631,17 @@ WHERE m.`apply_type` = 3  and m.`status` = 0 AND m.`hotel_id` = #{hotelId}
         WHERE m.`apply_type` = 2  AND m.`status` = 0 and m.`message_type` = 12 AND m.`hr_company_id` = #{hrId}
     </select>
 
-    <select id = "selectPcBindApply" resultType="">
-        SELECT c.`name` AS hrName, c.logo,c.address,c.`area`,c.`leader`,c.`leader_mobile`,m.id AS messageId,m.`message_type` FROM message m
+    <select id = "selectPcWorkerBindApply" resultType="com.microdev.param.BindPcResponse">
+        SELECT c.`name` AS hrName, c.logo as hrLogo,c.address,c.`area`,c.`leader` as hrLeader,c.`leader_mobile` as hrLeaderMobile,m.id AS messageId,m.`message_type` FROM message m
 INNER JOIN company c
 ON c.id = m.`hr_company_id`
 WHERE m.`message_type` = 5 AND m.`status` = 0 AND m.`apply_type` = 1 AND m.`worker_id` = #{workerId}
+    </select>
+
+    <select id = "selectPcHotelBind" resultType="com.microdev.param.BindPcResponse">
+      SELECT c.`name` AS hrName, c.logo,c.address,c.`area`,c.`leader`,c.`leader_mobile`,m.id AS messageId,m.`message_type` FROM message m
+INNER JOIN company c
+ON c.id = m.`hr_company_id`
+WHERE m.`message_type` = 13 AND m.`status` = 0 AND m.`apply_type` = 3 AND m.`hr_company_id` = #{hrId}
     </select>
 </mapper>
