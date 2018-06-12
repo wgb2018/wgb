@@ -3,8 +3,14 @@ package com.microdev.common;
 import com.microdev.common.exception.BusinessException;
 import com.microdev.mapper.DictMapper;
 import com.microdev.mapper.MessageMapper;
+import com.microdev.mapper.UserCompanyMapper;
+import com.microdev.mapper.UserMapper;
 import com.microdev.model.Message;
+import com.microdev.model.User;
+import com.microdev.model.UserCompany;
 import com.microdev.param.DictDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -16,12 +22,15 @@ import java.util.List;
 @Component
 public class WorkerUnbind {
 
+    private static final Logger logger = LoggerFactory.getLogger(WorkerUnbind.class);
     @Autowired
     private MessageMapper messageMapper;
     @Autowired
     private DictMapper dictMapper;
+    @Autowired
+    private UserCompanyMapper userCompanyMapper;
 
-    //@Scheduled(cron = "* * 0/1 * * ?")
+    @Scheduled(cron = "0 42 * * * ?")
     public void scanUnbindMessage() {
         DictDTO dict = dictMapper.findByNameAndCode("MaxUnbindDay","22");
         if (dict != null) {
@@ -37,7 +46,6 @@ public class WorkerUnbind {
                 }
                 list = messageMapper.selectWorkerUnbindMessage(i, end);
                 updateInfo(list, maxNum);
-                if (i+500 > num) break;
                 i = i + 500;
             }
         } else {
@@ -52,7 +60,15 @@ public class WorkerUnbind {
             for (Message message : list) {
                 boolean flag = comparaTime(message.getCreateTime(), maxNum);
                 if (flag) {
-
+                    UserCompany userCompany = userCompanyMapper.selectByWorkerIdHrId(message.getHrCompanyId(), message.getWorkerId());
+                    if (userCompany == null) {
+                        logger.error("小时工人力关系查询不到,workerId=" + message.getWorkerId() + ";hrId=" + message.getHrCompanyId());
+                    } else {
+                        //解绑小时工和人力
+                        userCompany.setStatus(4);
+                        userCompany.setRelieveTime(OffsetDateTime.now());
+                        userCompanyMapper.updateById(userCompany);
+                    }
                 }
             }
         }
@@ -60,7 +76,7 @@ public class WorkerUnbind {
 
     private boolean comparaTime(OffsetDateTime createTime, int maxNum) {
         OffsetDateTime nowTime = OffsetDateTime.now();
-        long leaveTime = nowTime.getLong(ChronoField.MINUTE_OF_DAY) - createTime.getLong(ChronoField.MINUTE_OF_DAY);
-        return (leaveTime / 60) >= (maxNum * 24);
+        long leaveTime = nowTime.getLong(ChronoField.INSTANT_SECONDS) - createTime.getLong(ChronoField.INSTANT_SECONDS);
+        return (leaveTime / 3600) >= (maxNum * 24);
     }
 }

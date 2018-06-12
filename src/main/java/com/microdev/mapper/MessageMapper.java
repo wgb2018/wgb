@@ -93,7 +93,9 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     List<BindPcResponse> selectPcUnBindApply(@Param("hrId") String hrId);
 
-    List<BindPcResponse> selectPcWorkerBindApply(@Param("workerId") String workerId);
+    List<ApplyBindResponse> selectPcWorkerBindApply(@Param("workerId") String workerId);
 
-    List<BindPcResponse> selectPcHotelBind(@Param("hrId") String hrId);
+    List<ApplyBindResponse> selectPcHotelBind(@Param("hotelId") String hotelId);
+
+    List<ApplyBindResponse> selectPcHrBind(@Param("hrId") String hrId);
 }

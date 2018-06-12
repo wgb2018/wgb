@@ -26,7 +26,7 @@ public class PunchCount {
 	@Autowired
 	private HolidayMapper holidayMapper;
 
-	@Scheduled(cron = "0 0 4 * * ?")
+	//@Scheduled(cron = "0 0 4 * * ?")
 	public void startCountPunchInfo() {
 		Integer count = workerLogMapper.countPunchInfoNumber();
 		if(count == null){
