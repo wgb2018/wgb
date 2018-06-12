@@ -66,7 +66,7 @@
         <include refid="TaskWorker_Query_List"/>
         from task_worker
         where user_id = #{userId} and status = 1 and to_date &gt;= #{nowTime} and from_date &lt;= #{nowTime}
-        and day_start_time &lt;= #{time} and day_end_time &gt;={timeA}
+        and day_start_time &lt;= #{time} and day_end_time &gt;=#{timeA}
         and deleted = 0
         order by create_time desc limit 1
     </select>

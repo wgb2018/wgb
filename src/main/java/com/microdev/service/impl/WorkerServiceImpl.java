@@ -122,7 +122,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             //取最近的一条工作记录以获取打卡信息
             log = workLogMapper.findFirstByTaskWorkerId(taskWorker.getPid());
         }else{
-            return response;
+            return null;
         }
         if (task != null) {
             Company hotel = companyMapper.findCompanyById(task.getHotelId());

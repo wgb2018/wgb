@@ -92,6 +92,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
             throw new BusinessException("任务状态不是新派发,无法接受任务");
         }
         if (taskWorker.getFromDate().isBefore(OffsetDateTime.now())) {
+            System.out.println ("now:"+OffsetDateTime.now()+"AAA:"+taskWorker.getFromDate());
             throw new BusinessException("任务已过期，无法接受");
         }
         //TODO 人数判断

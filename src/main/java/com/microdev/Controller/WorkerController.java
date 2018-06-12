@@ -5,6 +5,7 @@ import com.microdev.common.ResultDO;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.param.*;
 import com.microdev.param.api.request.PunchRequest;
+import com.microdev.param.api.response.GetCurrentTaskResponse;
 import com.microdev.service.TaskWorkerService;
 import com.microdev.service.WorkLogService;
 import com.microdev.service.WorkerService;
@@ -36,7 +37,13 @@ public class WorkerController {
      */
     @GetMapping("/worker-tasks/{workerId}/current")
     public ResultDO getCurrentTask(@PathVariable String workerId) {
-        return ResultDO.buildSuccess(workerService.getCurrentTask(workerId));
+        GetCurrentTaskResponse g = workerService.getCurrentTask(workerId);
+        if(g == null){
+            return ResultDO.buildSuccess("无工作任务");
+        }else{
+            return ResultDO.buildSuccess(g);
+        }
+
     }
     /**
      * 小时工打卡

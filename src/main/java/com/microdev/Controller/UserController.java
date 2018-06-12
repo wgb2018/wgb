@@ -9,7 +9,9 @@ import com.microdev.common.oss.ObjectStoreService;
 import com.microdev.common.utils.FileUtil;
 import com.microdev.common.utils.QRCodeUtil;
 import com.microdev.mapper.DictMapper;
+import com.microdev.mapper.TaskMapper;
 import com.microdev.mapper.UserMapper;
+import com.microdev.model.Task;
 import com.microdev.model.User;
 import com.microdev.param.*;
 import com.microdev.service.SmsFacade;
@@ -53,6 +55,8 @@ public class UserController {
     DictMapper dictMapper;
 	@Autowired
     SmsFacade smsFacade;
+	@Autowired
+    TaskMapper taskMapper;
 	/**
      * 创建用户
      */
@@ -207,7 +211,7 @@ public class UserController {
         return ResultDO.buildSuccess("上传文件成功", fileURI);
     }
     @GetMapping("/user/test")
-    public ResultDO test(){
+    public ResultDO test() throws Exception{
         User user = userService.selectById("0ffe5af3-21f2-4f87-bdec-c7bd1106db6f");
         //return ResultDO.buildSuccess(userService.selectList(new EntityWrapper<>(user)));
 //        Map map = new HashMap<>();
@@ -225,13 +229,24 @@ public class UserController {
 //        test.setUsername("TestNew");
 //        userMapper.update(test);
 //        test = userMapper.selectById("f1f33e09884c4b06b8fbe77465bd208d");
+        /*File file;
+        String fileURI = null;
+        String filePath;
+        file = QRCodeUtil.createQRCode ("f940cd69696d41259d6e15a308a06cf1WGBhotel");
+        filePath = "QRCode".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
+        //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
+        fileURI = objectStoreService.uploadFile(filePath, file);
+
+        System.out.println ("fileURI:"+fileURI);
         OffsetDateTime of = OffsetDateTime. ofInstant (Instant.ofEpochMilli (new Date().getTime ()),ZoneOffset.systemDefault ());
         System.out.println (of);
         System.out.println (new Date().getTime ());
         User test = userMapper.findByMobile("15601173951");
         test.setDeleted(false);
-        userMapper.updateById(test);
-        return ResultDO.buildSuccess(dictMapper.findArea("110100"));
+        userMapper.updateById(test);*/
+        Task t = taskMapper.getFirstById ("0af4cbe6642b4d19a7d1b8de07b9a456");
+        System.out.println ("task:"+t);
+        return ResultDO.buildSuccess("1");
     }
 	@GetMapping("/{mobile}/verifyMobile/{smsCode}")
     public ResultDO verifyMobile(@PathVariable String mobile, @PathVariable String smsCode) {
