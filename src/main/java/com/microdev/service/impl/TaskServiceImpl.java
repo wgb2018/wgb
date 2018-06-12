@@ -8,10 +8,12 @@ import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.DateUtil;
+import com.microdev.common.utils.StringKit;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
 import com.microdev.param.*;
 import com.microdev.converter.TaskConverter;
+import com.microdev.service.InformService;
 import com.microdev.service.MessageService;
 import com.microdev.service.TaskService;
 import org.apache.ibatis.annotations.Param;
@@ -45,6 +47,10 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
     TaskWorkerMapper taskWorkerMapper;
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private InformTemplateMapper informTemplateMapper;
+    @Autowired
+    private InformService informService;
     /**
      * 创建酒店任务
      */
@@ -325,6 +331,71 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         //发送消息
         messageService.hotelDistributeTask(set, hotel, "workTaskMessage", request);
         //TaskViewDTO taskDto= taskConverter.toViewDTOWithOutSet(task);
+        return ResultDO.buildSuccess("任务发布成功");
+    }
+
+    /**
+     * 酒店同意人力拒绝任务并再次派发
+     * @param request
+     * @return
+     */
+    @Override
+    public ResultDO hotelAgreeAndSendTask(CreateTaskRequest request) {
+
+        if (StringUtils.isEmpty(request.getMessageId())) {
+            throw new ParamsException("参数不能为空");
+        }
+        Message message = messageService.selectById(request.getMessageId());
+        if (message == null) {
+            throw new ParamsException("消息查询不到数据");
+        }
+        message.setStatus(1);
+        messageService.updateById(message);
+
+        Task task = taskMapper.selectById(request.getTaskId());
+
+        if (task == null) {
+            throw new BusinessException("任务找不到");
+        }
+        request.setHotelId(task.getHotelId());
+        Company hotel=companyMapper.findCompanyById(task.getHotelId());
+        if (hotel == null || !StringUtils.hasLength(hotel.getPid()) ) {
+            throw new ParamsException("酒店不存在");
+        }
+        // 判断酒店状态
+        if(hotel.getStatus()==null ||hotel.getStatus()!=1){
+            throw new ParamsException("酒店状态不是已审核,无法发布任务");
+        }
+        int needAllWorkers=0;
+        for (TaskHrCompanyDTO item : request.getHrCompanySet()) {
+            needAllWorkers=needAllWorkers+item.getNeedWorkers();
+        }
+
+        TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(message.getHrTaskId());
+        if (taskHrCompany == null) {
+            throw new ParamsException("查询不到人力任务信息");
+        }
+
+        Set<TaskHrCompany> set = AddHrTask(task,request);
+        //更新人力的状态为3: 拒绝任务
+        taskHrCompany.setStatus(3);
+
+        taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
+        //发送消息
+        messageService.hotelDistributeTask(set, hotel, "workTaskMessage", request);
+
+        //发送拒绝任务成功通知
+        InformTemplate inf = informTemplateMapper.selectByCode (InformType.refuse_hotel_task.name());
+        Map<String,String> map = new HashMap <> ();
+        map.put("hr",companyMapper.findCompanyById (message.getHrCompanyId()).getName ());
+        if (StringUtils.isEmpty(message.getContent())) {
+            map.put("reason", " ");
+        } else {
+            map.put("reason", message.getContent());
+        }
+
+        String content = StringKit.templateReplace(inf.getContent (), map);
+        informService.sendInformInfo (3,2,content,message.getHrCompanyId (),"拒绝任务成功");
         return ResultDO.buildSuccess("任务发布成功");
     }
 

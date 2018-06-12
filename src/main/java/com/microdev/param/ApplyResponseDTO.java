@@ -32,5 +32,6 @@ public class ApplyResponseDTO {
     private int age;//小时工年龄
     private String userMobile;//小时工电话
     private String sex;//小时工性别
+    private String messageType;//消息类型
 
 }

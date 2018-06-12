@@ -35,10 +35,7 @@ public interface MessageService extends IService<Message> {
      * 分页获取任务查询消息
      */
     ResultDO getPageMessages(Paginator paginator, MessageQuery query);
-    /**
-     * 设置消息已读
-     */
-    ResultDO updateMsgStatus(String id);
+
     /**
      * 酒店绑定或解绑人力公司 人力解绑或绑定酒店
      * @param bindCompany 要绑定的公司id的集合
@@ -209,4 +206,35 @@ public interface MessageService extends IService<Message> {
      * @return
      */
     Map<String, Object> selectDeployApply(PagingDO<ApplyParamDTO> paging);
+
+    /**
+     * pc查询申请补签
+     * @param paging
+     * @return
+     */
+    ResultDO selectPcSupplement(PagingDO<ApplyParamDTO> paging);
+
+    /**
+     * pc查询请假申请
+     * @param dto
+     * @param paginator
+     * @return
+     */
+    ResultDO selectPcLeaveApply(ApplyParamDTO dto, Paginator paginator);
+
+    /**
+     * pc查询加班申请
+     * @param dto
+     * @param paginator
+     * @return
+     */
+    ResultDO selectPcExtraApply(ApplyParamDTO dto, Paginator paginator);
+
+    /**
+     * pc查询解绑申请
+     * @param dto
+     * @param paginator
+     * @return
+     */
+    ResultDO selectPcBindApply(ApplyParamDTO dto, Paginator paginator);
 }

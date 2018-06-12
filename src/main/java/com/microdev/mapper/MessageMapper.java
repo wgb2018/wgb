@@ -88,4 +88,8 @@ public interface MessageMapper extends BaseMapper<Message> {
     List<ApplyResponseDTO> selectHotelDeploy(@Param("hotelId") String hotelId);
 
     List<ApplyResponseDTO> selectHrDeploy(@Param("hrId") String hrId);
+
+    List<ApplySupplementRequest> selectPcLeaveApply(@Param("hotelId") String hotelId,@Param("messageType") String messageType);
+
+    List<BindPcResponse> selectPcBindApply(@Param("hrId") String hrId);
 }
