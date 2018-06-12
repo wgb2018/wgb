@@ -372,7 +372,7 @@ INNER JOIN company c3 ON c3.id = m3.`hotel_id` WHERE m3.apply_type=2 AND m3.is_t
 
     <select id="selectHotelAwaitHandleInfo" resultType="com.microdev.param.AwaitHandleInfo">
         SELECT m.is_task,m.content,m.id AS messageId,m.create_time,IFNULL(c.address,'') as address,'' as logo,t.task_type_text,DATE_FORMAT(t.from_date, '%Y.%m.%d') as fromDate,DATE_FORMAT(t.to_date, '%Y.%m.%d') as toDate,DATE_FORMAT(t.day_start_time, '%H:%i') as dayStartTime,DATE_FORMAT(t.day_end_time, '%H:%i') as dayEndTime,t.hotel_name,IFNULL(t.confirmed_workers,0) as confirmedWorkers,IFNULL(t.need_workers,0) as needWorkers,
-t.lackWorkers,t.hotel_id,t.id,message_type AS type,IFNULL(t.hourly_pay,0) as hourlyPay,c.area FROM message m
+t.lackWorkers,t.hotel_id,t.id,message_type AS type,IFNULL(t.hourly_pay,0) as hourlyPay,c.area,tc.`need_workers` AS hrNeedWorkers FROM message m
 INNER JOIN
 (
 SELECT task_type_text,from_date,to_date,day_start_time,day_end_time,hotel_name,confirmed_workers,need_workers,IFNULL(need_workers,0)-IFNULL(confirmed_workers,0) AS lackWorkers,hotel_id,id,hourly_pay FROM task
@@ -380,13 +380,15 @@ SELECT task_type_text,from_date,to_date,day_start_time,day_end_time,hotel_name,c
 ON m.task_id = t.id
 INNER JOIN company c
 ON c.id = t.hotel_id
+INNER JOIN task_hr_company tc
+ON tc.id = m.`hr_task_id`
 WHERE m.apply_type=3 AND m.is_task = 0 and m.status = 0 AND m.hotel_id= #{hotelId}
 
 UNION
 
 (
 SELECT m3.is_task,m3.content,m3.id AS messageId,m3.`create_time`,IFNULL(c3.`address`,'') as address,c3.`logo`,NULL AS task_type_text,NULL AS from_date, NULL AS to_date,NULL AS day_start_time,NULL AS day_end_time, NULL AS hotel_name, 0 AS confirmed_workers,0 AS need_workers,
-  0 AS lackWorkers,NULL AS hotel_id, NULL AS id, message_type AS TYPE,0 AS hourlyPay,c3.`area` FROM message m3
+  0 AS lackWorkers,NULL AS hotel_id, NULL AS id, message_type AS TYPE,0 AS hourlyPay,c3.`area`,0 AS hrNeedWorkers FROM message m3
   INNER JOIN company c3
   ON c3.id = m3.`hr_company_id`
   WHERE m3.apply_type=3 AND m3.is_task = 1 and m3.status = 0 AND m3.`applicant_type` = 2  AND m3.hotel_id= #{hotelId}
@@ -570,13 +572,13 @@ ON m.hr_company_id = c2.id
       <if test="hotelId != null and hotelId != ''">
            and hotel_id = #{hotelId}
       </if>
-      <if test="roleName == 'hr">
+      <if test="roleName == 'hr'">
           and apply_type = 2
       </if>
-      <if test="roleName == 'worker">
+      <if test="roleName == 'worker'">
           and apply_type in (0,1)
       </if>
-      <if test="roleName == 'hotel">
+      <if test="roleName == 'hotel'">
            and apply_type = 3
       </if>
     </select>
@@ -619,7 +621,7 @@ WHERE m.`apply_type` = 3  and m.`status` = 0 AND m.`hotel_id` = #{hotelId}
 </if>
     </select>
 
-    <select id = "selectPcBindApply" resultType="com.microdev.param.BindPcResponse">
+    <select id = "selectPcUnBindApply" resultType="com.microdev.param.BindPcResponse">
         SELECT m.id AS messageId,m.`message_type` AS messageType,c.`name` AS hrName, c.`logo` AS hrLogo,c.`address`,u.`nickname` AS username, IF(IFNULL(u.`age`,0) &lt; 0,0,u.age) AS age,u.`sex`,u.mobile
         FROM message m
         INNER JOIN company c
@@ -627,5 +629,12 @@ WHERE m.`apply_type` = 3  and m.`status` = 0 AND m.`hotel_id` = #{hotelId}
         INNER JOIN USER u
         ON u.`worker_id` = m.`worker_id`
         WHERE m.`apply_type` = 2  AND m.`status` = 0 and m.`message_type` = 12 AND m.`hr_company_id` = #{hrId}
+    </select>
+
+    <select id = "selectPcBindApply" resultType="">
+        SELECT c.`name` AS hrName, c.logo,c.address,c.`area`,c.`leader`,c.`leader_mobile`,m.id AS messageId,m.`message_type` FROM message m
+INNER JOIN company c
+ON c.id = m.`hr_company_id`
+WHERE m.`message_type` = 5 AND m.`status` = 0 AND m.`apply_type` = 1 AND m.`worker_id` = #{workerId}
     </select>
 </mapper>

@@ -91,5 +91,5 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     List<ApplySupplementRequest> selectPcLeaveApply(@Param("hotelId") String hotelId,@Param("messageType") String messageType);
 
-    List<BindPcResponse> selectPcBindApply(@Param("hrId") String hrId);
+    List<BindPcResponse> selectPcUnBindApply(@Param("hrId") String hrId);
 }

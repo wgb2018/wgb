@@ -580,7 +580,12 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         if (StringUtils.isEmpty(taskHrCompanyId) || status == null) {
             throw new ParamsException("参数错误");
         }
-        taskHrCompanyMapper.updateStatusById(taskHrCompanyId, status);
+        TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(taskHrCompanyId);
+        if (taskHrCompany == null) {
+            throw new ParamsException("查询不到人力任务信息");
+        }
+        taskHrCompany.setCheckSign(status);
+        taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
         return "成功";
     }
 
@@ -842,10 +847,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper,Ta
         taskWorkerMapper.updateById (taskWorker);
 
         //给取消任务的小时工发送通知
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-        DateTimeFormatter time = DateTimeFormatter.ofPattern("HH:mm");
-        String content = taskWorker.getHrCompanyName() + "同意了你的取消任务申请，申请取消的任务日期是"
-                + date.format(message.getSupplementTime()) + ",时间为" + time.format(message.getSupplementTime()) + "-" + time.format(message.getSupplementTimeEnd()) + ",申请理由" + message.getMessageContent();
+
+        String content = taskWorker.getHrCompanyName() + "同意了你的取消任务申请。";
         informService.sendInformInfo(2, 1, content, message.getWorkerId(), "申请取消成功");
 
         //给新的小时工派发任务

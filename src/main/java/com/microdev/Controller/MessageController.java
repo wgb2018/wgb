@@ -56,7 +56,7 @@ public class MessageController {
 
 
     /**
-     * 查询未读数量(删除掉，不用)
+     * 手机端首页展示未读数量
      * @param id
      * @param applyType
      * @return
@@ -65,18 +65,6 @@ public class MessageController {
     public ResultDO getMessageAmount(@PathVariable String id, @PathVariable String applyType) {
 
         return ResultDO.buildSuccess(messageService.selectUnReadCount(id, applyType));
-    }
-
-    /**
-     * 用户查询未读消息
-     * @param id
-     * @param applyType
-     * @return
-     */
-    @GetMapping("/messages/{id}/info/{applyType}")
-    public ResultDO getUnReadMessageInfo(@PathVariable String id,@PathVariable String applyType) {
-
-        return ResultDO.buildSuccess(messageService.selectUnReadMessage(id, applyType));
     }
 
     /**
@@ -183,6 +171,17 @@ public class MessageController {
     @PostMapping("/message/pc/unbind/apply")
     public ResultDO selectPcUnbind(@RequestBody PagingDO<ApplyParamDTO> paging) {
 
-        return messageService.selectPcBindApply(paging.getSelector(), paging.getPaginator());
+        return messageService.selectPcUnBindApply(paging.getSelector(), paging.getPaginator());
+    }
+
+    /**
+     * PC端申请绑定
+     * @param paging
+     * @return
+     */
+    @PostMapping("/message/pc/bind/apply")
+    public ResultDO selectPcBind(@RequestBody PagingDO<ApplyParamDTO> paging) {
+
+        return ResultDO.buildSuccess("");
     }
 }

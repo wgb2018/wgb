@@ -182,14 +182,6 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         taskMapper.updateById(hotelTask);
         taskHrCompanyMapper.updateById(taskHr);
 
-        Inform notice = new Inform();
-        notice.setReceiveId(taskHr.getHrCompanyId());
-        notice.setSendType(1);
-        notice.setAcceptType(2);
-        notice.setTitle("任务被拒绝");
-        notice.setContent("小时工" + taskWorker.getUserName() + "拒绝了你派发的任务");
-        informMapper.insertInform(notice);
-
         //发送消息
         Message m = new Message();
         m.setContent(refusedTaskReq.getRefusedReason());
@@ -199,7 +191,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         m.setMessageTitle(mess.getTitle());
         m.setWorkerId (taskWorker.getWorkerId ());
         m.setWorkerTaskId (taskWorker.getPid ());
-        m.setHrCompanyId (taskHr.getPid ());
+        m.setHrCompanyId (taskHr.getHrCompanyId());
         m.setTaskId(hotelTask.getPid());
         m.setHotelId(hotelTask.getHotelId());
         Map<String, String> param = new HashMap<>();
@@ -283,10 +275,12 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         if (StringUtils.isEmpty(taskWorkerId) || status == null) {
             throw new ParamsException("参数错误");
         }
-        Map<String, Object> map = new HashMap<>();
-        map.put("pid", taskWorkerId);
-        map.put("checkSign", status);
-        taskWorkerMapper.updateByPrimaryKey(map);
+        TaskWorker taskWorker = taskWorkerMapper.selectById(taskWorkerId);
+        if (taskWorker == null) {
+            throw new ParamsException("查询不到小时工任务信息");
+        }
+        taskWorker.setCheckSign(status);
+        taskWorkerMapper.updateAllColumnById(taskWorker);
         return null;
     }
 

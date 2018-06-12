@@ -40,8 +40,5 @@ public interface TaskHrCompanyMapper extends BaseMapper<TaskHrCompany> {
     int selectUnreadCount(String hrCompanyId);
 
     int selectCompleteCount(String hrCompanyId);
-
-    @Update("update task_hr_company set check_sign = #{status} where id = #{taskHrCompanyId}")
-    int updateStatusById(String taskHrCompanyId, Integer status);
 }
 

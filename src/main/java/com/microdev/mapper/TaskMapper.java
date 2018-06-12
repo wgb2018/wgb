@@ -44,6 +44,4 @@ public interface TaskMapper extends BaseMapper<Task> {
 
     int selectCompleteCount(String hotelId);
 
-    @Update("update task set check_sign = #{checkSign} where id = #{taskId}")
-    int updateTaskCheckSign(String taskId, Integer checkSign);
 }

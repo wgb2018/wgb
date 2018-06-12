@@ -80,7 +80,7 @@ public class TaskController {
     }
 
     /**
-     * 酒店再次派发任务
+     * 酒店同意人力拒绝任务并再次派发
      * @param createTaskRequest
      * @return
      */

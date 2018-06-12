@@ -278,7 +278,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         if (StringUtils.isEmpty(taskId) || status == null) {
             throw new ParamsException("参数错误");
         }
-        taskMapper.updateTaskCheckSign(taskId, status);
+        Task task = taskMapper.selectById(taskId);
+        if (task == null) {
+            throw new ParamsException("查询不到酒店任务信息");
+        }
+        task.setCheckSign(status);
+        taskMapper.updateAllColumnById(task);
         return "成功";
     }
 
@@ -352,7 +357,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         message.setStatus(1);
         messageService.updateById(message);
 
-        Task task = taskMapper.selectById(request.getTaskId());
+        Task task = taskMapper.selectById(message.getTaskId());
 
         if (task == null) {
             throw new BusinessException("任务找不到");
@@ -366,10 +371,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         if(hotel.getStatus()==null ||hotel.getStatus()!=1){
             throw new ParamsException("酒店状态不是已审核,无法发布任务");
         }
-        int needAllWorkers=0;
-        for (TaskHrCompanyDTO item : request.getHrCompanySet()) {
-            needAllWorkers=needAllWorkers+item.getNeedWorkers();
-        }
 
         TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(message.getHrTaskId());
         if (taskHrCompany == null) {
@@ -379,7 +380,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         Set<TaskHrCompany> set = AddHrTask(task,request);
         //更新人力的状态为3: 拒绝任务
         taskHrCompany.setStatus(3);
-
         taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
         //发送消息
         messageService.hotelDistributeTask(set, hotel, "workTaskMessage", request);

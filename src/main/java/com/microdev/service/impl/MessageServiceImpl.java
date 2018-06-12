@@ -338,35 +338,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         messageMapper.insert(m);
     }
 
-    /**
-     * 查询未读消息
-     * @param id            角色id
-     * @param applyType     角色类型小时工worker人力hr酒店hotel
-     * @return
-     */
-    @Override
-    public List<Message> selectUnReadMessage(String id, String applyType) {
-
-        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(applyType)) {
-            throw new ParamsException("参数不能为空");
-        }
-        /*Map<String, Object> param = new HashMap<>();
-        param.put("applyType", applyType);
-        if ("worker".equals(applyType)) {
-            param.put("workerId", id);
-        } else if ("hr".equals(applyType)) {
-            param.put("hrCompanyId", id);
-        } else if ("hotel".equals(applyType)) {
-            param.put("hotelId", id);
-        } else {
-            throw new ParamsException("参数applyType类型错误");
-        }
-        List<Message> list = messageMapper.selectUnReadMessage(param);
-        if (list == null || list.size() == 0) {
-            return new ArrayList<>();
-        }*/
-        return null;
-    }
 
     /**
      * 查询未读消息数量及各个类型的数量
@@ -659,6 +630,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             list = messageMapper.selectWorkerAwaitHandleInfo(request.getId());
         } else if ("hotel".equals(request.getType())) {
             list = messageMapper.selectHotelAwaitHandleInfo(request.getId());
+            HrRefuseTaskNeedWorkers(list);
         } else if ("hr".equals(request.getType())) {
             list = messageMapper.selectHrAwaitHandleInfo(request.getId());
         } else {
@@ -729,9 +701,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         MessageDetailsResponse response = null;
         //根据消息id和类型查询待处理信息
         if ("12".equals(messagetype)) {
+
             response = messageMapper.selectWorkerApply(messageId);
             response.setOriginator(response.getName());
-            if (response.getAge() < 0) response.setAge(0);
         } else if ("13".equals(type)) {
             if ("hr".equals(messagetype)) {
                 response = messageMapper.selectCompanyApply(messageId);
@@ -763,33 +735,32 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             response.setOriginator(response.getCompanyName());
 
         } else if ("1".equals(type) ) {
+
             response = messageMapper.selectSupplementApply(messageId);
-            if (response.getAge() < 0) response.setAge(0);
             response.setOriginator(response.getName());
         } else if ("2".equals(type)){
+
             response = messageMapper.selectOvertimeApply(messageId);
-            if (response.getAge() < 0) response.setAge(0);
             response.setOriginator(response.getName());
         } else if ("3".equals(type)) {
+
             response = messageMapper.selectLeaveApply(messageId);
-            if (response.getAge() < 0) response.setAge(0);
             response.setOriginator(response.getName());
         } else if ("4".equals(type)) {
             response = messageMapper.selectApplyAllocate(messageId);
             response.setOriginator(response.getCompanyName());
         } else if ("7".equals(type)) {
             response = messageMapper.selectWorkerApply(messageId);
-            if (response.getAge() < 0) response.setAge(0);
+
             response.setOriginator(response.getName());
         } else if ("9".equals(type)) {
             response = messageMapper.selectWorkerApply(messageId);
-            if (response.getAge() < 0) response.setAge(0);
+
             String companyName = messageMapper.selectCompanyNameByMessageId(messageId);
             response.setOriginator(companyName);
         } else if ("10".equals(type)) {
             if ("hr".equals(messagetype)) {
                 response = messageMapper.selectWorkerApply(messageId);
-                if (response.getAge() < 0) response.setAge(0);
                 response.setOriginator(response.getName());
             } else if ("hotel".equals(messagetype)) {
                 response = messageMapper.selectHotelApply(messageId);
@@ -798,6 +769,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 throw new ParamsException("用户类型错误");
             }
         }
+        if (response != null && response.getAge() < 0) response.setAge(0);
         response.setMessageTextType(transMessageType(response.getMessageType()));
         return response;
     }
@@ -1059,19 +1031,43 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      * @return
      */
     @Override
-    public ResultDO selectPcBindApply(ApplyParamDTO dto, Paginator paginator) {
+    public ResultDO selectPcUnBindApply(ApplyParamDTO dto, Paginator paginator) {
 
         if (dto == null || StringUtils.isEmpty(dto.getId())) {
             throw new ParamsException("参数错误");
         }
         Map<String, Object> result = new HashMap<>();
         PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
-        List<BindPcResponse> list = messageMapper.selectPcBindApply(dto.getId());
+        List<BindPcResponse> list = messageMapper.selectPcUnBindApply(dto.getId());
         PageInfo<BindPcResponse> pageInfo = new PageInfo<>(list);
         result.put("page", pageInfo.getPageNum());
         result.put("total", pageInfo.getTotal());
         result.put("list", list);
         return ResultDO.buildSuccess(result);
+    }
+
+    /**
+     * PC端查询绑定申请
+     * @param dto
+     * @param paginator
+     * @return
+     */
+    @Override
+    public ResultDO selectPcBindApply(ApplyParamDTO dto, Paginator paginator) {
+
+        if (StringUtils.isEmpty(dto.getId()) || StringUtils.isEmpty(dto.getRoleType())) {
+            throw new ParamsException("参数不能为空");
+        }
+        if ("worker".equals(dto.getRoleType())) {
+
+        } else if ("hotel".equals(dto.getRoleType())) {
+
+        } else if ("hr".equals(dto.getRoleType())) {
+
+        } else {
+            throw new ParamsException("参数错误");
+        }
+        return null;
     }
 
     private String transMessageType(String messageType) {
@@ -1104,5 +1100,18 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             return "申请合作";
         }
         return messageType;
+    }
+
+    /**
+     * 人力拒绝酒店任务或调配酒店任务时，所需人数为人力任务数
+     * @param list
+     */
+    private void HrRefuseTaskNeedWorkers(List<AwaitHandleInfo> list) {
+        if (list == null) return;
+        for (AwaitHandleInfo info : list) {
+            if ("4".equals(info.getType()) || "10".equals(info.getType())) {
+                info.setNeedWorkers(info.getHrNeedWorkers());
+            }
+        }
     }
 }

@@ -88,14 +88,6 @@ public interface MessageService extends IService<Message> {
     void sendMessage(TaskHrCompany c, String reason, String number, String pattern);
 
     /**
-     * 查询未读消息
-     * @param id
-     * @param applyType
-     * @return
-     */
-    List<Message> selectUnReadMessage(String id, String applyType);
-
-    /**
      * 查询未读消息数量及各个类型的数量
      * @param id
      * @param applyType
@@ -232,6 +224,14 @@ public interface MessageService extends IService<Message> {
 
     /**
      * pc查询解绑申请
+     * @param dto
+     * @param paginator
+     * @return
+     */
+    ResultDO selectPcUnBindApply(ApplyParamDTO dto, Paginator paginator);
+
+    /**
+     * PC端查询绑定申请
      * @param dto
      * @param paginator
      * @return
