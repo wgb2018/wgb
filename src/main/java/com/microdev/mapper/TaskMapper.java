@@ -40,8 +40,5 @@ public interface TaskMapper extends BaseMapper<Task> {
     @Select("SELECT th.task_id FROM (SELECT task_hr_id FROM task_worker WHERE id = #{taskWorkerId})tw INNER JOIN task_hr_company th ON tw.task_hr_id = th.id")
     String selectTaskIdByTaskWorkerId(String taskWorkerId);
 
-    int selectUnReadCount(String hotelId);
-
-    int selectCompleteCount(String hotelId);
-
+    int queryHotelCurTaskCount(TaskQueryDTO queryDTO);
 }

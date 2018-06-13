@@ -147,9 +147,14 @@
     </select>
     <select id="selectUserPunchDetail" parameterType="java.lang.String"
             resultType="com.microdev.param.WorkerOneDayInfo">
-		SELECT group_concat(from_date) as fromDate,group_concat(to_date) as toDate,GROUP_CONCAT(IFNULL(STATUS,0)) AS status,id, GROUP_CONCAT(IFNULL(employer_confirm_status,0)) AS employerConfirmStatus,create_time as createTime
-		FROM work_log WHERE task_worker_id = #{taskWorkerId}
-		GROUP BY DATE_FORMAT(create_time, '%y-%m-%d') order by create_time ASC
+		SELECT GROUP_CONCAT( DATE_FORMAT(m.from_date, '%H:%i') ORDER BY m.create_time ASC ) AS fromDate,
+GROUP_CONCAT( DATE_FORMAT( m.to_date, '%H:%i') ORDER BY m.create_time ASC ) AS toDate,
+GROUP_CONCAT( IFNULL(m.STATUS, 0 ) ) AS STATUS,
+GROUP_CONCAT( IFNULL( m.employer_confirm_status, 0 ) ) AS employerConfirmStatus,
+m.create_time AS createTime  FROM
+(
+SELECT from_date, to_date,STATUS ,employer_confirm_status,create_time,id FROM 	work_log WHERE task_worker_id = #{taskWorkerId}
+) m GROUP BY m.create_time
 	</select>
     <select id="selectPunchDetails" parameterType="java.lang.String" resultType="com.microdev.model.WorkLog">
 		select from_date,to_date,status,employer_confirm_status from work_log where task_worker_id = #{taskWorkerId}

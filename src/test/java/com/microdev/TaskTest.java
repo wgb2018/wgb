@@ -4,6 +4,8 @@ import java.time.OffsetDateTime;
 import java.util.*;
 
 import com.microdev.common.WorkerUnbind;
+import com.microdev.mapper.MessageMapper;
+import com.microdev.model.Message;
 import com.microdev.param.CreateTaskRequest;
 import com.microdev.param.TaskHrCompanyDTO;
 import org.junit.Test;
@@ -27,7 +29,8 @@ public class TaskTest {
 	private TaskService taskService;
 	@Autowired
     private TaskMapper  taskMapper;
-
+	@Autowired
+	private MessageMapper messageMapper;
 	
 	@Test
 	public void oneTest() {
@@ -40,5 +43,12 @@ public class TaskTest {
 		}
 	}
 
-
+	@Test
+	public void twoest() {
+		Message m = messageMapper.selectById("b34921ea57de410b8e0b28072dc001ad");
+		System.out.println(m.toString());
+		/*m.setStatus(0);
+		messageMapper.updateById(m);
+		System.out.println(m.getStatus());*/
+	}
 }

@@ -480,44 +480,4 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         return userDTO;
     }
 
-    /**
-     * 查询未读的数量
-     * @param id         用户id
-     * @param type       用户类型worker，hotel，hr
-     * @return
-     */
-    @Override
-    public Map<String, Object> selectUnreadAmount(String id, String type) {
-        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(type)) {
-            throw new ParamsException("参数错误");
-        }
-        Map<String, Object> totalMap = new HashMap<>();
-        if ("hotel".equals(type)) {
-            totalMap.put("curTask", taskService.selectUnReadAmount(id));
-            totalMap.put("completeTask", taskService.selectCompleteAmount(id));
-            totalMap.put("pendingTask", messageService.selectUnHandleMessageAmount(id, "3", 0));
-            totalMap.put("message", messageService.selectMessageCount(id, "3", 0));
-        } else if ("hr".equals(type)) {
-            totalMap.put("pendingTask", messageService.selectUnHandleMessageAmount(id, "2", 0));
-            totalMap.put("message", messageService.selectMessageCount(id, "2", 0));
-            totalMap.put("curTask", taskHrCompanyService.selectUnreadCount(id));
-            totalMap.put("completeTask", taskHrCompanyService.selectCompleteCount(id));
-        } else if ("worker".equals(type)) {
-            totalMap.put("pendingTask", messageService.selectUnHandleMessageAmount(id, "1", 0));
-            totalMap.put("message", messageService.selectMessageCount(id, "1", 0));
-            totalMap.put("curTask", taskWorkerService.selectUnreadCount(id));
-            totalMap.put("completeTask", taskWorkerService.selectCompleteCount(id));
-            List<Integer> list = workerLogMapper.selectUnreadPunchCount();
-            if (list == null) {
-                totalMap.put("supplement", 0);
-            } else {
-                totalMap.put("supplement", list.size());
-            }
-
-        } else {
-            throw new ParamsException("用户类型错误");
-        }
-        return totalMap;
-    }
-
 }

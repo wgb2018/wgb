@@ -11,10 +11,7 @@ import com.microdev.common.utils.StringKit;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
 import com.microdev.param.*;
-import com.microdev.service.InformService;
-import com.microdev.service.MessageService;
-import com.microdev.service.TaskHrCompanyService;
-import com.microdev.service.TaskService;
+import com.microdev.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +37,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     private InformService informService;
     @Autowired
     private WorkerLogMapper workerLogMapper;
+    @Autowired
+    private TaskWorkerService taskWorkerService;
 
     /**
      * 创建消息模板
@@ -350,11 +349,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         if (StringUtils.isEmpty(id) || StringUtils.isEmpty(applyType)) {
             throw new ParamsException("参数不能为空");
         }
+        ApplyParamDTO applyParamDTO = new ApplyParamDTO();
+        applyParamDTO.setId(id);
         Map<String, Integer> param = new HashMap<>();
         Map<String, Object> map = new HashMap<>();
         if ("worker".equals(applyType)) {
             //查询当前任务未读数量
-            param.put("curTask", taskWorkerMapper.selectWorkerUnreadCount(id));
+            param.put("curTask", taskWorkerService.selectWorkerCurTaskCount(applyParamDTO));
             map.put("workerId", id);
             map.put("roleName", "worker");
             //查询未读待处理事物数量
@@ -365,8 +366,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             map.put("acceptType", 1);
             map.put("receiveId", id);
             param.put("notice", informService.selectCountByParam(map));
-            //查询已完成事物未读数量
-            param.put("completeTask", taskWorkerMapper.selectCompleteCount(id));
+
             //查询补签数量
             List<Integer> list = workerLogMapper.selectUnreadPunchCount();
             if (list == null) {
@@ -377,7 +377,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
 
         } else if ("hr".equals(applyType)) {
 
-            param.put("curTask", taskHrCompanyService.selectUnreadCount(id));
+            param.put("curTask", taskHrCompanyService.selectHrCurTaskCount(applyParamDTO));
             map.put("hrId", id);
             map.put("roleName", "hr");
             param.put("pendingTask", messageMapper.selectUnReadMessage(map));
@@ -386,11 +386,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             map.put("acceptType", 2);
             map.put("receiveId", id);
             param.put("notice", informService.selectCountByParam(map));
-            //查询已完成事物未读数量
-            param.put("completeTask", taskService.selectCompleteAmount(id));
+
         } else if ("hotel".equals(applyType)) {
 
-            param.put("curTask", taskService.selectUnReadAmount(id));
+            param.put("curTask", taskService.selectCurHotelTaskCount(applyParamDTO));
             map.put("hotelId", id);
             map.put("roleName", "hotel");
             param.put("pendingTask", messageMapper.selectUnReadMessage(map));
@@ -399,41 +398,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             map.put("acceptType", 3);
             map.put("receiveId", id);
             param.put("notice", informService.selectCountByParam(map));
-            //查询已完成事物未读数量
-            param.put("completeTask", taskHrCompanyService.selectCompleteCount(id));
+
         } else {
             throw new ParamsException("参数applyType类型错误");
         }
 
         return param;
-    }
-
-    /**
-     * 查询未读消息数量
-     * @param id
-     * @param applyType
-     * @param type  type=1时
-     * @return
-     */
-    @Override
-    public int selectMessageCount(String id, String applyType, int type) {
-        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(applyType)) {
-            throw new ParamsException("参数不能为空");
-        }
-        Map<String, Object> param = new HashMap<>();
-        param.put("applyType", applyType);
-        if ("1".equals(applyType)) {
-            param.put("workerId", id);
-        } else if ("2".equals(applyType)) {
-            param.put("hrCompanyId", id);
-        } else if ("3".equals(applyType)) {
-            param.put("hotelId", id);
-        } else {
-            throw new ParamsException("参数applyType类型错误");
-        }
-        param.put("checkSign", type);
-
-        return messageMapper.selectUnReadCount(param);
     }
 
     /**
@@ -549,20 +519,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             throw new ParamsException("参数值错误");
         }
         return message;
-    }
-
-    /**
-     * 更新消息
-     * @param id
-     * @return
-     */
-    @Override
-    public String updateMessageCheckSign(String id) {
-        if (StringUtils.isEmpty(id)) {
-            throw new ParamsException("参数错误");
-        }
-        messageMapper.updateMessageCheckSign(id);
-        return "成功";
     }
 
     /**
@@ -818,7 +774,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         } else if ("11".equals(type)) {
             response = messageMapper.selectHrHotelDetails(messageId);
         }
-        if ("0".equals(response.getHourlyPay())) {
+        if (response != null && "0".equals(response.getHourlyPay())) {
             response.setHourlyPay("");
         }
         return response;

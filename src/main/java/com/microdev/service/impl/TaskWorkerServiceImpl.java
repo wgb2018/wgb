@@ -11,6 +11,7 @@ import com.microdev.common.utils.StringKit;
 import com.microdev.converter.TaskWorkerConverter;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
+import com.microdev.param.ApplyParamDTO;
 import com.microdev.param.RefusedTaskRequest;
 import com.microdev.param.TaskWorkerQuery;
 import com.microdev.service.InformService;
@@ -93,7 +94,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
             taskWorker.setStatus (2);
             taskWorker.setRefusedReason ("任务已过期，无法接受");
             taskWorkerMapper.updateById (taskWorker);
-            throw new BusinessException("任务已过期，无法接受");
+            return ResultDO.buildSuccess("任务已过期，无法接受");
         }
         //TODO 人数判断
         TaskHrCompany taskHr = taskHrCompanyMapper.queryByTaskId(taskWorker.getTaskHrId());
@@ -214,24 +215,6 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
     @Override
     public ResultDO pagesTaskWorkers(Paginator paginator, TaskWorkerQuery taskQueryDTO) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
-        String date = taskQueryDTO.getOfDate();
-        if (date != null) {
-            Integer year = Integer.parseInt(date.split("-")[0]);
-            Integer month = Integer.parseInt(date.split("-")[1]);
-            if (month == 12) {
-                taskQueryDTO.setFromDate(OffsetDateTime.of
-                        (year, 12, 1, 0, 0, 0, 0,
-                                ZoneOffset.UTC));
-                taskQueryDTO.setToDate(OffsetDateTime.of
-                        (year, 1, 1, 0, 0, 0, 0,
-                                ZoneOffset.UTC));
-            } else {
-                taskQueryDTO.setFromDate(OffsetDateTime.of
-                        (year, month, 1, 0, 0, 0, 0, ZoneOffset.UTC));
-                taskQueryDTO.setToDate(OffsetDateTime.of
-                        (year, month + 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
-            }
-        }
         //查询数据集合
         List<TaskWorker> list = taskWorkerMapper.findAll(taskQueryDTO);
         for (TaskWorker t:list) {

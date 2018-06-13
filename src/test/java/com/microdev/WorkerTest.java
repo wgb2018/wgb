@@ -81,27 +81,6 @@ public class WorkerTest {
     }
 
     @Test
-    public void sixTest() {
-        WorkerSupplementRequest info = new WorkerSupplementRequest();
-        info.setTaskWorkerId("018f3e28-0526-44dd-8600-3dd8d5ade53c");
-        info.setReason("测试拒绝");
-        info.setTime(OffsetDateTime.now().plusHours(-1));
-        info.setEndTime(OffsetDateTime.now().plusHours(1));
-        workerService.askForLeave(info);
-    }
-
-    @Test
-    public void sevenTest() {
-        WorkerSupplementRequest info = new WorkerSupplementRequest();
-        info.setTaskWorkerId("018f3e28-0526-44dd-8600-3dd8d5ade53c");
-        info.setReason("测试加班");
-        info.setTime(OffsetDateTime.now().plusHours(-1));
-        info.setEndTime(OffsetDateTime.now().plusHours(1));
-        info.setMinutes(10);
-        workerService.askWorkOvertime(info);
-    }
-
-    @Test
     public void tenTest() {
         WorkerSupplementRequest info = new WorkerSupplementRequest();
         info.setReason("测试取消任务");
@@ -124,7 +103,6 @@ public class WorkerTest {
     public void twelveTest() {
         WorkerSupplementRequest info = new WorkerSupplementRequest();
         info.setReason("测试补签");
-        info.setTime(OffsetDateTime.now().plusHours(2));
         info.setTaskWorkerId("018f3e28-0526-44dd-8600-3dd8d5ade53c");
         ResultDO r = ResultDO.buildSuccess(workerService.supplementWork(info));
         JSONObject json = JSONObject.fromObject(r);

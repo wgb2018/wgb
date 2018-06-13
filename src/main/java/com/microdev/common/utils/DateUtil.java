@@ -2,8 +2,10 @@ package com.microdev.common.utils;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Clock;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -86,5 +88,22 @@ public class DateUtil {
             return nowYear - oldYear;
         }
 
+    }
+
+    /**
+     * 将字符类型的字符串转换成OffsetDateTime
+     * @param str
+     * @return
+     */
+    public static OffsetDateTime strToOffSetDateTime(String str, String pattern) {
+        SimpleDateFormat format = new SimpleDateFormat(pattern);
+        try {
+            Date d = format.parse(str);
+            return OffsetDateTime.ofInstant(Instant.ofEpochMilli(d.getTime()), ZoneId.systemDefault());
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

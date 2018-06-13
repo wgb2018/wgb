@@ -37,8 +37,6 @@ public interface TaskHrCompanyMapper extends BaseMapper<TaskHrCompany> {
 
     Map<String, Object> selectByTaskId(String hrCompanyId);
 
-    int selectUnreadCount(String hrCompanyId);
-
-    int selectCompleteCount(String hrCompanyId);
+    int queryHrCurTaskCount(TaskHrQueryDTO queryDTO);
 }
 
