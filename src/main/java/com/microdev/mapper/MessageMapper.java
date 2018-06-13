@@ -40,7 +40,7 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     List<Message> selectByParam(Map<String, Object> param);
 
-    List<Message> selectWorkerUnbindMessage(int start, int end);
+    List<Message> selectWorkerUnbindMessage(@Param("start") int start,@Param("end") int end);
 
     List<AwaitHandleInfo> selectWorkerAwaitHandleInfo(@Param("workerId") String workerId);
 

@@ -58,7 +58,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
      */
     @Override
     public ResultDO createTask(CreateTaskRequest request) {
-        System.out.println ("set:"+request.getHrCompanySet ());
+        System.out.println ("set:"+request.toString());
         if(request.getFromDateL ()!=null){
             request.setFromDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getFromDateL ()+OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getDayStartTimeL ()),ZoneOffset.systemDefault ()).toOffsetTime ().getLong (ChronoField.SECOND_OF_DAY )*1000),ZoneOffset.systemDefault ()));
             System.out.println (request.getFromDate ());

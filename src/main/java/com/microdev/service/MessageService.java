@@ -105,17 +105,6 @@ public interface MessageService extends IService<Message> {
     int selectUnHandleMessageAmount(String id, String applyType, int status);
 
     /**
-     * 查询用户的消息
-     * @param id           用户id
-     * @param role         角色类型
-     * @param type         显示消息类型
-     * @param page         页码
-     * @param pageNum      页数
-     * @return
-     */
-    MessageShowDTO selectMessage(String id, int role, int type, int page, int pageNum);
-
-    /**
      * 小时工绑定人力公司或人力公司绑定小时工
      * @param name
      * @param id

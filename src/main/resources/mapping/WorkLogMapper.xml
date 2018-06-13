@@ -106,7 +106,7 @@
 		DATE_FORMAT(tw.day_start_time,'%H:%i') AS dayStartTime,
 		DATE_FORMAT(tw.day_end_time,'%H:%i') AS dayEndTime,th.task_type_text
 		AS taskTypeText,GROUP_CONCAT(DATE_FORMAT(wl.`from_date`,'%H:%i') ORDER BY wl.create_time ASC) AS fromDate,
-		GROUP_CONCAT(DATE_FORMAT(wl.`to_date`,'%H:%i') ORDER BY wl.create_time ASC) AS toDate,
+		GROUP_CONCAT(IFNULL(DATE_FORMAT(wl.`to_date`,'%H:%i'), '--') ORDER BY wl.create_time ASC) AS toDate,
 		th.`hotel_id` AS hotelId,tw.id AS taskWorkerId,tw.worker_id AS workerId,
 		DATE_FORMAT(wl.`create_time`,'%Y/%m/%d') AS current
 		FROM (
@@ -125,9 +125,9 @@
             resultType="com.microdev.param.SupplementResponse">
         SELECT DATE_FORMAT(tw.from_date,'%Y.%m.%d') AS
 		workFromDate,DATE_FORMAT(tw.to_date,'%Y.%m.%d') AS workToDate,
-		DATE_FORMAT(tw.day_start_time,'%H:%i') AS
-		dayStartTime,DATE_FORMAT(wl.`from_date`,'%H:%i') AS fromDate,
-		DATE_FORMAT(wl.`to_date`,'%H:%i') AS
+		DATE_FORMAT(tw.day_start_time,'%H:%i')  AS
+		dayStartTime,GROUP_CONCAT(DATE_FORMAT(wl.`from_date`,'%H:%i') ORDER BY wl.create_time ASC) AS fromDate,
+		GROUP_CONCAT(IFNULL(DATE_FORMAT(wl.`to_date`,'%H:%i'),'--') ORDER BY wl.create_time ASC) AS
 		toDate,DATE_FORMAT(wl.`create_time`,'%Y/%m/%d') AS current,
 		DATE_FORMAT(tw.day_end_time,'%H:%i') AS dayEndTime,tw.hourly_pay AS
 		hourlyPay, th.task_type_text AS taskTypeText, th.`task_content` AS
@@ -135,7 +135,7 @@
 		c.name AS hotelName, c.address AS address,c.leader AS
 		leader,c.leader_mobile AS
 		leaderMobile,th.`hotel_id` AS hotelId,tw.id
-		AS taskWorkerId
+		AS taskWorkerId,c.area,tw.`worker_id`
 		FROM
 		(SELECT * FROM work_log WHERE task_worker_id = #{taskWorkerId} AND DATE_FORMAT(create_time, '%Y/%m/%d') = #{date}) wl
 		INNER JOIN task_worker tw
@@ -146,6 +146,7 @@
 		INNER JOIN
 		company c
 		ON c.id = th.`hotel_id`
+		GROUP BY wl.create_time
     </select>
     <select id="selectUserPunchDetail" parameterType="java.lang.String"
             resultType="com.microdev.param.WorkerOneDayInfo">

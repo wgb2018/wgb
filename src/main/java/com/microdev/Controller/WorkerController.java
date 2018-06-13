@@ -108,16 +108,16 @@ public class WorkerController {
     /**
      * 小时工分页补签信息
      */
-    @PostMapping("/workers/noPunchPageInfo")
-    public ResultDO noPunchPageInfo(@RequestBody PageRequest page) {
-        return ResultDO.buildSuccess(workerService.selectNoPunchPageInfo(page));
+    @PostMapping("/workers/noPunch/info")
+    public ResultDO noPunchPageInfo(@RequestBody PagingDO<ApplyParamDTO> paging) {
+        return ResultDO.buildSuccess(workerService.selectNoPunchPageInfo(paging.getSelector(), paging.getPaginator()));
     }
     /**
      * 小时工补签详情
      */
     @PostMapping("/workers/noPunchInfoDetail")
-    public ResultDO noPunchInfoDetail(String taskWorkerId, String date, String checkSign) {
-        return ResultDO.buildSuccess(workerService.selectNoPunchDetails(taskWorkerId, date, checkSign));
+    public ResultDO noPunchInfoDetail(@RequestBody Map<String, String> param) {
+        return ResultDO.buildSuccess(workerService.selectNoPunchDetails(param.get("taskWorkerId"), param.get("date")));
     }
     /**
      * 小时工申请补签

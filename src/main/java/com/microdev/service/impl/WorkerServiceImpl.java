@@ -451,45 +451,35 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
      * 查询补签的记录
      */
     @Override
-    public PageInfo<SupplementResponse> selectNoPunchPageInfo(PageRequest page) {
-        if (page == null) {
+    public Map<String, Object> selectNoPunchPageInfo(ApplyParamDTO applyParamDTO, Paginator paginator) {
+        if (StringUtils.isEmpty(applyParamDTO.getId())) {
             throw new ParamsException("参数不能为空");
         }
-        if (StringUtils.isEmpty(page.getId())) {
-            throw new ParamsException("参数id不能为空");
-        }
-        if (StringUtils.isEmpty(page.getPage())) {
-            throw new ParamsException("页码不能为空");
-        }
-        if (StringUtils.isEmpty(page.getPageSize())) {
-            throw new ParamsException("页数不能为空");
-        }
 
-        PageHelper.startPage(page.getPage(), page.getPageSize(), true);
-        List<SupplementResponse> list = workLogMapper.selectNoPunchByWorkerId(page.getId());
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+        List<SupplementResponse> list = workLogMapper.selectNoPunchByWorkerId(applyParamDTO.getId());
         PageInfo<SupplementResponse> info = new PageInfo<>(list);
         if (list == null) {
             info.setList(new ArrayList<>());
         } else {
             info.setList(list);
         }
-        return info;
+        Map<String, Object> result = new HashMap<>();
+        result.put("page", paginator.getPage());
+        result.put("total", paginator.getPageSize());
+        result.put("list", list);
+        return result;
     }
 
     /**
      * 查询补签记录详情
      */
     @Override
-    public SupplementResponse selectNoPunchDetails(String taskWorkerId, String date, String checkSign) {
-        if (StringUtils.isEmpty(date) || StringUtils.isEmpty(taskWorkerId) || StringUtils.isEmpty(checkSign)) {
+    public SupplementResponse selectNoPunchDetails(String taskWorkerId, String date) {
+        if (StringUtils.isEmpty(date) || StringUtils.isEmpty(taskWorkerId)) {
             throw new ParamsException("参数不能为空");
         }
 
-        if ("0".equals(checkSign)) {
-            WorkLog log = workLogMapper.selectUnreadInfoOne(taskWorkerId, date);
-            log.setCheckSign(1);
-            workLogMapper.updateById(log);
-        }
         Map<String, Object> param = new HashMap<>();
         param.put("taskWorkerId", taskWorkerId);
         param.put("date", date);
@@ -714,17 +704,19 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 }
             }
         } else {
-
+            //有打卡记录
             for (WorkerOneDayInfo param : list) {
                 detail = new WorkerDetail();
                 workList = new ArrayList<>();
                 OffsetDateTime time = param.getCreateTime();
                 String[] currentStartTime = param.getFromDate().split(",");
+
                 String[] currentEndTime = null;
                 if (StringUtils.isEmpty(param.getToDate())) {
                     currentEndTime = new String[0];
                 }
                 String[] confirmStatus = param.getEmployerConfirmStatus().split(",");
+                
 
 
                 //如果当天没有打卡记录
@@ -776,11 +768,10 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     hotelStatus = null;
                     sysStatus = null;
                 }
-                hotelStatus = new HashMap<>();
+				hotelStatus = new HashMap<>();
                 sysStatus = new HashMap<>();
                 initMapStatus(hotelStatus, 4);
-                initMapStatus(sysStatus, 5);
-                //有打卡记录
+                initMapStatus(sysStatus, 5);                //有打卡记录
                 expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
                 if (expire) {
                     detail.setExpire("1");

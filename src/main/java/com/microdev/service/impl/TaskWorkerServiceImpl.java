@@ -291,7 +291,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
     @Override
     public int selectWorkerCurTaskCount(ApplyParamDTO applyParamDTO) {
 
-        if (StringUtils.isEmpty(applyParamDTO.getId()) || StringUtils.isEmpty(applyParamDTO.getRoleType())) {
+        if (StringUtils.isEmpty(applyParamDTO.getId())) {
             return 0;
         }
         TaskWorkerQuery query = new TaskWorkerQuery();
