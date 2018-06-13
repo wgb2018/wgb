@@ -86,14 +86,13 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         if (message == null || message.getStatus() == 1) {
             throw new BusinessException("消息已处理");
         }
-        message.setStatus(1);
-        messageMapper.updateAllColumnById(message);
+        messageMapper.updateStatus (message.getPid ());
         TaskWorker taskWorker = taskWorkerMapper.findFirstById(message.getWorkerTaskId());
-        if (taskWorker.getStatus() > 0) {
-            throw new BusinessException("任务状态不是新派发,无法接受任务");
-        }
         if (taskWorker.getFromDate().isBefore(OffsetDateTime.now())) {
             System.out.println ("now:"+OffsetDateTime.now()+"AAA:"+taskWorker.getFromDate());
+            taskWorker.setStatus (2);
+            taskWorker.setRefusedReason ("任务已过期，无法接受");
+            taskWorkerMapper.updateById (taskWorker);
             throw new BusinessException("任务已过期，无法接受");
         }
         //TODO 人数判断

@@ -244,6 +244,8 @@ public class UserController {
         User test = userMapper.findByMobile("15601173951");
         test.setDeleted(false);
         userMapper.updateById(test);*/
+        OffsetDateTime of = OffsetDateTime.now ();
+        System.out.println (OffsetDateTime.of (of.getYear (),of.getMonthValue (),of.getDayOfMonth (),0,0,0,0,ZoneOffset.ofHoursMinutes (0,0)).plusDays (1).getHour ());
         Task t = taskMapper.getFirstById ("0af4cbe6642b4d19a7d1b8de07b9a456");
         System.out.println ("task:"+t);
         return ResultDO.buildSuccess("1");

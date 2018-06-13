@@ -25,6 +25,7 @@ import com.microdev.service.InformService;
 import com.microdev.service.MessageService;
 import com.microdev.service.WorkerService;
 import com.microdev.type.UserType;
+import lombok.Data;
 import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
 
 import java.math.BigDecimal;
 import java.time.*;
@@ -109,7 +111,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 OffsetDateTime.now(), time,timeA);
         //如果没有当前进行中的任务 则获取最近的下一个任务
         if (taskWorker == null) {
-            taskWorker = taskWorkerMapper.findWorkerNextTask(userId, TaskWorkerStatus.ACCEPTED.ordinal(), OffsetDateTime.now(),time);
+            OffsetDateTime of = OffsetDateTime.now ();
+            taskWorker = taskWorkerMapper.findWorkerNextTask(userId, TaskWorkerStatus.ACCEPTED.ordinal(),OffsetDateTime.ofInstant(new Date(of.getYear ()-1900,of.getMonthValue ()-1,of.getDayOfMonth ()).toInstant (),ZoneOffset.systemDefault ()).plusDays (1),time);
         }
         /*//如果没有下一个任务(也没有进行中的任务) 取前一个任务
         if (taskWorker == null) {
