@@ -8,7 +8,7 @@ import java.time.OffsetDateTime;
 public class WorkerSupplementRequest {
 
 	//请求设置的时间
-	private OffsetDateTime time;
+	private String time;
 	//申请理由
 	private String reason;
 	//taskWorkId
@@ -16,7 +16,7 @@ public class WorkerSupplementRequest {
 	//被请求者的id
 	private String applicateId;
 
-	private OffsetDateTime endTime;
+	private String endTime;
 	
 	private Integer minutes;
 	

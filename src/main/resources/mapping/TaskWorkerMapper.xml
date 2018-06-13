@@ -207,4 +207,24 @@
 WHERE check_sign = 0 AND DATE(to_date) >= DATE(NOW()) AND worker_id = #{workerId}
     </select>
 
+    <select id="selectCurTasCount" parameterType="com.microdev.param.TaskWorkerQuery" resultType="java.lang.Integer">
+        select count(1)
+        from task_worker
+        <where>
+            <if test="workerId != null || workerId !=''">
+                worker_id = #{workerId}
+            </if>
+            <if test="taskStatus != null || taskStatus !=''">
+                <if test="taskStatus &lt; 3">
+                    and  status = #{taskStatus}
+                </if>
+                <if test="taskStatus == 3">
+                    and to_date &gt;= now() and from_date &lt;= now()
+                </if>
+                <if test="taskStatus == 4">
+                    and to_date &lt; now()
+                </if>
+            </if>
+        </where>
+    </select>
 </mapper>

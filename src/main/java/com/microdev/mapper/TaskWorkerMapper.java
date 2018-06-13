@@ -59,4 +59,5 @@ public interface TaskWorkerMapper extends BaseMapper<TaskWorker> {
 
     void updateStatus(@Param("workerTaskId") String workerTaskId,@Param("status") Integer status);
 
+    int selectCurTasCount(TaskWorkerQuery query);
 }

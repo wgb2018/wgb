@@ -53,4 +53,10 @@ public interface TaskWorkerService extends IService<TaskWorker> {
      */
     String updateTaskWorkerStatus(String taskWorkerId, Integer status);
 
+    /**
+     * 查询小时工当前任务数量
+     * @param query
+     * @return
+     */
+    int selectWorkerCurTaskCount(TaskWorkerQuery query);
 }

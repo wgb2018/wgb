@@ -95,8 +95,8 @@ public class DateUtil {
      * @param str
      * @return
      */
-    public static OffsetDateTime strToOffSetDateTime(String str) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static OffsetDateTime strToOffSetDateTime(String str, String pattern) {
+        SimpleDateFormat format = new SimpleDateFormat(pattern);
         try {
             Date d = format.parse(str);
             return OffsetDateTime.ofInstant(Instant.ofEpochMilli(d.getTime()), ZoneId.systemDefault());

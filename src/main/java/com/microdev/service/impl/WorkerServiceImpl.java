@@ -301,9 +301,11 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             throw new ParamsException("结束时间不能为空");
         }
 
+        OffsetDateTime time = DateUtil.strToOffSetDateTime(info.getTime(), "yyyy/MM/dd HH:mm");
+        OffsetDateTime endTime = DateUtil.strToOffSetDateTime(info.getEndTime(), "yyyy/MM/dd HH:mm");
         Message m = new Message();
-        m.setSupplementTime(info.getTime());
-        m.setSupplementTimeEnd(info.getEndTime());
+        m.setSupplementTime(time);
+        m.setSupplementTimeEnd(endTime);
         m.setContent(info.getReason());
         WorkerCancelTask tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
 
@@ -324,12 +326,13 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         Map<String, String> param = new HashMap<>();
         param.put("userName", tp.getUsername());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        param.put("startTime", info.getTime().format(formatter));
+        param.put("startTime", info.getTime());
         param.put("taskContent", info.getReason());
-        param.put("endTime", info.getEndTime().format(formatter));
+        param.put("endTime", info.getEndTime());
         String c = StringKit.templateReplace(mess.getContent(), param);
         m.setMessageContent(c);
         m.setApplyType(3);
+        m.setApplicantType(1);
         m.setStatus(0);
         m.setIsTask(0);
 
@@ -357,9 +360,11 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         if (info.getMinutes() == null || info.getMinutes() <= 0) {
             throw new ParamsException("加时时间不能小于0");
         }
+
+        OffsetDateTime time = DateUtil.strToOffSetDateTime(info.getTime(), "yyyy/MM/dd");
         Message m = new Message();
         m.setContent(info.getReason());
-        m.setSupplementTime(info.getTime());
+        m.setSupplementTime(time);
         m.setMinutes(info.getMinutes() + "");
         WorkerCancelTask tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
 
@@ -376,8 +381,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
         Map<String, String> param = new HashMap<>();
         param.put("userName", tp.getUsername());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        param.put("startTime", info.getTime().format(formatter));
+        param.put("startTime", info.getTime());
         param.put("taskContent", info.getReason());
         param.put("minutes", info.getMinutes().toString());
         String c = StringKit.templateReplace(mess.getContent(), param);
@@ -507,8 +511,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             throw new ParamsException("参数time不能为空");
         }
 
+        OffsetDateTime time = DateUtil.strToOffSetDateTime(info.getTime(), "yyyy/MM/dd HH:mm");
         Message m = new Message();
-        m.setSupplementTime(info.getTime());
+        m.setSupplementTime(time);
         m.setContent(info.getReason());
         WorkerCancelTask tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applySupplementMessage");
@@ -518,8 +523,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         map.put("status",0);
         Map<String, String> param = new HashMap<>();
         param.put("userName",  tp.getUsername ());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        param.put("time", info.getTime().format(formatter));
+        param.put("time", info.getTime());
         param.put("taskContent", info.getReason());
         String c = StringKit.templateReplace(mess.getContent(), param);
         map.put("message_content",c);
@@ -777,7 +781,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     detail.setExpire("0");
                 }
 
-                OffsetDateTime t = DateUtil.strToOffSetDateTime(currentStartTime[0]);
+                OffsetDateTime t = DateUtil.strToOffSetDateTime(currentStartTime[0], "HH:mm");
                 workLog = new PunchInfo();
                 if (startDay.compareTo(t) < 0) {
                     int minutes = containsTime(t, startDay,  holidayList);
@@ -803,8 +807,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
                             workLog.setStartTime(currentStartTime[i]);
                             workLog.setEndTime(currentEndTime[i]);
-                            OffsetDateTime start2 = DateUtil.strToOffSetDateTime(currentStartTime[i]);
-                            OffsetDateTime end1 = DateUtil.strToOffSetDateTime(currentEndTime[i - 1]);
+                            OffsetDateTime start2 = DateUtil.strToOffSetDateTime(currentStartTime[i], "HH:mm");
+                            OffsetDateTime end1 = DateUtil.strToOffSetDateTime(currentEndTime[i - 1], "HH:mm");
                             if (start2.compareTo(end1) <= 0) {
 
                             } else {
@@ -827,8 +831,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                         if (currentEndTime.length == i + 1) {
 
                             workLog.setEndTime(currentEndTime[i]);
-                            OffsetDateTime start2 = DateUtil.strToOffSetDateTime(currentStartTime[i]);
-                            OffsetDateTime end1 = DateUtil.strToOffSetDateTime(currentEndTime[i - 1]);
+                            OffsetDateTime start2 = DateUtil.strToOffSetDateTime(currentStartTime[i], "HH:mm");
+                            OffsetDateTime end1 = DateUtil.strToOffSetDateTime(currentEndTime[i - 1], "HH:mm");
                             if (start2.compareTo(end1) <= 0) {
                                 if (start2.getLong(ChronoField.MINUTE_OF_DAY) >= endDay.getLong(ChronoField.MINUTE_OF_DAY)) {
 
@@ -1132,19 +1136,19 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
      */
     private boolean isLeave(DateTimeFormatter d, long start, long end, String[] str, String[] str2) {
         long leaveTime = 0L;
-        OffsetDateTime time = DateUtil.strToOffSetDateTime(str2[0]);
+        OffsetDateTime time = DateUtil.strToOffSetDateTime(str2[0], "yyyy-MM-dd HH:mm:ss");
         leaveTime += time.getLong(ChronoField.MINUTE_OF_DAY) - start;
         int i = 0;
         for (; ; i++) {
             if (i >= str.length - 1) break;
-            time = DateUtil.strToOffSetDateTime(str[i]);
+            time = DateUtil.strToOffSetDateTime(str[i], "yyyy-MM-dd HH:mm:ss");
             long s = time.getLong(ChronoField.MINUTE_OF_DAY);
-            time = DateUtil.strToOffSetDateTime(str2[i]);
+            time = DateUtil.strToOffSetDateTime(str2[i], "yyyy-MM-dd HH:mm:ss");
             long t = time.getLong(ChronoField.MINUTE_OF_DAY);
             leaveTime += t - s;
         }
         if (i > 0) {
-            time = DateUtil.strToOffSetDateTime(str[i]);
+            time = DateUtil.strToOffSetDateTime(str[i], "yyyy-MM-dd HH:mm:ss");
             leaveTime += end - time.getLong(ChronoField.MINUTE_OF_DAY);
         }
         return leaveTime > (end - start);

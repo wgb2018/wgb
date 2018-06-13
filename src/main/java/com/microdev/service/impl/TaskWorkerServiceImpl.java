@@ -89,11 +89,10 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         messageMapper.updateAllColumnById(message);
         TaskWorker taskWorker = taskWorkerMapper.findFirstById(message.getWorkerTaskId());
         if (taskWorker.getStatus() > 0) {
-            throw new BusinessException("任务状态不是新派发,无法接受任务");
+            return ResultDO.buildSuccess("任务状态不是新派发,无法接受任务");
         }
         if (taskWorker.getFromDate().isBefore(OffsetDateTime.now())) {
-            System.out.println ("now:"+OffsetDateTime.now()+"AAA:"+taskWorker.getFromDate());
-            throw new BusinessException("任务已过期，无法接受");
+            return ResultDO.buildSuccess("任务已过期，无法接受");
         }
         //TODO 人数判断
         TaskHrCompany taskHr = taskHrCompanyMapper.queryByTaskId(taskWorker.getTaskHrId());
@@ -282,6 +281,21 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         taskWorker.setCheckSign(status);
         taskWorkerMapper.updateAllColumnById(taskWorker);
         return null;
+    }
+
+    /**
+     * 查询小时工当前任务数量
+     * @param query
+     * @return
+     */
+    @Override
+    public int selectWorkerCurTaskCount(TaskWorkerQuery query) {
+
+        if (StringUtils.isEmpty(query.getWorkerId())) {
+            throw new ParamsException("参数不能为空");
+        }
+
+        return taskWorkerMapper.selectCurTasCount(query);
     }
 
 }
