@@ -194,7 +194,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
             havePayMoney += task.getHavePayMoney();
         }
         extra.put("shouldPayMoney",shouldPayMoney);
-        extra.put("havePayMoney",havePayMoney);*/
+        extra.put("havePayMoney",havePayMoney);
+        extra.put("paidPayMoney", Maths.sub(shouldPayMoney, havePayMoney));*/
         return ResultDO.buildSuccess(null,result,null,null);
 
     }
