@@ -38,6 +38,8 @@ public interface WorkerLogMapper extends BaseMapper<WorkLog> {
 
 	WorkLog selectUnreadInfoOne(@Param("taskWorkerId") String taskWorkerId,@Param("date") String date);
 
-	List<String> selectUnreadPunchCount(@Param("workerId") String workerId);
+	List<String> selectUnreadPunchCount(@Param ("workerId") String workerId);
 
+	@Update("update work_log set check_sign = 1 where task_worker_id = #{taskWorkerId} and DATE_FORMAT(create_time, '%Y/%m/%d') = #{date}")
+	int updateCheckSign(String taskWorkerId, String date);
 }

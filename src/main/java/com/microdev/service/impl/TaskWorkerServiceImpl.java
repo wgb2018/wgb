@@ -7,6 +7,7 @@ import com.microdev.common.ResultDO;
 import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
+import com.microdev.common.utils.Maths;
 import com.microdev.common.utils.StringKit;
 import com.microdev.converter.TaskWorkerConverter;
 import com.microdev.mapper.*;
@@ -240,6 +241,9 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         }else{
             list = taskWorkerMapper.findAllh(taskQueryDTO);
         }
+        HashMap<String,Object> extra = new HashMap<>();
+        Double shouldPayMoney = 0.0;
+        Double havePayMoney=0.0;
         for (TaskWorker t:list) {
             if(t.getToDate ().isAfter (OffsetDateTime.now ()) && t.getFromDate ().isBefore (OffsetDateTime.now ()) && t.getStatus () == 1){
                 t.setStatus (4);
@@ -250,8 +254,12 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
             t.setUser (userMapper.queryByUserId (t.getUserId ()));
             t.setHotel (companyMapper.selectById (t.getHotelId ()));
             t.setHrCompany (companyMapper.selectById (t.getHrCompanyId ()));
-
+            shouldPayMoney += t.getShouldPayMoney();
+            havePayMoney += t.getHavePayMoney();
         }
+        extra.put("shouldPayMoney",shouldPayMoney);
+        extra.put("havePayMoney",havePayMoney);
+        extra.put("paidPayMoney", Maths.sub(shouldPayMoney, havePayMoney));
         PageInfo<TaskWorker> pageInfo = new PageInfo<>(list);
         HashMap<String,Object> result = new HashMap<>();
         //设置获取到的总记录数total：
@@ -259,7 +267,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         //设置数据集合rows：
         result.put("result",pageInfo.getList());
         result.put("page",paginator.getPage());
-        return ResultDO.buildSuccess(result);
+        return ResultDO.buildSuccess(null,result,extra,null);
     }
 
 

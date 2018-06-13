@@ -245,8 +245,10 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         result.put("page", paginator.getPage());
         extra.put("shouldPayMoney", shouldPayMoney);
         extra.put("havePayMoney", havePayMoney);
+        extra.put("paidPayMoney", Maths.sub(shouldPayMoney, havePayMoney));
         extra.put("workersShouldPay", workersShouldPay);
         extra.put("workersHavePay", workersHavePay);
+        extra.put("workerPaidPay", Maths.sub(workersShouldPay, workersHavePay));
         return ResultDO.buildSuccess(null, result, extra, null);
     }
 
