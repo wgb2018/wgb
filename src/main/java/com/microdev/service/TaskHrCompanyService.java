@@ -58,28 +58,6 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
     ResultDO hrApplyChangeWorker(Map<String, Object> map);
 
     /**
-     * 统计人力公司待处理未读数据
-     * @param hrCompanyId
-     * @return
-     */
-    int selectUnreadCount(String hrCompanyId);
-
-    /**
-     * 统计人力已完成未读数据
-     * @param hrCompanyId
-     * @return
-     */
-    int selectCompleteCount(String hrCompanyId);
-
-    /**
-     * 更新人力任务查看标识
-     * @param taskHrCompanyId
-     * @param status            1未完成已读 3已完成已读
-     * @return
-     */
-    String updateTaskHrStatus(String taskHrCompanyId, Integer status);
-
-    /**
      * PC端人力接受任务
      * @param id
      * @return
@@ -138,4 +116,11 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
      * @return
      */
     ResultDO hrAgreeWorkerRefuseAndPost(String messageId, String workerId);
+
+    /**
+     * 查询人力当前任务数量
+     * @param applyParamDTO
+     * @return
+     */
+    int selectHrCurTaskCount(ApplyParamDTO applyParamDTO);
 }

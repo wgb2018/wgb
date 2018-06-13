@@ -288,16 +288,7 @@ public class UserController {
 
     }
 
-    /**
-     * 查询未读的数量
-     * @param id
-     * @param type
-     * @return
-     */
-    @GetMapping("/user/{id}/amount/{type}")
-    public ResultDO selectUnreadAmount(@PathVariable String id,@PathVariable String type) {
-        return ResultDO.buildSuccess(userService.selectUnreadAmount(id, type));
-    }
+
     /**
      * 邀请注册
      */

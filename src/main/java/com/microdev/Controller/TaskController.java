@@ -69,17 +69,6 @@ public class TaskController {
     }
 
     /**
-     * 更新任务查看状态
-     * @param taskId
-     * @param status
-     * @return
-     */
-    @GetMapping("/tasks/{taskId}/update/{status}")
-    public ResultDO updateTaskStatus(@PathVariable String taskId,@PathVariable Integer status) {
-        return ResultDO.buildSuccess(taskService.updateTaskStatus(taskId, status));
-    }
-
-    /**
      * 酒店同意人力拒绝任务并再次派发
      * @param createTaskRequest
      * @return

@@ -75,18 +75,6 @@ public class TaskHrCompanyController {
     }
 
     /**
-     * 将任务更新为已查看
-     * @param taskHrCompanyId
-     * @param status
-     * @return
-     */
-    @GetMapping("/hr-tasks/{taskHrCompanyId}/update/{status}")
-    public ResultDO updateTaskHrStatus(@PathVariable String taskHrCompanyId,@PathVariable Integer status) {
-
-        return ResultDO.buildSuccess(taskHrCompanyService.updateTaskHrStatus(taskHrCompanyId, status));
-    }
-
-    /**
      * PC端人力接受任务
      */
     @PostMapping("/hr-tasks/accept/pc")

@@ -243,51 +243,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
     }
 
     /**
-     * 查询酒店未读任务
-     * @param hotelId
-     * @return
-     */
-    @Override
-    public int selectUnReadAmount(String hotelId) {
-        if (StringUtils.isEmpty(hotelId)) {
-            throw new ParamsException("参数不能为空");
-        }
-        return taskMapper.selectUnReadCount(hotelId);
-    }
-
-    /**
-     * 查询已完成任务数量
-     * @param hotelId
-     * @return
-     */
-    @Override
-    public int selectCompleteAmount(String hotelId) {
-        if (StringUtils.isEmpty(hotelId)) {
-            throw new ParamsException("参数不能为空");
-        }
-        return taskMapper.selectCompleteCount(hotelId);
-    }
-
-    /**
-     * 更新任务的状态
-     * @param taskId        任务id
-     * @param status        1未完成已读3已完成已读
-     */
-    @Override
-    public String updateTaskStatus(String taskId, Integer status) {
-        if (StringUtils.isEmpty(taskId) || status == null) {
-            throw new ParamsException("参数错误");
-        }
-        Task task = taskMapper.selectById(taskId);
-        if (task == null) {
-            throw new ParamsException("查询不到酒店任务信息");
-        }
-        task.setCheckSign(status);
-        taskMapper.updateAllColumnById(task);
-        return "成功";
-    }
-
-    /**
      * 酒店再次派发任务
      * @param request
      * @return
@@ -397,6 +352,23 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         String content = StringKit.templateReplace(inf.getContent (), map);
         informService.sendInformInfo (3,2,content,message.getHrCompanyId (),"拒绝任务成功");
         return ResultDO.buildSuccess("任务发布成功");
+    }
+
+    /**
+     * 查询当前酒店任务数量
+     * @param applyParamDTO
+     * @return
+     */
+    @Override
+    public int selectCurHotelTaskCount(ApplyParamDTO applyParamDTO) {
+        if (StringUtils.isEmpty(applyParamDTO.getId()) || StringUtils.isEmpty(applyParamDTO.getRoleType())) {
+            throw new ParamsException("参数错误");
+        }
+        TaskQueryDTO queryDTO = new TaskQueryDTO();
+        queryDTO.setHotelId(applyParamDTO.getId());
+        queryDTO.setStatus(0);
+
+        return taskMapper.queryHotelCurTaskCount(queryDTO);
     }
 
     //循环添加人力资源任务

@@ -144,13 +144,67 @@
         WHERE th.id = #{hrCompanyId}
     </select>
 
-    <select id="selectUnreadCount" parameterType="java.lang.String" resultType="java.lang.Integer">
-        SELECT COUNT(1) FROM task_hr_company WHERE hr_company_id= #{hrCompanyId} AND check_sign = 0
-    </select>
+        <select id="queryHrCurTaskCount" parameterType="com.microdev.param.TaskHrQueryDTO"
+                resultType="java.lang.Integer">
+            select count(1)
+            from task_hr_company
+            <where>
+                <if test="hrCompanyId != null and hrCompanyId != ''">
+                    hr_company_id = #{hrCompanyId}
+                </if>
+                <if test="taskId != null and taskId != ''">
+                    task_id = #{taskId}
+                </if>
+                <if test="hotelId != null and hotelId != ''">
+                    hotel_id = #{hotelId}
+                </if>
+                <if test="taskTypeText != null and taskTypeText != ''">
+                    and task_type_text like '%${taskTypeText}%'
+                </if>
+                <if test="fromDate != null">
+                    and to_date &gt;= #{fromDate,jdbcType=TIMESTAMP}
+                </if>
+                <if test="payUp != null">
+                    and hourly_pay &lt;= #{payUp}
+                </if>
+                <if test="payDown != null">
+                    and hourly_pay >= #{payDown}
+                </if>
+                <if test="toDate != null">
+                    and from_date &lt;= #{toDate,jdbcType=TIMESTAMP}
+                </if>
 
-    <select id="selectCompleteCount" parameterType="java.lang.String" resultType="java.lang.Integer">
-        SELECT COUNT(1) FROM task_hr_company WHERE hr_company_id= #{hrCompanyId}
-        AND CURDATE() > to_date AND check_sign <![CDATA[<>]]> 3
-    </select>
+                <if test="hrCompanyName != null and hrCompanyName != ''">
+                    and hr_company_name like '%${hrCompanyName}%'
+                </if>
+                <if test="payStatus == 1">
+                    and have_pay_money = 0
+                </if>
+                <if test="payStatus == 2">
+                    and have_pay_money &gt;= 0 and should_pay_money != have_pay_money
+                </if>
+                <if test="payStatus == 3">
+                    and have_pay_money &gt;= 0 and should_pay_money = have_pay_money
+                </if>
+                <if test="status !=null and status !=0  and status !=6 and status !=7 and status !=8 and status !=9">
+                    and status = #{status}
+                </if>
+                <if test="status == 0">
+                    and status in (1,2,4,5) and to_date &gt; now()
+                </if>
+                <if test="status == 9">
+                    and ((status = 5 and to_date &gt; now()) or status = 3)
+                </if>
+                <if test="status == 6">
+                    and status = 5 and and to_date &gt; now() and from_date &lt; now()
+                </if>
+                <if test="status == 8">
+                    and status in (4,5) and to_date &gt; now()
+                </if>
+                <if test="status == 7">
+                    and status = 5 and to_date &lt; now()
+                </if>
+            </where>
 
+        </select>
 </mapper>

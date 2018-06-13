@@ -162,13 +162,56 @@
         WHERE tc.task_id = #{taskId}
     </select>
 
-    <select id="selectUnReadCount" parameterType="java.lang.String" resultType="java.lang.Integer">
-         select count(1) from task where hotel_id = #{hotelId} and check_sign = 0
-    </select>
+    <select id="queryHotelCurTaskCount" parameterType="com.microdev.param.TaskQueryDTO" resultType="java.lang.Integer">
+        select count(1)
+        from task
+        <where>
+            <if test="taskTypeText != null and taskTypeText != ''">
+                task_type_text = #{taskTypeText}
+            </if>
+            <if test="hotelId != null and hotelId != ''">
+                and hotel_id = #{hotelId}
+            </if>
+            <if test="startTime != null">
+                and to_date &gt;= #{startTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="endTime != null">
+                and from_date &lt;= #{endTime,jdbcType=TIMESTAMP}
+            </if>
 
-    <select id="selectCompleteCount" parameterType="java.lang.String" resultType="java.lang.Integer">
-      SELECT COUNT(1) FROM task
-      WHERE hotel_id = #{hotelId} AND CURDATE() > to_date and check_sign <![CDATA[<>]]> 3
+            <if test="hotelName != null and hotelName != ''">
+                and hotel_name like '%${hotelName}%'
+            </if>
+            <if test="payUp != null">
+                and hourly_pay &lt;= #{payUp}
+            </if>
+            <if test="payDown != null">
+                and hourly_pay &gt;= #{payDown}
+            </if>
+            <if test="payStatus == 1">
+                and have_pay_money = 0
+            </if>
+            <if test="payStatus == 2">
+                and have_pay_money &gt;= 0 and should_pay_money != have_pay_money
+            </if>
+            <if test="payStatus == 3">
+                and have_pay_money &gt;= 0 and should_pay_money = have_pay_money
+            </if>
+            <if test="status == 0">
+                and to_date &gt; now()
+            </if>
+            <if test="status == 1 || status == 2 || status == 3">
+                and to_date &gt; now() and status = #{status}
+            </if>
+            <if test="status == 4">
+                and from_date &gt; now() and status = 4
+            </if>
+            <if test="status == 5">
+                and status = 4 and now() between from_date and to_date
+            </if>
+            <if test="status == 6">
+                and to_date &lt;= now()
+            </if>
+        </where>
     </select>
-
 </mapper>

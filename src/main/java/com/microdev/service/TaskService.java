@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.model.Task;
+import com.microdev.param.ApplyParamDTO;
 import com.microdev.param.CreateTaskRequest;
 import com.microdev.param.HotelPayHrRequest;
 import com.microdev.param.TaskQueryDTO;
@@ -27,27 +28,6 @@ public interface TaskService extends IService<Task> {
     ResultDO hotelPayHr(HotelPayHrRequest payHrRequest);
 
     /**
-     * 查询酒店未读任务
-     * @param hotelId
-     * @return
-     */
-    int selectUnReadAmount(String hotelId);
-
-    /**
-     * 查询已完成任务数量
-     * @param hotelId
-     * @return
-     */
-    int selectCompleteAmount(String hotelId);
-
-    /**
-     * 更新任务的状态
-     * @param taskId        任务id
-     * @param status        1未完成已读3已完成已读
-     */
-    String updateTaskStatus(String taskId, Integer status);
-
-    /**
      * 酒店再次派发任务
      * @param request
      * @return
@@ -60,4 +40,11 @@ public interface TaskService extends IService<Task> {
      * @return
      */
     ResultDO hotelAgreeAndSendTask(CreateTaskRequest request);
+
+    /**
+     * 查询当前酒店任务数量
+     * @param applyParamDTO
+     * @return
+     */
+    int selectCurHotelTaskCount(ApplyParamDTO applyParamDTO);
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.model.TaskWorker;
+import com.microdev.param.ApplyParamDTO;
 import com.microdev.param.RefusedTaskRequest;
 import com.microdev.param.TaskWorkerQuery;
 
@@ -32,20 +33,6 @@ public interface TaskWorkerService extends IService<TaskWorker> {
     ResultDO pagesTaskWorkers(Paginator paginator, TaskWorkerQuery query);
 
     /**
-     * 统计未读当前任务数量
-     * @param userId
-     * @return
-     */
-    int selectUnreadCount(String userId);
-
-    /**
-     * 统计未读已完成任务数量
-     * @param userId
-     * @return
-     */
-    int selectCompleteCount(String userId);
-
-    /**
      * 更新查看标识
      * @param taskWorkerId
      * @param status        状态1未完成已读3已完成已读
@@ -55,8 +42,8 @@ public interface TaskWorkerService extends IService<TaskWorker> {
 
     /**
      * 查询小时工当前任务数量
-     * @param query
+     * @param applyParamDTO
      * @return
      */
-    int selectWorkerCurTaskCount(TaskWorkerQuery query);
+    int selectWorkerCurTaskCount(ApplyParamDTO applyParamDTO);
 }

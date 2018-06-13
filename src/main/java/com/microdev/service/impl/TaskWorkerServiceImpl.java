@@ -11,6 +11,7 @@ import com.microdev.common.utils.StringKit;
 import com.microdev.converter.TaskWorkerConverter;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
+import com.microdev.param.ApplyParamDTO;
 import com.microdev.param.RefusedTaskRequest;
 import com.microdev.param.TaskWorkerQuery;
 import com.microdev.service.InformService;
@@ -237,31 +238,6 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         return ResultDO.buildSuccess(result);
     }
 
-    /**
-     * 统计未读当前任务数量
-     * @param userId
-     * @return
-     */
-    @Override
-    public int selectUnreadCount(String userId) {
-        if (StringUtils.isEmpty(userId)) {
-            throw new ParamsException("参数不能为空");
-        }
-        return taskWorkerMapper.selectUnreadCount(userId);
-    }
-
-    /**
-     * 统计未读已完成任务数量
-     * @param userId
-     * @return
-     */
-    @Override
-    public int selectCompleteCount(String userId) {
-        if (StringUtils.isEmpty(userId)) {
-            throw new ParamsException("参数不能为空");
-        }
-        return taskWorkerMapper.selectCompleteCount(userId);
-    }
 
     /**
      * 更新查看标识
@@ -285,16 +261,18 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
 
     /**
      * 查询小时工当前任务数量
-     * @param query
+     * @param applyParamDTO
      * @return
      */
     @Override
-    public int selectWorkerCurTaskCount(TaskWorkerQuery query) {
+    public int selectWorkerCurTaskCount(ApplyParamDTO applyParamDTO) {
 
-        if (StringUtils.isEmpty(query.getWorkerId())) {
-            throw new ParamsException("参数不能为空");
+        if (StringUtils.isEmpty(applyParamDTO.getId()) || StringUtils.isEmpty(applyParamDTO.getRoleType())) {
+            return 0;
         }
-
+        TaskWorkerQuery query = new TaskWorkerQuery();
+        query.setWorkerId(applyParamDTO.getId());
+        query.setTaskStatus(1);
         return taskWorkerMapper.selectCurTasCount(query);
     }
 

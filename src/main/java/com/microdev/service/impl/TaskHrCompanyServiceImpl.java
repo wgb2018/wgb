@@ -23,10 +23,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.sql.ParameterMetaData;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Transactional
@@ -554,56 +554,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
     }
 
     /**
-     * 统计人力公司待处理未读数据
-     *
-     * @param hrCompanyId
-     * @return
-     */
-    @Override
-    public int selectUnreadCount(String hrCompanyId) {
-        if (StringUtils.isEmpty(hrCompanyId)) {
-            throw new ParamsException("参数不能为空");
-        }
-        return taskHrCompanyMapper.selectUnreadCount(hrCompanyId);
-    }
-
-    /**
-     * 统计人力已完成未读数据
-     *
-     * @param hrCompanyId
-     * @return
-     */
-    @Override
-    public int selectCompleteCount(String hrCompanyId) {
-        if (StringUtils.isEmpty(hrCompanyId)) {
-            throw new ParamsException("参数不能为空");
-        }
-
-        return taskHrCompanyMapper.selectCompleteCount(hrCompanyId);
-    }
-
-    /**
-     * 更新人力任务查看标识
-     *
-     * @param taskHrCompanyId
-     * @param status          1未完成已读 3已完成已读
-     * @return
-     */
-    @Override
-    public String updateTaskHrStatus(String taskHrCompanyId, Integer status) {
-        if (StringUtils.isEmpty(taskHrCompanyId) || status == null) {
-            throw new ParamsException("参数错误");
-        }
-        TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(taskHrCompanyId);
-        if (taskHrCompany == null) {
-            throw new ParamsException("查询不到人力任务信息");
-        }
-        taskHrCompany.setCheckSign(status);
-        taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
-        return "成功";
-    }
-
-    /**
      * PC端人力接受任务
      *
      * @param id
@@ -1053,5 +1003,21 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         messageService.hrDistributeTask(list, taskHrCompany.getHrCompanyId(), taskHrCompany.getHrCompanyName(), "workTaskMessage", task.getPid(), taskHrCompany.getPid());
         return ResultDO.buildSuccess("派发成功");
 
+    }
+
+    /**
+     * 查询人力当前任务数量
+     * @param applyParamDTO
+     * @return
+     */
+    @Override
+    public int selectHrCurTaskCount(ApplyParamDTO applyParamDTO) {
+        if (StringUtils.isEmpty(applyParamDTO.getId()) || StringUtils.isEmpty(applyParamDTO.getRoleType())) {
+            return 0;
+        }
+        TaskHrQueryDTO queryDTO = new TaskHrQueryDTO();
+        queryDTO.setHrCompanyId(applyParamDTO.getId());
+        queryDTO.setStatus(8);
+        return taskHrCompanyMapper.queryHrCurTaskCount(queryDTO);
     }
 }
