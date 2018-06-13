@@ -1015,7 +1015,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
      */
     @Override
     public int selectHrCurTaskCount(ApplyParamDTO applyParamDTO) {
-        if (StringUtils.isEmpty(applyParamDTO.getId()) || StringUtils.isEmpty(applyParamDTO.getRoleType())) {
+        if (StringUtils.isEmpty(applyParamDTO.getId())) {
             return 0;
         }
         TaskHrQueryDTO queryDTO = new TaskHrQueryDTO();
