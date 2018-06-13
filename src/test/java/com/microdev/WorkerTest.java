@@ -89,17 +89,6 @@ public class WorkerTest {
     }
 
     @Test
-    public void elevenTest() {
-        String userId = "3bcac98d-e07e-4df2-ad94-41c30df3787b";
-        PageRequest page = new PageRequest();
-        page.setId(userId);
-        page.setPage(1);
-        page.setPageSize(5);
-        PageInfo<SupplementResponse> p = workerService.selectNoPunchPageInfo(page);
-        System.out.println(p.toString());
-    }
-
-    @Test
     public void twelveTest() {
         WorkerSupplementRequest info = new WorkerSupplementRequest();
         info.setReason("测试补签");

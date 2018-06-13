@@ -4,7 +4,7 @@
     <sql id="TaskWorker_Query_List">
     id as pid, create_time, deleted, modify_time,
     confirmed_date, have_pay_money, minutes, no_promise, refused_reason, repast_times,
-    settled, settled_date, should_pay_money, status, worker_id, task_hr_id, user_id, user_name,hourly_pay,hr_company_name,hotel_name, check_sign,
+    settled, settled_date, should_pay_money, status, worker_id, task_hr_id, user_id, user_name,hourly_pay,hr_company_name,hotel_name,
         hotel_id,from_date,to_date,day_start_time,day_end_time,task_type_code,task_type_text,task_content,hr_company_id,hotel_task_id
 </sql>
     <select id="findFirstById" resultType="com.microdev.model.TaskWorker" parameterType="java.lang.String">
@@ -40,9 +40,7 @@
             <if test="havePayMoney != null">
                 have_pay_money = #{havePayMoney},
             </if>
-            <if test="checkSign != null">
-                check_sign = #{checkSign},
-            </if>
+
         </set>
         where id = #{pid}
     </update>
@@ -102,7 +100,7 @@
         select
         t.id as pid, t.create_time, t.deleted, t.modify_time,
         t.confirmed_date, t.have_pay_money, t.minutes, t.no_promise, t.refused_reason, t.repast_times,
-        t.settled, t.settled_date, t.should_pay_money, t.status, t.worker_id, t.task_hr_id, t.user_id, t.user_name,t.hourly_pay,t.hr_company_name,t.hotel_name, t.check_sign,
+        t.settled, t.settled_date, t.should_pay_money, t.status, t.worker_id, t.task_hr_id, t.user_id, t.user_name,t.hourly_pay,t.hr_company_name,t.hotel_name,
         t.hotel_id,t.from_date,t.to_date,t.day_start_time,t.day_end_time,t.task_type_code,t.task_type_text,t.task_content,t.hr_company_id,t.hotel_task_id
         from task_worker t left join company c on t.hr_company_id = c.id
         <where>
@@ -233,7 +231,7 @@
         select
         t.id as pid, t.create_time, t.deleted, t.modify_time,
         t.confirmed_date, t.have_pay_money, t.minutes, t.no_promise, t.refused_reason, t.repast_times,
-        t.settled, t.settled_date, t.should_pay_money, t.status, t.worker_id, t.task_hr_id, t.user_id, t.user_name,t.hourly_pay,t.hr_company_name,t.hotel_name, t.check_sign,
+        t.settled, t.settled_date, t.should_pay_money, t.status, t.worker_id, t.task_hr_id, t.user_id, t.user_name,t.hourly_pay,t.hr_company_name,t.hotel_name,
         t.hotel_id,t.from_date,t.to_date,t.day_start_time,t.day_end_time,t.task_type_code,t.task_type_text,t.task_content,t.hr_company_id,t.hotel_task_id
         from task_worker t left join company c on t.hotel_id = c.id
         <where>

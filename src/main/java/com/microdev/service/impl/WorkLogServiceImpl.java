@@ -13,19 +13,4 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class WorkLogServiceImpl extends ServiceImpl<WorkerLogMapper,WorkLog> implements WorkLogService {
 
-
-    /**
-     * 更新查看标识
-     * @param taskWorkerId
-     * @param date
-     * @return
-     */
-    @Override
-    public String updateCheckSign(String taskWorkerId, String date) {
-        if (StringUtils.isEmpty(taskWorkerId) || StringUtils.isEmpty(date)) {
-            throw new ParamsException("参数错误");
-        }
-        baseMapper.updateCheckSign(taskWorkerId, date);
-        return "成功";
-    }
 }
