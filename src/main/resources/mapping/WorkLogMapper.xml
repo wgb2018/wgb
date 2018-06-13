@@ -4,7 +4,7 @@
     <sql id="WorkLog_Column_List">
         id as pid, create_time, deleted, modify_time,
         from_date, minutes, punch_date, repast_times, task_worker_id,
-        to_date, task_id,status,employer_confirm_status,check_sign
+        to_date, task_id,status,employer_confirm_status
     </sql>
     <resultMap type="com.microdev.param.PunchDTO" id="countPunchMap">
         <result column="startTime" jdbcType="TIMESTAMP" property="startTime"/>
@@ -165,7 +165,11 @@ SELECT from_date, to_date,STATUS ,employer_confirm_status,create_time,id FROM 	w
 	</select>
 
     <select id = "selectUnreadPunchCount" resultType="java.lang.String">
-        SELECT id FROM work_log WHERE to_date IS NULL AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) >= DATE(create_time) GROUP BY DATE_FORMAT(create_time,'%Y.%m.%d')
+        SELECT id FROM work_log WHERE to_date IS NULL AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <![CDATA[<=]]> DATE(create_time) AND
+task_worker_id IN (
+SELECT id FROM task_worker WHERE worker_id = #{workerId}
+)
+GROUP BY DATE_FORMAT(create_time,'%Y.%m.%d')
     </select>
 
     <select id="selectUnreadInfoOne" resultType="com.microdev.model.WorkLog">

@@ -150,17 +150,6 @@ public class WorkerController {
     }
 
     /**
-     * 将补签信息更新为已读
-     * @param taskWorkerId
-     * @param date
-     * @return
-     */
-    @GetMapping("/workers/{taskWorkerId}/updateCheckSign/{date}")
-    public ResultDO updateWorkerLogCheckSign(@PathVariable String taskWorkerId,@PathVariable String date) {
-
-        return ResultDO.buildSuccess(workLogService.updateCheckSign(taskWorkerId, date));
-    }
-    /**
      * 分页查询小时工
      */
     @PostMapping("/workers/search")

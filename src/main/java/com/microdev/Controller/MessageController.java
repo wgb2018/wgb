@@ -56,19 +56,6 @@ public class MessageController {
 
 
     /**
-     * 手机端首页展示未读数量
-     * @param id
-     * @param applyType
-     * @return
-     */
-    @GetMapping("/messages/{id}/amount/{applyType}")
-    public ResultDO getMessageAmount(@PathVariable String id, @PathVariable String applyType) {
-
-        return ResultDO.buildSuccess(messageService.selectUnReadCount(id, applyType));
-    }
-
-
-    /**
      *分页查询待处理事务
      * @return
      */

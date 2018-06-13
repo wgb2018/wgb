@@ -51,7 +51,6 @@ public abstract class BaseEntity implements Serializable {
         this.pid = pid;
     }
 
-
     public Boolean getDeleted() {
         return deleted;
     }
