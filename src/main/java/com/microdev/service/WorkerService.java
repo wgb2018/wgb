@@ -63,20 +63,21 @@ public interface WorkerService extends IService<Worker> {
      * @return
      */
     String applyCancelTask(WorkerSupplementRequest info);
-    /**
+
+    /***
      * 查询补签的记录
-     * @param page
+     * @param applyParamDTO
+     * @param paginator
      * @return
      */
-    PageInfo<SupplementResponse> selectNoPunchPageInfo(PageRequest page);
+    Map<String, Object> selectNoPunchPageInfo(ApplyParamDTO applyParamDTO, Paginator paginator);
     /**
      * 查询补签记录详情
      * @param taskWorkerId
      * @param date
-     * @param checkSign
      * @return
      */
-    SupplementResponse selectNoPunchDetails(String taskWorkerId, String date, String checkSign);
+    SupplementResponse selectNoPunchDetails(String taskWorkerId, String date);
     /**
      * 小时工补签
      * @param info

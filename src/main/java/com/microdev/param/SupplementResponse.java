@@ -22,4 +22,5 @@ public class SupplementResponse {
 	private String leaderMobile;
 	private String address;
 	private String workerId;
+	private String area;
 }

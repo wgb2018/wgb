@@ -67,17 +67,6 @@ public class MessageController {
         return ResultDO.buildSuccess(messageService.selectUnReadCount(id, applyType));
     }
 
-    /**
-     * 查询消息
-     * @param request
-     * @return
-     */
-    @PostMapping("/messages/select/messsageInfo")
-    public ResultDO getMessageInfo(@RequestBody PageRequest request) {
-
-        return ResultDO.buildSuccess(messageService.selectMessage(request.getId(), request.getRole(), request.getType(), request.getPage(), request.getPage()));
-    }
-
 
     /**
      *分页查询待处理事务

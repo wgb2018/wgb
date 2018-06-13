@@ -14,11 +14,11 @@ public class PageRequest {
 	/**
 	 * 页码
 	 */
-	private Integer page;
+	private Integer page = 1;
 	/**
 	 * 每页页数
 	 */
-	private Integer pageSize;
+	private Integer pageSize = 10;
 	/**
 	 * workerId
 	 */
