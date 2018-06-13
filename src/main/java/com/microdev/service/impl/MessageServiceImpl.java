@@ -724,8 +724,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 throw new ParamsException("用户类型错误");
             }
         }
-        if (response != null && response.getAge() < 0) response.setAge(0);
-        response.setMessageTextType(transMessageType(response.getMessageType()));
+        if (response != null) {
+            if (response.getAge() < 0) response.setAge(0);
+            response.setMessageTextType(transMessageType(response.getMessageType()));
+        }
         return response;
     }
 
