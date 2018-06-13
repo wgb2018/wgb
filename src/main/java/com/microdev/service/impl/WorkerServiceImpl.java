@@ -720,12 +720,12 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 workList = new ArrayList<>();
                 OffsetDateTime time = param.getCreateTime();
                 String[] currentStartTime = param.getFromDate().split(",");
-                String[] currentEndTime = param.getToDate().split(",");
+                String[] currentEndTime = null;
+                if (StringUtils.isEmpty(param.getToDate())) {
+                    currentEndTime = new String[0];
+                }
                 String[] confirmStatus = param.getEmployerConfirmStatus().split(",");
-                hotelStatus = new HashMap<>();
-                sysStatus = new HashMap<>();
-                initMapStatus(hotelStatus, 4);
-                initMapStatus(sysStatus, 5);
+
 
                 //如果当天没有打卡记录
                 while (startDay.getDayOfYear() != time.getDayOfYear() && startDay.getLong(ChronoField.EPOCH_DAY) <= nowDate.getLong(ChronoField.EPOCH_DAY)) {
@@ -776,6 +776,10 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     hotelStatus = null;
                     sysStatus = null;
                 }
+                hotelStatus = new HashMap<>();
+                sysStatus = new HashMap<>();
+                initMapStatus(hotelStatus, 4);
+                initMapStatus(sysStatus, 5);
                 //有打卡记录
                 expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
                 if (expire) {

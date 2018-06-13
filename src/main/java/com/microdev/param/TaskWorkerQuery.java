@@ -41,4 +41,6 @@ public class TaskWorkerQuery {
 
     private OffsetDateTime toDate;
 
+    private String hotelName;
+
 }

@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -214,13 +215,36 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
     @Override
     public ResultDO pagesTaskWorkers(Paginator paginator, TaskWorkerQuery taskQueryDTO) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
-        //查询数据集合
-        List<TaskWorker> list = taskWorkerMapper.findAll(taskQueryDTO);
-        for (TaskWorker t:list) {
-            if(t.getToDate ().isAfter (OffsetDateTime.now ()) && t.getFromDate ().isBefore (OffsetDateTime.now ())){
-                t.setStatus (3);
+        String date = taskQueryDTO.getOfDate();
+        if (date != null) {
+            Integer year = Integer.parseInt(date.split("-")[0]);
+            Integer month = Integer.parseInt(date.split("-")[1]);
+            if (month == 12) {
+                taskQueryDTO.setFromDate(OffsetDateTime.of
+                        (year, 12, 1, 0, 0, 0, 0,
+                                ZoneOffset.UTC));
+                taskQueryDTO.setToDate(OffsetDateTime.of
+                        (year, 1, 1, 0, 0, 0, 0,
+                                ZoneOffset.UTC));
+            } else {
+                taskQueryDTO.setFromDate(OffsetDateTime.of
+                        (year, month, 1, 0, 0, 0, 0, ZoneOffset.UTC));
+                taskQueryDTO.setToDate(OffsetDateTime.of
+                        (year, month + 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
             }
-            if(t.getToDate ().isBefore (OffsetDateTime.now ())){
+        }
+        //查询数据集合
+        List<TaskWorker> list = null;
+        if(taskQueryDTO.getHotelName () == null || taskQueryDTO.getHotelName ().equals ("")){
+            list = taskWorkerMapper.findAll(taskQueryDTO);
+        }else{
+            list = taskWorkerMapper.findAllh(taskQueryDTO);
+        }
+        for (TaskWorker t:list) {
+            if(t.getToDate ().isAfter (OffsetDateTime.now ()) && t.getFromDate ().isBefore (OffsetDateTime.now ()) && t.getStatus () == 1){
+                t.setStatus (4);
+            }
+            if(t.getToDate ().isBefore (OffsetDateTime.now ()) && t.getStatus () == 1 ){
                 t.setStatus (4);
             }
             t.setUser (userMapper.queryByUserId (t.getUserId ()));

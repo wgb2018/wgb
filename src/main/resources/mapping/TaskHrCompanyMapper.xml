@@ -69,8 +69,8 @@
                 and t.from_date &lt;= #{toDate,jdbcType=TIMESTAMP}
             </if>
 
-            <if test="hrCompanyName != null and hrCompanyName != ''">
-                and c.hr_company_name like '%${hrCompanyName}%'
+            <if test="hotelName != null and hotelName != ''">
+                and c.name like '%${hotelName}%'
             </if>
             <if test="payStatus == 1">
                 and t.have_pay_money = 0

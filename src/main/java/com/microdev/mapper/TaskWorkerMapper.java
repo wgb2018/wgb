@@ -35,6 +35,8 @@ public interface TaskWorkerMapper extends BaseMapper<TaskWorker> {
 
     List<TaskWorker> findAll(TaskWorkerQuery taskQueryDTO);
 
+    List<TaskWorker> findAllh(TaskWorkerQuery taskQueryDTO);
+
     List<TaskWorker> findByHrTaskId(String HrTaskId);
 
     List<TaskWorker> queryHrCompanyBill(BillRequest request);

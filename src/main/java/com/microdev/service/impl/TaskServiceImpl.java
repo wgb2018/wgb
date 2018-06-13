@@ -363,7 +363,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
      */
     @Override
     public int selectCurHotelTaskCount(ApplyParamDTO applyParamDTO) {
-        if (StringUtils.isEmpty(applyParamDTO.getId()) || StringUtils.isEmpty(applyParamDTO.getRoleType())) {
+        if (StringUtils.isEmpty(applyParamDTO.getId())) {
             throw new ParamsException("参数错误");
         }
         TaskQueryDTO queryDTO = new TaskQueryDTO();
