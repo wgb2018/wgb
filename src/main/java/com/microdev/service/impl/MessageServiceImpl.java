@@ -368,7 +368,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             param.put("notice", informService.selectCountByParam(map));
 
             //查询补签数量
-            List<Integer> list = workerLogMapper.selectUnreadPunchCount();
+            List<String> list = workerLogMapper.selectUnreadPunchCount();
             if (list == null) {
                 param.put("supplement", 0);
             } else {
@@ -656,7 +656,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         }
         MessageDetailsResponse response = null;
         //根据消息id和类型查询待处理信息
-        if ("12".equals(messagetype)) {
+        if ("12".equals(type)) {
 
             response = messageMapper.selectWorkerApply(messageId);
             response.setOriginator(response.getName());
@@ -738,6 +738,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      */
     @Override
     public AwaitTaskResponse selectAwaitTaskDetails(String messageId, String messagetype, String type) {
+        System.out.println("type=" + type + ";messagetype=" + messagetype);
         if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(messagetype) || StringUtils.isEmpty(type)) {
             throw new ParamsException("参数错误");
         }
