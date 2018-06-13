@@ -718,7 +718,6 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 String[] confirmStatus = param.getEmployerConfirmStatus().split(",");
                 
 
-
                 //如果当天没有打卡记录
                 while (startDay.getDayOfYear() != time.getDayOfYear() && startDay.getLong(ChronoField.EPOCH_DAY) <= nowDate.getLong(ChronoField.EPOCH_DAY)) {
                     expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
@@ -733,6 +732,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     if (minutes == 0) {
                         workLog = new PunchInfo();
                         sysStatus.put("stay", 1);
+                        workLog = new PunchInfo();
+                        workLog.setEndTime("--");
+                        workLog.setStartTime("--");
                         workList.add(workLog);
                     } else {
                         //请假时间小于上班时间

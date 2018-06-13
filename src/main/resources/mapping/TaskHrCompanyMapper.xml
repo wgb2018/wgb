@@ -111,7 +111,7 @@
         </if>
     </select>
     <select id="queryHrCompanyBill" resultType="com.microdev.model.TaskHrCompany" parameterType="com.microdev.param.BillRequest">
-        select  sum(should_pay_money) as should_pay_money,sum(have_pay_money) as have_pay_money, sum(minutes) as minutes,
+        select  sum(should_pay_money) as should_pay_money,sum(have_pay_money) as have_pay_money, sum(minutes) as minutes,sum(should_pay_money) - sum(have_pay_money) as paidPayMoney,
         hotel_id as hotelId,hotel_name as hotelName from task_hr_company
         where hr_company_id = #{id} group by hotel_id,hotel_name
         <if test = "name != null and name != ''">

@@ -27,13 +27,9 @@
       </where>
     </select>
 
-    <select id="selectInfromByParam" parameterType="java.util.Map" resultType="java.util.Map">
+    <select id="selectInfromByParam" parameterType="java.util.Map" resultType="com.microdev.param.NoticeResponse">
         SELECT
-        title,CASE WHEN
-        DATE_FORMAT(create_time,'%Y-%m-%d') = CURDATE() THEN '今天' WHEN
-        DATE_FORMAT(create_time,'%Y-%m-%d') = DATE_SUB(CURDATE(), INTERVAL 1
-        DAY) THEN '昨天' ELSE DATE_FORMAT(create_time,'%m-%d') END AS
-        dateinfo,content, id AS pid, DATE_FORMAT(create_time,'%H:%i') AS timeinfo
+        id as pid,create_time,content,title,status
         FROM inform
         <where>
             <if test="sendType != null">

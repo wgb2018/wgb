@@ -151,7 +151,7 @@
     <select id="selectUserPunchDetail" parameterType="java.lang.String"
             resultType="com.microdev.param.WorkerOneDayInfo">
 		SELECT GROUP_CONCAT( DATE_FORMAT(m.from_date, '%H:%i') ORDER BY m.create_time ASC ) AS fromDate,
-GROUP_CONCAT( DATE_FORMAT( m.to_date, '%H:%i') ORDER BY m.create_time ASC ) AS toDate,
+GROUP_CONCAT( IFNULL(DATE_FORMAT( m.to_date, '%H:%i'),'') ORDER BY m.create_time ASC ) AS toDate,
 GROUP_CONCAT( IFNULL(m.STATUS, 0 ) ) AS STATUS,
 GROUP_CONCAT( IFNULL( m.employer_confirm_status, 0 ) ) AS employerConfirmStatus,
 m.create_time AS createTime  FROM
