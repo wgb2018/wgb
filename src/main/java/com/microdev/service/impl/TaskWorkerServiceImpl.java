@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -239,31 +238,6 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         return ResultDO.buildSuccess(result);
     }
 
-    /**
-     * 统计未读当前任务数量
-     * @param userId
-     * @return
-     */
-    @Override
-    public int selectUnreadCount(String userId) {
-        if (StringUtils.isEmpty(userId)) {
-            throw new ParamsException("参数不能为空");
-        }
-        return taskWorkerMapper.selectUnreadCount(userId);
-    }
-
-    /**
-     * 统计未读已完成任务数量
-     * @param userId
-     * @return
-     */
-    @Override
-    public int selectCompleteCount(String userId) {
-        if (StringUtils.isEmpty(userId)) {
-            throw new ParamsException("参数不能为空");
-        }
-        return taskWorkerMapper.selectCompleteCount(userId);
-    }
 
     /**
      * 更新查看标识
@@ -283,6 +257,23 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         taskWorker.setCheckSign(status);
         taskWorkerMapper.updateAllColumnById(taskWorker);
         return null;
+    }
+
+    /**
+     * 查询小时工当前任务数量
+     * @param applyParamDTO
+     * @return
+     */
+    @Override
+    public int selectWorkerCurTaskCount(ApplyParamDTO applyParamDTO) {
+
+        if (StringUtils.isEmpty(applyParamDTO.getId()) || StringUtils.isEmpty(applyParamDTO.getRoleType())) {
+            return 0;
+        }
+        TaskWorkerQuery query = new TaskWorkerQuery();
+        query.setWorkerId(applyParamDTO.getId());
+        query.setTaskStatus(1);
+        return taskWorkerMapper.selectCurTasCount(query);
     }
 
 }
