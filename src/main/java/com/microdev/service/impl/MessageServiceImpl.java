@@ -368,7 +368,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             param.put("notice", informService.selectCountByParam(map));
 
             //查询补签数量
-            List<String> list = workerLogMapper.selectUnreadPunchCount();
+            List<String> list = workerLogMapper.selectUnreadPunchCount(applyParamDTO.getId ());
             if (list == null) {
                 param.put("supplement", 0);
             } else {
