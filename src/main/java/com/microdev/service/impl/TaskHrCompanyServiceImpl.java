@@ -916,10 +916,14 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             task.setHavePayMoney(task.getHavePayMoney() + Double.valueOf(message.getMinutes()));
             taskMapper.updateAllColumnById(task);
             //新增酒店支付人力明细
-            HotelPayHrDetails details = new HotelPayHrDetails();
-            details.setTaskHrId(taskHrCompany.getPid());
-            details.setThisPayMoney(Double.valueOf(message.getMinutes()));
-            hotelPayHrDetailsService.saveBean(details);
+            Bill bill = new Bill();
+            bill.setHrCompanyId(taskHrCompany.getHrCompanyId());
+            bill.setHrCompanyName(taskHrCompany.getHrCompanyName());
+            bill.setPayMoney(Double.valueOf(message.getMinutes()));
+            bill.setPayType(1);
+            bill.setTaskId(taskHrCompany.getTaskId());
+            bill.setHotelId(taskHrCompany.getHotelId());
+            billMapper.insert(bill);
             String content = taskHrCompany.getHrCompanyName() + "同意了你发起的一笔支付信息，金额为" + Double.valueOf(message.getMinutes());
             informService.sendInformInfo(2, 3, content, message.getHotelId(), "账目已同意");
         } else {

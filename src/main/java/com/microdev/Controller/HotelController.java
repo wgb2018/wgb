@@ -193,4 +193,14 @@ public class HotelController {
         return companyService.deploymentHandle(request);
     }
 
+    /**
+     * 酒店处理小时工工作记录
+     * @param record
+     * @return
+     */
+    @PostMapping("/hotels/handle/workerRecord")
+    public ResultDO hotelsHandleRecords(@RequestBody HotelHandleWorkerRecord record) {
+
+        return companyService.hotelHandleWorkerRecord(record);
+    }
 }

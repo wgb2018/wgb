@@ -71,13 +71,7 @@ public interface WorkerService extends IService<Worker> {
      * @return
      */
     Map<String, Object> selectNoPunchPageInfo(ApplyParamDTO applyParamDTO, Paginator paginator);
-    /**
-     * 查询补签记录详情
-     * @param taskWorkerId
-     * @param date
-     * @return
-     */
-    SupplementResponse selectNoPunchDetails(String taskWorkerId, String date);
+
     /**
      * 小时工补签
      * @param info

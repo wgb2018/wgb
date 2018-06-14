@@ -255,4 +255,8 @@ union
       ) c INNER JOIN
 (SELECT id,hr_company_id,create_time FROM message WHERE STATUS = 0 AND hotel_id = #{hotelId} AND apply_type = 3 AND applicant_type = 2 and message_code = 'applyBindMessage') m ON c.id = m.hr_company_id ORDER BY m.create_time DESC
     </select>
+
+    <select id = "">
+
+    </select>
 </mapper>

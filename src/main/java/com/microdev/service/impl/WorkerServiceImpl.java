@@ -455,6 +455,23 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
         List<SupplementResponse> list = workLogMapper.selectNoPunchByWorkerId(applyParamDTO.getId());
         PageInfo<SupplementResponse> info = new PageInfo<>(list);
+        Map<String, String> param = null;
+        List<Map<String, String>> timeList = null;
+        //将签到时间转换成key-value形式
+        for (SupplementResponse response : list) {
+
+            timeList = new ArrayList<>();
+            String[] start = response.getStartTime().split(",");
+            String[] end = response.getEndTime().split(",");
+            int len = start.length;
+            for (int i = 0; i < len; i++) {
+                param = new HashMap<>();
+                param.put("fromDate", start[i]);
+                param.put("toDate", end[i]);
+                timeList.add(param);
+            }
+            response.setSignDate(timeList);
+        }
         if (list == null) {
             info.setList(new ArrayList<>());
         } else {
@@ -465,21 +482,6 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         result.put("total", paginator.getPageSize());
         result.put("list", list);
         return result;
-    }
-
-    /**
-     * 查询补签记录详情
-     */
-    @Override
-    public SupplementResponse selectNoPunchDetails(String taskWorkerId, String date) {
-        if (StringUtils.isEmpty(date) || StringUtils.isEmpty(taskWorkerId)) {
-            throw new ParamsException("参数不能为空");
-        }
-
-        Map<String, Object> param = new HashMap<>();
-        param.put("taskWorkerId", taskWorkerId);
-        param.put("date", date);
-        return workLogMapper.selectNoPunchDetail(param);
     }
 
     /**
