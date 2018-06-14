@@ -159,4 +159,11 @@ public interface CompanyService extends IService<Company> {
     ResultDO hotelHandleLeave(String messageId, String status);
 
     ResultDO deploymentHandle(CreateTaskRequest createTaskRequest);
+
+    /**
+     * 酒店处理小时工工作记录
+     * @param record
+     * @return
+     */
+    ResultDO hotelHandleWorkerRecord(HotelHandleWorkerRecord record);
 }

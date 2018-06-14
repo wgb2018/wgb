@@ -112,7 +112,7 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
         List<NoticeResponse> list = informMapper.selectInfromByParam(param);
         PageInfo<NoticeResponse> pageInfo = new PageInfo<>(list);
         for (NoticeResponse response : list) {
-            response.setTime(response.getCreateTime().getLong(ChronoField.INSTANT_SECONDS));
+            response.setTime(response.getCreateTime().getLong(ChronoField.INSTANT_SECONDS) * 1000);
         }
         result.put("page", pageInfo.getPageNum());
         result.put("pageSize", pageInfo.getPageSize());

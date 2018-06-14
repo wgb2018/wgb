@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.microdev.model.WorkLog;
+import com.microdev.param.HotelHandleWorkerRecord;
 import com.microdev.param.PunchDTO;
 import com.microdev.param.SupplementResponse;
 import com.microdev.param.WorkerOneDayInfo;
@@ -42,4 +43,6 @@ public interface WorkerLogMapper extends BaseMapper<WorkLog> {
 
 	@Update("update work_log set check_sign = 1 where task_worker_id = #{taskWorkerId} and DATE_FORMAT(create_time, '%Y/%m/%d') = #{date}")
 	int updateCheckSign(String taskWorkerId, String date);
+
+	List<WorkLog> selectByDate(HotelHandleWorkerRecord record);
 }

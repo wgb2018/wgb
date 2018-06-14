@@ -71,13 +71,7 @@ public interface WorkerService extends IService<Worker> {
      * @return
      */
     Map<String, Object> selectNoPunchPageInfo(ApplyParamDTO applyParamDTO, Paginator paginator);
-    /**
-     * 查询补签记录详情
-     * @param taskWorkerId
-     * @param date
-     * @return
-     */
-    SupplementResponse selectNoPunchDetails(String taskWorkerId, String date);
+
     /**
      * 小时工补签
      * @param info
@@ -106,9 +100,10 @@ public interface WorkerService extends IService<Worker> {
     String workerApplybind(String workerId, List<String> set);
 
     /**
-     * 小时工处理人力支付.
-     * @param param
+     * 小时工处理人力支付
+     * @param messageId
+     * @param status
      * @return
      */
-    ResultDO workerHandleHrPay(Map<String, String> param);
+    ResultDO workerHandleHrPay(String messageId, String status);
 }

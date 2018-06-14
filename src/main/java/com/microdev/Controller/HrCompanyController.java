@@ -228,12 +228,13 @@ public class HrCompanyController {
 
     /**
      * 人力处理酒店付款.
-     * @param param
+     * @param messageId
+     * @param status        0拒绝1同意
      * @return
      */
-    @PostMapping("/hrcompanies/handle/account")
-    public ResultDO hrcompaniesHandleAccount(@RequestBody Map<String, String> param) {
-        return taskHrCompanyService.hrHandleIncome(param.get("messageId"), param.get("status"), param.get("reason"));
+    @GetMapping("/hrcompanies/{messageId}/account/{status}")
+    public ResultDO hrcompaniesHandleAccount(@PathVariable String messageId,@PathVariable String status) {
+        return taskHrCompanyService.hrHandleIncome(messageId, status);
     }
 
     /**

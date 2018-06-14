@@ -112,13 +112,7 @@ public class WorkerController {
     public ResultDO noPunchPageInfo(@RequestBody PagingDO<ApplyParamDTO> paging) {
         return ResultDO.buildSuccess(workerService.selectNoPunchPageInfo(paging.getSelector(), paging.getPaginator()));
     }
-    /**
-     * 小时工补签详情
-     */
-    @PostMapping("/workers/noPunchInfoDetail")
-    public ResultDO noPunchInfoDetail(@RequestBody Map<String, String> param) {
-        return ResultDO.buildSuccess(workerService.selectNoPunchDetails(param.get("taskWorkerId"), param.get("date")));
-    }
+
     /**
      * 小时工申请补签
      */
@@ -170,12 +164,13 @@ public class WorkerController {
 
     /**
      * 小时工处理收入确认
-     * @param param
+     * @param messageId
+     * @param status        0拒绝1同意
      * @return
      */
-    @PostMapping("/worker/handle/accont")
-    public ResultDO workerHandleAccount(@RequestBody Map<String, String> param) {
+    @GetMapping("/worker/{messageId}/account/{status}")
+    public ResultDO workerHandleAccount(@PathVariable String messageId,@PathVariable String status) {
 
-        return workerService.workerHandleHrPay(param);
+        return workerService.workerHandleHrPay(messageId, status);
     }
 }

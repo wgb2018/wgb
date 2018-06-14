@@ -402,9 +402,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         Map<String, Object> tp = taskWorkerMapper.selectHrId((String)map.get("taskWorkerId"));
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applyChangeMessage");
         m.setMessageCode(mess.getCode());
-        //m.setMessageTitle(mess.getTitle());
+        m.setMessageTitle((String)tp.get("taskTypeText"));
         m.setContent((String)map.get("reason"));
-        m.setWorkerId(null);
+        m.setWorkerId((String)tp.get("workerId"));
         m.setHrCompanyId((String)map.get("hrCompanyId"));
         m.setHotelId((String)map.get("hotelId"));
         m.setWorkerTaskId((String)map.get("taskWorkerId"));
@@ -418,8 +418,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         m.setStatus(0);
         m.setIsTask(0);
         m.setMessageType(9);
-        m.setHrTaskId(param.get("hrTaskId"));
-        m.setHrTaskId(param.get("taskId"));
+        m.setHrTaskId((String)tp.get("hrTaskId"));
+        m.setHrTaskId((String)tp.get("taskId"));
         messageMapper.insert(m);
         return true;
     }
@@ -1010,6 +1010,34 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         taskHrCompany.setStatus (5);
         taskHrCompanyMapper.updateById (taskHrCompany);
         return ResultDO.buildSuccess("处理成功");
+    }
+
+    /**
+     * 酒店处理小时工工作记录
+     * @param record
+     * @return
+     */
+    @Override
+    public ResultDO hotelHandleWorkerRecord(HotelHandleWorkerRecord record) {
+
+        if (StringUtils.isEmpty(record.getDate()) || StringUtils.isEmpty(record.getStatus()) || StringUtils.isEmpty(record.getTaskWorkerId())) {
+            throw new ParamsException("参数不能为空");
+        }
+
+        List<WorkLog> workLogList = workLogMapper.selectByDate(record);
+        if (workLogList == null || workLogList.size() == 0) {
+            return ResultDO.buildError("查询不到工作记录");
+        }
+        for (WorkLog workLog1 : workLogList) {
+            if (workLog1.getEmployerConfirmStatus() == null || workLog1.getEmployerConfirmStatus() == 0) {
+                workLog1.setStatus(Integer.valueOf(record.getStatus()));
+                workLog1.setEmployerConfirmStatus(1);
+                workLogMapper.updateById(workLog1);
+                break;
+            }
+        }
+
+        return ResultDO.buildSuccess("成功");
     }
 
 }

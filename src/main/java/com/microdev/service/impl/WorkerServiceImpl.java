@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 
 
 import java.math.BigDecimal;
@@ -454,6 +455,23 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
         List<SupplementResponse> list = workLogMapper.selectNoPunchByWorkerId(applyParamDTO.getId());
         PageInfo<SupplementResponse> info = new PageInfo<>(list);
+        Map<String, String> param = null;
+        List<Map<String, String>> timeList = null;
+        //将签到时间转换成key-value形式
+        for (SupplementResponse response : list) {
+
+            timeList = new ArrayList<>();
+            String[] start = response.getStartTime().split(",");
+            String[] end = response.getEndTime().split(",");
+            int len = start.length;
+            for (int i = 0; i < len; i++) {
+                param = new HashMap<>();
+                param.put("fromDate", start[i]);
+                param.put("toDate", end[i]);
+                timeList.add(param);
+            }
+            response.setSignDate(timeList);
+        }
         if (list == null) {
             info.setList(new ArrayList<>());
         } else {
@@ -464,21 +482,6 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         result.put("total", paginator.getPageSize());
         result.put("list", list);
         return result;
-    }
-
-    /**
-     * 查询补签记录详情
-     */
-    @Override
-    public SupplementResponse selectNoPunchDetails(String taskWorkerId, String date) {
-        if (StringUtils.isEmpty(date) || StringUtils.isEmpty(taskWorkerId)) {
-            throw new ParamsException("参数不能为空");
-        }
-
-        Map<String, Object> param = new HashMap<>();
-        param.put("taskWorkerId", taskWorkerId);
-        param.put("date", date);
-        return workLogMapper.selectNoPunchDetail(param);
     }
 
     /**
@@ -564,9 +567,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         Calendar dayStart = DateUtil.dateToCalendar (taskWorker.getDayStartTime());
         Calendar dayEnd = DateUtil.dateToCalendar (taskWorker.getDayEndTime());
 
-        startDay.set (startDay.get (Calendar.YEAR),startDay.get (Calendar.MONTH), startDay.get (Calendar.DAY_OF_YEAR), dayStart.get (Calendar.HOUR_OF_DAY), dayStart.get (Calendar.MINUTE));
-        endDay.set (endDay.get (Calendar.YEAR), endDay.get (Calendar.MONTH), endDay.get (Calendar.DAY_OF_YEAR),
-                dayEnd.get (Calendar.HOUR_OF_DAY), dayEnd.get (Calendar.MINUTE));
+        startDay.set(startDay.get(Calendar.YEAR), startDay.get(Calendar.MONTH), startDay.get(Calendar.DAY_OF_MONTH), dayStart.get(Calendar.HOUR_OF_DAY), dayStart.get(Calendar.MINUTE));
+        endDay.set(endDay.get(Calendar.YEAR), endDay.get(Calendar.MONTH), endDay.get(Calendar.DAY_OF_MONTH), dayEnd.get(Calendar.HOUR_OF_DAY), dayEnd.get(Calendar.MINUTE));
         long start = dayStart.getTimeInMillis () / 1000;
         long end = dayEnd.getTimeInMillis () / 1000;
         boolean expire;
@@ -574,6 +576,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         // 查询打卡记录
         SimpleDateFormat d = new SimpleDateFormat ("yyyy/MM/dd");
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+
         List<WorkerDetail> detailList = new ArrayList<>();//存放小时工所有打卡记录
         List<WorkerOneDayInfo> list = workLogMapper.selectUserPunchDetail(taskWorkerId);
         List<HolidayDateInfo> holidayList = holidayMapper.selectHolidayByTaskWorkId(taskWorkerId);
@@ -716,11 +719,11 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     currentEndTime = param.getToDate ().split (",");
                 }
                 String[] confirmStatus = param.getEmployerConfirmStatus().split(",");
-                
+                boolean flag = false;
 
                 //如果当天没有打卡记录
-                while (startDay.get (Calendar.YEAR) != time.get (Calendar.YEAR) && startDay.getTimeInMillis ()/1000 <= nowDate.getTimeInMillis ()/1000) {
-                    expire = (nowDate.getTimeInMillis ()/1000 - startDay.getTimeInMillis ()/1000) / 3600  >= 168 ? true : false;
+                while (startDay.get (Calendar.DAY_OF_YEAR) != time.get (Calendar.DAY_OF_YEAR) && startDay.compareTo(nowDate) < 0) {
+                    expire = ((nowDate.getTimeInMillis ()/1000) - (startDay.getTimeInMillis ()/1000)) / 3600  >= 168 ? true : false;
                     int minutes = containsTime(startDay, endDay,  holidayList);
                     if (hotelStatus == null || sysStatus == null) {
                         hotelStatus = new HashMap<>();
@@ -730,7 +733,6 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     }
                     //没有请假
                     if (minutes == 0) {
-                        workLog = new PunchInfo();
                         sysStatus.put("stay", 1);
                         workLog = new PunchInfo();
                         workLog.setEndTime("--");
@@ -766,9 +768,18 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     } else  {
                         detail.setExpire("0");
                     }
+                    detail.setWorkList(workList);
                     detailList.add(detail);
+                    workList = null;
+
                     hotelStatus = null;
                     sysStatus = null;
+                    flag = true;
+                }
+                //如果进入了没有打卡的流程，要重新生成记录
+                if (flag) {
+                    detail = new WorkerDetail();
+                    workList = new ArrayList<>();
                 }
 				hotelStatus = new HashMap<>();
                 sysStatus = new HashMap<>();
@@ -902,6 +913,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 detail.setTime(d.format (startDay.getTime ()));
                 detailList.add(detail);
                 startDay.add (Calendar.DAY_OF_YEAR, 1);
+                hotelStatus = null;
+                sysStatus = null;
             }
         }
         response.setList(detailList);
@@ -1182,17 +1195,16 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
     /**
      * 小时工处理人力支付
-     * @param param
+     * @param messageId
+     * @param status    0拒绝1同意
      * @return
      */
     @Override
-    public ResultDO workerHandleHrPay(Map<String, String> param) {
-        if (StringUtils.isEmpty(param.get("messageId")) || StringUtils.isEmpty(param.get("status"))) {
+    public ResultDO workerHandleHrPay(String messageId, String status) {
+        if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(status)) {
             throw new ParamsException("参数不能为空");
         }
-        String status = param.get("status");
-        String messageId = param.get("messageId");
-        String reason = param.get("reason");
+
         Message message = messageMapper.selectById(messageId);
         if (message == null) {
             throw new ParamsException("查询不到消息");
@@ -1206,7 +1218,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         if ("0".equals(status)) {
             //拒绝
-            String content = "小时工" + user.getNickname() + "拒绝了你发起的一笔支付信息，金额为" + Double.valueOf(message.getMinutes()) + ",拒绝理由为" + reason;
+            String content = "小时工" + user.getNickname() + "拒绝了你发起的一笔支付信息，金额为" + Double.valueOf(message.getMinutes());
             informService.sendInformInfo(1, 2, content, message.getHrCompanyId(), "账目被拒绝");
         } else if ("1".equals(status)) {
             //同意
