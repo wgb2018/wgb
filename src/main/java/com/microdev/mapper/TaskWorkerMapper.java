@@ -1,6 +1,7 @@
 package com.microdev.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.microdev.model.TaskDateInfo;
 import com.microdev.model.TaskHrCompany;
 import com.microdev.model.TaskWorker;
 import com.microdev.param.BillRequest;
@@ -56,4 +57,6 @@ public interface TaskWorkerMapper extends BaseMapper<TaskWorker> {
     void updateStatus(@Param("workerTaskId") String workerTaskId,@Param("status") Integer status);
 
     int selectCurTasCount(TaskWorkerQuery query);
+
+    TaskDateInfo selectTaskWorkerDate(@Param ("id") String id);
 }

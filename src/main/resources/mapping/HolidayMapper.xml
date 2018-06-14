@@ -16,7 +16,7 @@
 	GROUP BY DATE_FORMAT(create_time,'%y-%m-%d') order by create_time ASC
   </select>
 
-    <select id="selectHolidayByTaskWorkId" parameterType="java.lang.String" resultType="com.microdev.model.Holiday">
+    <select id="selectHolidayByTaskWorkId" parameterType="java.lang.String" resultType="com.microdev.param.HolidayDateInfo">
       select create_time, modify_time, from_date, to_date
        from holiday where task_worker_id = #{taskWorkerId}
        order by create_time ASC

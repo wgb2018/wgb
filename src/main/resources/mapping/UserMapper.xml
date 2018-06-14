@@ -45,4 +45,16 @@
         SELECT u.nickname AS username, u.sex AS sex,u.age,u.mobile AS mobile,w.health_card AS healthCard FROM USER u INNER JOIN worker w
 ON u.worker_id = w.id WHERE w.id = #{workerId}
     </select>
+    <select id="queryFreeback" resultType="com.microdev.model.FreeBack" parameterType="com.microdev.param.FeedbackQueryDTO">
+        select f.* from freeback f left join user u on f.user_id = u.id
+        <where>
+            <if test="name != null and name != ''">
+                u.nickname like concat('%', #{name},'%')
+            </if>
+            <if test="userType != null and userType != ''">
+                f.user_type = #{userType}
+            </if>
+        </where>
+        order by f.create_time desc
+    </select>
 </mapper>

@@ -37,7 +37,7 @@
         select
         t.id as pid, t.create_time, t.deleted, t.modify_time,
         t.hourly_pay, t.confirmed_workers, t.have_pay_money, t.minutes, t.need_workers, t.refused_workers, t.repast_times, t.should_pay_money, t.status, t.workers_have_pay, t.workers_should_pay,
-        t.hr_company_id, t.task_id, t.hotel_id, t.hr_company_name, t.hotel_name, t.task_type_code, t.task_type_text, t.task_content, t.refused_reason,t.from_date,t.to_date,t.day_start_time,t.day_end_time,t.hourly_pay_hotel,
+        t.should_pay_money - t.have_pay_money as  paidPayMoney,t.workers_should_pay - t.workers_have_pay as workersPaidPay,t.hr_company_id, t.task_id, t.hotel_id, t.hr_company_name, t.hotel_name, t.task_type_code, t.task_type_text, t.task_content, t.refused_reason,t.from_date,t.to_date,t.day_start_time,t.day_end_time,t.hourly_pay_hotel,
         t.distribute_workers
         from task_hr_company t left join company c on t.hotel_id = c.id
         <where>
@@ -103,20 +103,24 @@
         order by t.create_time desc
     </select>
     <select id="queryHotelBill" resultType="com.microdev.model.TaskHrCompany" parameterType="com.microdev.param.BillRequest">
-        select  sum(should_pay_money) as should_pay_money,sum(have_pay_money) as have_pay_money, sum(minutes) as minutes,
-        hr_company_id as hrCompanyId,hr_company_name as hrCompanyName from task_hr_company
-        where hotel_id = #{id} group by hr_company_id,hr_company_name
+        select  sum(t.should_pay_money) as should_pay_money,sum(t.have_pay_money) as have_pay_money, sum(t.minutes) as minutes,
+        sum(t.should_pay_money) - sum(t.have_pay_money) as paidPayMoney,t.hr_company_id as hrCompanyId,c.name as hrCompanyName from task_hr_company t left join company c on t.hr_company_id = c.id
+        where t.hotel_id = #{id}
         <if test = "name != null and name != ''">
-           and hr_company_name = #{name}
+            and c.name like concat('%', #{name},'%')
         </if>
+        group by c.id,c.name
     </select>
     <select id="queryHrCompanyBill" resultType="com.microdev.model.TaskHrCompany" parameterType="com.microdev.param.BillRequest">
-        select  sum(should_pay_money) as should_pay_money,sum(have_pay_money) as have_pay_money, sum(minutes) as minutes,
-        hotel_id as hotelId,hotel_name as hotelName from task_hr_company
-        where hr_company_id = #{id} group by hotel_id,hotel_name
+        select  sum(t.should_pay_money) as should_pay_money,sum(t.have_pay_money) as have_pay_money, sum(t.minutes) as minutes,
+        t.hotel_id as hotelId,c.name as hotelName ,sum(t.should_pay_money) - sum(t.have_pay_money) as paidPayMoney
+        from task_hr_company t left join company c on t.hotel_id = c.id
+        where t.hr_company_id = #{id}
         <if test = "name != null and name != ''">
-            and hotel_name = #{name}
+            and c.name like concat('%', #{name},'%')
         </if>
+        group by t.hotel_id,c.name
+
     </select>
     <select id="selectPayHrInfo" parameterType="java.lang.String" resultType="java.util.Map">
         SELECT hr_company_name AS companyName, IFNULL(`should_pay_money`,0) AS shouldPayMoney, IFNULL(have_pay_money,0) AS havePayMoney,

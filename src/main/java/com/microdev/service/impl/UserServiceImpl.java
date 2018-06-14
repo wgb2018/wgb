@@ -1,12 +1,17 @@
 package com.microdev.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.microdev.common.ResultDO;
 import com.microdev.common.context.ServiceContextHolder;
 import com.microdev.common.exception.AuthenticationException;
 import com.microdev.common.exception.AuthorizationException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.oss.ObjectStoreService;
+import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.FileUtil;
 import com.microdev.common.utils.PasswordHash;
 import com.microdev.common.utils.QRCodeUtil;
@@ -478,6 +483,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         }
 
         return userDTO;
+    }
+
+    @Override
+    public ResultDO feedbackQuery(Paginator paginator, FeedbackQueryDTO feedbackQueryDTO) {
+        PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
+        //查询数据集合
+        List<FreeBack> list = userMapper.queryFreeback(feedbackQueryDTO);
+        PageInfo<FreeBack> pageInfo = new PageInfo<FreeBack>(list);
+        HashMap<String,Object> result = new HashMap<>();
+        //设置获取到的总记录数total：
+        result.put("total",pageInfo.getTotal());
+        //设置数据集合rows：
+        result.put("result",list);
+        result.put("page",paginator.getPage());
+        return ResultDO.buildSuccess(result);
     }
 
 }

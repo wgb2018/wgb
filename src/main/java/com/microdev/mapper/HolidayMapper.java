@@ -2,6 +2,7 @@ package com.microdev.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.microdev.model.Holiday;
+import com.microdev.param.HolidayDateInfo;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,5 +15,5 @@ public interface HolidayMapper extends BaseMapper<Holiday> {
 
     List<Map<String, Object>> selectUserHolidayByTaskWorkId(String taskWorkerId);
 
-    List<Holiday> selectHolidayByTaskWorkId(String taskWorkerId);
+    List<HolidayDateInfo> selectHolidayByTaskWorkId(String taskWorkerId);
 }

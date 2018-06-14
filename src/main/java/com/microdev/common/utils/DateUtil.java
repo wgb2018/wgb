@@ -106,4 +106,15 @@ public class DateUtil {
         }
         return null;
     }
+
+    /**
+     * 将date类型转换成Calendar类型
+     * @param time
+     * @return
+     */
+    public static Calendar dateToCalendar(Date time) {
+        Calendar c = Calendar.getInstance ();
+        c.setTime (time);
+        return c;
+    }
 }

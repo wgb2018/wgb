@@ -3,6 +3,7 @@ package com.microdev.param;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
+import java.util.Date;
 
 @Data
 public class WorkerOneDayInfo {
@@ -12,5 +13,5 @@ public class WorkerOneDayInfo {
     private String status;
     private String id;
     private String employerConfirmStatus;
-    private OffsetDateTime createTime;
+    private Date createTime;
 }

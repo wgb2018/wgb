@@ -2,6 +2,7 @@ package com.microdev.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.microdev.model.Task;
+import com.microdev.model.TaskDateInfo;
 import com.microdev.param.TaskHrCompanyViewDTO;
 import com.microdev.param.TaskQueryDTO;
 import com.microdev.param.TaskViewDTO;
@@ -41,4 +42,5 @@ public interface TaskMapper extends BaseMapper<Task> {
     String selectTaskIdByTaskWorkerId(String taskWorkerId);
 
     int queryHotelCurTaskCount(TaskQueryDTO queryDTO);
+
 }

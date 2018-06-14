@@ -122,6 +122,9 @@ public class TaskHrCompany extends BaseEntity {
      *  人力公司已付小时工金额 (这个字段不清楚何时赋值,因为系统暂时是线下支付)
      */
     private Double workersHavePay=0.0;
+
+    @TableField(exist = false)
+    private Double workersPaidPay=0.0;
     /**
      *  任务描述
      */

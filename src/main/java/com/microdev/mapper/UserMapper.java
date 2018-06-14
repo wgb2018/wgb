@@ -1,13 +1,16 @@
 package com.microdev.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.microdev.model.FreeBack;
 import com.microdev.model.User;
+import com.microdev.param.FeedbackQueryDTO;
 import com.microdev.param.UserDTO;
 import com.microdev.param.UserTaskResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface UserMapper extends BaseMapper<User> {
@@ -27,4 +30,6 @@ public interface UserMapper extends BaseMapper<User> {
     User selectByWorkerId(String workerId);
 
     List<String> selectIdByWorkerId(@Param("set") List<String> set);
+
+    List<FreeBack> queryFreeback(FeedbackQueryDTO feedbackQueryDTO);
 }

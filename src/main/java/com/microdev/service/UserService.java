@@ -1,11 +1,10 @@
 package com.microdev.service;
 
 import com.baomidou.mybatisplus.service.IService;
+import com.microdev.common.ResultDO;
+import com.microdev.common.paging.Paginator;
 import com.microdev.model.User;
-import com.microdev.param.ChangePwdRequest;
-import com.microdev.param.TokenDTO;
-import com.microdev.param.UserDTO;
-import com.microdev.param.WeixinUserInfo;
+import com.microdev.param.*;
 
 import java.util.List;
 import java.util.Map;
@@ -57,5 +56,7 @@ public interface UserService extends IService<User>{
         * @return
         */
        UserDTO me();
+
+       ResultDO feedbackQuery(Paginator paginator, FeedbackQueryDTO feedbackQueryDTO);
 
 }

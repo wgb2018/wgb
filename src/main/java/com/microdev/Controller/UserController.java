@@ -3,9 +3,11 @@ package com.microdev.Controller;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.microdev.Constant;
+import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.oss.ObjectStoreService;
+import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.FileUtil;
 import com.microdev.common.utils.QRCodeUtil;
 import com.microdev.mapper.DictMapper;
@@ -310,6 +312,14 @@ public class UserController {
         //HttpServletRequest.
         return ResultDO.buildSuccess (null);
     }
+    /**
+     * 分页查询意见反馈
+     */
+    @PostMapping("/feedback/query")
+    public ResultDO feedbackQuery( @RequestBody PagingDO<FeedbackQueryDTO> paging) {
+        return ResultDO.buildSuccess (userService.feedbackQuery(paging.getPaginator (),paging.getSelector ()));
+    }
+
 
 
 

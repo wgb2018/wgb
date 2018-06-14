@@ -7,8 +7,6 @@ import com.microdev.common.ResultDO;
 import com.microdev.common.context.ServiceContextHolder;
 import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
-import com.microdev.common.exception.TaskWorkerNotFoundException;
-import com.microdev.common.exception.WorkLogNotFoundException;
 import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.DateUtil;
 import com.microdev.common.utils.LocationUtils;
@@ -25,8 +23,6 @@ import com.microdev.service.InformService;
 import com.microdev.service.MessageService;
 import com.microdev.service.WorkerService;
 import com.microdev.type.UserType;
-import lombok.Data;
-import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +37,6 @@ import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
-import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
 @Transactional
@@ -532,7 +527,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setHrTaskId(tp.getTaskHrId());
         m.setWorkerTaskId(info.getTaskWorkerId());
         m.setHotelId(tp.getHotelId());
-        m.setTaskId (tp.getHotelTaskId());
+        m.setTaskId (tp.getTaskId());
         m.setMessageContent(c);
         m.setApplyType(3);
         m.setStatus(0);
@@ -552,13 +547,13 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         UserTaskResponse response = new UserTaskResponse();
         // 查询用户工作记录
-        TaskWorker taskWorker = taskWorkerMapper.selectById(taskWorkerId);
+        TaskDateInfo taskWorker = taskWorkerMapper.selectTaskWorkerDate(taskWorkerId);
         if (taskWorker == null) {
             throw new ParamsException("查询不到用户工作任务");
         }
-        OffsetDateTime startDay = taskWorker.getFromDate();
-        OffsetDateTime endDay = taskWorker.getToDate();
-        OffsetDateTime nowDate = OffsetDateTime.now();
+        Calendar startDay = DateUtil.dateToCalendar (taskWorker.getFromDate());
+        Calendar nowDate = Calendar.getInstance ();
+        Calendar endDay = DateUtil.dateToCalendar (taskWorker.getToDate());
         if (nowDate.compareTo(startDay) < 0) {
             log.info("任务还没有开始");
             return response;
@@ -566,20 +561,22 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         if (nowDate.compareTo(endDay) < 0) {
             endDay = nowDate;
         }
-        OffsetTime dayStart = taskWorker.getDayStartTime();
-        OffsetTime dayEnd = taskWorker.getDayEndTime();
-        startDay = OffsetDateTime.of(startDay.getYear(), startDay.getMonthValue(), startDay.getDayOfMonth(), dayStart.getHour(), dayStart.getMinute(), dayStart.getSecond(),0, ZoneOffset.UTC);
-        endDay = OffsetDateTime.of(endDay.getYear(), endDay.getMonthValue(), endDay.getDayOfMonth(), dayEnd.getHour(), dayEnd.getMinute(), dayEnd.getSecond(),0, ZoneOffset.UTC);
-        long start = dayStart.getLong(ChronoField.MINUTE_OF_DAY);
-        long end = dayEnd.getLong(ChronoField.MINUTE_OF_DAY);
+        Calendar dayStart = DateUtil.dateToCalendar (taskWorker.getDayStartTime());
+        Calendar dayEnd = DateUtil.dateToCalendar (taskWorker.getDayEndTime());
+
+        startDay.set (startDay.get (Calendar.YEAR),startDay.get (Calendar.MONTH), startDay.get (Calendar.DAY_OF_YEAR), dayStart.get (Calendar.HOUR_OF_DAY), dayStart.get (Calendar.MINUTE));
+        endDay.set (endDay.get (Calendar.YEAR), endDay.get (Calendar.MONTH), endDay.get (Calendar.DAY_OF_YEAR),
+                dayEnd.get (Calendar.HOUR_OF_DAY), dayEnd.get (Calendar.MINUTE));
+        long start = dayStart.getTimeInMillis () / 1000;
+        long end = dayEnd.getTimeInMillis () / 1000;
         boolean expire;
         //long workDay = endDay.getLong(ChronoField.EPOCH_DAY) - startDay.getLong(ChronoField.EPOCH_DAY);
         // 查询打卡记录
-        DateTimeFormatter d = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
+        SimpleDateFormat d = new SimpleDateFormat ("yyyy/MM/dd");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
         List<WorkerDetail> detailList = new ArrayList<>();//存放小时工所有打卡记录
         List<WorkerOneDayInfo> list = workLogMapper.selectUserPunchDetail(taskWorkerId);
-        List<Holiday> holidayList = holidayMapper.selectHolidayByTaskWorkId(taskWorkerId);
+        List<HolidayDateInfo> holidayList = holidayMapper.selectHolidayByTaskWorkId(taskWorkerId);
         PunchInfo workLog = null;
         WorkerDetail detail = null;
         List<PunchInfo> workList = null;
@@ -602,18 +599,18 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
                     detail.setHotelStatus(hotelStatus);
                     detail.setSysStatus(sysStatus);
-                    expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
+                    expire = (nowDate.getTimeInMillis () - startDay.getTimeInMillis ()) / 3600000  >= 168 ? true : false;
                     if (expire) {
                         detail.setExpire("1");
                     } else  {
                         detail.setExpire("0");
                     }
                     workList.add(workLog);
-                    detail.setTime(startDay.format(d));
+                    detail.setTime(d.format (startDay.getTime ()));
                     detailList.add(detail);
                     detail.setSysStatus(sysStatus);
                     detail.setHotelStatus(hotelStatus);
-                    startDay = startDay.plusDays(1);
+                    startDay.add (Calendar.DAY_OF_YEAR, 1);
                 }
 
             } else {
@@ -628,55 +625,58 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     initMapStatus(sysStatus, 5);
                     long time = 0L;
                     int num = 0;
-                    expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
-                    for (Holiday holiday : holidayList) {
-                        if (holiday.getFromDate().getDayOfYear() == startDay.getDayOfYear()) {
+                    expire = (nowDate.getTimeInMillis() - startDay.getTimeInMillis()) / 3600000  >= 168 ? true : false;
+                    for (HolidayDateInfo holiday : holidayList) {
+                        Calendar holidayFrom = DateUtil.dateToCalendar (holiday.getFromDate ());
+                        Calendar holidayToDay = DateUtil.dateToCalendar (holiday.getToDate ());
+                        if (holidayFrom.get (Calendar.DAY_OF_YEAR) == startDay.get (Calendar.DAY_OF_YEAR)) {
                             //当天请假
                             sysStatus.put("leave", 1);
                             hotelStatus.put("leave", 1);
                             workLog.setEndTime("--");
                             workLog.setStartTime("--");
                             workList.add(workLog);
-                            if (holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY) <= startDay.getLong(ChronoField.MINUTE_OF_DAY)) {
 
-                                if (holiday.getToDate().getDayOfYear() > startDay.getDayOfYear() || (holiday.getToDate().getDayOfYear() == startDay.getDayOfYear() && holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) >= end)) {
+                            if ((holiday.getFromDate().getTime ()/60000) <= (startDay.getTimeInMillis ()/60000)) {
+
+                                if (holidayToDay.get (Calendar.DAY_OF_YEAR) > startDay.get (Calendar.DAY_OF_YEAR) || (holidayToDay.get (Calendar.DAY_OF_YEAR) == startDay.get (Calendar.DAY_OF_YEAR) && holidayToDay.getTimeInMillis ()/1000 >= end)) {
 
                                     break;
                                 } else {
                                     //当天部分时间请假
                                     num++;
-                                    time += holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) - start;
+                                    time += holidayToDay.getTimeInMillis ()/1000 - start;
                                 }
                             } else {
-                                if (holiday.getToDate().getDayOfYear() == startDay.getDayOfYear()) {
-                                    if (holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) < end) {
+                                if (holidayToDay.get (Calendar.DAY_OF_YEAR) == startDay.get (Calendar.DAY_OF_YEAR)) {
+                                    if (holidayToDay.getTimeInMillis () / 1000 < end) {
                                         num++;
-                                        time += holiday.getToDate().getLong(ChronoField.SECOND_OF_DAY) - holiday.getFromDate().getLong(ChronoField.SECOND_OF_DAY);
+                                        time += holidayToDay.getTimeInMillis () / 60000 - holidayFrom.getTimeInMillis ()/6000;
                                     }
-                                } else if (holiday.getToDate().getDayOfYear() > startDay.getDayOfYear()){
+                                } else if (holidayToDay.get (Calendar.DAY_OF_YEAR) > startDay.get (Calendar.DAY_OF_YEAR)){
                                     num++;
-                                    time += end - holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY);
+                                    time += end - holidayFrom.getTimeInMillis ()/1000;
                                 } else {
                                     throw new ParamsException("请假时间错误");
                                 }
                             }
 
-                        } else if (holiday.getFromDate().getDayOfYear() < startDay.getDayOfYear()){
+                        } else if (holidayFrom.get (Calendar.DAY_OF_YEAR) < startDay.get (Calendar.DAY_OF_YEAR)){
                             //请假是从当天之前开始计算
                             sysStatus.put("leave", 1);
                             hotelStatus.put("leave", 1);
                             workLog.setEndTime("--");
                             workLog.setStartTime("--");
                             workList.add(workLog);
-                            if (holiday.getToDate().getDayOfYear() > endDay.getDayOfYear()) {
+                            if (holidayToDay.get (Calendar.DAY_OF_YEAR) > endDay.get (Calendar.DAY_OF_YEAR)) {
                                 //全体请假
                                 break;
-                            } else if (holiday.getToDate().getDayOfYear() == endDay.getDayOfYear()){
-                                if (holiday.getToDate().getLong(ChronoField.SECOND_OF_DAY) >= end) {
+                            } else if (holidayToDay.get (Calendar.DAY_OF_YEAR) == endDay.get (Calendar.DAY_OF_YEAR)){
+                                if (holidayToDay.getTimeInMillis ()/1000 >= end) {
                                     break;
                                 } else {
                                     num++;
-                                    time += holiday.getToDate().getLong(ChronoField.SECOND_OF_DAY) - start;
+                                    time += holidayToDay.getTimeInMillis ()/1000 - start;
                                 }
                             } else {
                                 throw new ParamsException("请假时间错误");
@@ -696,8 +696,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     } else  {
                         detail.setExpire("0");
                     }
-                    detail.setTime(startDay.format(d));
-                    startDay = startDay.plusDays(1);
+                    detail.setTime(d.format (startDay.getTime ()));
+                    startDay.add (Calendar.DAY_OF_YEAR, 1);
                     detail.setSysStatus(sysStatus);
                     detail.setHotelStatus(hotelStatus);
                     detailList.add(detail);
@@ -708,20 +708,19 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             for (WorkerOneDayInfo param : list) {
                 detail = new WorkerDetail();
                 workList = new ArrayList<>();
-                OffsetDateTime time = param.getCreateTime();
+                Calendar time = DateUtil.dateToCalendar (param.getCreateTime());
                 String[] currentStartTime = param.getFromDate().split(",");
 
                 String[] currentEndTime = null;
-                if (StringUtils.isEmpty(param.getToDate())) {
-                    currentEndTime = new String[0];
+                if (!StringUtils.isEmpty(param.getToDate())) {
+                    currentEndTime = param.getToDate ().split (",");
                 }
                 String[] confirmStatus = param.getEmployerConfirmStatus().split(",");
                 
 
-
                 //如果当天没有打卡记录
-                while (startDay.getDayOfYear() != time.getDayOfYear() && startDay.getLong(ChronoField.EPOCH_DAY) <= nowDate.getLong(ChronoField.EPOCH_DAY)) {
-                    expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
+                while (startDay.get (Calendar.YEAR) != time.get (Calendar.YEAR) && startDay.getTimeInMillis ()/1000 <= nowDate.getTimeInMillis ()/1000) {
+                    expire = (nowDate.getTimeInMillis ()/1000 - startDay.getTimeInMillis ()/1000) / 3600  >= 168 ? true : false;
                     int minutes = containsTime(startDay, endDay,  holidayList);
                     if (hotelStatus == null || sysStatus == null) {
                         hotelStatus = new HashMap<>();
@@ -733,6 +732,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     if (minutes == 0) {
                         workLog = new PunchInfo();
                         sysStatus.put("stay", 1);
+                        workLog = new PunchInfo();
+                        workLog.setEndTime("--");
+                        workLog.setStartTime("--");
                         workList.add(workLog);
                     } else {
                         //请假时间小于上班时间
@@ -755,8 +757,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                             workList.add(workLog);
                         }
                     }
-                    detail.setTime(startDay.format(d));
-                    startDay = startDay.plusDays(1);
+                    detail.setTime(d.format (startDay.getTime ()));
+                    startDay.add (Calendar.DAY_OF_YEAR, 1);
                     detail.setHotelStatus(hotelStatus);
                     detail.setSysStatus(sysStatus);
                     if (expire) {
@@ -772,17 +774,23 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 sysStatus = new HashMap<>();
                 initMapStatus(hotelStatus, 4);
                 initMapStatus(sysStatus, 5);                //有打卡记录
-                expire = (nowDate.getLong(ChronoField.INSTANT_SECONDS) - startDay.getLong(ChronoField.INSTANT_SECONDS)) / 3600  >= 168 ? true : false;
+                expire = (nowDate.getTimeInMillis ()/1000 - startDay.getTimeInMillis ()/1000) / 3600  >= 168 ? true : false;
                 if (expire) {
                     detail.setExpire("1");
                 } else  {
                     detail.setExpire("0");
                 }
 
-                OffsetDateTime t = DateUtil.strToOffSetDateTime(currentStartTime[0], "HH:mm");
+                Date t = null;
+                try {
+                   t = timeFormat.parse (currentStartTime[0]);
+                } catch (ParseException e) {
+                    e.printStackTrace ( );
+                }
                 workLog = new PunchInfo();
-                if (startDay.compareTo(t) < 0) {
-                    int minutes = containsTime(t, startDay,  holidayList);
+                Calendar tc = DateUtil.dateToCalendar (t);
+                if (dayStart.getTime ().compareTo(t) < 0) {
+                    int minutes = containsTime(tc, startDay,  holidayList);
                     if (minutes == 0) {
                         sysStatus.put("comeLate", 1);
                         if ("1".equals(confirmStatus[0])) {
@@ -793,7 +801,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                         hotelStatus.put("leave", 1);
                     }
                 }
-                workLog.setStartTime(t.format(timeFormat));
+                workLog.setStartTime(currentStartTime[0]);
                 if (currentEndTime != null && currentEndTime.length > 0) {
                     workLog.setEndTime(currentEndTime[0]);
 
@@ -805,12 +813,20 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
                             workLog.setStartTime(currentStartTime[i]);
                             workLog.setEndTime(currentEndTime[i]);
-                            OffsetDateTime start2 = DateUtil.strToOffSetDateTime(currentStartTime[i], "HH:mm");
-                            OffsetDateTime end1 = DateUtil.strToOffSetDateTime(currentEndTime[i - 1], "HH:mm");
+                            Date start2 = null;
+                            Date end1 = null;
+                            try {
+                                start2 = timeFormat.parse (currentStartTime[i]);
+                                end1 = timeFormat.parse (currentEndTime[i - 1]);
+                            } catch (ParseException e) {
+                                e.printStackTrace ( );
+                            }
+                            Calendar cStart2 = DateUtil.dateToCalendar (start2);
+                            Calendar cEnd1 = DateUtil.dateToCalendar (end1);
                             if (start2.compareTo(end1) <= 0) {
 
                             } else {
-                                int minutes = containsTime(end1, start2,  holidayList);
+                                int minutes = containsTime(cEnd1, cStart2,  holidayList);
                                 if (minutes == 0) {
                                     sysStatus.put("comeLate", 1);
                                     if ("1".equals(confirmStatus[i])) {
@@ -829,10 +845,17 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                         if (currentEndTime.length == i + 1) {
 
                             workLog.setEndTime(currentEndTime[i]);
-                            OffsetDateTime start2 = DateUtil.strToOffSetDateTime(currentStartTime[i], "HH:mm");
-                            OffsetDateTime end1 = DateUtil.strToOffSetDateTime(currentEndTime[i - 1], "HH:mm");
+                            Date start2 = null;
+                            Date end1 = null;
+                            try {
+                                start2 = timeFormat.parse (currentStartTime[i]);
+                                end1 = timeFormat.parse (currentEndTime[i - 1]);
+                            } catch (ParseException e) {
+                                e.printStackTrace ( );
+                            }
+
                             if (start2.compareTo(end1) <= 0) {
-                                if (start2.getLong(ChronoField.MINUTE_OF_DAY) >= endDay.getLong(ChronoField.MINUTE_OF_DAY)) {
+                                if (start2.getTime ()/1000 >= dayStart.getTimeInMillis ()/1000) {
 
                                 } else {
                                    sysStatus.put("earlier", 1);
@@ -876,9 +899,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 detail.setWorkList(workList);
                 detail.setSysStatus(sysStatus);
                 detail.setHotelStatus(hotelStatus);
-                detail.setTime(startDay.format(d));
+                detail.setTime(d.format (startDay.getTime ()));
                 detailList.add(detail);
-                startDay = startDay.plusDays(1);
+                startDay.add (Calendar.DAY_OF_YEAR, 1);
             }
         }
         response.setList(detailList);
@@ -1076,46 +1099,51 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
      * @param holidayList   请假数据
      * @return
      */
-    private int containsTime(OffsetDateTime startTime, OffsetDateTime endTime, List<Holiday> holidayList) {
+    private int containsTime(Calendar startTime, Calendar endTime, List<HolidayDateInfo> holidayList) {
         int num = 0;
-        for (Holiday holiday : holidayList) {
-            long hStart = holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY);
-            long hEnd = holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY);
-            long startMinute = startTime.getLong(ChronoField.MINUTE_OF_DAY);
-            long endMinute = endTime.getLong(ChronoField.MINUTE_OF_DAY);
-            if (holiday.getFromDate().compareTo(startTime) > 0) continue;
-            if (holiday.getFromDate().compareTo(startTime) <= 0) {
+        Calendar time2 = Calendar.getInstance ();
+        time2.set (startTime.get (Calendar.YEAR), startTime.get (Calendar.MONTH), startTime.get (Calendar.DAY_OF_YEAR),
+                endTime.get (Calendar.HOUR_OF_DAY), endTime.get (Calendar.MINUTE), endTime.get (Calendar.SECOND));
+        for (HolidayDateInfo holiday : holidayList) {
+            Calendar from = DateUtil.dateToCalendar (holiday.getFromDate ());
+            Calendar to = DateUtil.dateToCalendar (holiday.getToDate ());
+            long hStart = from.getTimeInMillis ()/60000;
+            long hEnd = to.getTimeInMillis ()/60000;
+            long startMinute = startTime.getTimeInMillis ()/1000;
+            long endMinute = time2.getTimeInMillis ()/1000;
+            if (holiday.getFromDate().compareTo(startTime.getTime ()) > 0) continue;
+            if (holiday.getFromDate().compareTo(startTime.getTime ()) <= 0) {
                 //请假开始日期小于当前日期
-                if (holiday.getToDate().compareTo(startTime) >= 0) {
-                    if (holiday.getToDate().compareTo(endTime) < 0) {
+                if (holiday.getToDate().compareTo(startTime.getTime ()) >= 0) {
+                    if (holiday.getToDate().compareTo(time2.getTime ()) < 0) {
                         num += hEnd - startMinute;
                     } else  {
                         num += endMinute - startMinute;
                     }
                 }
-            } else if (holiday.getFromDate().getDayOfYear() == startTime.getDayOfYear()) {
+            } else if (from.get (Calendar.DAY_OF_YEAR) == startTime.get (Calendar.DAY_OF_YEAR)) {
                 //请假日期和当前日期一致
-                if (holiday.getToDate().getDayOfYear() == startTime.getDayOfYear()) {
+                if (to.get (Calendar.DAY_OF_YEAR) == startTime.get (Calendar.DAY_OF_YEAR)) {
                     if (hStart <= startMinute) {
-                        if (holiday.getToDate().compareTo(startTime) > 0) {
-                            if (holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) >= endTime.getLong(ChronoField.MINUTE_OF_DAY)) {
-                                num += endTime.getLong(ChronoField.MINUTE_OF_DAY) - startTime.getLong(ChronoField.MINUTE_OF_DAY);
+                        if (holiday.getToDate().compareTo(startTime.getTime ()) > 0) {
+                            if (to.getTimeInMillis ()/60000 >= time2.getTimeInMillis ()/60000) {
+                                num += time2.getTimeInMillis ()/60000 - startTime.getTimeInMillis ()/60000;
                             } else {
-                                num += holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) - startTime.getLong(ChronoField.MINUTE_OF_DAY);
+                                num += to.getTimeInMillis ()/60000 - startTime.getTimeInMillis ()/60000;
                             }
                         }
                     } else {
-                        if (holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) >= endTime.getLong(ChronoField.MINUTE_OF_DAY)) {
-                            num += endTime.getLong(ChronoField.MINUTE_OF_DAY) - holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY);
+                        if (to.getTimeInMillis ()/60000 >= time2.getTimeInMillis ()/60000) {
+                            num += time2.getTimeInMillis ()/60000 - from.getTimeInMillis ()/60000;
                         } else {
-                            num += holiday.getToDate().getLong(ChronoField.MINUTE_OF_DAY) - holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY);
+                            num += to.getTimeInMillis ()/60000 - from.getTimeInMillis ()/60000;
                         }
                     }
-                } else if (holiday.getToDate().getDayOfYear() > startTime.getDayOfYear()) {
-                    if (holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY) <= startTime.getLong(ChronoField.MINUTE_OF_DAY)) {
-                        num += endTime.getLong(ChronoField.MINUTE_OF_DAY) - startTime.getLong(ChronoField.MINUTE_OF_DAY);
-                    } else if (holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY) <= endTime.getLong(ChronoField.MINUTE_OF_DAY)){
-                        num += endTime.getLong(ChronoField.MINUTE_OF_DAY) - holiday.getFromDate().getLong(ChronoField.MINUTE_OF_DAY);
+                } else if (to.get (Calendar.DAY_OF_YEAR) > startTime.get (Calendar.DAY_OF_YEAR)) {
+                    if (from.getTimeInMillis ()/60000 <= startTime.getTimeInMillis ()/60000) {
+                        num += time2.getTimeInMillis ()/60000 - startTime.getTimeInMillis ()/60000;
+                    } else if (from.getTimeInMillis ()/60000 <= time2.getTimeInMillis ()/60000){
+                        num += time2.getTimeInMillis ()/60000 - from.getTimeInMillis ()/60000;
                     }
                 }
             }

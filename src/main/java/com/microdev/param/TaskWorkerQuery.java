@@ -43,4 +43,6 @@ public class TaskWorkerQuery {
 
     private String hotelName;
 
+    private String hrCompanyId;
+
 }
