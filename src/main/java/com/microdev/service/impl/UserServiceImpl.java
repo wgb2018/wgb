@@ -1,7 +1,5 @@
 package com.microdev.service.impl;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -71,6 +69,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     private ObjectStoreService objectStoreService;
     @Autowired
     DictService dictService;
+    @Autowired
+    FeedBackMapper feedBackMapper;
     @Override
     public User create(User user) throws Exception{
         try{
@@ -489,8 +489,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     public ResultDO feedbackQuery(Paginator paginator, FeedbackQueryDTO feedbackQueryDTO) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         //查询数据集合
-        List<FreeBack> list = userMapper.queryFreeback(feedbackQueryDTO);
-        PageInfo<FreeBack> pageInfo = new PageInfo<FreeBack>(list);
+        List<FeedBack> list = userMapper.queryFreeback(feedbackQueryDTO);
+        PageInfo<FeedBack> pageInfo = new PageInfo<FeedBack>(list);
         HashMap<String,Object> result = new HashMap<>();
         //设置获取到的总记录数total：
         result.put("total",pageInfo.getTotal());
@@ -498,6 +498,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         result.put("result",list);
         result.put("page",paginator.getPage());
         return ResultDO.buildSuccess(result);
+    }
+
+    @Override
+    public ResultDO feedbackInsert(FeedBackParam request) throws Exception{
+        User user = userMapper.queryByUserId (request.getUserId ());
+        if(user == null){
+            throw new Exception ("用户不存在");
+        }
+        FeedBack feedBack = new FeedBack ();
+        feedBack.setUserId (request.getUserId ());
+        feedBack.setContent (request.getContent ());
+        feedBack.setUserType (user.getUserType ());
+        feedBackMapper.insert (feedBack);
+        return ResultDO.buildSuccess ("反馈成功");
     }
 
 }

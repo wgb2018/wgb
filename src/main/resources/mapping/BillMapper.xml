@@ -17,7 +17,7 @@
         select
         <include refid="Bill_Column_List"/>
         FROM bill WHERE
-        task_id = #{HrCompanyTaskID} and hr_company_id = #{hrCompanyId} and worker_id = #{WorkerId}
+        task_id = #{hrCompanyTaskId} and hr_company_id = #{hrCompanyId} and worker_id = #{workerId}
         order by create_time desc
     </select>
 

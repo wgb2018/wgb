@@ -323,8 +323,8 @@ public class UserController {
      * 添加意见反馈
      */
     @PostMapping("/feedback/insert")
-    public ResultDO feedbackInsert( @RequestBody PagingDO<FeedbackQueryDTO> paging) {
-        return ResultDO.buildSuccess (userService.feedbackQuery(paging.getPaginator (),paging.getSelector ()));
+    public ResultDO feedbackInsert( @RequestBody FeedBackParam request) throws Exception{
+        return ResultDO.buildSuccess (userService.feedbackInsert(request));
     }
 
 

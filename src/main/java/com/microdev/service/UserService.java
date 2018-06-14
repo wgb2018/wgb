@@ -59,4 +59,6 @@ public interface UserService extends IService<User>{
 
        ResultDO feedbackQuery(Paginator paginator, FeedbackQueryDTO feedbackQueryDTO);
 
+       ResultDO feedbackInsert(FeedBackParam request) throws Exception;
+
 }

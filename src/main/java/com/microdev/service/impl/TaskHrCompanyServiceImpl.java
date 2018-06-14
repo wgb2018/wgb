@@ -679,6 +679,9 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             throw new BusinessException("查询不到人力公司任务");
         }
         taskHrCompany.setConfirmedWorkers(taskHrCompany.getConfirmedWorkers() - 1);
+        Task task = taskMapper.getFirstById (message.getTaskId ());
+        task.setConfirmedWorkers (task.getConfirmedWorkers () - 1);
+        taskMapper.updateById (task);
         if (message.getApplicantType() == 1) {
             taskHrCompany.setRefusedWorkers(taskHrCompany.getRefusedWorkers() + 1);
         }
@@ -722,6 +725,60 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             informService.sendInformInfo(2, 1, content, message.getWorkerId(), "调换通知");
         }
         return ResultDO.buildSuccess("派发完成");
+    }
+
+    @Override
+    public ResultDO exchangeWorker(String taskWorkerId,String workerId) {
+
+        //消息发送者是酒店，将小时工任务状态设置为3终止，如果是小时工，将状态置为2
+        TaskWorker taskWorker = taskWorkerMapper.selectById(taskWorkerId);
+        if (taskWorker == null) {
+            throw new BusinessException("查询不到小时工工作任务");
+        }
+        taskWorker.setStatus (3);
+        taskWorker.setRefusedReason("小时工有事不能工作，另换小时工接替工作");
+        taskWorkerMapper.updateAllColumnById(taskWorker);
+
+        //更新人力任务信息
+        TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(taskWorker.getTaskHrId ());
+        if (taskHrCompany == null) {
+            throw new BusinessException("查询不到人力公司任务");
+        }
+        taskHrCompany.setConfirmedWorkers(taskHrCompany.getConfirmedWorkers() - 1);
+        taskHrCompany.setRefusedWorkers (taskHrCompany.getRefusedWorkers () + 1);
+        Task task = taskMapper.getFirstById (taskHrCompany.getTaskId ());
+        task.setConfirmedWorkers (task.getConfirmedWorkers () - 1);
+        taskMapper.updateById (task);
+        taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
+
+        //插入小时工任务信息
+        TaskWorker workerTask = null;
+
+        workerTask = new TaskWorker();
+        workerTask.setStatus(0);
+        workerTask.setDayEndTime(taskWorker.getDayEndTime());
+        workerTask.setDayStartTime(taskWorker.getDayStartTime());
+        workerTask.setToDate(taskWorker.getToDate());
+        workerTask.setFromDate(taskWorker.getFromDate());
+        workerTask.setHotelName(taskHrCompany.getHotelName());
+        workerTask.setHourlyPay(taskHrCompany.getHourlyPay());
+        workerTask.setTaskContent(taskHrCompany.getTaskContent());
+        workerTask.setTaskTypeCode(taskHrCompany.getTaskTypeCode());
+        workerTask.setTaskTypeText(taskHrCompany.getTaskTypeText());
+        workerTask.setTaskHrId(taskHrCompany.getPid());
+        workerTask.setWorkerId(workerId);
+        taskWorkerMapper.insert(workerTask);
+        List<TaskWorker> list = new ArrayList<TaskWorker> ();
+        list.add (workerTask);
+        //给小时工发送消息
+        messageService.hrDistributeWorkerTask(list, taskHrCompany);
+
+            User oldUser = userMapper.selectByWorkerId(taskWorker.getWorkerId());
+            taskWorkerMapper.updateStatus(taskWorker.getWorkerId(), 3);
+            User newUser = userMapper.selectByWorkerId(list.get(0).getWorkerId());
+            String content = companyMapper.findCompanyById (taskHrCompany.getHrCompanyId ()).getName ()+"人力公司终止了您在"+companyMapper.findCompanyById (task.getHotelId ()).getName ()+"的任务，如有疑问请咨询相关人力公司";
+            informService.sendInformInfo(2, 1, content, taskWorker.getWorkerId(), "任务被终止");
+        return ResultDO.buildSuccess("操作完成");
     }
 
     /**
