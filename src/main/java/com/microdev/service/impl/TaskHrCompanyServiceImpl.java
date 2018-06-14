@@ -884,11 +884,10 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
      *
      * @param messageId
      * @param status    0拒绝1同意
-     * @param reason
      * @return
      */
     @Override
-    public ResultDO hrHandleIncome(String messageId, String status, String reason) {
+    public ResultDO hrHandleIncome(String messageId, String status) {
         if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(status)) {
             throw new ParamsException("参数不能为空");
         }

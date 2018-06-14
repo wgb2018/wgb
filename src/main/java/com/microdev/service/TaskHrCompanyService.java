@@ -104,10 +104,9 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
      * 人力公司处理酒店
      * @param messageId
      * @param status        0拒绝1同意
-     * @param reason
      * @return
      */
-    ResultDO hrHandleIncome(String messageId, String status, String reason);
+    ResultDO hrHandleIncome(String messageId, String status);
 
     /**
      * 人力同意小时工拒绝任务并派发任务

@@ -402,9 +402,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         Map<String, Object> tp = taskWorkerMapper.selectHrId((String)map.get("taskWorkerId"));
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applyChangeMessage");
         m.setMessageCode(mess.getCode());
-        //m.setMessageTitle(mess.getTitle());
+        m.setMessageTitle((String)tp.get("taskTypeText"));
         m.setContent((String)map.get("reason"));
-        m.setWorkerId(null);
+        m.setWorkerId((String)tp.get("workerId"));
         m.setHrCompanyId((String)map.get("hrCompanyId"));
         m.setHotelId((String)map.get("hotelId"));
         m.setWorkerTaskId((String)map.get("taskWorkerId"));
@@ -418,8 +418,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         m.setStatus(0);
         m.setIsTask(0);
         m.setMessageType(9);
-        m.setHrTaskId(param.get("hrTaskId"));
-        m.setHrTaskId(param.get("taskId"));
+        m.setHrTaskId((String)tp.get("hrTaskId"));
+        m.setHrTaskId((String)tp.get("taskId"));
         messageMapper.insert(m);
         return true;
     }

@@ -170,12 +170,13 @@ public class WorkerController {
 
     /**
      * 小时工处理收入确认
-     * @param param
+     * @param messageId
+     * @param status        0拒绝1同意
      * @return
      */
-    @PostMapping("/worker/handle/accont")
-    public ResultDO workerHandleAccount(@RequestBody Map<String, String> param) {
+    @GetMapping("/worker/{messageId}/account/{status}")
+    public ResultDO workerHandleAccount(@PathVariable String messageId,@PathVariable String status) {
 
-        return workerService.workerHandleHrPay(param);
+        return workerService.workerHandleHrPay(messageId, status);
     }
 }
