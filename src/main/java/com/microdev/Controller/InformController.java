@@ -4,10 +4,9 @@ import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
 import com.microdev.param.InformRequestDTO;
 import com.microdev.service.InformService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class InformController {
@@ -24,5 +23,16 @@ public class InformController {
     public ResultDO getInformDetails(@RequestBody PagingDO<InformRequestDTO> paging) {
 
         return ResultDO.buildSuccess(informService.selectMessageInfo(paging.getSelector(), paging.getPaginator()));
+    }
+
+    /**
+     * 更新通知状态为已读
+     * @param noticeId  通知id
+     * @return
+     */
+    @GetMapping("/inform/update/{noticeId}")
+    public ResultDO updateinformNotice(@PathVariable String noticeId) {
+
+        return informService.updateInformStatus(noticeId);
     }
 }

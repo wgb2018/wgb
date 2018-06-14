@@ -1,6 +1,7 @@
 package com.microdev.service;
 
 import com.baomidou.mybatisplus.service.IService;
+import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.model.Inform;
 import com.microdev.param.InformRequestDTO;
@@ -39,4 +40,11 @@ public interface InformService extends IService<Inform> {
      * @return
      */
     int selectCountByParam(Map<String, Object> param);
+
+    /**
+     * 更新通知状态为已读
+     * @param noticeId      通知id
+     * @return
+     */
+    ResultDO updateInformStatus(String noticeId);
 }

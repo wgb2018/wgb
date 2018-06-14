@@ -3,6 +3,8 @@ package com.microdev.service.impl;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.microdev.common.ResultDO;
+import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.StringKit;
@@ -12,12 +14,14 @@ import com.microdev.model.Inform;
 import com.microdev.model.InformTemplate;
 import com.microdev.param.InformRequestDTO;
 import com.microdev.param.InformType;
+import com.microdev.param.NoticeResponse;
 import com.microdev.service.InformService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.temporal.ChronoField;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,8 +109,11 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
         //分页查询type类型的消息
 
         PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
-        List<Map<String, Object>> list = informMapper.selectInfromByParam(param);
-        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
+        List<NoticeResponse> list = informMapper.selectInfromByParam(param);
+        PageInfo<NoticeResponse> pageInfo = new PageInfo<>(list);
+        for (NoticeResponse response : list) {
+            response.setTime(response.getCreateTime().getLong(ChronoField.INSTANT_SECONDS));
+        }
         result.put("page", pageInfo.getPageNum());
         result.put("pageSize", pageInfo.getPageSize());
         result.put("list", list);
@@ -154,6 +161,25 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
     @Override
     public int selectCountByParam(Map<String, Object> param) {
         return informMapper.selectUnReadCount(param);
+    }
+
+    /**
+     * 更新通知状态为已读
+     * @param noticeId      通知id
+     * @return
+     */
+    @Override
+    public ResultDO updateInformStatus(String noticeId) {
+        if (StringUtils.isEmpty(noticeId)) {
+            throw new ParamsException("参数不能为空");
+        }
+        Inform inform = informMapper.selectById(noticeId);
+        if (inform == null) {
+            return ResultDO.buildError("查询不到通知信息");
+        }
+        inform.setStatus(1);
+        informMapper.updateById(inform);
+        return ResultDO.buildSuccess("更新成功");
     }
 
 
