@@ -59,4 +59,5 @@ public interface TaskWorkerMapper extends BaseMapper<TaskWorker> {
     int selectCurTasCount(TaskWorkerQuery query);
 
     TaskDateInfo selectTaskWorkerDate(@Param ("id") String id);
+
 }

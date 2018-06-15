@@ -28,7 +28,7 @@
     </select>
 
     <select id="selectInfromByParam" parameterType="java.util.Map" resultType="com.microdev.param.NoticeResponse">
-        SELECT id as pid,create_time,content,title,status
+        SELECT id as pid,create_time as createTime,content,title,status
         FROM inform
         <where>
             <if test="sendType != null">

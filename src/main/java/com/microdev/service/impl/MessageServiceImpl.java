@@ -506,7 +506,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         } else {
             throw new ParamsException("参数传递错误");
         }
-        System.out.println ("list:"+list);
         PageInfo<AwaitHandleInfo> pageInfo = new PageInfo<>(list);
         Map<String, Object> map = new HashMap<>();
         map.put("page", pageInfo.getPageNum());
@@ -989,6 +988,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         for (AwaitHandleInfo info : list) {
             if ("4".equals(info.getType()) || "10".equals(info.getType())) {
                 info.setNeedWorkers(info.getHrNeedWorkers());
+                info.setConfirmedWorkers(info.getHrConfirmedWorkers());
             }
         }
     }
