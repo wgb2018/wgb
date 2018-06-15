@@ -145,6 +145,8 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         } else {
             return ResultDO.buildSuccess("失败");
         }
+        inform.setModifyTime(OffsetDateTime.now());
+        inform.setCreateTime(OffsetDateTime.now());
         informMapper.insertInform(inform);
         return    ResultDO.buildSuccess("添加成功");
     }
@@ -415,6 +417,8 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         message.setStatus(1);
         messageMapper.updateById(message);
         Inform inform = new Inform();
+        inform.setCreateTime(OffsetDateTime.now());
+        inform.setModifyTime(OffsetDateTime.now());
         inform.setReceiveId(message.getWorkerId());
         inform.setSendType(2);
         inform.setAcceptType(1);

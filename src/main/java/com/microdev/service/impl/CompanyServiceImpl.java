@@ -162,9 +162,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         messageMapper.updateById(message);
 
         Company company = null;
-        Inform inform = null;
+        Inform inform = new Inform();
+        inform.setCreateTime(OffsetDateTime.now());
+        inform.setModifyTime(OffsetDateTime.now());
         if (type == 1) {//酒店处理
-            inform = new Inform();
+
             inform.setSendType(3);
             inform.setAcceptType(2);
             inform.setReceiveId(message.getHrCompanyId());
@@ -194,7 +196,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             }
             informMapper.insertInform(inform);
         } else {//人力处理
-            inform = new Inform();
             inform.setSendType(2);
             inform.setAcceptType(3);
             inform.setReceiveId(message.getHotelId());
@@ -319,6 +320,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
         Company c = companyMapper.selectById(oldMsg.getHotelId());
         inform.setAcceptType(1);
+        inform.setCreateTime(OffsetDateTime.now());
+        inform.setModifyTime(OffsetDateTime.now());
         inform.setSendType(3);
         inform.setStatus(0);
         inform.setReceiveId(oldMsg.getWorkerId());
@@ -592,6 +595,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         messageMapper.updateById(m);
 
         Inform inform = new Inform();
+        inform.setCreateTime(OffsetDateTime.now());
+        inform.setModifyTime(OffsetDateTime.now());
         inform.setReceiveId(m.getWorkerId());
         inform.setSendType(3);
         inform.setAcceptType(1);
@@ -753,6 +758,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         message.setStatus(1);
         messageMapper.updateById(message);
         Inform inform = new Inform();
+        inform.setCreateTime(OffsetDateTime.now());
+        inform.setModifyTime(OffsetDateTime.now());
         inform.setAcceptType(1);
         inform.setSendType(2);
         inform.setReceiveId(message.getWorkerId());
@@ -846,6 +853,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         message.setStatus(1);
         messageMapper.updateById(message);
         Inform inform = new Inform();
+        inform.setCreateTime(OffsetDateTime.now());
+        inform.setModifyTime(OffsetDateTime.now());
         HotelHrCompany hotelHrCompany = hotelHrCompanyMapper.findOneHotelHr(message.getHotelId(), message.getHrCompanyId());
         if (hotelHrCompany == null) {
             throw new BusinessException("查询不到人力酒店关系");

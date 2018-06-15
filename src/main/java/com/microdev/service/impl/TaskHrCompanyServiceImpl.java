@@ -318,6 +318,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         inform.setReceiveId(taskHrCompany.getHotelId());
         inform.setAcceptType(3);
         inform.setSendType(2);
+        inform.setCreateTime(OffsetDateTime.now());
+        inform.setModifyTime(OffsetDateTime.now());
         informMapper.insertInform(inform);
 
         //生成一个待派发的消息
@@ -577,6 +579,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         inform.setReceiveId(taskHrCompany.getHotelId());
         inform.setAcceptType(3);
         inform.setSendType(2);
+        inform.setCreateTime(OffsetDateTime.now());
+        inform.setModifyTime(OffsetDateTime.now());
         informMapper.insertInform(inform);
         return "成功";
     }

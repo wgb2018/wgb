@@ -21,6 +21,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.time.temporal.ChronoField;
 import java.util.HashMap;
 import java.util.List;
@@ -134,6 +135,8 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
             throw new ParamsException("参数不能为空");
         }
         Inform inform = new Inform();
+        inform.setCreateTime(OffsetDateTime.now());
+        inform.setModifyTime(OffsetDateTime.now());
         inform.setTitle(title);
         inform.setContent(content);
         inform.setAcceptType(acceptType);

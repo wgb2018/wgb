@@ -828,6 +828,28 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             if (holidayList == null || holidayList.size() == 0) {
                 //没有打卡也没有请假
                 while (startDay.compareTo(nowDate) <= 0) {
+                    if (startDay.getDayOfYear() == nowDate.getDayOfYear() && (nowDate.toOffsetTime().compareTo(dayEnd)) < 0) {
+                        //如果是当天且没有到下班时间
+                        detail = new WorkerDetail();
+                        workList = new ArrayList<>();
+                        workLog = new PunchInfo();
+                        workLog.setStartTime("--");
+                        workLog.setEndTime("--");
+                        hotelStatus = new HashMap<>();
+                        sysStatus = new HashMap<>();
+                        initMapStatus(hotelStatus, 4);
+                        initMapStatus(sysStatus, 5);
+                        sysStatus.put("comeLate", 1);
+                        detail.setHotelStatus(hotelStatus);
+                        detail.setSysStatus(sysStatus);
+                        detail.setExpire("0");
+                        detail.setTime(startDay.format(t1));
+                        workList.add(workLog);
+                        detail.setWorkList(workList);
+                        detailList.add(detail);
+                        startDay = startDay.plusDays(1);
+                        continue;
+                    }
                     detail = new WorkerDetail();
                     workList = new ArrayList<>();
                     workLog = new PunchInfo();
@@ -849,9 +871,10 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     }
                     workList.add(workLog);
                     detail.setTime(startDay.format(t1));
-                    detailList.add(detail);
+                    detail.setWorkList(workList);
                     detail.setSysStatus(sysStatus);
                     detail.setHotelStatus(hotelStatus);
+                    detailList.add(detail);
                     startDay = startDay.plusDays(1);
                 }
 
@@ -980,7 +1003,12 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     }
                     //没有请假
                     if (minutes == 0) {
-                        sysStatus.put("stay", 1);
+                        //当前时间且没有到下班时间
+                        if (startDay.getDayOfYear() == nowDate.getDayOfYear() && (nowDate.toOffsetTime().compareTo(dayEnd)) < 0) {
+                            sysStatus.put("comeLate", 1);
+                        } else {
+                            sysStatus.put("stay", 1);
+                        }
                         workLog = new PunchInfo();
                         workLog.setEndTime("--");
                         workLog.setStartTime("--");
@@ -1139,9 +1167,13 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                             workList.add(workLog);
                         } else {
                             workLog.setEndTime("--");
-                            sysStatus.put("forget", 1);
-                            if (status.contains("4") && confirmStatus.contains("4")) {
-                                hotelStatus.put("forget", 1);
+                            if (startDay.getDayOfYear() == nowDate.getDayOfYear() && (nowDate.toOffsetTime().compareTo(dayEnd) < 0)) {
+                                //如果当天还没有工作结束，就不判断
+                            } else {
+                                sysStatus.put("forget", 1);
+                                if (status.contains("4") && confirmStatus.contains("4")) {
+                                    hotelStatus.put("forget", 1);
+                                }
                             }
                             workList.add(workLog);
                         }
@@ -1149,9 +1181,14 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 } else {
                     //忘打卡
                     workLog.setEndTime("--");
-                    sysStatus.put("forget", 1);
-                    if (status.contains("4") && confirmStatus.contains("4")) {
-                        hotelStatus.put("forget", 1);
+                    //如果当天还没有工作结束，就不判断
+                    if (startDay.getDayOfYear() == nowDate.getDayOfYear() && (nowDate.toOffsetTime().compareTo(dayEnd) < 0)) {
+
+                    } else {
+                        sysStatus.put("forget", 1);
+                        if (status.contains("4") && confirmStatus.contains("4")) {
+                            hotelStatus.put("forget", 1);
+                        }
                     }
                     workList.add(workLog);
                     int minutes = judgeTime(startDay.getYear(), startDay.getDayOfYear(), dayStart, dayEnd, holidayList);

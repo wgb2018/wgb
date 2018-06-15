@@ -133,6 +133,8 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
 
         //添加一个通知消息
         Inform notice = new Inform();
+        notice.setCreateTime(OffsetDateTime.now());
+        notice.setModifyTime(OffsetDateTime.now());
         notice.setReceiveId(taskHr.getHrCompanyId());
         notice.setAcceptType(2);
         notice.setSendType(1);
