@@ -1,20 +1,13 @@
 package com.microdev;
 
-import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoField;
+import java.time.OffsetDateTime;
 import java.util.*;
 
-
-
+import com.microdev.common.WorkerUnbind;
 import com.microdev.mapper.MessageMapper;
-import com.microdev.mapper.WorkerLogMapper;
 import com.microdev.model.Message;
-import com.microdev.model.WorkLog;
-import com.microdev.param.*;
-import com.microdev.service.WorkerService;
-import net.sf.json.JSONObject;
-import org.joda.time.DateTime;
+import com.microdev.param.CreateTaskRequest;
+import com.microdev.param.TaskHrCompanyDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +18,7 @@ import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.mapper.TaskMapper;
 import com.microdev.model.Task;
+import com.microdev.param.TaskQueryDTO;
 import com.microdev.service.TaskService;
 
 @RunWith(SpringRunner.class)
@@ -37,10 +31,6 @@ public class TaskTest {
     private TaskMapper  taskMapper;
 	@Autowired
 	private MessageMapper messageMapper;
-	@Autowired
-	private WorkerLogMapper workerLogMapper;
-	@Autowired
-	private WorkerService workerService;
 	
 	@Test
 	public void oneTest() {
@@ -55,20 +45,10 @@ public class TaskTest {
 
 	@Test
 	public void twoest() {
-
-		WorkLog workLog = workerLogMapper.selectById("f291beb1a22b42cfa983f43b35e9b78f");
-		OffsetDateTime time = OffsetDateTime.now();
-		OffsetDateTime off = workLog.getModifyTime();
-		DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		System.out.println(f.format(off));
-		OffsetDateTime second = OffsetDateTime.ofInstant(Instant.ofEpochMilli(off.toEpochSecond()*1000), ZoneId.systemDefault());
-		System.out.println("second:" + f.format(second));
-	}
-
-	@Test
-	public void threeTest() {
-		UserTaskResponse response = workerService.selectUserTaskInfo("b229cd5ab09d4d56bde740b86b7f1a16", "0638d16d6a0a42709f12c5b3ad5d901d");
-		JSONObject json = JSONObject.fromObject(response);
-		System.out.println(json.toString());
+		Message m = messageMapper.selectById("b34921ea57de410b8e0b28072dc001ad");
+		System.out.println(m.toString());
+		/*m.setStatus(0);
+		messageMapper.updateById(m);
+		System.out.println(m.getStatus());*/
 	}
 }
