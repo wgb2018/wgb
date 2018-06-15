@@ -12,6 +12,8 @@ import com.microdev.service.AdvertService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.OffsetDateTime;
+
 @RestController
 public class AdvertController {
     /**
@@ -23,7 +25,7 @@ public class AdvertController {
     AdvertMapper advertMapper;
     @PostMapping("/advert/add")
     public ResultDO addAdvert(@RequestBody AdvertParam param) {
-        return  ResultDO.buildSuccess(advertService.insertAdvert (param));
+        return  advertService.insertAdvert (param);
     }
     /**
      * 删除广告
@@ -38,7 +40,7 @@ public class AdvertController {
      */
     @PostMapping("/search/advert")
     public ResultDO queryAdvert(@RequestBody PagingDO<AdvertQuery> page) {
-        return ResultDO.buildSuccess (advertService.queryAdvert (page.getPaginator (),page.getSelector ()));
+        return advertService.queryAdvert (page.getPaginator (),page.getSelector ());
     }
     /**
      * 广告更新
@@ -53,6 +55,9 @@ public class AdvertController {
         advert.setContent (param.getContent ());
         advert.setDescription (param.getDescription ());
         advert.setTittle (param.getTittle ());
+        if(advert.getStatus () == 0 && param.getStatus () == 1){
+            advert.setReleaseTime (OffsetDateTime.now ());
+        }
         advert.setStatus (param.getStatus ());
         advert.setTheCover (param.getTheCover ());
         advert.setAdvertType (param.getAdvertType ());
@@ -66,6 +71,21 @@ public class AdvertController {
     public ResultDO detailAdvert(@PathVariable String id) throws Exception{
         return ResultDO.buildSuccess (advertMapper.selectById (id));
     }
+    /**
+     * 发布广告
+     */
+    @GetMapping("/advert/release/{id}")
+    public ResultDO releaseAdvert(@PathVariable String id) throws Exception{
+        Advert advert = advertMapper.selectById (id);
+        if(advert == null){
+            return ResultDO.buildError ("无法查到需要发布的广告信息");
+        }
+        advert.setStatus (1);
+        advert.setReleaseTime (OffsetDateTime.now ());
+        advertMapper.updateById (advert);
+        return ResultDO.buildSuccess ("发布成功");
+    }
+
 
 
 

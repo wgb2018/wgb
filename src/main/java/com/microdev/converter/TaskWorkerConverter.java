@@ -4,6 +4,8 @@ import com.microdev.model.TaskWorker;
 import com.microdev.param.WorkTaskViewModel;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
+
 /**
  * @author yinbaoxin
  */
@@ -31,6 +33,12 @@ public class TaskWorkerConverter {
         }
         if(taskWorker.getShouldPayMoney()-taskWorker.getHavePayMoney()<=0 && taskWorker.getShouldPayMoney()>0){
             viewModel.setPayStatus("已结算");
+        }
+        if(taskWorker.getToDate ().isAfter (OffsetDateTime.now ()) && taskWorker.getFromDate ().isBefore (OffsetDateTime.now ()) && taskWorker.getStatus () == 1){
+            viewModel.setStatus (4);
+        }
+        if(taskWorker.getToDate ().isBefore (OffsetDateTime.now ()) && taskWorker.getStatus () == 1 ){
+            viewModel.setStatus (5);
         }
         viewModel.setHourlyPay(taskWorker.getHourlyPay());
         viewModel.setHrCompanyName(taskWorker.getHrCompanyName());

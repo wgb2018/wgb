@@ -73,6 +73,13 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         if (map == null) {
             return ResultDO.buildSuccess(new HashMap<String, Object>());
         }
+        /*if((Integer)map.get ("status") == 5){
+            if(((OffsetDateTime)map.get("toDate")).isAfter (OffsetDateTime.now()) && ((OffsetDateTime)map.get("fromDate")).isBefore (OffsetDateTime.now())){
+                map.put("status",6);
+            }else if(((OffsetDateTime)map.get("fromDate")).isBefore (OffsetDateTime.now())){
+                map.put("status",7);
+            }
+        }*/
         map.put("payStatus", "未结算");
         if ((Double) map.get("workersHavePay") > 0) {
             map.put("payStatus", "结算中");
@@ -235,6 +242,13 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             task.setHotel(companyMapper.findCompanyById(task.getHotelId()));
             List<Map<String, Object>> lis = taskWorkerMapper.selectTaskWorkCById(task.getPid());
             task.setListWorkerTask(lis);
+            if(task.getStatus () == 5){
+                if(task.getToDate ().isAfter (OffsetDateTime.now()) && task.getFromDate ().isBefore (OffsetDateTime.now())){
+                    task.setStatus (6);
+                }else if(task.getToDate ().isBefore (OffsetDateTime.now())){
+                    task.setStatus (7);
+                }
+            }
         }
         PageInfo<TaskHrCompany> pageInfo = new PageInfo<>(list);
         HashMap<String, Object> result = new HashMap<>();
@@ -256,8 +270,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
      * 人力公司支付小时工
      */
     @Override
-    public ResultDO hrPayWorkers(HrPayWorkerRequest payWorkerRequest) {
-        TaskHrCompany taskHr = taskHrCompanyMapper.queryByTaskId(payWorkerRequest.getHrTaskId());
+    public ResultDO hrPayWorkers(PayParam PayHrParam) {
+        /*TaskHrCompany taskHr = taskHrCompanyMapper.queryByTaskId(payWorkerRequest.getHrTaskId());
         Set<WorkerPayDetailRequest> paySet = payWorkerRequest.getPayWorkerSet();
         if (paySet.size() == 0) {
             throw new ParamsException("支付的小时工列表不能为空");
@@ -286,7 +300,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         }
         taskHr.setWorkersHavePay(taskHr
                 .getWorkersHavePay() + thisPayMoneySum);
-        taskHrCompanyMapper.updateById(taskHr);
+        taskHrCompanyMapper.updateById(taskHr);*/
         return ResultDO.buildSuccess("结算成功");
     }
 
@@ -975,7 +989,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             //新增酒店支付人力明细
             Bill bill = new Bill();
             bill.setHrCompanyId(taskHrCompany.getHrCompanyId());
-            bill.setHrCompanyName(taskHrCompany.getHrCompanyName());
             bill.setPayMoney(Double.valueOf(message.getMinutes()));
             bill.setPayType(1);
             bill.setTaskId(taskHrCompany.getTaskId());

@@ -249,7 +249,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
                 t.setStatus (4);
             }
             if(t.getToDate ().isBefore (OffsetDateTime.now ()) && t.getStatus () == 1 ){
-                t.setStatus (4);
+                t.setStatus (5);
             }
             t.setUser (userMapper.queryByUserId (t.getUserId ()));
             t.setHotel (companyMapper.selectById (t.getHotelId ()));

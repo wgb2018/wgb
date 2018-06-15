@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.model.Task;
-import com.microdev.param.ApplyParamDTO;
-import com.microdev.param.CreateTaskRequest;
-import com.microdev.param.HotelPayHrRequest;
-import com.microdev.param.TaskQueryDTO;
+import com.microdev.param.*;
 
 public interface TaskService extends IService<Task> {
     /**
@@ -25,7 +22,7 @@ public interface TaskService extends IService<Task> {
     /**
      * 酒店支付人力公司
      */
-    ResultDO hotelPayHr(HotelPayHrRequest payHrRequest);
+    ResultDO hotelPayHr(PayParam PayHrParam);
 
     /**
      * 酒店再次派发任务

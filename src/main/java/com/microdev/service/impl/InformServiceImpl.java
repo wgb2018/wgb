@@ -40,6 +40,7 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
      */
     @Override
     public Map<String, Object> selectMessageInfo(InformRequestDTO dto, Paginator paginator) {
+        System.out.println ("dto:"+dto);
         if (StringUtils.isEmpty(dto.getRole()) || StringUtils.isEmpty(dto.getId())) {
             throw new ParamsException("参数不能为空");
         }
@@ -110,8 +111,10 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
 
         PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
         List<NoticeResponse> list = informMapper.selectInfromByParam(param);
+        System.out.println ("list:"+list);
         PageInfo<NoticeResponse> pageInfo = new PageInfo<>(list);
         for (NoticeResponse response : list) {
+            System.out.println ("response:"+response);
             response.setTime(response.getCreateTime().getLong(ChronoField.INSTANT_SECONDS) * 1000);
         }
         result.put("page", pageInfo.getPageNum());

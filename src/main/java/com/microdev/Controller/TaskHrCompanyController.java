@@ -4,6 +4,7 @@ import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
 import com.microdev.param.HrPayWorkerRequest;
 import com.microdev.param.HrTaskDistributeRequest;
+import com.microdev.param.PayParam;
 import com.microdev.param.TaskHrQueryDTO;
 import com.microdev.service.TaskHrCompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,10 +61,9 @@ public class TaskHrCompanyController {
     /**
      * 人力公司结算小时工
      */
-    @PutMapping("/admin/hr-tasks/{hrTaskId}/pay")
-    public ResultDO createCompany(@PathVariable String hrTaskId,@RequestBody HrPayWorkerRequest payWorkerRequest) {
-        payWorkerRequest.setHrTaskId(hrTaskId);
-        return taskHrCompanyService.hrPayWorkers(payWorkerRequest);
+    @PostMapping("/hr/pay/worker")
+    public ResultDO hrPayWorker(@RequestBody PayParam PayHrParam) {
+        return taskHrCompanyService.hrPayWorkers(PayHrParam);
     }
     /**
      * 人力公司申请调配

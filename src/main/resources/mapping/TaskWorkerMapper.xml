@@ -188,7 +188,7 @@
         SELECT u.worker_id AS workerId, u.`nickname` AS workerName, CASE u.`sex` WHEN 'MALE' THEN 'MALE' WHEN 'FEMALE' THEN 'FEMALE' ELSE 'UNKNOWN' END AS gender,
         IFNULL(u.avatar, '') AS headImage,u.mobile AS mobile, u.birthday AS birthday,tw.refused_reason as refusedReason,
         tw.refused_reason AS refusedReason,tw.status AS taskStatus,tw.repast_times AS repastTimes, tw.minutes AS minutes,
-        IFNULL(tw.have_pay_money,0) AS havePayMoney, IFNULL(tw.should_pay_money,0) AS shouldPayMoney, IFNULL(tw.should_pay_money - tw.have_pay_money,0) AS waitPayMoney,
+        IFNULL(tw.have_pay_money,0.0) AS havePayMoney, IFNULL(tw.should_pay_money,0.0) AS shouldPayMoney, IFNULL(tw.should_pay_money - tw.have_pay_money,0.0) AS waitPayMoney,
         tw.id AS taskWorkerId
         FROM (
         SELECT * FROM task_worker
@@ -202,7 +202,7 @@
         SELECT u.worker_id AS workerId, u.`nickname` AS workerName, CASE u.`sex` WHEN 'MALE' THEN 'MALE' WHEN 'FEMALE' THEN 'FEMALE' ELSE 'UNKNOWN' END AS gender,
         IFNULL(u.avatar, '') AS headImage,u.mobile AS mobile, u.birthday AS birthday,tw.refused_reason as refusedReason,u.age as age,
         tw.refused_reason AS refusedReason,tw.status AS taskStatus,tw.repast_times AS repastTimes, tw.minutes AS minutes,
-        IFNULL(tw.have_pay_money,0) AS havePayMoney, IFNULL(tw.should_pay_money,0) AS shouldPayMoney, IFNULL(tw.should_pay_money - tw.have_pay_money,0) AS waitPayMoney,
+        IFNULL(tw.have_pay_money,0.0) AS havePayMoney, IFNULL(tw.should_pay_money,0.0) AS shouldPayMoney, IFNULL(tw.should_pay_money - tw.have_pay_money,0.0) AS waitPayMoney,
         tw.id AS taskWorkerId
         FROM (
         SELECT * FROM task_worker

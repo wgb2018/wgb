@@ -3,7 +3,7 @@
 <mapper namespace="com.microdev.mapper.AdvertMapper">
     <sql id="Advert_Column_List">
         id as pid, create_time, deleted, modify_time,description,the_cover,content
-        ,status,external_links,advert_type,tittle
+        ,status,external_links,advert_type,tittle,release_time
 
     </sql>
     <select id="queryAdvert" resultType="com.microdev.model.Advert" parameterType="com.microdev.param.AdvertQuery">
@@ -16,7 +16,7 @@
               and status = #{status}
             </if>
         </where>
-        order by create_time desc;
+        order by create_time desc
     </select>
 
 

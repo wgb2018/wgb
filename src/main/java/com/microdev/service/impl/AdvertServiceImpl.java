@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,11 @@ public class AdvertServiceImpl extends ServiceImpl<AdvertMapper,Advert> implemen
         advert.setTittle (param.getTittle ());
         advert.setDescription (param.getDescription ());
         advert.setTheCover(param.getTheCover ());
+        advert.setAdvertType (param.getAdvertType ());
+        advert.setStatus (param.getStatus ());
+        if(param.getStatus () == 1){
+            advert.setReleaseTime (OffsetDateTime.now ());
+        }
         if(param.getAdvertType () == 2){
             advert.setContent (param.getContent ());
         }else if(param.getAdvertType () == 3){

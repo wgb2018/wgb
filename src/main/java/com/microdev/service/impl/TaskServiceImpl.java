@@ -16,7 +16,6 @@ import com.microdev.converter.TaskConverter;
 import com.microdev.service.InformService;
 import com.microdev.service.MessageService;
 import com.microdev.service.TaskService;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +25,6 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoField;
-import java.time.temporal.TemporalField;
 import java.util.*;
 
 @Transactional
@@ -53,6 +51,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
     private InformTemplateMapper informTemplateMapper;
     @Autowired
     private InformService informService;
+    @Autowired
+    private MessageTemplateMapper messageTemplateMapper;
     /**
      * 创建酒店任务
      */
@@ -122,6 +122,14 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         if (taskViewDTO.getShouldPayMoney() > 0
                 && (taskViewDTO.getShouldPayMoney() - taskViewDTO.getHavePayMoney() <= 0)) {
             taskViewDTO.setPayStatus("已结算");
+        }
+        if(taskViewDTO.getStatus()==4){
+            if(OffsetDateTime.now().isBefore(taskViewDTO.getToDate()) &&  OffsetDateTime.now().isAfter(taskViewDTO.getFromDate())){
+                taskViewDTO.setStatus(5);
+            }
+        }
+        if(OffsetDateTime.now().isAfter(taskViewDTO.getToDate())){
+            taskViewDTO.setStatus(6);
         }
         List<TaskHrCompanyViewDTO> taskHrList = taskViewDTO.getListTaskHr();
         if (taskHrList != null) {
@@ -203,46 +211,41 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
      * 酒店支付人力公司
      */
     @Override
-    public ResultDO hotelPayHr(HotelPayHrRequest payHrRequest) {
-        Set<HrPayDetailRequest>  paySet= payHrRequest.getPayHrSet();
-        if(paySet.size()==0){
-            throw new ParamsException("支付的人力公司列表不能为空");
+    public ResultDO hotelPayHr(PayParam PayHrParam) {
+        if (PayHrParam == null || StringUtils.hasLength(PayHrParam.getTaskHrId ()) ||  StringUtils.isEmpty (PayHrParam.getPayMoney ())) {
+            throw new ParamsException("参数错误");
         }
-        Task task=  taskMapper.getFirstById(payHrRequest.getTaskId());
-        //List<TaskHrCompany> listHrTask = taskHrCompanyMapper.queryByHotelTaskId(payHrRequest.getTaskId());
-            double thisPayMoney=0.0;
-            for (HrPayDetailRequest payHr:paySet){
-                thisPayMoney=payHr.getThisPayMoney();
-                if(thisPayMoney<=0){
-                    throw new ParamsException("付款金额不能小于0");
-                }
-                TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId(payHr.getTaskHrId());
-                taskHrCompany.setHavePayMoney(taskHrCompany.getHavePayMoney()+thisPayMoney);
-                task.setHavePayMoney(task.getHavePayMoney()+ thisPayMoney);
-                //记录详情
-                /*hotelPayHrDetails = new HotelPayHrDetails();
-                hotelPayHrDetails.setTask_hr_id(payHr.getTaskHrId());
-                hotelPayHrDetails.setThis_pay_money(thisPayMoney);
-                hotelPayHrDetails.setPid(UUID.randomUUID().toString());
-                hotelPayHrDetails.setCreate_time(OffsetDateTime.now());
-                taskHrCompanyMapper.update(taskHrCompany);*/
-                //废弃方法
-                //hotelPayDetailsMapper.save(hotelPayHrDetails);
-                //支付记录
-                //记录详情
+        TaskHrCompany taskHr =  taskHrCompanyMapper.queryByTaskId (PayHrParam.getTaskHrId ());
+        //插入支付记录
                 Bill bill = new Bill();
-                bill.setTaskId(task.getPid());
-                bill.setHotelId(task.getHotelId());
-                bill.setHotelName(task.getHotelName());
-                bill.setPayMoney(thisPayMoney);
-                bill.setHrCompanyId(taskHrCompany.getHrCompanyId());
-                bill.setHrCompanyName(taskHrCompany.getHrCompanyName());
+                bill.setTaskId(taskHr.getTaskId ());
+                bill.setHotelId(taskHr.getHotelId());
+                bill.setPayMoney(PayHrParam.getPayMoney ());
+                bill.setHrCompanyId(taskHr.getHrCompanyId());
                 bill.setDeleted(false);
                 bill.setPayType(1);
+                bill.setStatus (0);
                 billMapper.insert(bill);
-            }
-        taskMapper.updateById(task);
-        return ResultDO.buildSuccess("结算成功");
+         //发送支付待确认消息
+        MessageTemplate mess = messageTemplateMapper.findFirstByCode("hotelPayHrMessage");
+        Message m = new Message();
+        m.setTaskId (taskHr.getTaskId ());
+        m.setMessageCode ("hotelPayHrMessage");
+        m.setMessageType(8);
+        m.setMessageTitle ("酒店支付人力公司");
+        m.setStatus (0);
+        m.setHotelId (taskHr.getHotelId ());
+        m.setHrCompanyId (taskHr.getHrCompanyId ());
+        m.setApplicantType (3);
+        m.setApplyType (2);
+        m.setIsTask (0);
+        m.setHrTaskId (taskHr.getPid ());
+        Map<String, String> param = new HashMap<>();
+        param.put("hotelName", companyMapper.findCompanyById (taskHr.getHotelId ()).getName ());
+        String c = StringKit.templateReplace(mess.getContent(), param);
+        m.setContent (c);
+        messageService.insert (m);
+        return ResultDO.buildSuccess("消息发送成功");
     }
 
     /**

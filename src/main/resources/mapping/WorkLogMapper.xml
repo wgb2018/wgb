@@ -101,27 +101,27 @@
     <select id="selectNoPunchByWorkerId" parameterType="java.lang.String"
             resultType="com.microdev.param.SupplementResponse">
         SELECT th.hotel_name AS
-		hotelName,DATE_FORMAT(tw.from_date,'%Y.%m.%d')
-		AS workFromDate,DATE_FORMAT(tw.to_date,'%Y.%m.%d') AS workToDate,
-		DATE_FORMAT(tw.day_start_time,'%H:%i') AS dayStartTime,
-		DATE_FORMAT(tw.day_end_time,'%H:%i') AS dayEndTime,th.task_type_text
-		AS taskTypeText,GROUP_CONCAT(DATE_FORMAT(wl.`from_date`,'%H:%i') ORDER BY wl.create_time ASC) AS startTime,
-		GROUP_CONCAT(IFNULL(DATE_FORMAT(wl.`to_date`,'%H:%i'), '--') ORDER BY wl.create_time ASC) AS endTime,
-		th.`hotel_id` AS hotelId,tw.id AS taskWorkerId,tw.worker_id AS workerId,
-		DATE_FORMAT(wl.`create_time`,'%Y/%m/%d') AS current,IFNULL(th.hourly_pay,0) as price,c.address,c.area,th.task_content as taskContent
-		FROM (
-		SELECT m.`create_time`,m.`from_date`,m.`to_date`,m.`task_worker_id` FROM work_log m LEFT JOIN
-		(SELECT create_time FROM work_log WHERE to_date IS NULL AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) >= DATE(create_time)) m3
-		ON DATE(m.`create_time`) = DATE(m3.create_time)
-		) wl
-		INNER JOIN
-		(SELECT * FROM task_worker WHERE worker_id = #{workerId}) tw
-		ON wl.`task_worker_id` = tw.id
-		INNER JOIN task_hr_company th
-		ON th.id = tw.task_hr_id
-		inner join company c
-		on c.id = th.hotel_id
-		GROUP BY DATE_FORMAT(wl.create_time,'%Y.%m.%d')
+        hotelName,DATE_FORMAT(tw.from_date,'%Y.%m.%d')
+        AS workFromDate,DATE_FORMAT(tw.to_date,'%Y.%m.%d') AS workToDate,
+        DATE_FORMAT(tw.day_start_time,'%H:%i') AS dayStartTime,
+        DATE_FORMAT(tw.day_end_time,'%H:%i') AS dayEndTime,th.task_type_text
+        AS taskTypeText,GROUP_CONCAT(DATE_FORMAT(wl.`from_date`,'%H:%i') ORDER BY wl.create_time ASC) AS startTime,
+        GROUP_CONCAT(IFNULL(DATE_FORMAT(wl.`to_date`,'%H:%i'), '--') ORDER BY wl.create_time ASC) AS endTime,
+        th.`hotel_id` AS hotelId,tw.id AS taskWorkerId,tw.worker_id AS workerId,
+        DATE_FORMAT(wl.`create_time`,'%Y/%m/%d') AS current,IFNULL(th.hourly_pay,0.0) AS price,c.address,c.area,th.task_content AS taskContent,c.`leader`,c.`leader_mobile` AS leaderMobile
+        FROM (
+        SELECT m.`create_time`,m.`from_date`,m.`to_date`,m.`task_worker_id` FROM work_log m INNER JOIN
+        (SELECT create_time FROM work_log WHERE to_date IS NULL AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= DATE(create_time)) m3
+        ON DATE(m.`create_time`) = DATE(m3.create_time)
+        ) wl
+        INNER JOIN
+        (SELECT * FROM task_worker WHERE worker_id = #{workerId}) tw
+        ON wl.`task_worker_id` = tw.id
+        INNER JOIN task_hr_company th
+        ON th.id = tw.task_hr_id
+        INNER JOIN company c
+        ON c.id = th.hotel_id
+        GROUP BY DATE_FORMAT(wl.create_time,'%Y.%m.%d')
     </select>
     <select id="selectNoPunchDetail" parameterType="java.util.Map"
             resultType="com.microdev.param.SupplementResponse">
