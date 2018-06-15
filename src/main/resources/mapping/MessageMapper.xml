@@ -98,15 +98,13 @@
         wl.id AS id, wl.punch_date AS
         punchDate, wl.task_id AS taskId,
         wl.task_worker_id AS taskWorkerId,
-        th.id AS taskHrId
+        IFNULL(wl.minutes,0) as minutes
         FROM (SELECT * FROM message WHERE id= #{id}) m
         INNER
         JOIN work_log wl
-        ON wl.`task_worker_id` = m.worker_id AND
-        m.`worker_task_id` = wl.`task_id`
-        INNER JOIN task_hr_company th
-        ON
-        th.hr_company_id = m.hr_company_id AND th.task_id = wl.task_id
+        ON wl.`task_worker_id` = m.worker_task_id AND
+        m.`task_id` = wl.`task_id`
+
     </select>
     <select id="selectHrCooperateInfo" parameterType="java.lang.String"
             resultType="com.microdev.param.HrApply">
@@ -644,6 +642,6 @@ ON u.`worker_id` = m2.worker_id
     </select>
 
     <select id = "selectIsRepeat" resultType="java.lang.Integer">
-        SELECT COUNT(1) FROM message WHERE STATUS = 0 AND applicant_type = 1 AND apply_type = 3 AND message_type = 1
+        SELECT COUNT(1) FROM message WHERE STATUS = 0 AND applicant_type = 1 AND apply_type = 3 AND message_type = 1 and workerId = #{workerId}
     </select>
 </mapper>

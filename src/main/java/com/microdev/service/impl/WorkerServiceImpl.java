@@ -503,7 +503,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             throw new ParamsException("参数time不能为空");
         }
 
-        int repeat = messageMapper.selectIsRepeat();
+        WorkerCancelTask tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
+        int repeat = messageMapper.selectIsRepeat(tp.getWorkerId());
         if (repeat > 0) {
             return "你已经提交过补签申请";
         }
@@ -511,7 +512,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         Message m = new Message();
         m.setSupplementTime(time);
         m.setContent(info.getReason());
-        WorkerCancelTask tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
+
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applySupplementMessage");
         Map map = new HashMap<String,Object> ();
         map.put("message_type",1);
@@ -536,6 +537,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setWorkerTaskId(info.getTaskWorkerId());
         m.setHotelId(tp.getHotelId());
         m.setTaskId (tp.getTaskId());
+        m.setHrCompanyId(tp.getHrId());
         m.setMessageContent(c);
         m.setApplyType(3);
         m.setStatus(0);

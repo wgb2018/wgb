@@ -326,10 +326,14 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         inform.setStatus(0);
         inform.setReceiveId(oldMsg.getWorkerId());
         if ("1".equals(status)) {
-            PunchMessageDTO punch = messageMapper.selectPunchMessage(id);
-            if (punch == null) {
-                throw new ParamsException("数据异常");
+            List<PunchMessageDTO> punchList = messageMapper.selectPunchMessage(id);
+            PunchMessageDTO punch = null;
+            if (punchList == null || punchList.size() == 0) {
+                return "查询不到数据";
+            } else {
+                punch = punchList.get(0);
             }
+
             Map<String, Object> param = new HashMap<>();
             param.put("id", punch.getId());
             param.put("punchDate", OffsetDateTime.now());
@@ -347,7 +351,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                     minutes = seconds / 60;
                 }
                 param.put("punchDate", OffsetDateTime.now());
-                param.put("minutes", minutes);
+                param.put("minutes", minutes + punch.getMinutes());
                 workLogMapper.updateByMapId(param);
             }
 
@@ -363,7 +367,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                         setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 
                 taskWorkerMapper.addMinutes(punch.getTaskWorkerId(),minutes,shouldPayMoney_hrtoworker);
-                taskHrCompanyMapper.addMinutes(punch.getTaskHrId(),minutes,shouldPayMoney_hrtoworker,shouldPayMoney_hoteltohr);
+                taskHrCompanyMapper.addMinutes(oldMsg.getHrTaskId(),minutes,shouldPayMoney_hrtoworker,shouldPayMoney_hoteltohr);
                 taskMapper.addMinutes(punch.getTaskId(),minutes,shouldPayMoney_hoteltohr);
             }
 
