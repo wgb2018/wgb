@@ -135,6 +135,8 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
 
         //添加一个通知消息
         Inform notice = new Inform();
+        notice.setCreateTime(OffsetDateTime.now());
+        notice.setModifyTime(OffsetDateTime.now());
         notice.setReceiveId(taskHr.getHrCompanyId());
         notice.setAcceptType(2);
         notice.setSendType(1);
@@ -270,27 +272,6 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         result.put("result",pageInfo.getList());
         result.put("page",paginator.getPage());
         return ResultDO.buildSuccess(null,result,extra,null);
-    }
-
-
-    /**
-     * 更新查看标识
-     * @param taskWorkerId
-     * @param status        状态1未完成已读3已完成已读
-     * @return
-     */
-    @Override
-    public String updateTaskWorkerStatus(String taskWorkerId, Integer status) {
-        if (StringUtils.isEmpty(taskWorkerId) || status == null) {
-            throw new ParamsException("参数错误");
-        }
-        TaskWorker taskWorker = taskWorkerMapper.selectById(taskWorkerId);
-        if (taskWorker == null) {
-            throw new ParamsException("查询不到小时工任务信息");
-        }
-        taskWorker.setCheckSign(status);
-        taskWorkerMapper.updateAllColumnById(taskWorker);
-        return null;
     }
 
     /**

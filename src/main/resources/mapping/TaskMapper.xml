@@ -30,7 +30,7 @@
     <insert id="save" parameterType="com.microdev.model.Task">
         insert into task values (#{pid},#{create_time},#{deleted},#{modify_time},#{confirmed_workers},#{from_date},
         #{have_pay_money},#{hourly_pay},#{minutes},#{need_workers},#{refused_workers},#{repast_times},#{should_pay_money},#{status},
-        #{task_content},#{task_type_code},#{task_type_text},#{to_date},#{hotel_id},#{day_start_time},#{day_end_time},#{hotel_name}, #{checkSign})
+        #{task_content},#{task_type_code},#{task_type_text},#{to_date},#{hotel_id},#{day_start_time},#{day_end_time},#{hotel_name})
     </insert>
     <select id="getFirstById" resultType="com.microdev.model.Task">
         select

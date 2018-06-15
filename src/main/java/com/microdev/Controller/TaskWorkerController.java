@@ -59,15 +59,4 @@ public class TaskWorkerController {
         return ResultDO.buildSuccess(list);
     }
 
-    /**
-     * 更新小时工任务查看标识
-     * @param taskWorkerId
-     * @param status
-     * @return
-     */
-    @GetMapping("/worker-tasks/update/status")
-    public ResultDO updateTaskWorkStatus(String taskWorkerId, Integer status) {
-        return ResultDO.buildSuccess(taskWorkerService.updateTaskWorkerStatus(taskWorkerId, status));
-    }
-
 }

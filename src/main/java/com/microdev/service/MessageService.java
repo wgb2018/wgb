@@ -96,15 +96,6 @@ public interface MessageService extends IService<Message> {
     Map<String, Integer> selectUnReadCount(String id, String applyType);
 
     /**
-     * 查询未处理的消息数量
-     * @param id
-     * @param applyType
-     * @param status
-     * @return
-     */
-    int selectUnHandleMessageAmount(String id, String applyType, int status);
-
-    /**
      * 小时工绑定人力公司或人力公司绑定小时工
      * @param name
      * @param id

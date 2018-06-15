@@ -16,4 +16,5 @@ public interface HolidayMapper extends BaseMapper<Holiday> {
     List<Map<String, Object>> selectUserHolidayByTaskWorkId(String taskWorkerId);
 
     List<HolidayDateInfo> selectHolidayByTaskWorkId(String taskWorkerId);
+
 }

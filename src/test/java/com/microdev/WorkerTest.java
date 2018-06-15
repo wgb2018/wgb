@@ -99,17 +99,4 @@ public class WorkerTest {
         System.out.println(json.toString());
     }
 
-    @Test
-    public void thirteenTest() {
-        long start = System.currentTimeMillis();
-        String taskWorkerId = "140da358-6e4b-4499-9369-8d9536b82d35";
-        String userId = "8c03e4ae-524b-48d9-bdbd-2ae019429689";
-        UserTaskResponse response = workerService.selectUserTaskInfo(taskWorkerId, userId);
-        if (response != null) {
-            JSONObject json = JSONObject.fromObject(response);
-            System.out.println(json.toString());
-        }
-        long end = System.currentTimeMillis();
-        System.out.println("花费时间：" + (end - start));
-    }
 }

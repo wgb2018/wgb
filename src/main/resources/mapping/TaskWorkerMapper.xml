@@ -57,7 +57,7 @@
         insert into task_worker
         values(#{pid},#{createTime},#{deleted},#{modifyTime},#{confirmedDate},#{fromDate},
         #{havePayMoney},#{minutes},#{noPromise},#{refusedReason},#{repastTimes},#{settled},#{settledDate},#{shouldayMoney},
-        #{status},#{toDate},#{workerd},#{taskHrId},#{userId},#{dayStartTime},#{dayEndTime},#{userName},#{hourlyPay}, #{hrCompanyName},#{hotelName},#{checkSign})
+        #{status},#{toDate},#{workerd},#{taskHrId},#{userId},#{dayStartTime},#{dayEndTime},#{userName},#{hourlyPay}, #{hrCompanyName},#{hotelName})
     </insert>
     <select id="findWorkerNowTask" resultType="com.microdev.model.TaskWorker">
         select

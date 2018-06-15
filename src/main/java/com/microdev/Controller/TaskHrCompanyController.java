@@ -31,7 +31,6 @@ public class TaskHrCompanyController {
      */
     @PostMapping("/hr-tasks/accept")
     public ResultDO accept(@RequestBody  Map<String, String> map) {
-        System.out.println (map);
         taskHrCompanyService.TaskHraccept(map.get("messageId"));
         return ResultDO.buildSuccess("接受任务成功");
     }

@@ -33,14 +33,6 @@ public interface TaskWorkerService extends IService<TaskWorker> {
     ResultDO pagesTaskWorkers(Paginator paginator, TaskWorkerQuery query);
 
     /**
-     * 更新查看标识
-     * @param taskWorkerId
-     * @param status        状态1未完成已读3已完成已读
-     * @return
-     */
-    String updateTaskWorkerStatus(String taskWorkerId, Integer status);
-
-    /**
      * 查询小时工当前任务数量
      * @param applyParamDTO
      * @return

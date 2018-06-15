@@ -180,6 +180,11 @@
 			<artifactId>jpush-client</artifactId>
 			<version>3.2.17</version>
 		</dependency>
+		<!-- aop包 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

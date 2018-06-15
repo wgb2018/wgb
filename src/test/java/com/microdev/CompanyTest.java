@@ -10,6 +10,8 @@ import java.util.Set;
 import com.jayway.jsonpath.Criteria;
 import com.microdev.mapper.AreaRelationMapper;
 import com.microdev.param.CompanyQueryDTO;
+import com.microdev.param.HotelHandleWorkerRecord;
+import com.microdev.service.MessageService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +35,7 @@ public class CompanyTest {
 	@Autowired
     private CompanyMapper companyMapper;
 	@Autowired
-	private AreaRelationMapper areaRelationMapper;
+	private MessageService messageService;
 
 	@Test
 	public void pageTest() {
@@ -66,61 +68,5 @@ public class CompanyTest {
 		List<Company> list = companyMapper.selectByMap(map);
 
 	}
-	
-	@Test
-	public void fiveTest() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("companyType", 1);
 
-		List<Company>  list = companyMapper.selectByMap(map);
-		if (list != null) {
-			Company c = list.get(0);
-			Map<String, Object> m = companyService.accountDetail(c.getPid(), 1,10);
-			System.out.println(m.toString());
-		}
-	}
-	
-	@Test
-	public void sixTest() {
-		String id = "f5116454-e75d-489c-b108-36dab6027306";
-		String status = "1";
-		companyService.workExpand(id, status);
-	}
-	
-	@Test
-	public void sevenTest() {
-		HotelDeployInfoRequest request = new HotelDeployInfoRequest();
-		request.setTaskId("16103e7d-0a34-4cc6-8ee2-d512f40dfb7e");
-		request.setTaskContent("测试酒店任务发布");
-		request.setName("测试酒店");
-		request.setHotelId("9ee67eb1-1178-42c1-a2fe-a3efe82c7632");
-		request.setFromDate(OffsetDateTime.now().plusHours(-5));
-		request.setToDate(OffsetDateTime.now().plusDays(7).plusHours(3));
-		request.setHourlyPay(123.56);
-		Map<String, Object> m = null;
-		Set<Map<String, Object>> hrCompany = new HashSet<>();
-		m = new HashMap<>();
-		m.put("id", "b9bd3f40-fb01-45e0-9f7a-fe25784a144c");
-		m.put("number", 3);
-		hrCompany.add(m);
-		m = new HashMap<>();
-		m.put("id", "c955120f-2a17-4905-a0d9-b0edb5003086");
-		m.put("number", 5);
-		hrCompany.add(m);
-		request.setHrCompany(hrCompany);
-		companyService.hotelPublish(request);
-	}
-
-	@Test
-	public void nineTest() {
-		String messageId = "1191dbb1-3777-4527-970a-4b21f0618d1d";
-		Integer type = 1;
-
-	}
-
-	@Test
-	public void tenTest() {
-		String id = "71fd5dd0-b4c6-475e-91e3-b977b525fcc7";
-
-	}
 }
