@@ -180,8 +180,16 @@ public class HrCompanyController {
      */
     @PostMapping("/hrcompanies/assignment/workers")
     public ResultDO hrcompaniesAssignmentWorkers(@RequestBody AssignmentRequest request) {
-
         return taskHrCompanyService.hrAssignmentTask(request);
+    }
+
+    /**
+     * 人力主动换小时工
+     * @return
+     */
+    @GetMapping("/{workerId}/exchange/worker/{taskWorkerId}")
+    public ResultDO hrcompanyExchangeWorker(@PathVariable String taskWorkerId,@PathVariable String workerId) {
+        return taskHrCompanyService.exchangeWorker(taskWorkerId,workerId);
     }
 
     /**
@@ -237,7 +245,6 @@ public class HrCompanyController {
      */
     @GetMapping("/hrcompanies/agree/{messageId}/distribute/{workerId}")
     public ResultDO hrcompaniesAgreePost(@PathVariable String messageId,@PathVariable String workerId) {
-
         return taskHrCompanyService.hrAgreeWorkerRefuseAndPost(messageId, workerId);
     }
 }

@@ -733,7 +733,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             message.setTaskId (taskHrCompany.getTaskId ());
             messageMapper.insert(message);
         }
-
     }
 
     /**
