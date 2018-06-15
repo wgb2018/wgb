@@ -97,12 +97,14 @@
         fromDate, wl.`to_date` AS toDate,
         wl.id AS id, wl.punch_date AS
         punchDate, wl.task_id AS taskId,
-        wl.task_worker_id AS taskWorkerId,IFNULL(wl.minutes,0) as minutes
+        wl.task_worker_id AS taskWorkerId,
+        IFNULL(wl.minutes,0) as minutes
         FROM (SELECT * FROM message WHERE id= #{id}) m
         INNER
         JOIN work_log wl
         ON wl.`task_worker_id` = m.worker_task_id AND
         m.`task_id` = wl.`task_id`
+
     </select>
     <select id="selectHrCooperateInfo" parameterType="java.lang.String"
             resultType="com.microdev.param.HrApply">
@@ -512,36 +514,12 @@ INNER JOIN company c ON m.hr_company_id = c.id
     </select>
 
     <select id="selectHrHotelDetails" resultType="com.microdev.param.AwaitTaskResponse">
-        SELECT m.`hotel_id` AS hotelId,
-        c.name as name,
-        c.leader_mobile as leaderMobile,
-        c.leader as leader,
-        c.area as area,
-        c.address as address,
-        m.id as messageId,
-        m.message_type as messageType,
-        DATE_FORMAT( t.from_date, '%Y.%m.%d' ) AS fromDate,
-        DATE_FORMAT( t.to_date, '%Y.%m.%d' ) AS toDate,
-        DATE_FORMAT( t.`day_start_time`, '%H:%i' ) AS dayStartTime,
-        DATE_FORMAT( t.`day_end_time`, '%H:%i' ) AS dayEndTime,
-        IFNULL( t.`hourly_pay`, 0.0 ) AS hourlyPayHotel,
-        IFNULL( tc.`hourly_pay`, '' ) AS hourlyPay,
-        tc.`task_type_text` AS messageTitle,
-        IFNULL( tc.`need_workers`, 0 ) AS needWorkers,
-        IFNULL( tc.`confirmed_workers`, 0 ) AS confirmedWorkers,
-        tc.hr_company_id AS hrId,
-        tc.hr_company_name AS hrName,
-        tc.`task_content` AS taskContent,
-        c2.`address` AS hrAddress,
-        c2.`area` AS hrArea,
-        c2.leader_mobile as hrLeaderMobile,
-        c.leader AS hrLeader,
-        m.task_id AS taskHotelId,
-        m.hr_task_id AS taskHrId,
-        m.worker_task_id AS workerTaskId,
-        t.`task_type_code` AS taskTypeCode
-
-        FROM
+        SELECT m.`hotel_id` AS hotelId,DATE_FORMAT(t.from_date, '%Y.%m.%d') AS fromDate,DATE_FORMAT(t.to_date,'%Y.%m.%d') AS toDate,
+DATE_FORMAT(t.`day_start_time`,'%H:%i') AS dayStartTime,DATE_FORMAT(t.`day_end_time`,'%H:%i') AS dayEndTime,IFNULL(t.`hourly_pay`,0.0) AS hourlyPayHotel
+,IFNULL(tc.`hourly_pay`,'') AS hourlyPay,tc.`task_type_text` AS messageTitle,IFNULL(tc.`need_workers`,0) AS needWorkers,
+IFNULL(tc.`confirmed_workers`,0) AS confirmedWorkers,tc.id AS hrId,tc.hr_company_name AS hrName,tc.`task_content` AS taskContent,c2.`address` AS hrAddress
+,c2.`area` AS hrArea,c.leader AS hrLeader,m.task_id AS taskHotelId,m.hr_task_id AS taskHrId,m.worker_task_id AS workerTaskId,t.`task_type_code` AS taskTypeCode
+FROM
 (SELECT * FROM message WHERE id= #{messageId}) m
 INNER JOIN task_hr_company tc
 ON m.`hr_task_id` = tc.id
@@ -665,6 +643,5 @@ ON u.`worker_id` = m2.worker_id
 
     <select id = "selectIsRepeat" resultType="java.lang.Integer">
         SELECT COUNT(1) FROM message WHERE STATUS = 0 AND applicant_type = 1 AND apply_type = 3 AND message_type = 1
-        and worker_id = #{workerId}
     </select>
 </mapper>

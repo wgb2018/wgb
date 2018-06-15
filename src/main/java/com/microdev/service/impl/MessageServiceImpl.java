@@ -624,7 +624,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      */
     @Override
     public AwaitTaskResponse selectAwaitTaskDetails(String messageId, String messagetype, String type) {
-        System.out.println("type=" + type + ";messagetype=" + messagetype);
         if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(messagetype) || StringUtils.isEmpty(type)) {
             throw new ParamsException("参数错误");
         }

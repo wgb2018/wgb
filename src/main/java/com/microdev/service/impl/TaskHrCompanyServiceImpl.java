@@ -955,7 +955,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         String notice = messageService.installContent(param, "workTaskMessage");
         Map<String, Object> result = new HashMap<>();
         result.put("hrCompanyId", taskHrCompany.getHrCompanyId());
-        result.put("taskHrId", taskHrCompany.getTaskId());
         result.put("workerId", workerId);
         result.put("workerTaskId", workerTask.getPid());
         result.put("hotelId", taskHrCompany.getHotelId());

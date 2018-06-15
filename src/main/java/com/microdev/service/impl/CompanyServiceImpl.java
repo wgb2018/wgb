@@ -28,10 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.time.Clock;
-import java.time.Duration;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.*;
@@ -328,12 +327,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         if ("1".equals(status)) {
             List<PunchMessageDTO> punchList = messageMapper.selectPunchMessage(id);
             PunchMessageDTO punch = null;
-            if (punchList == null || punchList.size () == 0) {
-                return "查找不到数据";
+            if (punchList == null || punchList.size() == 0) {
+                return "查询不到数据";
             } else {
-                punch = punchList.get (0);
+                punch = punchList.get(0);
             }
-
             Map<String, Object> param = new HashMap<>();
             param.put("id", punch.getId());
             param.put("punchDate", OffsetDateTime.now());
@@ -351,7 +349,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                     minutes = seconds / 60;
                 }
                 param.put("punchDate", OffsetDateTime.now());
-                param.put("minutes", minutes + punch.getMinutes ());
+                param.put("minutes", minutes + punch.getMinutes());
                 workLogMapper.updateByMapId(param);
             }
 
@@ -1057,6 +1055,32 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             throw new ParamsException("参数不能为空");
         }
 
+        if ("3".equals(record.getStatus())) {
+            SimpleDateFormat f = new SimpleDateFormat("yyyy/MM/dd");
+            try {
+                Date d = f.parse(record.getDate());
+                OffsetDateTime createTime = OffsetDateTime.ofInstant(Instant.ofEpochMilli(d.getTime()), ZoneId.systemDefault());
+                TaskWorker taskWorker = taskWorkerMapper.selectById(record.getTaskWorkerId());
+                if (taskWorker == null) {
+                    return ResultDO.buildSuccess("查询不到小时工任务信息");
+                }
+                WorkLog workLog = new WorkLog();
+                workLog.setCreateTime(createTime);
+                workLog.setModifyTime(OffsetDateTime.now());
+                workLog.setFromDate(OffsetDateTime.ofInstant(Instant.ofEpochSecond(taskWorker.getDayStartTime().getLong(ChronoField.SECOND_OF_DAY)), taskWorker.getDayStartTime().getOffset().normalized()));
+                workLog.setToDate(OffsetDateTime.ofInstant(Instant.ofEpochSecond(taskWorker.getDayEndTime().getLong(ChronoField.SECOND_OF_DAY)), taskWorker.getDayEndTime().getOffset().normalized()));
+                workLog.setToDate(createTime);
+                workLog.setMinutes(0);
+                workLog.setStatus(3);
+                workLog.setEmployerConfirmStatus(1);
+                workLog.setTaskId(taskWorker.getTaskHrId());
+                workLog.setTaskWorkerId(taskWorker.getPid());
+                workLogMapper.insert(workLog);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            return ResultDO.buildSuccess("成功");
+        }
         List<WorkLog> workLogList = workLogMapper.selectByDate(record);
         if (workLogList == null || workLogList.size() == 0) {
             logger.info("hotelHandleWorkerRecord:" + record.toString());
