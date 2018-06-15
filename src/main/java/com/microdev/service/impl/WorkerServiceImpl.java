@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
@@ -1027,6 +1028,15 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     detail = new WorkerDetail();
                     workList = new ArrayList<>();
                 }
+                try {
+                    //每天工作时间(分钟)及应付薪酬
+                    int minutes = countWorkMinutes(currentStartTime, currentEndTime);
+                    detail.setWorkHour(minutes);
+                    double d = new BigDecimal(minutes).multiply(new BigDecimal(taskWorker.getHourlyPay())).divide(new BigDecimal(60), 2, RoundingMode.HALF_UP).doubleValue();
+                    detail.setPayment(d);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 hotelStatus = new HashMap<>();
                 sysStatus = new HashMap<>();
                 initMapStatus(hotelStatus, 4);
@@ -1168,15 +1178,6 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     }
 
     /**
-     * 获取当天的秒数
-     * @param time
-     * @return
-     */
-    private int getCurrentSeconds(OffsetDateTime time) {
-        return time.getHour() * 3600 + time.getMinute() * 60 + time.getSecond();
-    }
-
-    /**
      * 判断时间是否再请假时间中
      * @param year               打卡日期的年份
      * @param day               打卡的在一年中的天数
@@ -1276,7 +1277,12 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             }
         } else {
             //有忘打卡
-
+            for (int i = 0; i < startLen - 1; i++) {
+                if (StringUtils.isEmpty(ends[i])) continue;
+                Date d1 = dateFormat.parse(starts[i]);
+                Date d2 = dateFormat.parse(ends[i]);
+                num += (d2.getTime() - d1.getTime()) / 60000;
+            }
         }
         return num;
     }

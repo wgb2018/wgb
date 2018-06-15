@@ -13,5 +13,5 @@ public class WorkerDetail {
     private Map<String, Integer> sysStatus = new HashMap<>();//系统状态
     private List<PunchInfo> workList = new ArrayList<>();
     private int workHour;//工作时间（单位分钟)
-    private int payment;//应付薪酬（单位元)
+    private double payment;//应付薪酬（单位元)
 }
