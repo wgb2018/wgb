@@ -14,4 +14,5 @@ public class WorkerOneDayInfo {
     private String id;
     private String employerConfirmStatus;
     private OffsetDateTime createTime;
+    private int totalTime;
 }

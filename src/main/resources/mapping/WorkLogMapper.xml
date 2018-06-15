@@ -162,7 +162,7 @@ SELECT GROUP_CONCAT( DATE_FORMAT(m.from_date, '%H:%i') ORDER BY m.create_time AS
 GROUP_CONCAT( IFNULL(DATE_FORMAT( m.to_date, '%H:%i' ),'') ORDER BY m.create_time ASC ) AS toDate,
 GROUP_CONCAT( IFNULL(m.STATUS, 0 ) ) AS STATUS,
 GROUP_CONCAT( IFNULL( m.employer_confirm_status, 0 ) ) AS employerConfirmStatus,
-m.create_time AS createTime  FROM
+m.create_time AS createTime,SUM(IFNULL(m.minutes,0)) AS totalTime  FROM
 (
 SELECT from_date, to_date,STATUS ,employer_confirm_status,create_time,id FROM 	work_log WHERE task_worker_id = #{taskWorkerId}
 ) m GROUP BY DATE_FORMAT( m.create_time,'%Y-%m-%d')
