@@ -44,7 +44,7 @@ public interface MessageService extends IService<Message> {
      * @param type  1  酒店添加(解绑)的人力公司2：人力公司添加(解绑)的酒店
      * @return
      */
-    boolean hotelBindHrCompany(Set<String> bindCompany, Company applyCompany, String pattern, Integer type);
+    String hotelBindHrCompany(Set<String> bindCompany, Company applyCompany, String pattern, Integer type);
 
     /**
      * 小时工绑定或解绑人力公司

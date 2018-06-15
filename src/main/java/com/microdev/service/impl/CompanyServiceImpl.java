@@ -352,9 +352,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             }
 
             if (minutes > 0) {
-                Map<String, Double> mapPay = taskMapper.selectHrAndTaskHourPay(punch.getTaskId());
-                Double shouldPayMoney_hrtoworker = (minutes / 60.00) * mapPay.get("hrPay");
-                Double shouldPayMoney_hoteltohr = (minutes / 60.00) * mapPay.get("taskPay");
+                TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(oldMsg.getHrTaskId());
+                Double shouldPayMoney_hrtoworker = (minutes / 60.00) * taskHrCompany.getHourlyPay();
+                Double shouldPayMoney_hoteltohr = (minutes / 60.00) * taskHrCompany.getHourlyPayHotel();
 
                 //小数点后保留两位(第三位四舍五入)
                 shouldPayMoney_hrtoworker = new BigDecimal(shouldPayMoney_hrtoworker).
@@ -362,7 +362,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 shouldPayMoney_hoteltohr = new BigDecimal(shouldPayMoney_hoteltohr).
                         setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 
-                Map<String, Object> p = new HashMap<>();
                 taskWorkerMapper.addMinutes(punch.getTaskWorkerId(),minutes,shouldPayMoney_hrtoworker);
                 taskHrCompanyMapper.addMinutes(punch.getTaskHrId(),minutes,shouldPayMoney_hrtoworker,shouldPayMoney_hoteltohr);
                 taskMapper.addMinutes(punch.getTaskId(),minutes,shouldPayMoney_hoteltohr);
@@ -518,7 +517,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
      * 酒店再发布
      */
     @Override
-    public boolean hotelPublish(HotelDeployInfoRequest request) {
+    public String hotelPublish(HotelDeployInfoRequest request) {
         if (request == null) {
             throw new ParamsException("参数不能为空");
         }
@@ -576,7 +575,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             list.add(message);
         }
         messageMapper.saveBatch(list);
-        return true;
+        return "成功";
     }
 
     /**
@@ -637,8 +636,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }
 
         informMapper.insertInform(inform);
-        return "操作成功";
-    }
+        return "申请成功";    }
     /**
      * 酒店申请绑定人力资源公司或人力公司申请绑定酒店
      */
@@ -968,15 +966,33 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         message.setStatus(1);
         messageMapper.updateById(message);
 
+        //发送通知
+
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        Map<String,String> map = new HashMap <> ();
+        InformTemplate informTemplate = null;
         if ("1".equals(status)) {
             Holiday holiday = new Holiday();
             holiday.setFromDate(message.getSupplementTime());
             holiday.setToDate(message.getSupplementTimeEnd());
             holiday.setTaskWorkerId(message.getWorkerTaskId());
             holidayMapper.insert(holiday);
-        } else if (!"0".equals(status)){
+            informTemplate = informTemplateMapper.selectByCode(InformType.apply_for_leave_success.name());
+            map.put("hotel", companyMapper.selectById(message.getHotelId()).getName());
+            map.put("date", message.getSupplementTime().format(format));
+            map.put("time", message.getSupplementTimeEnd().format(format));
+            map.put("reason", message.getContent());
+
+        } else if ("0".equals(status)) {
+            informTemplate = informTemplateMapper.selectByCode(InformType.apply_for_leave_fail.name());
+            map.put("hotel", companyMapper.selectById(message.getHotelId()).getName());
+            map.put("reason", message.getContent());
+
+        } else {
             throw new ParamsException("参数错误");
         }
+        String content = StringKit.templateReplace(informTemplate.getContent(), map);
+        informService.sendInformInfo (3,1,content,message.getWorkerId (), informTemplate.getTitle());
         return ResultDO.buildSuccess("处理成功");
     }
 

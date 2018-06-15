@@ -339,6 +339,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setIsTask(0);
 
         messageMapper.insert(m);
+
         return "成功";
     }
 
@@ -346,6 +347,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
      * 小时工申请加班
      */
     @Override
+ 
     public String askWorkOvertime(WorkerSupplementRequest info) {
         if (info == null) {
             throw new ParamsException("参数不能为空");
@@ -378,6 +380,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setWorkerTaskId(info.getTaskWorkerId());
         m.setHotelId(tp.getHotelId());
         m.setHrTaskId(tp.getTaskHrId());
+  
         m.setTaskId (tp.getTaskId());
         m.setHrCompanyId(tp.getHrId());
 
@@ -393,6 +396,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setIsTask(0);
 
         messageMapper.insert(m);
+
         return "成功";
     }
 
@@ -505,6 +509,10 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             throw new ParamsException("参数time不能为空");
         }
 
+        int repeat = messageMapper.selectIsRepeat();
+        if (repeat > 0) {
+            return "你已经提交过补签申请";
+        }
         OffsetDateTime time = DateUtil.strToOffSetDateTime(info.getTime(), "yyyy/MM/dd HH:mm");
         Message m = new Message();
         m.setSupplementTime(time);
@@ -756,6 +764,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         if ("0".equals(status)) {
             //拒绝
+            
             String content = "小时工" + user.getNickname() + "拒绝了你发起的一笔支付信息，金额为" + Double.valueOf(bill.getPayMoney ());
             informService.sendInformInfo(1, 2, content, message.getHrCompanyId(), "账目被拒绝");
             bill.setStatus (2);
@@ -766,16 +775,19 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             if (taskWorker == null) {
                 throw new ParamsException("查询不到小时工任务信息");
             }
+         
             taskWorker.setHavePayMoney(taskWorker.getHavePayMoney() + Double.valueOf(bill.getPayMoney ()));
             taskWorkerMapper.updateAllColumnById(taskWorker);
             TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(message.getHrTaskId());
             if (taskHrCompany == null) {
                 throw new ParamsException("查询不到人力任务");
             }
+         
             taskHrCompany.setWorkersHavePay(taskHrCompany.getWorkersHavePay() + Double.valueOf(bill.getPayMoney ()));
             taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
 
             //发送通知
+  
             String content = "小时工" + user.getNickname() + "同意了你发起的一笔支付信息，金额为" + bill.getPayMoney ();
             informService.sendInformInfo(1, 2, content, message.getHrCompanyId(), "账目已同意");
             bill.setStatus (1);
@@ -848,7 +860,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                         sysStatus = new HashMap<>();
                         initMapStatus(hotelStatus, 4);
                         initMapStatus(sysStatus, 5);
-                        sysStatus.put("comeLate", 1);
+                       
                         detail.setHotelStatus(hotelStatus);
                         detail.setSysStatus(sysStatus);
                         detail.setExpire("0");
@@ -1014,7 +1026,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     if (minutes == 0) {
                         //当前时间且没有到下班时间
                         if (startDay.getDayOfYear() == nowDate.getDayOfYear() && (nowDate.toOffsetTime().compareTo(dayEnd)) < 0) {
-                            sysStatus.put("comeLate", 1);
+
                         } else {
                             sysStatus.put("stay", 1);
                         }
@@ -1029,8 +1041,13 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                             workLog.setEndTime("--");
                             workLog.setStartTime("--");
                             sysStatus.put("leave", 1);
-                            sysStatus.put("comeLate", 1);
+                      
                             hotelStatus.put("leave", 1);
+                            if (startDay.getDayOfYear() == nowDate.getDayOfYear() && (nowDate.toOffsetTime().compareTo(dayEnd)) < 0) {
+
+                            } else {
+                                sysStatus.put("comeLate", 1);
+                            }
                             workList.add(workLog);
 
                         } else {
@@ -1065,15 +1082,12 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     detail = new WorkerDetail();
                     workList = new ArrayList<>();
                 }
-                try {
-                    //每天工作时间(分钟)及应付薪酬
-                    int minutes = countWorkMinutes(currentStartTime, currentEndTime);
-                    detail.setWorkHour(minutes);
-                    double d = new BigDecimal(minutes).multiply(new BigDecimal(taskWorker.getHourlyPay())).divide(new BigDecimal(60), 2, RoundingMode.HALF_UP).doubleValue();
-                    detail.setPayment(d);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+              
+                //每天工作时间(分钟)及应付薪酬
+
+                detail.setWorkHour(param.getTotalTime());
+                double d = new BigDecimal(param.getTotalTime()).multiply(new BigDecimal(taskWorker.getHourlyPay())).divide(new BigDecimal(60), 2, RoundingMode.HALF_UP).doubleValue();
+                detail.setPayment(d);
                 hotelStatus = new HashMap<>();
                 sysStatus = new HashMap<>();
                 initMapStatus(hotelStatus, 4);
@@ -1300,37 +1314,6 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         return num;
     }
 
-    /**
-     * 计算小时工每天工作时间
-     * @param starts        签到打卡时间
-     * @param ends          签退打卡时间
-     * @return
-     */
-    private int countWorkMinutes(String[] starts, String[] ends) throws ParseException {
 
-        if (starts == null || ends == null) return 0;
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
-        int num = 0;
-        int startLen = starts.length;
-        int endLen = ends.length;
-        if (startLen == endLen) {
-            //没有忘打卡
-            for (int i = 0; i < startLen; i++) {
-                if (StringUtils.isEmpty(ends[i])) continue;
-                Date d1 = dateFormat.parse(starts[i]);
-                Date d2 = dateFormat.parse(ends[i]);
-                num += (d2.getTime() - d1.getTime()) / 60000;
-            }
-        } else {
-            //有忘打卡
-            for (int i = 0; i < startLen - 1; i++) {
-                if (StringUtils.isEmpty(ends[i])) continue;
-                Date d1 = dateFormat.parse(starts[i]);
-                Date d2 = dateFormat.parse(ends[i]);
-                num += (d2.getTime() - d1.getTime()) / 60000;
-            }
-        }
-        return num;
-    }
 
 }

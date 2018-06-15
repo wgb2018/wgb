@@ -225,28 +225,6 @@
             #{item.requestId},#{item.hotelId},#{item.hrCompanyId},#{item.applicantType},#{item.applyType},#{item.messageLink}, #{item.msgLink}, #{item.taskId},#{item.isTask},#{item.hrTaskId})
         </foreach>
     </insert>
-    <select id="selectAllMessage" parameterType="java.util.Map" resultType="com.microdev.param.MessageResponse">
-        SELECT
-        message_title AS messageTitle,CASE WHEN
-        DATE_FORMAT(create_time,'%Y-%m-%d') = CURDATE() THEN '今天' WHEN
-        DATE_FORMAT(create_time,'%Y-%m-%d') = DATE_SUB(CURDATE(), INTERVAL 1
-        DAY) THEN '昨天' ELSE DATE_FORMAT(create_time,'%m-%d') END AS
-        days,message_content AS messageContent, id
-        FROM message
-        <where>
-            <if test="workerId != null">
-                and worker_id = #{workerId}
-            </if>
-            <if test="hotelId != null">
-                and hotel_id = #{hotelId}
-            </if>
-            <if test="hrCompanyId != null">
-                and hr_company_id = #{hrCompanyId}
-            </if>
-        </where>
-        ORDER BY STATUS ASC ,create_time DESC
-    </select>
-
 
     <select id="selectUnReadCount" parameterType="java.util.Map" resultType="java.lang.Integer">
       SELECT COUNT(1) FROM message WHERE deleted = 0
@@ -663,5 +641,9 @@ SELECT * FROM message WHERE message_type IN (5,13) AND STATUS = 0 AND apply_type
 INNER JOIN USER u
 ON u.`worker_id` = m2.worker_id
 )
+    </select>
+
+    <select id = "selectIsRepeat" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM message WHERE STATUS = 0 AND applicant_type = 1 AND apply_type = 3 AND message_type = 1
     </select>
 </mapper>
