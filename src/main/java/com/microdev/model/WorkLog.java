@@ -49,14 +49,7 @@ public class WorkLog extends BaseEntity {
      * 2早退
      * 3旷工
      * 4忘打卡
-     * 5迟到早退
-     * 6早退忘打卡
-     * 7迟到忘打卡
-     * 8请假
-     * 9请假旷工
-     * 10请假早退
-     * 11请假迟到早退
-     * 12请假迟到
+     * 5请假
      */
     private Integer status;
 
@@ -65,8 +58,4 @@ public class WorkLog extends BaseEntity {
      */
     private Integer employerConfirmStatus;
 
-    /**
-     * 是否已查看0未查看1已查看
-     */
-    private Integer checkSign = 0;
 }

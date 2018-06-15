@@ -134,12 +134,6 @@ public class TaskHrCompany extends BaseEntity {
      */
     private Integer distributeWorkers;
 
-    /**
-     * 是否已查看0未读1未完成已读3已完成已读
-     */
-    private Integer checkSign = 0;
-
-
     public Integer getStatus() {
         return status;
     }

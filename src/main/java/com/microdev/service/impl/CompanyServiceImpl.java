@@ -1026,6 +1026,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
         List<WorkLog> workLogList = workLogMapper.selectByDate(record);
         if (workLogList == null || workLogList.size() == 0) {
+            logger.info("hotelHandleWorkerRecord:" + record.toString());
             return ResultDO.buildError("查询不到工作记录");
         }
         for (WorkLog workLog1 : workLogList) {

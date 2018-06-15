@@ -175,6 +175,6 @@ SELECT from_date, to_date,STATUS ,employer_confirm_status,create_time,id FROM 	w
     </select>
 
     <select id = "selectByDate" parameterType="com.microdev.param.HotelHandleWorkerRecord" resultType="com.microdev.model.WorkLog">
-        SELECT * FROM work_log WHERE task_worker_id = #{taskWorkerId} AND DATE_FORMAT(create_time, '%Y/%m/%d') = #{date} LIMIT 1
+        SELECT * FROM work_log WHERE task_worker_id = #{taskWorkerId} AND DATE_FORMAT(create_time, '%Y/%m/%d') = #{date}
     </select>
 </mapper>

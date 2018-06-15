@@ -407,35 +407,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     }
 
     /**
-     * 查询未处理的消息数量
-     * @param id
-     * @param applyType
-     * @param status
-     * @return
-     */
-    @Override
-    public int selectUnHandleMessageAmount(String id, String applyType, int status) {
-        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(applyType)) {
-            throw new ParamsException("参数不能为空");
-        }
-        Map<String, Object> param = new HashMap<>();
-        if ("1".equals(applyType)) {
-            param.put("workerId", id);
-        } else if ("2".equals(applyType)) {
-            param.put("hrCompanyId", id);
-        } else if ("3".equals(applyType)) {
-            param.put("hotelId", id);
-        } else {
-            throw new ParamsException("参数applyType类型错误");
-        }
-        param.put("applyType", applyType);
-        param.put("status", 0);
-        param.put("checkSign", 0);
-
-        return messageMapper.selectUnReadCount(param);
-    }
-
-    /**
      * 小时工绑定人力公司或人力绑定小时工
      * @param name      申请人名称
      * @param id        申请绑定的用户id

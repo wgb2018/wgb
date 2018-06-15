@@ -270,27 +270,6 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         return ResultDO.buildSuccess(null,result,extra,null);
     }
 
-
-    /**
-     * 更新查看标识
-     * @param taskWorkerId
-     * @param status        状态1未完成已读3已完成已读
-     * @return
-     */
-    @Override
-    public String updateTaskWorkerStatus(String taskWorkerId, Integer status) {
-        if (StringUtils.isEmpty(taskWorkerId) || status == null) {
-            throw new ParamsException("参数错误");
-        }
-        TaskWorker taskWorker = taskWorkerMapper.selectById(taskWorkerId);
-        if (taskWorker == null) {
-            throw new ParamsException("查询不到小时工任务信息");
-        }
-        taskWorker.setCheckSign(status);
-        taskWorkerMapper.updateAllColumnById(taskWorker);
-        return null;
-    }
-
     /**
      * 查询小时工当前任务数量
      * @param applyParamDTO

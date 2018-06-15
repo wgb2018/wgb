@@ -131,10 +131,7 @@ public class TaskWorker extends BaseEntity {
     @JsonFormat(pattern="HH:mm")
     private OffsetTime dayEndTime;
     private String hotelTaskId;
-    /**
-     * 是否已查看0未读1未完成已读3已完成已读
-     */
-    private Integer checkSign = 0;
+
     public Integer getStatus() {
         return status;
     }
