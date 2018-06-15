@@ -692,6 +692,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             message.setMessageCode(template.getCode());
             message.setMessageTitle(taskHrCompany.getTaskTypeText());
             message.setContent(str);
+            message.setMessageType (6);
             message.setMessageContent(str);
             message.setHrTaskId(taskHrCompany.getPid());
             message.setApplyType(0);

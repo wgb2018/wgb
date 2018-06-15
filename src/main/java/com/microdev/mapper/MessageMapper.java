@@ -16,7 +16,7 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     List<Message> findAll(MessageQuery message);
 
-    PunchMessageDTO selectPunchMessage(String id);
+    List<PunchMessageDTO> selectPunchMessage(String id);
 
     HrApply selectHrCooperateInfo(String id);
 
@@ -94,5 +94,5 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     List<ApplyBindResponse> selectPcHrBind(@Param("hrId") String hrId);
 
-    int selectIsRepeat();
+    int selectIsRepeat(@Param ("workerId") String workerId);
 }

@@ -13,6 +13,5 @@ public class PunchMessageDTO {
 	private OffsetDateTime punchDate;
 	private String taskId;
 	private String taskWorkerId;
-	private String taskHrId;
-	
+	private int minutes;
 }

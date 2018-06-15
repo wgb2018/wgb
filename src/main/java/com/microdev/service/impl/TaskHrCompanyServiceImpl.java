@@ -271,7 +271,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
      */
     @Override
     public ResultDO hrPayWorkers(PayParam PayHrParam) {
-        if (PayHrParam == null || StringUtils.hasLength(PayHrParam.getTaskWorkerId ()) ||  StringUtils.isEmpty (PayHrParam.getPayMoney ())) {
+        if (PayHrParam == null || !StringUtils.hasLength(PayHrParam.getTaskWorkerId ()) ||  StringUtils.isEmpty (PayHrParam.getPayMoney ())) {
             throw new ParamsException("参数错误");
         }
         TaskWorker taskWorker =  taskWorkerMapper.findFirstById (PayHrParam.getTaskWorkerId ());
@@ -281,6 +281,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         bill.setHotelId(taskWorker.getHotelId());
         bill.setPayMoney(PayHrParam.getPayMoney ());
         bill.setHrCompanyId(taskWorker.getHrCompanyId());
+        bill.setWorkerId (taskWorker.getWorkerId ());
         bill.setDeleted(false);
         bill.setPayType(2);
         bill.setStatus (0);
@@ -290,7 +291,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         Message m = new Message();
         m.setTaskId (taskWorker.getHotelTaskId ());
         m.setMessageCode ("hrPayWorkerMessage");
-        m.setMinutes (bill.getPid ());
+        m.setRequestId (bill.getPid ());
         m.setMessageType(8);
         m.setMessageTitle ("人力公司支付小时工");
         m.setStatus (0);
@@ -299,11 +300,14 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         m.setApplicantType (2);
         m.setApplyType (1);
         m.setIsTask (0);
+        m.setWorkerTaskId (taskWorker.getPid ());
+        m.setWorkerId (taskWorker.getWorkerId ());
         m.setHrTaskId (taskWorker.getTaskHrId ());
+        m.setMinutes (PayHrParam.getPayMoney ().toString ());
         Map<String, String> param = new HashMap<>();
         param.put("hrName", companyMapper.findCompanyById (taskWorker.getHrCompanyId ()).getName ());
         String c = StringKit.templateReplace(mess.getContent(), param);
-        m.setContent (c);
+        m.setMessageContent (c);
         messageService.insert (m);
         return ResultDO.buildSuccess("消息发送成功");
     }
@@ -680,6 +684,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             throw new BusinessException("查询不到消息");
         }
         message.setStatus(1);
+        messageMapper.updateById (message);
         //消息发送者是酒店，将小时工任务状态设置为3终止，如果是小时工，将状态置为2
         TaskWorker taskWorker = taskWorkerMapper.selectById(message.getWorkerTaskId());
         if (taskWorker == null) {
@@ -725,7 +730,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             workerTask.setTaskTypeCode(taskHrCompany.getTaskTypeCode());
             workerTask.setTaskTypeText(taskHrCompany.getTaskTypeText());
             workerTask.setTaskHrId(taskHrCompany.getPid());
-            workerTask.setWorkerId(message.getWorkerId());
+            workerTask.setWorkerId(str);
             taskWorkerMapper.insert(workerTask);
             list.add(workerTask);
         }
@@ -984,7 +989,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         }
         message.setStatus(1);
         messageMapper.updateAllColumnById(message);
-        Bill bill = billMapper.selectById (message.getMinutes ());
+        Bill bill = billMapper.selectById (message.getRequestId ());
         if(bill == null){
             throw new ParamsException("未查到相关支付记录");
         }

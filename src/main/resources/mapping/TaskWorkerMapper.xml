@@ -171,7 +171,7 @@
         </if>
     </select>
     <select id="selectHrId" parameterType="java.lang.String" resultType="java.util.Map">
-        SELECT th.`hotel_id` AS hotelId, th.`hr_company_id` AS hrCompanyId, tw.`hotel_name` AS hotelName,th.id as hrTaskId,th.task_id as taskId,th.task_type_text,tw.worker_id
+        SELECT th.`hotel_id` AS hotelId, th.`hr_company_id` AS hrCompanyId, tw.`hotel_name` AS hotelName,th.id as hrTaskId,th.task_id as taskId,th.task_type_text,tw.worker_id as workerId
         FROM task_worker tw
         INNER JOIN task_hr_company th
         ON tw.`task_hr_id` = th.`id`

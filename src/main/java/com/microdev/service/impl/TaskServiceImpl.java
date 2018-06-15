@@ -212,7 +212,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
      */
     @Override
     public ResultDO hotelPayHr(PayParam PayHrParam) {
-        if (PayHrParam == null || StringUtils.hasLength(PayHrParam.getTaskHrId ()) ||  StringUtils.isEmpty (PayHrParam.getPayMoney ())) {
+        if (PayHrParam == null || !StringUtils.hasLength(PayHrParam.getTaskHrId ()) ||  StringUtils.isEmpty (PayHrParam.getPayMoney ())) {
             throw new ParamsException("参数错误");
         }
         TaskHrCompany taskHr =  taskHrCompanyMapper.queryByTaskId (PayHrParam.getTaskHrId ());
@@ -240,11 +240,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         m.setApplyType (2);
         m.setIsTask (0);
         m.setHrTaskId (taskHr.getPid ());
-        m.setMinutes (bill.getPid ());
+        m.setRequestId (bill.getPid ());
+        m.setMinutes (PayHrParam.getPayMoney ().toString ());
         Map<String, String> param = new HashMap<>();
         param.put("hotelName", companyMapper.findCompanyById (taskHr.getHotelId ()).getName ());
         String c = StringKit.templateReplace(mess.getContent(), param);
-        m.setContent (c);
+        m.setMessageContent (c);
         messageService.insert (m);
         return ResultDO.buildSuccess("消息发送成功");
     }
