@@ -30,8 +30,6 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     int updateByMapId(Message mess);
 
-    List<MessageResponse> selectAllMessage(Map<String, Object> map);
-
     int selectUnReadMessage(Map<String, Object> param);
 
     int selectUnReadCount(Map<String, Object> param);
@@ -95,4 +93,6 @@ public interface MessageMapper extends BaseMapper<Message> {
     List<ApplyBindResponse> selectPcHotelBind(@Param("hotelId") String hotelId);
 
     List<ApplyBindResponse> selectPcHrBind(@Param("hrId") String hrId);
+
+    int selectIsRepeat();
 }

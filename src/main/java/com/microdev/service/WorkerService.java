@@ -50,13 +50,13 @@ public interface WorkerService extends IService<Worker> {
      * @param info
      * @return
      */
-    boolean askForLeave(WorkerSupplementRequest info);
+    String askForLeave(WorkerSupplementRequest info);
     /**
      * 小时工申请加班
      * @param info
      * @return
      */
-    boolean askWorkOvertime(WorkerSupplementRequest info);
+    String askWorkOvertime(WorkerSupplementRequest info);
     /**
      * 小时工申请取消任务
      * @param info

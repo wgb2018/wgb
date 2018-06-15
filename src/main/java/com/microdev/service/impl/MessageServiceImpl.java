@@ -107,7 +107,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      * 酒店绑定或解绑人力公司 人力解绑或绑定酒店
      */
     @Override
-    public boolean hotelBindHrCompany(Set<String> bindCompany, Company applyCompany, String pattern, Integer type) {
+    public String hotelBindHrCompany(Set<String> bindCompany, Company applyCompany, String pattern, Integer type) {
         System.out.println ("set:"+bindCompany);
         System.out.println ("applyCompany:"+applyCompany);
         System.out.println ("pattern:"+pattern);
@@ -154,7 +154,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             list.add(m);
         }
         messageMapper.saveBatch(list);
-        return true;
+        return "成功";
     }
 
     /**

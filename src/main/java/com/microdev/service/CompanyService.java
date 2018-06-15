@@ -87,7 +87,7 @@ public interface CompanyService extends IService<Company> {
      * @param request
      * @return
      */
-    boolean hotelPublish(HotelDeployInfoRequest request);
+    String hotelPublish(HotelDeployInfoRequest request);
     /**
      * 酒店处理小时工加时
      * @param id

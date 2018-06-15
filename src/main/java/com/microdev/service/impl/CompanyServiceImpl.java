@@ -518,7 +518,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
      * 酒店再发布
      */
     @Override
-    public boolean hotelPublish(HotelDeployInfoRequest request) {
+    public String hotelPublish(HotelDeployInfoRequest request) {
         if (request == null) {
             throw new ParamsException("参数不能为空");
         }
@@ -576,7 +576,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             list.add(message);
         }
         messageMapper.saveBatch(list);
-        return true;
+        return "成功";
     }
 
     /**
@@ -613,9 +613,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             log.setMinutes(logMinutes + minutes);
             workLogMapper.updateById(log);
 
-            Map<String, Double> mapPay = taskMapper.selectHrAndTaskHourPay(log.getTaskId());
-            Double shouldPayMoney_hrtoworker = (minutes / 60.00) * mapPay.get("hrPay");
-            Double shouldPayMoney_hoteltohr = (minutes / 60.00) * mapPay.get("taskPay");
+            TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(m.getHrTaskId());
+            Double shouldPayMoney_hrtoworker = (minutes / 60.00) * taskHrCompany.getHourlyPay();
+            Double shouldPayMoney_hoteltohr = (minutes / 60.00) * taskHrCompany.getHourlyPayHotel();
             shouldPayMoney_hrtoworker = new BigDecimal(shouldPayMoney_hrtoworker).
                     setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
             shouldPayMoney_hoteltohr = new BigDecimal(shouldPayMoney_hoteltohr).
@@ -637,7 +637,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }
 
         informMapper.insertInform(inform);
-        return "申请成功";
+        return "成功";
     }
     /**
      * 酒店申请绑定人力资源公司或人力公司申请绑定酒店
@@ -968,15 +968,33 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         message.setStatus(1);
         messageMapper.updateById(message);
 
+        //发送通知
+
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        Map<String,String> map = new HashMap <> ();
+        InformTemplate informTemplate = null;
         if ("1".equals(status)) {
             Holiday holiday = new Holiday();
             holiday.setFromDate(message.getSupplementTime());
             holiday.setToDate(message.getSupplementTimeEnd());
             holiday.setTaskWorkerId(message.getWorkerTaskId());
             holidayMapper.insert(holiday);
-        } else if (!"0".equals(status)){
+            informTemplate = informTemplateMapper.selectByCode(InformType.apply_for_leave_success.name());
+            map.put("hotel", companyMapper.selectById(message.getHotelId()).getName());
+            map.put("date", message.getSupplementTime().format(format));
+            map.put("time", message.getSupplementTimeEnd().format(format));
+            map.put("reason", message.getContent());
+
+        } else if ("0".equals(status)) {
+            informTemplate = informTemplateMapper.selectByCode(InformType.apply_for_leave_fail.name());
+            map.put("hotel", companyMapper.selectById(message.getHotelId()).getName());
+            map.put("reason", message.getContent());
+
+        } else {
             throw new ParamsException("参数错误");
         }
+        String content = StringKit.templateReplace(informTemplate.getContent(), map);
+        informService.sendInformInfo (3,1,content,message.getWorkerId (), informTemplate.getTitle());
         return ResultDO.buildSuccess("处理成功");
     }
 

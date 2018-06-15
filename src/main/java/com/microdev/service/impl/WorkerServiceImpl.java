@@ -284,7 +284,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
      * 小时工申请请假
      */
     @Override
-    public boolean askForLeave(WorkerSupplementRequest info) {
+    public String askForLeave(WorkerSupplementRequest info) {
         if (info == null) {
             throw new ParamsException("参数不能为空");
         }
@@ -337,14 +337,14 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setIsTask(0);
 
         messageMapper.insert(m);
-        return true;
+        return "成功";
     }
 
     /**
      * 小时工申请加班
      */
     @Override
-    public boolean askWorkOvertime(WorkerSupplementRequest info) {
+    public String askWorkOvertime(WorkerSupplementRequest info) {
         if (info == null) {
             throw new ParamsException("参数不能为空");
         }
@@ -376,7 +376,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setWorkerTaskId(info.getTaskWorkerId());
         m.setHotelId(tp.getHotelId());
         m.setHrTaskId(tp.getTaskHrId());
-        m.setTaskId (tp.getHotelTaskId());
+        m.setTaskId (tp.getTaskId());
         m.setHrCompanyId(tp.getHrId());
 
         Map<String, String> param = new HashMap<>();
@@ -391,7 +391,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setIsTask(0);
 
         messageMapper.insert(m);
-        return true;
+        return "成功";
     }
 
     /**
@@ -503,6 +503,10 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             throw new ParamsException("参数time不能为空");
         }
 
+        int repeat = messageMapper.selectIsRepeat();
+        if (repeat > 0) {
+            return "你已经提交过补签申请";
+        }
         OffsetDateTime time = DateUtil.strToOffSetDateTime(info.getTime(), "yyyy/MM/dd HH:mm");
         Message m = new Message();
         m.setSupplementTime(time);
