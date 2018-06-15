@@ -138,7 +138,7 @@ public class TaskConverter {
         viewDTO.setHavePayMoney(task.getHavePayMoney());
         viewDTO.setWaitPayMoney(task.getShouldPayMoney()-task.getHavePayMoney());
         viewDTO.setPayStatus("未结算");
-        if(task.getStatus()==4){
+        if(task.getStatus()>=3){
             if(OffsetDateTime.now().isBefore(task.getToDate()) &&  OffsetDateTime.now().isAfter(task.getFromDate())){
                 task.setStatus(5);
             }

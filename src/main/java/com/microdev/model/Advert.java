@@ -22,7 +22,7 @@ public class Advert extends BaseEntity{
 
     private Integer advertType;
 
-    private String tittle;
+    private String title;
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private OffsetDateTime releaseTime;
 }

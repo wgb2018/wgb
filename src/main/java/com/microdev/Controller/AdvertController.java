@@ -12,6 +12,7 @@ import com.microdev.service.AdvertService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.time.OffsetDateTime;
 
 @RestController
@@ -24,7 +25,7 @@ public class AdvertController {
     @Autowired
     AdvertMapper advertMapper;
     @PostMapping("/advert/add")
-    public ResultDO addAdvert(@RequestBody AdvertParam param) {
+    public ResultDO addAdvert(@RequestBody AdvertParam param) throws Exception{
         return  advertService.insertAdvert (param);
     }
     /**
@@ -54,9 +55,12 @@ public class AdvertController {
         advert.setExternalLinks (param.getExternalLinks ());
         advert.setContent (param.getContent ());
         advert.setDescription (param.getDescription ());
-        advert.setTittle (param.getTittle ());
+        advert.setTitle (param.getTitle ());
         if(advert.getStatus () == 0 && param.getStatus () == 1){
             advert.setReleaseTime (OffsetDateTime.now ());
+        }
+        if(advert.getStatus () == 1 && param.getStatus () == 0){
+            advert.setReleaseTime (null);
         }
         advert.setStatus (param.getStatus ());
         advert.setTheCover (param.getTheCover ());

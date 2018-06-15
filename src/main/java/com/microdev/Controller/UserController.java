@@ -317,7 +317,7 @@ public class UserController {
      */
     @PostMapping("/feedback/query")
     public ResultDO feedbackQuery( @RequestBody PagingDO<FeedbackQueryDTO> paging) {
-        return ResultDO.buildSuccess (userService.feedbackQuery(paging.getPaginator (),paging.getSelector ()));
+        return userService.feedbackQuery(paging.getPaginator (),paging.getSelector ());
     }
     /**
      * 添加意见反馈

@@ -9,7 +9,7 @@ import com.microdev.param.AdvertQuery;
 
 public interface AdvertService extends IService<Advert> {
 
-    ResultDO insertAdvert(AdvertParam param);
+    ResultDO insertAdvert(AdvertParam param) throws Exception;
 
     ResultDO queryAdvert(Paginator paginator, AdvertQuery advertQuery);
 }

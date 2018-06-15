@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
@@ -541,387 +542,6 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     }
 
     /**
-     * 查询小时工工作记录
-     */
-    @Override
-    public UserTaskResponse selectUserTaskInfo(String taskWorkerId, String workerId) {
-        if (StringUtils.isEmpty(taskWorkerId) || StringUtils.isEmpty(workerId)) {
-            throw new ParamsException("参数不能为空");
-        }
-        UserTaskResponse response = new UserTaskResponse();
-        // 查询用户工作记录
-        TaskDateInfo taskWorker = taskWorkerMapper.selectTaskWorkerDate(taskWorkerId);
-        if (taskWorker == null) {
-            throw new ParamsException("查询不到用户工作任务");
-        }
-        Calendar startDay = DateUtil.dateToCalendar (taskWorker.getFromDate());
-        Calendar nowDate = Calendar.getInstance ();
-        Calendar endDay = DateUtil.dateToCalendar (taskWorker.getToDate());
-        if (nowDate.compareTo(startDay) < 0) {
-            log.info("任务还没有开始");
-            return response;
-        }
-        if (nowDate.compareTo(endDay) < 0) {
-            endDay = nowDate;
-        }
-        Calendar dayStart = DateUtil.dateToCalendar (taskWorker.getDayStartTime());
-        Calendar dayEnd = DateUtil.dateToCalendar (taskWorker.getDayEndTime());
-
-        startDay.set(startDay.get(Calendar.YEAR), startDay.get(Calendar.MONTH), startDay.get(Calendar.DAY_OF_MONTH), dayStart.get(Calendar.HOUR_OF_DAY), dayStart.get(Calendar.MINUTE));
-        endDay.set(endDay.get(Calendar.YEAR), endDay.get(Calendar.MONTH), endDay.get(Calendar.DAY_OF_MONTH), dayEnd.get(Calendar.HOUR_OF_DAY), dayEnd.get(Calendar.MINUTE));
-        long start = dayStart.getTimeInMillis () / 1000;
-        long end = dayEnd.getTimeInMillis () / 1000;
-        boolean expire;
-        //long workDay = endDay.getLong(ChronoField.EPOCH_DAY) - startDay.getLong(ChronoField.EPOCH_DAY);
-        // 查询打卡记录
-        SimpleDateFormat d = new SimpleDateFormat ("yyyy/MM/dd");
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-
-        List<WorkerDetail> detailList = new ArrayList<>();//存放小时工所有打卡记录
-        List<WorkerOneDayInfo> list = workLogMapper.selectUserPunchDetail(taskWorkerId);
-        List<HolidayDateInfo> holidayList = holidayMapper.selectHolidayByTaskWorkId(taskWorkerId);
-        PunchInfo workLog = null;
-        WorkerDetail detail = null;
-        List<PunchInfo> workList = null;
-        Map<String, Integer> hotelStatus = null;
-        Map<String, Integer> sysStatus = null;
-        if (list == null || list.size() == 0) {
-            if (holidayList == null || holidayList.size() == 0) {
-                //没有打卡也没有请假
-                while (startDay.compareTo(nowDate) <= 0) {
-                    detail = new WorkerDetail();
-                    workList = new ArrayList<>();
-                    workLog = new PunchInfo();
-                    workLog.setStartTime("--");
-                    workLog.setEndTime("--");
-                    hotelStatus = new HashMap<>();
-                    sysStatus = new HashMap<>();
-                    initMapStatus(hotelStatus, 4);
-                    initMapStatus(sysStatus, 5);
-                    sysStatus.put("stay", 1);
-
-                    detail.setHotelStatus(hotelStatus);
-                    detail.setSysStatus(sysStatus);
-                    expire = (nowDate.getTimeInMillis () - startDay.getTimeInMillis ()) / 3600000  >= 168 ? true : false;
-                    if (expire) {
-                        detail.setExpire("1");
-                    } else  {
-                        detail.setExpire("0");
-                    }
-                    workList.add(workLog);
-                    detail.setTime(d.format (startDay.getTime ()));
-                    detailList.add(detail);
-                    detail.setSysStatus(sysStatus);
-                    detail.setHotelStatus(hotelStatus);
-                    startDay.add (Calendar.DAY_OF_YEAR, 1);
-                }
-
-            } else {
-                while (true) {
-                    if (startDay.compareTo(nowDate) > 0) break;
-                    detail = new WorkerDetail();
-                    workList = new ArrayList<>();
-                    workLog = new PunchInfo();
-                    hotelStatus = new HashMap<>();
-                    sysStatus = new HashMap<>();
-                    initMapStatus(hotelStatus, 4);
-                    initMapStatus(sysStatus, 5);
-                    long time = 0L;
-                    int num = 0;
-                    expire = (nowDate.getTimeInMillis() - startDay.getTimeInMillis()) / 3600000  >= 168 ? true : false;
-                    for (HolidayDateInfo holiday : holidayList) {
-                        Calendar holidayFrom = DateUtil.dateToCalendar (holiday.getFromDate ());
-                        Calendar holidayToDay = DateUtil.dateToCalendar (holiday.getToDate ());
-                        if (holidayFrom.get (Calendar.DAY_OF_YEAR) == startDay.get (Calendar.DAY_OF_YEAR)) {
-                            //当天请假
-                            sysStatus.put("leave", 1);
-                            hotelStatus.put("leave", 1);
-                            workLog.setEndTime("--");
-                            workLog.setStartTime("--");
-                            workList.add(workLog);
-
-                            if ((holiday.getFromDate().getTime ()/60000) <= (startDay.getTimeInMillis ()/60000)) {
-
-                                if (holidayToDay.get (Calendar.DAY_OF_YEAR) > startDay.get (Calendar.DAY_OF_YEAR) || (holidayToDay.get (Calendar.DAY_OF_YEAR) == startDay.get (Calendar.DAY_OF_YEAR) && holidayToDay.getTimeInMillis ()/1000 >= end)) {
-
-                                    break;
-                                } else {
-                                    //当天部分时间请假
-                                    num++;
-                                    time += holidayToDay.getTimeInMillis ()/1000 - start;
-                                }
-                            } else {
-                                if (holidayToDay.get (Calendar.DAY_OF_YEAR) == startDay.get (Calendar.DAY_OF_YEAR)) {
-                                    if (holidayToDay.getTimeInMillis () / 1000 < end) {
-                                        num++;
-                                        time += holidayToDay.getTimeInMillis () / 60000 - holidayFrom.getTimeInMillis ()/6000;
-                                    }
-                                } else if (holidayToDay.get (Calendar.DAY_OF_YEAR) > startDay.get (Calendar.DAY_OF_YEAR)){
-                                    num++;
-                                    time += end - holidayFrom.getTimeInMillis ()/1000;
-                                } else {
-                                    throw new ParamsException("请假时间错误");
-                                }
-                            }
-
-                        } else if (holidayFrom.get (Calendar.DAY_OF_YEAR) < startDay.get (Calendar.DAY_OF_YEAR)){
-                            //请假是从当天之前开始计算
-                            sysStatus.put("leave", 1);
-                            hotelStatus.put("leave", 1);
-                            workLog.setEndTime("--");
-                            workLog.setStartTime("--");
-                            workList.add(workLog);
-                            if (holidayToDay.get (Calendar.DAY_OF_YEAR) > endDay.get (Calendar.DAY_OF_YEAR)) {
-                                //全体请假
-                                break;
-                            } else if (holidayToDay.get (Calendar.DAY_OF_YEAR) == endDay.get (Calendar.DAY_OF_YEAR)){
-                                if (holidayToDay.getTimeInMillis ()/1000 >= end) {
-                                    break;
-                                } else {
-                                    num++;
-                                    time += holidayToDay.getTimeInMillis ()/1000 - start;
-                                }
-                            } else {
-                                throw new ParamsException("请假时间错误");
-                            }
-                        }
-                    }
-                    if (num > 0  && time < (end - start)) {
-                        workLog = new PunchInfo();
-                        sysStatus.put("comeLate", 1);
-                        workLog.setStartTime("--");
-                        workLog.setEndTime("--");
-
-                        workList.add(workLog);
-                    }
-                    if (expire) {
-                        detail.setExpire("1");
-                    } else  {
-                        detail.setExpire("0");
-                    }
-                    detail.setTime(d.format (startDay.getTime ()));
-                    startDay.add (Calendar.DAY_OF_YEAR, 1);
-                    detail.setSysStatus(sysStatus);
-                    detail.setHotelStatus(hotelStatus);
-                    detailList.add(detail);
-                }
-            }
-        } else {
-            //有打卡记录
-            for (WorkerOneDayInfo param : list) {
-                detail = new WorkerDetail();
-                workList = new ArrayList<>();
-                Calendar time = DateUtil.dateToCalendar (param.getCreateTime());
-                String[] currentStartTime = param.getFromDate().split(",");
-
-                String[] currentEndTime = null;
-                if (!StringUtils.isEmpty(param.getToDate())) {
-                    currentEndTime = param.getToDate ().split (",");
-                }
-                String[] confirmStatus = param.getEmployerConfirmStatus().split(",");
-                boolean flag = false;
-
-                //如果当天没有打卡记录
-                while (startDay.get (Calendar.DAY_OF_YEAR) != time.get (Calendar.DAY_OF_YEAR) && startDay.compareTo(nowDate) < 0) {
-                    expire = ((nowDate.getTimeInMillis ()/1000) - (startDay.getTimeInMillis ()/1000)) / 3600  >= 168 ? true : false;
-                    int minutes = containsTime(startDay, endDay,  holidayList);
-                    if (hotelStatus == null || sysStatus == null) {
-                        hotelStatus = new HashMap<>();
-                        sysStatus = new HashMap<>();
-                        initMapStatus(hotelStatus, 4);
-                        initMapStatus(sysStatus, 5);
-                    }
-                    //没有请假
-                    if (minutes == 0) {
-                        sysStatus.put("stay", 1);
-                        workLog = new PunchInfo();
-                        workLog.setEndTime("--");
-                        workLog.setStartTime("--");
-                        workList.add(workLog);
-                    } else {
-                        //请假时间小于上班时间
-                        if (minutes < (end - start)) {
-                            workLog = new PunchInfo();
-                            workLog.setEndTime("--");
-                            workLog.setStartTime("--");
-                            sysStatus.put("leave", 1);
-                            sysStatus.put("comeLate", 1);
-                            hotelStatus.put("leave", 1);
-                            workList.add(workLog);
-
-                        } else {
-                            //全天请假
-                            workLog = new PunchInfo();
-                            workLog.setEndTime("--");
-                            workLog.setStartTime("--");
-                            sysStatus.put("leave", 1);
-                            hotelStatus.put("leave", 1);
-                            workList.add(workLog);
-                        }
-                    }
-                    detail.setTime(d.format (startDay.getTime ()));
-                    startDay.add (Calendar.DAY_OF_YEAR, 1);
-                    detail.setHotelStatus(hotelStatus);
-                    detail.setSysStatus(sysStatus);
-                    if (expire) {
-                        detail.setExpire("1");
-                    } else  {
-                        detail.setExpire("0");
-                    }
-                    detail.setWorkList(workList);
-                    detailList.add(detail);
-                    workList = null;
-
-                    hotelStatus = null;
-                    sysStatus = null;
-                    flag = true;
-                }
-                //如果进入了没有打卡的流程，要重新生成记录
-                if (flag) {
-                    detail = new WorkerDetail();
-                    workList = new ArrayList<>();
-                }
-				hotelStatus = new HashMap<>();
-                sysStatus = new HashMap<>();
-                initMapStatus(hotelStatus, 4);
-                initMapStatus(sysStatus, 5);                //有打卡记录
-                expire = (nowDate.getTimeInMillis ()/1000 - startDay.getTimeInMillis ()/1000) / 3600  >= 168 ? true : false;
-                if (expire) {
-                    detail.setExpire("1");
-                } else  {
-                    detail.setExpire("0");
-                }
-
-                Date t = null;
-                try {
-                   t = timeFormat.parse (currentStartTime[0]);
-                } catch (ParseException e) {
-                    e.printStackTrace ( );
-                }
-                workLog = new PunchInfo();
-                Calendar tc = DateUtil.dateToCalendar (t);
-                if (dayStart.getTime ().compareTo(t) < 0) {
-                    int minutes = containsTime(tc, startDay,  holidayList);
-                    if (minutes == 0) {
-                        sysStatus.put("comeLate", 1);
-                        if ("1".equals(confirmStatus[0])) {
-                            sysStatus.put("comeLate", 1);
-                        }
-                    } else {
-                        sysStatus.put("leave", 1);
-                        hotelStatus.put("leave", 1);
-                    }
-                }
-                workLog.setStartTime(currentStartTime[0]);
-                if (currentEndTime != null && currentEndTime.length > 0) {
-                    workLog.setEndTime(currentEndTime[0]);
-
-                    workList.add(workLog);
-                    if (currentStartTime.length > 1) {
-                        int i;
-                        for (i = 1; i < currentStartTime.length - 1; i++) {
-                            workLog = new PunchInfo();
-
-                            workLog.setStartTime(currentStartTime[i]);
-                            workLog.setEndTime(currentEndTime[i]);
-                            Date start2 = null;
-                            Date end1 = null;
-                            try {
-                                start2 = timeFormat.parse (currentStartTime[i]);
-                                end1 = timeFormat.parse (currentEndTime[i - 1]);
-                            } catch (ParseException e) {
-                                e.printStackTrace ( );
-                            }
-                            Calendar cStart2 = DateUtil.dateToCalendar (start2);
-                            Calendar cEnd1 = DateUtil.dateToCalendar (end1);
-                            if (start2.compareTo(end1) <= 0) {
-
-                            } else {
-                                int minutes = containsTime(cEnd1, cStart2,  holidayList);
-                                if (minutes == 0) {
-                                    sysStatus.put("comeLate", 1);
-                                    if ("1".equals(confirmStatus[i])) {
-                                        hotelStatus.put("comeLate", 1);
-                                    }
-                                } else {
-                                    sysStatus.put("leave", 1);
-                                    hotelStatus.put("leave", 1);
-                                }
-                            }
-                            workList.add(workLog);
-                        }
-                        workLog = new PunchInfo();
-
-                        workLog.setStartTime(currentStartTime[i]);
-                        if (currentEndTime.length == i + 1) {
-
-                            workLog.setEndTime(currentEndTime[i]);
-                            Date start2 = null;
-                            Date end1 = null;
-                            try {
-                                start2 = timeFormat.parse (currentStartTime[i]);
-                                end1 = timeFormat.parse (currentEndTime[i - 1]);
-                            } catch (ParseException e) {
-                                e.printStackTrace ( );
-                            }
-
-                            if (start2.compareTo(end1) <= 0) {
-                                if (start2.getTime ()/1000 >= dayStart.getTimeInMillis ()/1000) {
-
-                                } else {
-                                   sysStatus.put("earlier", 1);
-                                   if ("1".equals(confirmStatus[i])) {
-                                       hotelStatus.put("earlier", 1);
-                                   }
-                                }
-                            } else {
-                                sysStatus.put("comeLate", 1);
-                                if ("1".equals(confirmStatus[i])) {
-                                    hotelStatus.put("comeLate", 1);
-                                }
-                            }
-                            workList.add(workLog);
-                        } else {
-                            workLog.setEndTime("--");
-                            sysStatus.put("forget", 1);
-                            if ("1".equals(confirmStatus[i])) {
-                                hotelStatus.put("forget", 1);
-                            }
-                            workList.add(workLog);
-                        }
-                    }
-                } else {
-                    //忘打卡
-                    workLog.setEndTime("--");
-                    sysStatus.put("forget", 1);
-                    if ("1".equals(confirmStatus[0])) {
-                        hotelStatus.put("forget", 1);
-                    }
-                    workList.add(workLog);
-                    int minutes = containsTime(startDay, endDay,  holidayList);
-                    //查询是否有请假
-                    if (minutes > 0) {
-                        workLog = new PunchInfo();
-                        sysStatus.put("leave", 1);
-                        hotelStatus.put("leave", 1);
-                        workList.add(workLog);
-                    }
-                }
-                detail.setWorkList(workList);
-                detail.setSysStatus(sysStatus);
-                detail.setHotelStatus(hotelStatus);
-                detail.setTime(d.format (startDay.getTime ()));
-                detailList.add(detail);
-                startDay.add (Calendar.DAY_OF_YEAR, 1);
-                hotelStatus = null;
-                sysStatus = null;
-            }
-        }
-        response.setList(detailList);
-        return response;
-    }
-
-    /**
      * 初始化小时工工作记录打卡状态
      * @param map
      */
@@ -1105,93 +725,6 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         return "申请成功";
     }
 
-    /**
-     * 统计请假时间
-     * @param startTime     上班时间
-     * @param endTime       上班打卡时间
-     * @param holidayList   请假数据
-     * @return
-     */
-    private int containsTime(Calendar startTime, Calendar endTime, List<HolidayDateInfo> holidayList) {
-        int num = 0;
-        Calendar time2 = Calendar.getInstance ();
-        time2.set (startTime.get (Calendar.YEAR), startTime.get (Calendar.MONTH), startTime.get (Calendar.DAY_OF_YEAR),
-                endTime.get (Calendar.HOUR_OF_DAY), endTime.get (Calendar.MINUTE), endTime.get (Calendar.SECOND));
-        for (HolidayDateInfo holiday : holidayList) {
-            Calendar from = DateUtil.dateToCalendar (holiday.getFromDate ());
-            Calendar to = DateUtil.dateToCalendar (holiday.getToDate ());
-            long hStart = from.getTimeInMillis ()/60000;
-            long hEnd = to.getTimeInMillis ()/60000;
-            long startMinute = startTime.getTimeInMillis ()/1000;
-            long endMinute = time2.getTimeInMillis ()/1000;
-            if (holiday.getFromDate().compareTo(startTime.getTime ()) > 0) continue;
-            if (holiday.getFromDate().compareTo(startTime.getTime ()) <= 0) {
-                //请假开始日期小于当前日期
-                if (holiday.getToDate().compareTo(startTime.getTime ()) >= 0) {
-                    if (holiday.getToDate().compareTo(time2.getTime ()) < 0) {
-                        num += hEnd - startMinute;
-                    } else  {
-                        num += endMinute - startMinute;
-                    }
-                }
-            } else if (from.get (Calendar.DAY_OF_YEAR) == startTime.get (Calendar.DAY_OF_YEAR)) {
-                //请假日期和当前日期一致
-                if (to.get (Calendar.DAY_OF_YEAR) == startTime.get (Calendar.DAY_OF_YEAR)) {
-                    if (hStart <= startMinute) {
-                        if (holiday.getToDate().compareTo(startTime.getTime ()) > 0) {
-                            if (to.getTimeInMillis ()/60000 >= time2.getTimeInMillis ()/60000) {
-                                num += time2.getTimeInMillis ()/60000 - startTime.getTimeInMillis ()/60000;
-                            } else {
-                                num += to.getTimeInMillis ()/60000 - startTime.getTimeInMillis ()/60000;
-                            }
-                        }
-                    } else {
-                        if (to.getTimeInMillis ()/60000 >= time2.getTimeInMillis ()/60000) {
-                            num += time2.getTimeInMillis ()/60000 - from.getTimeInMillis ()/60000;
-                        } else {
-                            num += to.getTimeInMillis ()/60000 - from.getTimeInMillis ()/60000;
-                        }
-                    }
-                } else if (to.get (Calendar.DAY_OF_YEAR) > startTime.get (Calendar.DAY_OF_YEAR)) {
-                    if (from.getTimeInMillis ()/60000 <= startTime.getTimeInMillis ()/60000) {
-                        num += time2.getTimeInMillis ()/60000 - startTime.getTimeInMillis ()/60000;
-                    } else if (from.getTimeInMillis ()/60000 <= time2.getTimeInMillis ()/60000){
-                        num += time2.getTimeInMillis ()/60000 - from.getTimeInMillis ()/60000;
-                    }
-                }
-            }
-        }
-        return num;
-    }
-    /**
-     * 判断是否请假
-     *
-     * @param d     格式化對象
-     * @param start 每天工作开始时间
-     * @param end   每天工作结束时间
-     * @param str   请假开始时间
-     * @param str2  请假结束时间
-     * @return true 请假 false 请假旷工
-     */
-    private boolean isLeave(DateTimeFormatter d, long start, long end, String[] str, String[] str2) {
-        long leaveTime = 0L;
-        OffsetDateTime time = DateUtil.strToOffSetDateTime(str2[0], "yyyy-MM-dd HH:mm:ss");
-        leaveTime += time.getLong(ChronoField.MINUTE_OF_DAY) - start;
-        int i = 0;
-        for (; ; i++) {
-            if (i >= str.length - 1) break;
-            time = DateUtil.strToOffSetDateTime(str[i], "yyyy-MM-dd HH:mm:ss");
-            long s = time.getLong(ChronoField.MINUTE_OF_DAY);
-            time = DateUtil.strToOffSetDateTime(str2[i], "yyyy-MM-dd HH:mm:ss");
-            long t = time.getLong(ChronoField.MINUTE_OF_DAY);
-            leaveTime += t - s;
-        }
-        if (i > 0) {
-            time = DateUtil.strToOffSetDateTime(str[i], "yyyy-MM-dd HH:mm:ss");
-            leaveTime += end - time.getLong(ChronoField.MINUTE_OF_DAY);
-        }
-        return leaveTime > (end - start);
-    }
 
     /**
      * 小时工处理人力支付
@@ -1242,4 +775,515 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         return ResultDO.buildSuccess("成功");
     }
 
+    /**
+     *查询小时工工作记录
+     * @param taskWorkerId
+     * @param workerId
+     * @return
+     */
+    @Override
+    public UserTaskResponse selectUserTaskInfo(String taskWorkerId, String workerId) {
+        if (StringUtils.isEmpty(taskWorkerId) || StringUtils.isEmpty(workerId)) {
+            throw new ParamsException("参数不能为空");
+        }
+        UserTaskResponse response = new UserTaskResponse();
+        // 查询用户工作记录
+        TaskWorker taskWorker = taskWorkerMapper.selectById(taskWorkerId);
+        if (taskWorker == null) {
+            throw new ParamsException("查询不到用户工作任务");
+        }
+        OffsetDateTime startDay = taskWorker.getFromDate();
+        OffsetDateTime nowDate = OffsetDateTime.now();
+        OffsetDateTime endDay = taskWorker.getToDate();
+
+        if (nowDate.compareTo(startDay) < 0) {
+            log.info("任务还没有开始");
+            return response;
+        }
+        if (nowDate.compareTo(endDay) < 0) {
+            endDay = nowDate;
+        }
+        OffsetTime dayStart = taskWorker.getDayStartTime();
+        OffsetTime dayEnd = taskWorker.getDayEndTime();
+
+        long start = dayStart.getLong(ChronoField.SECOND_OF_DAY);
+        long end = dayEnd.getLong(ChronoField.SECOND_OF_DAY);
+        startDay = startDay.plusHours(-startDay.getHour()).plusMinutes(-startDay.getMinute()).plusSeconds(-startDay.getSecond()).plusSeconds(start);
+        endDay = endDay.plusHours(-endDay.getHour()).plusMinutes(-endDay.getMinute()).plusSeconds(-endDay.getSecond()).plusSeconds(end);
+        boolean expire;
+
+        // 查询打卡记录
+        DateTimeFormatter t1 = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+
+        List<WorkerDetail> detailList = new ArrayList<>();//存放小时工所有打卡记录
+        List<WorkerOneDayInfo> list = workLogMapper.selectUserPunchDetail(taskWorkerId);
+        List<Holiday> holidayList = holidayMapper.selectByTaskWorkId(taskWorkerId);
+        PunchInfo workLog = null;
+        WorkerDetail detail = null;
+        List<PunchInfo> workList = null;
+        Map<String, Integer> hotelStatus = null;
+        Map<String, Integer> sysStatus = null;
+        if (list == null || list.size() == 0) {
+            if (holidayList == null || holidayList.size() == 0) {
+                //没有打卡也没有请假
+                while (startDay.compareTo(nowDate) <= 0) {
+                    detail = new WorkerDetail();
+                    workList = new ArrayList<>();
+                    workLog = new PunchInfo();
+                    workLog.setStartTime("--");
+                    workLog.setEndTime("--");
+                    hotelStatus = new HashMap<>();
+                    sysStatus = new HashMap<>();
+                    initMapStatus(hotelStatus, 4);
+                    initMapStatus(sysStatus, 5);
+                    sysStatus.put("stay", 1);
+
+                    detail.setHotelStatus(hotelStatus);
+                    detail.setSysStatus(sysStatus);
+                    expire = (nowDate.toEpochSecond() - startDay.toEpochSecond()) / 3600  >= 168 ? true : false;
+                    if (expire) {
+                        detail.setExpire("1");
+                    } else  {
+                        detail.setExpire("0");
+                    }
+                    workList.add(workLog);
+                    detail.setTime(startDay.format(t1));
+                    detailList.add(detail);
+                    detail.setSysStatus(sysStatus);
+                    detail.setHotelStatus(hotelStatus);
+                    startDay = startDay.plusDays(1);
+                }
+
+            } else {
+                while (true) {
+                    if (startDay.compareTo(nowDate) > 0) break;
+                    detail = new WorkerDetail();
+                    workList = new ArrayList<>();
+                    workLog = new PunchInfo();
+                    hotelStatus = new HashMap<>();
+                    sysStatus = new HashMap<>();
+                    initMapStatus(hotelStatus, 4);
+                    initMapStatus(sysStatus, 5);
+                    long time = 0L;
+                    int num = 0;
+                    expire = (nowDate.toEpochSecond() - startDay.toEpochSecond()) / 3600  >= 168 ? true : false;
+                    for (Holiday holiday : holidayList) {
+                        OffsetDateTime holidayFormDay = holiday.getFromDate();
+                        OffsetDateTime holidayToDay = holiday.getToDate();
+
+                        if (holidayFormDay.getDayOfYear() == startDay.getDayOfYear()) {
+                            //当天请假
+                            sysStatus.put("leave", 1);
+                            hotelStatus.put("leave", 1);
+                            workLog.setEndTime("--");
+                            workLog.setStartTime("--");
+                            workList.add(workLog);
+
+                            if (holidayFormDay.toEpochSecond() <= startDay.toEpochSecond()) {
+
+                                if ((holidayToDay.getYear() == startDay.getYear() && holidayToDay.getDayOfYear() > startDay.getDayOfYear()) || holidayToDay.getYear() > startDay.getYear()) {
+
+                                    break;
+                                } else {
+                                    //当天部分时间请假
+                                    num++;
+                                    time += holidayToDay.getLong(ChronoField.SECOND_OF_DAY) - start;
+                                }
+                            } else {
+                                if ((holidayToDay.getYear() == startDay.getYear() && holidayToDay.getDayOfYear() > startDay.getDayOfYear()) || holidayToDay.getYear() > startDay.getYear()) {
+                                    if (holidayToDay.getLong(ChronoField.SECOND_OF_DAY) < end) {
+                                        num++;
+                                        time += end - holidayFormDay.getLong(ChronoField.SECOND_OF_DAY);
+                                    }
+                                } else if (holidayToDay.getDayOfYear() == startDay.getDayOfYear()){
+                                    num++;
+                                    if (holidayToDay.toEpochSecond() >= startDay.getDayOfYear()) {
+                                        time += startDay.getLong(ChronoField.SECOND_OF_DAY) - holidayFormDay.getLong(ChronoField.SECOND_OF_DAY);
+                                    } else {
+                                        time += holidayToDay.getLong(ChronoField.SECOND_OF_DAY) - holidayFormDay.getLong(ChronoField.SECOND_OF_DAY);
+                                    }
+
+                                } else {
+                                    throw new ParamsException("请假时间错误");
+                                }
+                            }
+
+                        } else if ((holidayFormDay.getYear() == startDay.getYear() && holidayFormDay.getDayOfYear() < startDay.getDayOfYear()) || holidayFormDay.getYear() < startDay.getYear()) {
+                            //请假是从当天之前开始计算
+                            sysStatus.put("leave", 1);
+                            hotelStatus.put("leave", 1);
+                            workLog.setEndTime("--");
+                            workLog.setStartTime("--");
+                            workList.add(workLog);
+                            if ((holidayToDay.getYear() == startDay.getYear() && holidayToDay.getDayOfYear() > startDay.getDayOfYear()) || holidayToDay.getYear() > startDay.getYear()) {
+                                //全体请假
+                                break;
+                            } else if (holidayToDay.getYear() == startDay.getYear() && holidayToDay.getDayOfYear() == startDay.getDayOfYear()) {
+                                if (holidayToDay.getLong(ChronoField.SECOND_OF_DAY) >= end) {
+                                    break;
+                                } else {
+                                    num++;
+                                    time += holidayToDay.getLong(ChronoField.SECOND_OF_DAY) - start;
+                                }
+                            } else {
+                                throw new ParamsException("请假时间错误");
+                            }
+                        }
+                    }
+                    if (num > 0  && time < (end - start)) {
+                        workLog = new PunchInfo();
+                        sysStatus.put("comeLate", 1);
+                        workLog.setStartTime("--");
+                        workLog.setEndTime("--");
+
+                        workList.add(workLog);
+                    }
+                    if (expire) {
+                        detail.setExpire("1");
+                    } else  {
+                        detail.setExpire("0");
+                    }
+                    detail.setTime(startDay.format(t1));
+                    startDay = startDay.plusDays(1);
+                    detail.setSysStatus(sysStatus);
+                    detail.setHotelStatus(hotelStatus);
+                    detailList.add(detail);
+                }
+            }
+        } else {
+            //有打卡记录
+            for (WorkerOneDayInfo param : list) {
+                detail = new WorkerDetail();
+                workList = new ArrayList<>();
+                OffsetDateTime time = param.getCreateTime();
+                String[] currentStartTime = param.getFromDate().split(",");
+
+                String[] currentEndTime = null;
+                if (!StringUtils.isEmpty(param.getToDate())) {
+                    currentEndTime = param.getToDate ().split (",");
+                }
+                String confirmStatus = param.getEmployerConfirmStatus();
+                String status = param.getStatus();
+                boolean flag = false;
+
+                //如果当天没有打卡记录
+                while (startDay.getDayOfYear() != time.getDayOfYear() && startDay.compareTo(nowDate) < 0) {
+                    expire = (nowDate.toEpochSecond() - startDay.toEpochSecond()) / 3600  >= 168 ? true : false;
+
+                    int minutes = judgeTime(startDay.getYear(), startDay.getDayOfYear(), dayStart, dayEnd, holidayList);
+                    if (hotelStatus == null || sysStatus == null) {
+                        hotelStatus = new HashMap<>();
+                        sysStatus = new HashMap<>();
+                        initMapStatus(hotelStatus, 4);
+                        initMapStatus(sysStatus, 5);
+                    }
+                    //没有请假
+                    if (minutes == 0) {
+                        sysStatus.put("stay", 1);
+                        workLog = new PunchInfo();
+                        workLog.setEndTime("--");
+                        workLog.setStartTime("--");
+                        workList.add(workLog);
+                    } else {
+                        //请假时间小于上班时间
+                        if (minutes < (end - start)) {
+                            workLog = new PunchInfo();
+                            workLog.setEndTime("--");
+                            workLog.setStartTime("--");
+                            sysStatus.put("leave", 1);
+                            sysStatus.put("comeLate", 1);
+                            hotelStatus.put("leave", 1);
+                            workList.add(workLog);
+
+                        } else {
+                            //全天请假
+                            workLog = new PunchInfo();
+                            workLog.setEndTime("--");
+                            workLog.setStartTime("--");
+                            sysStatus.put("leave", 1);
+                            hotelStatus.put("leave", 1);
+                            workList.add(workLog);
+                        }
+                    }
+                    detail.setTime(startDay.format(t1));
+                    startDay = startDay.plusDays(1);
+                    detail.setHotelStatus(hotelStatus);
+                    detail.setSysStatus(sysStatus);
+                    if (expire) {
+                        detail.setExpire("1");
+                    } else  {
+                        detail.setExpire("0");
+                    }
+                    detail.setWorkList(workList);
+                    detailList.add(detail);
+                    workList = null;
+
+                    hotelStatus = null;
+                    sysStatus = null;
+                    flag = true;
+                }
+                //如果进入了没有打卡的流程，要重新生成记录
+                if (flag) {
+                    detail = new WorkerDetail();
+                    workList = new ArrayList<>();
+                }
+                try {
+                    //每天工作时间(分钟)及应付薪酬
+                    int minutes = countWorkMinutes(currentStartTime, currentEndTime);
+                    detail.setWorkHour(minutes);
+                    double d = new BigDecimal(minutes).multiply(new BigDecimal(taskWorker.getHourlyPay())).divide(new BigDecimal(60), 2, RoundingMode.HALF_UP).doubleValue();
+                    detail.setPayment(d);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                hotelStatus = new HashMap<>();
+                sysStatus = new HashMap<>();
+                initMapStatus(hotelStatus, 4);
+                initMapStatus(sysStatus, 5);                //有打卡记录
+                expire = (nowDate.toEpochSecond() - startDay.toEpochSecond()) / 3600  >= 168 ? true : false;
+                if (expire) {
+                    detail.setExpire("1");
+                } else  {
+                    detail.setExpire("0");
+                }
+
+                Date t = null;
+                try {
+                    t = timeFormat.parse (currentStartTime[0]);
+                } catch (ParseException e) {
+                    e.printStackTrace ( );
+                }
+                workLog = new PunchInfo();
+                OffsetTime tc = OffsetTime.ofInstant(Instant.ofEpochMilli(t.getTime()), ZoneId.systemDefault());
+                if (dayStart.compareTo(tc) < 0) {
+                    int minutes = judgeTime(startDay.getYear(), startDay.getDayOfYear(), dayStart, tc, holidayList);
+                    if (minutes == 0) {
+                        sysStatus.put("comeLate", 1);
+                        if (status.contains("1") && confirmStatus.contains("1")) {
+                            hotelStatus.put("comeLate", 1);
+                        }
+                    } else {
+                        sysStatus.put("leave", 1);
+                        hotelStatus.put("leave", 1);
+                    }
+                }
+                workLog.setStartTime(currentStartTime[0]);
+                if (currentEndTime != null && currentEndTime.length > 0) {
+                    workLog.setEndTime(currentEndTime[0]);
+
+                    workList.add(workLog);
+                    if (currentStartTime.length > 1) {
+                        int i;
+                        for (i = 1; i < currentStartTime.length - 1; i++) {
+                            workLog = new PunchInfo();
+
+                            workLog.setStartTime(currentStartTime[i]);
+                            workLog.setEndTime(currentEndTime[i]);
+                            Date start2 = null;
+                            Date end1 = null;
+                            try {
+                                start2 = timeFormat.parse (currentStartTime[i]);
+                                end1 = timeFormat.parse (currentEndTime[i - 1]);
+                            } catch (ParseException e) {
+                                e.printStackTrace ( );
+                            }
+                            OffsetTime cStart2 = OffsetTime.ofInstant(Instant.ofEpochMilli(start2.getTime()), ZoneId.systemDefault());
+                            OffsetTime cEnd1 = OffsetTime.ofInstant(Instant.ofEpochMilli(end1.getTime()), ZoneId.systemDefault());
+                            if (start2.compareTo(end1) <= 0) {
+
+                            } else {
+                                int minutes = judgeTime(startDay.getYear(), startDay.getDayOfYear(), cEnd1, cStart2, holidayList);
+                                if (minutes == 0) {
+                                    sysStatus.put("comeLate", 1);
+                                    if (status.contains("1") && confirmStatus.contains("1")) {
+                                        hotelStatus.put("comeLate", 1);
+                                    }
+                                } else {
+                                    sysStatus.put("leave", 1);
+                                    hotelStatus.put("leave", 1);
+                                }
+                            }
+                            workList.add(workLog);
+                        }
+                        workLog = new PunchInfo();
+
+                        workLog.setStartTime(currentStartTime[i]);
+                        if (currentEndTime.length == i + 1) {
+
+                            workLog.setEndTime(currentEndTime[i]);
+                            Date start2 = null;
+                            Date end1 = null;
+                            try {
+                                start2 = timeFormat.parse (currentStartTime[i]);
+                                end1 = timeFormat.parse (currentEndTime[i - 1]);
+                            } catch (ParseException e) {
+                                e.printStackTrace ( );
+                            }
+
+                            if (start2.compareTo(end1) <= 0) {
+                                if (start2.getTime ()/1000 >= dayStart.getLong(ChronoField.SECOND_OF_DAY)) {
+
+                                } else {
+                                    sysStatus.put("earlier", 1);
+                                    if (status.contains("2") && confirmStatus.contains("2")) {
+                                        hotelStatus.put("earlier", 1);
+                                    }
+                                }
+                            } else {
+                                sysStatus.put("comeLate", 1);
+                                if (status.contains("1") && confirmStatus.contains("1")) {
+                                    hotelStatus.put("comeLate", 1);
+                                }
+                            }
+                            workList.add(workLog);
+                        } else {
+                            workLog.setEndTime("--");
+                            sysStatus.put("forget", 1);
+                            if (status.contains("4") && confirmStatus.contains("4")) {
+                                hotelStatus.put("forget", 1);
+                            }
+                            workList.add(workLog);
+                        }
+                    }
+                } else {
+                    //忘打卡
+                    workLog.setEndTime("--");
+                    sysStatus.put("forget", 1);
+                    if (status.contains("4") && confirmStatus.contains("4")) {
+                        hotelStatus.put("forget", 1);
+                    }
+                    workList.add(workLog);
+                    int minutes = judgeTime(startDay.getYear(), startDay.getDayOfYear(), dayStart, dayEnd, holidayList);
+                    //查询是否有请假
+                    if (minutes > 0) {
+                        workLog = new PunchInfo();
+                        sysStatus.put("leave", 1);
+                        hotelStatus.put("leave", 1);
+                        workList.add(workLog);
+                    }
+                }
+                detail.setWorkList(workList);
+                detail.setSysStatus(sysStatus);
+                detail.setHotelStatus(hotelStatus);
+                detail.setTime(startDay.format(t1));
+                detailList.add(detail);
+                startDay = startDay.plusDays(1);
+                hotelStatus = null;
+                sysStatus = null;
+            }
+        }
+        response.setList(detailList);
+        return response;
+    }
+
+    /**
+     * 判断时间是否再请假时间中
+     * @param year               打卡日期的年份
+     * @param day               打卡的在一年中的天数
+     * @param startTime         打卡的开始时间
+     * @param endTime           打卡的结束时间
+     * @param holidayList       请假集合
+     * @return
+     */
+    private int judgeTime(int year, int day, OffsetTime startTime, OffsetTime endTime, List<Holiday> holidayList) {
+        int num = 0;
+
+        for (Holiday holiday : holidayList) {
+            OffsetDateTime from = holiday.getFromDate();
+            OffsetDateTime to = holiday.getToDate();
+            if (from.getYear() > year) {
+                continue;
+            } else if (from.getYear() < year){
+                if (to.getYear() < year) {
+                    continue;
+                } else {
+                    if (to.getDayOfYear() < day) continue;
+                    //请假结束日期大于打卡日期
+                    if (to.getDayOfYear() > day)  {
+                        num += (int) (endTime.getLong(ChronoField.SECOND_OF_DAY) - startTime.getLong(ChronoField.SECOND_OF_DAY));
+                        break;
+                    } else {
+                        if (to.toOffsetTime().compareTo(endTime) >= 0) {
+                            num += (int) (endTime.getLong(ChronoField.SECOND_OF_DAY) - startTime.getLong(ChronoField.SECOND_OF_DAY));
+                        } else {
+                            num += (int) (to.getLong(ChronoField.SECOND_OF_DAY) - startTime.getLong(ChronoField.SECOND_OF_DAY));
+                        }
+                    }
+
+                }
+            } else {
+                //同一年
+                if (from.getDayOfYear() > day) {
+                    //请假日期大于打卡日期
+                    continue;
+                } else if (from.getDayOfYear() < day) {
+                    //请假日期小于打卡日期
+                } else {
+                    //请假日期等于打卡日期
+                    if (to.getYear() > year || to.getDayOfYear() > day) {
+                        //请假结束日期大于当天
+                        if (startTime.compareTo(from.toOffsetTime()) > 0) {
+                            num += endTime.getLong(ChronoField.SECOND_OF_DAY) - startTime.getLong(ChronoField.SECOND_OF_DAY);
+                        } else {
+                            num += endTime.getLong(ChronoField.SECOND_OF_DAY) - from.getLong(ChronoField.SECOND_OF_DAY);
+                        }
+                    } else {
+                        //当天
+                        if (startTime.compareTo(from.toOffsetTime()) >= 0) {
+                            if (endTime.compareTo(to.toOffsetTime()) <= 0) {
+                                num += endTime.getLong(ChronoField.SECOND_OF_DAY) - startTime.getLong(ChronoField.SECOND_OF_DAY);
+                            } else {
+                                num += to.getLong(ChronoField.SECOND_OF_DAY) - startTime.getLong(ChronoField.SECOND_OF_DAY);
+                            }
+
+                        } else {
+                            //请假时间晚于startTime
+                            if (endTime.compareTo(from.toOffsetTime()) <= 0) {
+                                continue;
+                            } else if (endTime.compareTo(to.toOffsetTime()) >= 0) {
+                                num += to.getLong(ChronoField.SECOND_OF_DAY) - from.getLong(ChronoField.SECOND_OF_DAY);
+                            } else {
+                                num += endTime.getLong(ChronoField.SECOND_OF_DAY) - from.getLong(ChronoField.SECOND_OF_DAY);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return num;
+    }
+
+    /**
+     * 计算小时工每天工作时间
+     * @param starts        签到打卡时间
+     * @param ends          签退打卡时间
+     * @return
+     */
+    private int countWorkMinutes(String[] starts, String[] ends) throws ParseException {
+
+        if (starts == null || ends == null) return 0;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+        int num = 0;
+        int startLen = starts.length;
+        int endLen = ends.length;
+        if (startLen == endLen) {
+            //没有忘打卡
+            for (int i = 0; i < startLen; i++) {
+                if (StringUtils.isEmpty(ends[i])) continue;
+                Date d1 = dateFormat.parse(starts[i]);
+                Date d2 = dateFormat.parse(ends[i]);
+                num += (d2.getTime() - d1.getTime()) / 60000;
+            }
+        } else {
+            //有忘打卡
+            for (int i = 0; i < startLen - 1; i++) {
+                if (StringUtils.isEmpty(ends[i])) continue;
+                Date d1 = dateFormat.parse(starts[i]);
+                Date d2 = dateFormat.parse(ends[i]);
+                num += (d2.getTime() - d1.getTime()) / 60000;
+            }
+        }
+        return num;
+    }
 }

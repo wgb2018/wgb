@@ -5,7 +5,7 @@
     id as pid, create_time, deleted, modify_time,
     confirmed_date, have_pay_money, minutes, no_promise, refused_reason, repast_times,
     settled, settled_date, should_pay_money, status, worker_id, task_hr_id, user_id, user_name,hourly_pay,hr_company_name,hotel_name,
-        hotel_id,from_date,to_date,day_start_time,day_end_time,task_type_code,task_type_text,task_content,hr_company_id,hotel_task_id
+        hotel_id,from_date,to_date,day_start_time,day_end_time,task_type_code,task_type_text,task_content,hr_company_id,hotel_task_id,verification
 </sql>
     <select id="findFirstById" resultType="com.microdev.model.TaskWorker" parameterType="java.lang.String">
         select

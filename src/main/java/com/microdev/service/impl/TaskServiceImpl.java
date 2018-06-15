@@ -123,7 +123,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
                 && (taskViewDTO.getShouldPayMoney() - taskViewDTO.getHavePayMoney() <= 0)) {
             taskViewDTO.setPayStatus("已结算");
         }
-        if(taskViewDTO.getStatus()==4){
+        if(taskViewDTO.getStatus() >= 3 ){
             if(OffsetDateTime.now().isBefore(taskViewDTO.getToDate()) &&  OffsetDateTime.now().isAfter(taskViewDTO.getFromDate())){
                 taskViewDTO.setStatus(5);
             }
@@ -240,6 +240,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         m.setApplyType (2);
         m.setIsTask (0);
         m.setHrTaskId (taskHr.getPid ());
+        m.setMinutes (bill.getPid ());
         Map<String, String> param = new HashMap<>();
         param.put("hotelName", companyMapper.findCompanyById (taskHr.getHotelId ()).getName ());
         String c = StringKit.templateReplace(mess.getContent(), param);

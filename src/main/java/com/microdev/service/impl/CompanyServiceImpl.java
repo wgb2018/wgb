@@ -992,7 +992,10 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }
         message.setStatus(1);
         messageMapper.updateById(message);
-
+        if(taskMapper.getFirstById (message.getTaskId()).getFromDate ().isBefore (OffsetDateTime.now ())){
+            informService.sendInformInfo (3,2,"由于酒店未及时处理您的调配申请，此申请默认拒绝",message.getHrCompanyId (),"申请调配处理超时");
+            return ResultDO.buildSuccess("任务已开始，处理超时");
+        }
         request.setTaskId(message.getTaskId());
         request.setTaskHrId(message.getHrTaskId());
 

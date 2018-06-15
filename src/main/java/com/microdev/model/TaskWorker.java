@@ -135,6 +135,10 @@ public class TaskWorker extends BaseEntity {
      * 是否已查看0未读1未完成已读3已完成已读
      */
     private Integer checkSign = 0;
+    /**
+    * 是否验证
+    * */
+    private Integer verification;
     public Integer getStatus() {
         return status;
     }

@@ -90,12 +90,14 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         }
         messageMapper.updateStatus (message.getPid ());
         TaskWorker taskWorker = taskWorkerMapper.findFirstById(message.getWorkerTaskId());
-        if (taskWorker.getFromDate().isBefore(OffsetDateTime.now())) {
-            System.out.println ("now:"+OffsetDateTime.now()+"AAA:"+taskWorker.getFromDate());
-            taskWorker.setStatus (2);
-            taskWorker.setRefusedReason ("任务已过期，无法接受");
-            taskWorkerMapper.updateById (taskWorker);
-            return ResultDO.buildSuccess("任务已过期，无法接受");
+        if(taskWorker.getVerification () != 1){
+            if (taskWorker.getFromDate().isBefore(OffsetDateTime.now())) {
+                System.out.println ("now:"+OffsetDateTime.now()+"AAA:"+taskWorker.getFromDate());
+                taskWorker.setStatus (2);
+                taskWorker.setRefusedReason ("任务已过期，无法接受");
+                taskWorkerMapper.updateById (taskWorker);
+                return ResultDO.buildSuccess("任务已过期，无法接受");
+            }
         }
         //TODO 人数判断
         TaskHrCompany taskHr = taskHrCompanyMapper.queryByTaskId(taskWorker.getTaskHrId());
@@ -124,7 +126,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
              taskHr.setConfirmedWorkers(confirmedWorkers+1);
         }
         if(taskHr.getConfirmedWorkers() == taskHr.getNeedWorkers()){
-            taskHrCompanyMapper.updateStatus(taskHr.getPid(),5);
+            taskHr.setStatus (5);
         }
         taskWorker.setRefusedReason("");
         taskWorkerMapper.updateById(taskWorker);
