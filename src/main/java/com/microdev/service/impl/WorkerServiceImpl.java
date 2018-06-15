@@ -1084,7 +1084,6 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     detail = new WorkerDetail();
                     workList = new ArrayList<>();
                 }
-              
                 //每天工作时间(分钟)及应付薪酬
 
                 detail.setWorkHour(param.getTotalTime());
@@ -1099,6 +1098,25 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     detail.setExpire("1");
                 } else  {
                     detail.setExpire("0");
+                }
+
+                //判断是否是旷工
+                if ("3".equals(status) && "1".equals(confirmStatus)) {
+                    sysStatus.put("stay", 1);
+                    hotelStatus.put("stay", 1);
+                    workLog = new PunchInfo();
+                    workLog.setEndTime("--");
+                    workLog.setStartTime("--");
+                    workList.add(workLog);
+                    detail.setWorkList(workList);
+                    detail.setTime(startDay.format(t1));
+                    detail.setSysStatus(sysStatus);
+                    detail.setHotelStatus(hotelStatus);
+                    detailList.add(detail);
+                    startDay = startDay.plusDays(1);
+                    hotelStatus = null;
+                    sysStatus = null;
+                    continue;
                 }
 
                 Date t = null;
@@ -1143,7 +1161,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                             }
                             OffsetTime cStart2 = OffsetTime.ofInstant(Instant.ofEpochMilli(start2.getTime()), ZoneId.systemDefault());
                             OffsetTime cEnd1 = OffsetTime.ofInstant(Instant.ofEpochMilli(end1.getTime()), ZoneId.systemDefault());
-                            if (start2.compareTo(end1) <= 0) {
+                            if (cStart2.compareTo(cEnd1) <= 0) {
 
                             } else {
                                 int minutes = judgeTime(startDay.getYear(), startDay.getDayOfYear(), cEnd1, cStart2, holidayList);
@@ -1173,20 +1191,20 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                             } catch (ParseException e) {
                                 e.printStackTrace ( );
                             }
-
-                            if (start2.compareTo(end1) <= 0) {
-                                if (start2.getTime ()/1000 >= dayStart.getLong(ChronoField.SECOND_OF_DAY)) {
-
-                                } else {
-                                    sysStatus.put("earlier", 1);
-                                    if (status.contains("2") && confirmStatus.contains("2")) {
-                                        hotelStatus.put("earlier", 1);
-                                    }
-                                }
+                                OffsetTime ts2 = OffsetTime.ofInstant(Instant.ofEpochMilli(start2.getTime()), ZoneId.systemDefault());
+                                OffsetTime te1 = OffsetTime.ofInstant(Instant.ofEpochMilli(end1.getTime()), ZoneId.systemDefault());
+                            if (ts2.compareTo(te1) <= 0) {
+                                //正常
                             } else {
-                                sysStatus.put("comeLate", 1);
-                                if (status.contains("1") && confirmStatus.contains("1")) {
-                                    hotelStatus.put("comeLate", 1);
+                                int minutes = judgeTime(startDay.getYear(), startDay.getDayOfYear(), te1, ts2, holidayList);
+                                if (minutes == 0) {
+                                    sysStatus.put("comeLate", 1);
+                                    if (status.contains("1") && confirmStatus.contains("1")) {
+                                        hotelStatus.put("comeLate", 1);
+                                    }
+                                } else {
+                                    sysStatus.put("leave", 1);
+                                    hotelStatus.put("leave", 1);
                                 }
                             }
                             workList.add(workLog);

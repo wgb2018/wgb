@@ -67,7 +67,7 @@ public class TaskTest {
 
 	@Test
 	public void threeTest() {
-		UserTaskResponse response = workerService.selectUserTaskInfo("b229cd5ab09d4d56bde740b86b7f1a16", "0638d16d6a0a42709f12c5b3ad5d901d");
+		UserTaskResponse response = workerService.selectUserTaskInfo("14ca1456a97e4c099647d0e8a8629afc", "5b65af4690fe4c378d0449c706d2ffa5");
 		JSONObject json = JSONObject.fromObject(response);
 		System.out.println(json.toString());
 	}
