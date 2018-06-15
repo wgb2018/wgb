@@ -22,7 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
@@ -90,7 +92,6 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         }
         messageMapper.updateStatus (message.getPid ());
         TaskWorker taskWorker = taskWorkerMapper.findFirstById(message.getWorkerTaskId());
-        if(taskWorker.getVerification () != 1){
             if (taskWorker.getFromDate().isBefore(OffsetDateTime.now())) {
                 System.out.println ("now:"+OffsetDateTime.now()+"AAA:"+taskWorker.getFromDate());
                 taskWorker.setStatus (2);
@@ -98,9 +99,13 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
                 taskWorkerMapper.updateById (taskWorker);
                 return ResultDO.buildSuccess("任务已过期，无法接受");
             }
-        }
+
         //TODO 人数判断
         TaskHrCompany taskHr = taskHrCompanyMapper.queryByTaskId(taskWorker.getTaskHrId());
+        if(taskWorker.getFromDate ().isEqual (taskWorker.getToDate ()))  {
+            OffsetDateTime of = OffsetDateTime.now();
+            taskWorker.setFromDate (OffsetDateTime.ofInstant (Instant.ofEpochSecond (of.toEpochSecond () - of.toOffsetTime ().getSecond ()+taskHr.getDayStartTime ().getSecond ()),ZoneId.systemDefault ()).plusDays (1));;
+        }
         Integer confirmedWorkers = taskHr.getConfirmedWorkers();
         if (confirmedWorkers == null) {
             confirmedWorkers = 0;

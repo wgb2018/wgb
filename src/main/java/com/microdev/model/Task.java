@@ -103,6 +103,9 @@ public class Task extends BaseEntity {
      */
     private Double havePayMoney=0.0;
 
+    @TableField(exist = false)
+    private Double unConfirmedPay=0.0;
+
     public Integer getStatus() {
         return status;
     }

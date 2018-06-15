@@ -82,6 +82,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     private MessageService messageService;
     @Autowired
     private InformService informService;
+    @Autowired
+    private BillMapper billMapper;
 
     @Override
     public GetCurrentTaskResponse getCurrentTask(String workerId) {
@@ -284,7 +286,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
      * 小时工申请请假
      */
     @Override
-    public boolean askForLeave(WorkerSupplementRequest info) {
+    public String askForLeave(WorkerSupplementRequest info) {
         if (info == null) {
             throw new ParamsException("参数不能为空");
         }
@@ -337,14 +339,14 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setIsTask(0);
 
         messageMapper.insert(m);
-        return true;
+        return "成功";
     }
 
     /**
      * 小时工申请加班
      */
     @Override
-    public boolean askWorkOvertime(WorkerSupplementRequest info) {
+    public String askWorkOvertime(WorkerSupplementRequest info) {
         if (info == null) {
             throw new ParamsException("参数不能为空");
         }
@@ -376,7 +378,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setWorkerTaskId(info.getTaskWorkerId());
         m.setHotelId(tp.getHotelId());
         m.setHrTaskId(tp.getTaskHrId());
-        m.setTaskId (tp.getHotelTaskId());
+        m.setTaskId (tp.getTaskId());
         m.setHrCompanyId(tp.getHrId());
 
         Map<String, String> param = new HashMap<>();
@@ -391,7 +393,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setIsTask(0);
 
         messageMapper.insert(m);
-        return true;
+        return "成功";
     }
 
     /**
@@ -744,33 +746,40 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         message.setStatus(1);
         messageMapper.updateAllColumnById(message);
-
+        Bill bill = billMapper.selectById (message.getMinutes ());
+        if(bill == null){
+            throw new ParamsException("未查到相关支付记录");
+        }
         User user = userMapper.selectByWorkerId(message.getWorkerId());
         if (user == null) {
             throw new BusinessException("查询不到小时工信息");
         }
         if ("0".equals(status)) {
             //拒绝
-            String content = "小时工" + user.getNickname() + "拒绝了你发起的一笔支付信息，金额为" + Double.valueOf(message.getMinutes());
+            String content = "小时工" + user.getNickname() + "拒绝了你发起的一笔支付信息，金额为" + Double.valueOf(bill.getPayMoney ());
             informService.sendInformInfo(1, 2, content, message.getHrCompanyId(), "账目被拒绝");
+            bill.setStatus (2);
+            billMapper.updateById (bill);
         } else if ("1".equals(status)) {
             //同意
             TaskWorker taskWorker = taskWorkerMapper.selectById(message.getWorkerTaskId());
             if (taskWorker == null) {
                 throw new ParamsException("查询不到小时工任务信息");
             }
-            taskWorker.setHavePayMoney(taskWorker.getHavePayMoney() + Double.valueOf(message.getMinutes()));
+            taskWorker.setHavePayMoney(taskWorker.getHavePayMoney() + Double.valueOf(bill.getPayMoney ()));
             taskWorkerMapper.updateAllColumnById(taskWorker);
             TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(message.getHrTaskId());
             if (taskHrCompany == null) {
                 throw new ParamsException("查询不到人力任务");
             }
-            taskHrCompany.setWorkersHavePay(taskHrCompany.getWorkersHavePay() + Double.valueOf(message.getMinutes()));
+            taskHrCompany.setWorkersHavePay(taskHrCompany.getWorkersHavePay() + Double.valueOf(bill.getPayMoney ()));
             taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
 
             //发送通知
-            String content = "小时工" + user.getNickname() + "同意了你发起的一笔支付信息，金额为" + message.getMinutes();
+            String content = "小时工" + user.getNickname() + "同意了你发起的一笔支付信息，金额为" + bill.getPayMoney ();
             informService.sendInformInfo(1, 2, content, message.getHrCompanyId(), "账目已同意");
+            bill.setStatus (1);
+            billMapper.updateById (bill);
         }
         return ResultDO.buildSuccess("成功");
     }

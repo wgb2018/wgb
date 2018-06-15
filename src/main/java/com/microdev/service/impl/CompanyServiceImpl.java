@@ -378,7 +378,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             throw new ParamsException("参数错误");
         }
         informMapper.insertInform(inform);
-        return "成功";
+        return "提交成功";
     }
     /**
      * 酒店申请替换小时工
@@ -512,7 +512,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             HrDeployApply apply = messageMapper.selectHrDeployInfo(param);
             return ResultDO.buildSuccess(apply);
         }
-        return ResultDO.buildSuccess("成功");
+        return ResultDO.buildSuccess("提交成功");
     }
     /**
      * 酒店再发布
@@ -613,9 +613,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             log.setMinutes(logMinutes + minutes);
             workLogMapper.updateById(log);
 
-            Map<String, Double> mapPay = taskMapper.selectHrAndTaskHourPay(log.getTaskId());
-            Double shouldPayMoney_hrtoworker = (minutes / 60.00) * mapPay.get("hrPay");
-            Double shouldPayMoney_hoteltohr = (minutes / 60.00) * mapPay.get("taskPay");
+            TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(m.getHrTaskId());
+            Double shouldPayMoney_hrtoworker = (minutes / 60.00) * taskHrCompany.getHourlyPay();
+            Double shouldPayMoney_hoteltohr = (minutes / 60.00) * taskHrCompany.getHourlyPayHotel();
             shouldPayMoney_hrtoworker = new BigDecimal(shouldPayMoney_hrtoworker).
                     setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
             shouldPayMoney_hoteltohr = new BigDecimal(shouldPayMoney_hoteltohr).
@@ -637,7 +637,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }
 
         informMapper.insertInform(inform);
-        return "申请成功";
+        return "操作成功";
     }
     /**
      * 酒店申请绑定人力资源公司或人力公司申请绑定酒店

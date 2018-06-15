@@ -289,7 +289,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("hrPayWorkerMessage");
         Message m = new Message();
         m.setTaskId (taskWorker.getHotelTaskId ());
-        m.setMessageCode ("hotelPayHrMessage");
+        m.setMessageCode ("hrPayWorkerMessage");
+        m.setMinutes (bill.getPid ());
         m.setMessageType(8);
         m.setMessageTitle ("人力公司支付小时工");
         m.setStatus (0);
@@ -717,7 +718,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             workerTask.setDayEndTime(taskWorker.getDayEndTime());
             workerTask.setDayStartTime(taskWorker.getDayStartTime());
             workerTask.setToDate(taskWorker.getToDate());
-            workerTask.setFromDate(taskWorker.getFromDate());
+            workerTask.setFromDate(taskWorker.getToDate());
             workerTask.setHotelName(taskHrCompany.getHotelName());
             workerTask.setHourlyPay(taskHrCompany.getHourlyPay());
             workerTask.setTaskContent(taskHrCompany.getTaskContent());
@@ -780,7 +781,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         workerTask.setDayEndTime(taskWorker.getDayEndTime());
         workerTask.setDayStartTime(taskWorker.getDayStartTime());
         workerTask.setToDate(taskWorker.getToDate());
-        workerTask.setFromDate(taskWorker.getFromDate());
+        workerTask.setFromDate(taskWorker.getToDate ());
         workerTask.setHotelName(taskHrCompany.getHotelName());
         workerTask.setHourlyPay(taskHrCompany.getHourlyPay());
         workerTask.setTaskContent(taskHrCompany.getTaskContent());
@@ -1072,7 +1073,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         taskWork.setWorkerId(user.getWorkerId());
         taskWork.setUserName(user.getUsername());
         taskWork.setStatus(0);
-        taskWork.setFromDate(taskHrCompany.getFromDate());
+        taskWork.setFromDate(taskWorker.getFromDate());
         taskWork.setToDate(taskHrCompany.getToDate());
         taskWork.setHourlyPay(taskHrCompany.getHourlyPay());
         taskWork.setTaskTypeCode(taskHrCompany.getTaskTypeCode());
