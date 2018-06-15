@@ -343,14 +343,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         messageService.hotelDistributeTask(set, hotel, "workTaskMessage", request);
 
         //发送拒绝任务成功通知
-        InformTemplate inf = informTemplateMapper.selectByCode (InformType.refuse_hotel_task.name());
+        InformTemplate inf = informTemplateMapper.selectByCode (InformType.hotel_agree_apply.name());
         Map<String,String> map = new HashMap <> ();
-        map.put("hr",companyMapper.findCompanyById (message.getHrCompanyId()).getName ());
-        if (StringUtils.isEmpty(message.getContent())) {
-            map.put("reason", " ");
-        } else {
-            map.put("reason", message.getContent());
-        }
+        map.put("hotel",companyMapper.findCompanyById (message.getHotelId()).getName ());
 
         String content = StringKit.templateReplace(inf.getContent (), map);
         informService.sendInformInfo (3,2,content,message.getHrCompanyId (),"拒绝任务成功");

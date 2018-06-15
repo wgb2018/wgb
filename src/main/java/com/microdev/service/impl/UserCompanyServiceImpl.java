@@ -78,10 +78,11 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         inform.setReceiveId(message.getHrCompanyId());
         inform.setAcceptType(2);
         inform.setSendType(1);
+        UserCompany userCompany= userCompanyMapper.selectByWorkerIdHrId(message.getHrCompanyId(),message.getWorkerId());
         if ("0".equals(status)) {
             inform.setTitle("绑定被拒绝");
-            inform.setContent("小时工" + user.getUsername() + "拒绝了你的绑定申请。");
-            UserCompany userCompany= userCompanyMapper.selectByWorkerIdHrId(message.getHrCompanyId(),message.getWorkerId());
+            inform.setContent("小时工" + user.getNickname() + "拒绝了你的绑定申请。");
+
             if(userCompany==null){
                 userCompany=new UserCompany();
 
@@ -96,12 +97,12 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                 userCompany.setStatus (2);
                 userCompanyMapper.insert (userCompany);
             }else{
+                userCompany.setRelieveTime(OffsetDateTime.now());
+                userCompany.setStatus(2);
                 userCompanyMapper.updateById (userCompany);
             }
 
-
         } else if ("1".equals(status)) {
-            UserCompany userCompany= userCompanyMapper.selectByWorkerIdHrId(message.getHrCompanyId(),message.getWorkerId());
             if(userCompany==null){
                 userCompany=new UserCompany();
 
@@ -140,7 +141,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                 userCompanyMapper.insert(userCompany);
             }
             inform.setTitle("绑定成功");
-            inform.setContent("小时工" + user.getUsername() + "同意了你的绑定申请，成功添加为合作伙伴，添加合作人力公司即代表同意劳务合作协议。你可以接受合作的人力公司派发的任务，确保能够及时完美的完成任务，可以获得相应的酬劳。");
+            inform.setContent("小时工" + user.getNickname() + "同意了你的绑定申请，成功添加为合作伙伴，添加合作人力公司即代表同意劳务合作协议。你可以接受合作的人力公司派发的任务，确保能够及时完美的完成任务，可以获得相应的酬劳。");
         } else {
             return ResultDO.buildSuccess("失败");
         }

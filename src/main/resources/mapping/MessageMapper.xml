@@ -388,7 +388,7 @@ UNION
 
 (
 SELECT m3.is_task,m3.content,m3.id AS messageId,m3.`create_time`,IFNULL(c3.`address`,'') as address,c3.`logo`,NULL AS task_type_text,NULL AS from_date, NULL AS to_date,NULL AS day_start_time,NULL AS day_end_time, NULL AS hotel_name, 0 AS confirmed_workers,0 AS need_workers,
-  0 AS lackWorkers,NULL AS hotel_id, NULL AS id, message_type AS TYPE,0 AS hourlyPay,c3.`area`,0 AS hrNeedWorkers FROM message m3
+  0 AS lackWorkers,NULL AS hotel_id, NULL AS id, message_type AS TYPE,0 AS hourlyPay,c3.`area`,0 AS hrNeedWorkers ,0 AS hrConfirmedWorkers FROM message m3
   INNER JOIN company c3
   ON c3.id = m3.`hr_company_id`
   WHERE m3.apply_type=3 AND m3.is_task = 1 and m3.status = 0 AND m3.`applicant_type` = 2  AND m3.hotel_id= #{hotelId}

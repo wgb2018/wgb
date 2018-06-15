@@ -39,13 +39,19 @@
                 from_date = #{fromDate},
             </if>
             <if test="toDate != null">
-                to_date = #{toDate}
+                to_date = #{toDate},
             </if>
             <if test="punchDate != null">
-                punch_date = #{punchDate}
+                punch_date = #{punchDate},
             </if>
             <if test="minutes != null">
-                minutes = #{minutes}
+                minutes = #{minutes},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="employerConfirmStatus != null">
+                employer_confirm_status = #{employerConfirmStatus},
             </if>
         </set>
         where id = #{id}
@@ -167,7 +173,7 @@ SELECT from_date, to_date,STATUS ,employer_confirm_status,create_time,id FROM 	w
 	</select>
 
     <select id = "selectUnreadPunchCount" resultType="java.lang.String">
-        SELECT id FROM work_log WHERE to_date IS NULL AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) >= DATE(create_time) GROUP BY DATE_FORMAT(create_time,'%Y.%m.%d')
+        SELECT id FROM work_log WHERE to_date IS NULL AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= DATE(create_time) GROUP BY DATE_FORMAT(create_time,'%Y.%m.%d')
     </select>
 
     <select id="selectUnreadInfoOne" resultType="com.microdev.model.WorkLog">
@@ -175,6 +181,6 @@ SELECT from_date, to_date,STATUS ,employer_confirm_status,create_time,id FROM 	w
     </select>
 
     <select id = "selectByDate" parameterType="com.microdev.param.HotelHandleWorkerRecord" resultType="com.microdev.model.WorkLog">
-        SELECT * FROM work_log WHERE task_worker_id = #{taskWorkerId} AND DATE_FORMAT(create_time, '%Y/%m/%d') = #{date}
+        SELECT <include refid="WorkLog_Column_List"/> FROM work_log WHERE task_worker_id = #{taskWorkerId} AND DATE_FORMAT(create_time, '%Y/%m/%d') = #{date}
     </select>
 </mapper>
