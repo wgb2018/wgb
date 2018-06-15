@@ -352,9 +352,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             }
 
             if (minutes > 0) {
-                Map<String, Double> mapPay = taskMapper.selectHrAndTaskHourPay(punch.getTaskId());
-                Double shouldPayMoney_hrtoworker = (minutes / 60.00) * mapPay.get("hrPay");
-                Double shouldPayMoney_hoteltohr = (minutes / 60.00) * mapPay.get("taskPay");
+                TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(oldMsg.getHrTaskId());
+                Double shouldPayMoney_hrtoworker = (minutes / 60.00) * taskHrCompany.getHourlyPay();
+                Double shouldPayMoney_hoteltohr = (minutes / 60.00) * taskHrCompany.getHourlyPayHotel();
 
                 //小数点后保留两位(第三位四舍五入)
                 shouldPayMoney_hrtoworker = new BigDecimal(shouldPayMoney_hrtoworker).
@@ -362,7 +362,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 shouldPayMoney_hoteltohr = new BigDecimal(shouldPayMoney_hoteltohr).
                         setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 
-                Map<String, Object> p = new HashMap<>();
                 taskWorkerMapper.addMinutes(punch.getTaskWorkerId(),minutes,shouldPayMoney_hrtoworker);
                 taskHrCompanyMapper.addMinutes(punch.getTaskHrId(),minutes,shouldPayMoney_hrtoworker,shouldPayMoney_hoteltohr);
                 taskMapper.addMinutes(punch.getTaskId(),minutes,shouldPayMoney_hoteltohr);
