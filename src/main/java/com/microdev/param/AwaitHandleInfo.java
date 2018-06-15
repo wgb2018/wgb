@@ -8,7 +8,7 @@ import java.time.OffsetDateTime;
 public class AwaitHandleInfo {
 
     private String taskTypeText;
-    private String hourlyPay;
+    private Double hourlyPay;
     private String fromDate;
     private String toDate;
     private String dayStartTime;

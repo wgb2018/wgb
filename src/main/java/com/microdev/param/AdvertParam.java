@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class AdvertParam {
-    private String tittle;
+    private String title;
 
     private String description;
 

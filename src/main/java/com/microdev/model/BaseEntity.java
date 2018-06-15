@@ -28,7 +28,7 @@ public abstract class BaseEntity implements Serializable {
      */
     //@TableField(validate= FieldStrategy.IGNORED)
     @TableField(value="create_time",validate = FieldStrategy.NOT_EMPTY)
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private OffsetDateTime createTime;
     /**
      * 最后一次更新时间
@@ -36,7 +36,7 @@ public abstract class BaseEntity implements Serializable {
     @Version
     //@TableField(validate= FieldStrategy.IGNORED)
     @TableField(value="modify_time",validate = FieldStrategy.NOT_EMPTY)
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private OffsetDateTime modifyTime;
     /**
      * 逻辑删除  默认：false，true为删除

@@ -12,7 +12,6 @@ import com.microdev.mapper.WorkerLogMapper;
 import com.microdev.model.Message;
 import com.microdev.model.WorkLog;
 import com.microdev.param.*;
-import com.microdev.service.InformService;
 import com.microdev.service.WorkerService;
 import net.sf.json.JSONObject;
 import org.joda.time.DateTime;
@@ -42,9 +41,7 @@ public class TaskTest {
 	private WorkerLogMapper workerLogMapper;
 	@Autowired
 	private WorkerService workerService;
-	@Autowired
-	private InformService informService;
-
+	
 	@Test
 	public void oneTest() {
 		Map<String, Object> map = new HashMap<>();
@@ -72,20 +69,6 @@ public class TaskTest {
 	public void threeTest() {
 		UserTaskResponse response = workerService.selectUserTaskInfo("b229cd5ab09d4d56bde740b86b7f1a16", "0638d16d6a0a42709f12c5b3ad5d901d");
 		JSONObject json = JSONObject.fromObject(response);
-		System.out.println(json.toString());
-	}
-
-	@Test
-	public void fourTest() {
-		InformRequestDTO dto = new InformRequestDTO();
-		dto.setRole("hr");
-		dto.setType(1);
-		dto.setId("b1bad47abc574d8cb288e9871bfbab01");
-		Paginator paginator = new Paginator();
-		paginator.setPage(1);
-		paginator.setPageSize(6);
-		Map<String, Object> map = informService.selectMessageInfo(dto, paginator);
-		JSONObject json = JSONObject.fromObject(map);
 		System.out.println(json.toString());
 	}
 }

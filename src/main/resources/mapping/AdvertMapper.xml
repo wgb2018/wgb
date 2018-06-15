@@ -3,20 +3,20 @@
 <mapper namespace="com.microdev.mapper.AdvertMapper">
     <sql id="Advert_Column_List">
         id as pid, create_time, deleted, modify_time,description,the_cover,content
-        ,status,external_links,advert_type,tittle
+        ,status,external_links,advert_type,title,release_time
 
     </sql>
     <select id="queryAdvert" resultType="com.microdev.model.Advert" parameterType="com.microdev.param.AdvertQuery">
         select <include refid="Advert_Column_List" /> from advertisement
         <where>
-            <if test="tittle != null and tittle != ''">
-                tittle like concat('%', #{tittle},'%')
+            <if test="title != null and title != ''">
+                title like concat('%', #{title},'%')
             </if>
             <if test="status != null">
               and status = #{status}
             </if>
         </where>
-        order by create_time desc;
+        order by create_time desc
     </select>
 
 

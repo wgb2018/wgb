@@ -122,8 +122,8 @@
         group by t.hotel_id,c.name
     </select>
     <select id="selectPayHrInfo" parameterType="java.lang.String" resultType="java.util.Map">
-        SELECT hr_company_name AS companyName, IFNULL(`should_pay_money`,0) AS shouldPayMoney, IFNULL(have_pay_money,0) AS havePayMoney,
-        IFNULL(should_pay_money - have_pay_money,0) AS waitPayMoney, hr_company_id as hrCompanyId
+        SELECT hr_company_name AS companyName, IFNULL(`should_pay_money`,0.0) AS shouldPayMoney, IFNULL(have_pay_money,0.0) AS havePayMoney,
+        IFNULL(should_pay_money - have_pay_money,0.0) AS waitPayMoney, hr_company_id as hrCompanyId
         FROM task_hr_company
         WHERE hotel_id = #{hotelId}
     </select>
@@ -134,17 +134,17 @@
     <update id="updateStatus">
         update task_hr_company set status = #{status} where id = #{id}
     </update>
-    <select id="selectByTaskId" parameterType="java.lang.String" resultType="java.util.Map">
+    <select id="selectByTaskId" parameterType="java.lang.String" resultType="com.microdev.param.HrTaskDetails">
         SELECT th.hourly_pay_hotel AS hourlyPayHotel,t.hotel_id AS hotelId,t.hotel_name AS
         hotelName,c.leader_mobile as leaderMobile,c.leader as leader,t.id AS hotelTaskId,t.task_type_text AS taskTypeText,DATE_FORMAT(t.day_start_time,'%H:%i') as dayStartTime,DATE_FORMAT(t.day_end_time,'%H:%i') as dayEndTime,
-        t.task_content AS taskContent, DATE_FORMAT(t.`from_date`,'%Y.%m.%d') AS fromDate, DATE_FORMAT(t.`to_date`,'%Y.%m.%d') AS toDate
-        , c.`address` AS hotelAddress,IFNULL(t.`hourly_pay`, 0) AS hotelHourlyPay,th.distribute_workers as distributeWorkers,
-        th.hr_company_id AS hrCompanyId, th.hr_company_name AS hrCompanyName, th.id AS pid,IFNULL(th.`hourly_pay`,0) AS hourlyPay,
+        t.task_content AS taskContent, t.from_date AS fromDate, t.to_date AS toDate
+        , c.`address` AS hotelAddress,IFNULL(t.`hourly_pay`, 0.0) AS hotelHourlyPay,th.distribute_workers as distributeWorkers,
+        th.hr_company_id AS hrCompanyId, th.hr_company_name AS hrCompanyName, th.id AS pid,IFNULL(th.`hourly_pay`,0.0) AS hourlyPay,
         th.need_workers AS needWorkers, th.confirmed_workers AS confirmedWorkers, th.`refused_workers` AS refusedWorkers,
         th.`status` AS status, th.`repast_times` AS repastTimes, th.`minutes` AS minutes, th.`should_pay_money` AS shouldPayMoney,
-        IFNULL(th.`have_pay_money`,0) AS havePayMoney, (IFNULL(th.`should_pay_money`,0) - IFNULL(th.have_pay_money,0)) AS waitPayMoney,
-        IFNULL(th.`workers_have_pay`,0) AS workersHavePay,
-        IFNULL(th.`workers_should_pay`,0) AS workersShouldPay, (IFNULL(th.workers_should_pay,0) - IFNULL(th.workers_have_pay,0)) AS workersWaitPay,c.area
+        IFNULL(th.`have_pay_money`,0.0) AS havePayMoney, (IFNULL(th.`should_pay_money`,0.0) - IFNULL(th.have_pay_money,0.0)) AS waitPayMoney,
+        IFNULL(th.`workers_have_pay`,0.0) AS workersHavePay,
+        IFNULL(th.`workers_should_pay`,0.0) AS workersShouldPay, (IFNULL(th.workers_should_pay,0.0) - IFNULL(th.workers_have_pay,0.0)) AS workersWaitPay,c.area
         FROM task t
         INNER JOIN task_hr_company th
         ON t.id = th.task_id

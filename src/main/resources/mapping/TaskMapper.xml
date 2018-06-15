@@ -106,9 +106,9 @@
     </select>
     <select id="selectPayMoneyInfo" parameterType="java.lang.String"
             resultType="java.util.Map">
-        SELECT SUM(IFNULL(should_pay_money,0)) AS shouldPayMoney,
-        SUM(IFNULL(have_pay_money,0)) AS havePayMoney,
-        SUM(IFNULL(should_pay_money,0)) - SUM(IFNULL(have_pay_money,0)) AS
+        SELECT SUM(IFNULL(should_pay_money,0.0)) AS shouldPayMoney,
+        SUM(IFNULL(have_pay_money,0.0)) AS havePayMoney,
+        SUM(IFNULL(should_pay_money,0.0)) - SUM(IFNULL(have_pay_money,0.0)) AS
         waitPayMoney
         FROM task where hotel_id = #{hotelId}
     </select>
@@ -148,9 +148,9 @@
         needWorkers,t.`hotel_name` AS HotelName,t.`confirmed_workers` AS
         confirmedWorkers,
         t.`refused_workers` AS refusedWorkers,t.`repast_times` AS repastTimes,t.`minutes` AS
-        minutes,IFNULL(t.`should_pay_money`,0) AS shouldPayMoney,
-        IFNULL(t.`have_pay_money`,0) AS
-        havePayMoney,IFNULL(t.`should_pay_money` - t.`have_pay_money`,0) AS
+        minutes,IFNULL(t.`should_pay_money`,0.0) AS shouldPayMoney,
+        IFNULL(t.`have_pay_money`,0.0) AS
+        havePayMoney,IFNULL(t.`should_pay_money` - t.`have_pay_money`,0.0) AS
         waitPayMoney
         FROM task t WHERE t.id = #{id}
     </select>
@@ -159,9 +159,9 @@
         SELECT tc.id AS taskHrId,tc.need_workers AS needWorkers,tc.confirmed_workers
         AS confirmedWorkers,tc.refused_workers AS refusedWorkers,
         tc.repast_times AS repastTimes, tc.minutes AS
-        minutes,IFNULL(tc.should_pay_money,0) AS shouldPayMoney
-        ,IFNULL(tc.`have_pay_money`,0) AS havePayMoney,
-        IFNULL(tc.should_pay_money - tc.`have_pay_money`,0) AS
+        minutes,IFNULL(tc.should_pay_money,0.0) AS shouldPayMoney
+        ,IFNULL(tc.`have_pay_money`,0.0) AS havePayMoney,
+        IFNULL(tc.should_pay_money - tc.`have_pay_money`,0.0) AS
         waitPayMoney,tc.hr_company_name AS hrCompanyName, tc.hr_company_id AS
         hrCompanyId
         FROM task_hr_company tc

@@ -45,4 +45,6 @@ public class TaskWorkerQuery {
 
     private String hrCompanyId;
 
+    private String taskWorkerId;
+
 }

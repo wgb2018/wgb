@@ -24,7 +24,7 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
     /**
      * 人力公司支付小时工
      */
-    ResultDO hrPayWorkers(HrPayWorkerRequest payWorkerRequest);
+    ResultDO hrPayWorkers(PayParam PayHrParam);
     /**
      * 人力公司接受任务
      */

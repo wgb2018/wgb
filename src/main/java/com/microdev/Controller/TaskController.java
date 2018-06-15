@@ -3,9 +3,8 @@ package com.microdev.Controller;
 
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
-import com.microdev.model.Task;
 import com.microdev.param.CreateTaskRequest;
-import com.microdev.param.HotelPayHrRequest;
+import com.microdev.param.PayParam;
 import com.microdev.param.TaskQueryDTO;
 import com.microdev.service.TaskService;
 import com.microdev.service.TaskWorkerService;
@@ -51,13 +50,11 @@ public class TaskController {
         return taskService.getPageTasks(paging.getPaginator(),paging.getSelector());
     }
     /**
-     * 酒店按任务给人力公司结账
+     * 酒店按任务给人力公司结账(发送消息)
      */
-    @PutMapping("/admin/tasks/{taskId}/pay")
-    public ResultDO payHr(@PathVariable String taskId,@RequestBody HotelPayHrRequest payHrRequest) {
-        payHrRequest.setTaskId(taskId);
-        log.info("payHr:" + taskId + ";" + payHrRequest.toString());
-        return taskService.hotelPayHr(payHrRequest);
+    @PostMapping("/hotel/pay/hrCompany")
+    public ResultDO payHr(@RequestBody PayParam PayHrParam) {
+        return taskService.hotelPayHr(PayHrParam);
     }
     /**
      * 酒店设置人力公司下哪个任务下哪个小时工违约

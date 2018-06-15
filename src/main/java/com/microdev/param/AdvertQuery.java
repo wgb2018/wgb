@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class AdvertQuery {
-    private String tittle;
+    private String title;
 
     private Integer status;
 }

@@ -381,7 +381,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             throw new ParamsException("参数错误");
         }
         informMapper.insertInform(inform);
-        return "成功";
+        return "提交成功";
     }
     /**
      * 酒店申请替换小时工
@@ -515,7 +515,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             HrDeployApply apply = messageMapper.selectHrDeployInfo(param);
             return ResultDO.buildSuccess(apply);
         }
-        return ResultDO.buildSuccess("成功");
+        return ResultDO.buildSuccess("提交成功");
     }
     /**
      * 酒店再发布
@@ -640,8 +640,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }
 
         informMapper.insertInform(inform);
-        return "成功";
-    }
+        return "申请成功";    }
     /**
      * 酒店申请绑定人力资源公司或人力公司申请绑定酒店
      */
@@ -1022,7 +1021,10 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }
         message.setStatus(1);
         messageMapper.updateById(message);
-
+        if(taskMapper.getFirstById (message.getTaskId()).getFromDate ().isBefore (OffsetDateTime.now ())){
+            informService.sendInformInfo (3,2,"由于酒店未及时处理您的调配申请，此申请默认拒绝",message.getHrCompanyId (),"申请调配处理超时");
+            return ResultDO.buildSuccess("任务已开始，处理超时");
+        }
         request.setTaskId(message.getTaskId());
         request.setTaskHrId(message.getHrTaskId());
 

@@ -3,6 +3,7 @@ package com.microdev.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.microdev.model.TaskHrCompany;
 import com.microdev.param.BillRequest;
+import com.microdev.param.HrTaskDetails;
 import com.microdev.param.TaskHrQueryDTO;
 
 import org.apache.ibatis.annotations.Param;
@@ -35,7 +36,7 @@ public interface TaskHrCompanyMapper extends BaseMapper<TaskHrCompany> {
 
     List<Map<String, Object>> selectPayHrInfo(String hotelId);
 
-    Map<String, Object> selectByTaskId(String hrCompanyId);
+    HrTaskDetails selectByTaskId(String hrCompanyId);
 
     int queryHrCurTaskCount(TaskHrQueryDTO queryDTO);
 }

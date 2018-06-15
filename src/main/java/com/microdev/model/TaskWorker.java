@@ -99,6 +99,9 @@ public class TaskWorker extends BaseEntity {
 
     @TableField(exist = false)
     private Double paidPayMoney=0.0;
+
+    @TableField(exist = false)
+    private Double unConfirmedPay=0.0;
     /**
      *  每小时支付给小时工价钱
      */
@@ -131,7 +134,14 @@ public class TaskWorker extends BaseEntity {
     @JsonFormat(pattern="HH:mm")
     private OffsetTime dayEndTime;
     private String hotelTaskId;
-
+    /**
+     * 是否已查看0未读1未完成已读3已完成已读
+     */
+    private Integer checkSign = 0;
+    /**
+    * 是否验证
+    * */
+    private Integer verification;
     public Integer getStatus() {
         return status;
     }

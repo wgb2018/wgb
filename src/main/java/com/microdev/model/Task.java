@@ -30,7 +30,7 @@ public class Task extends BaseEntity {
      * 任务内容（describe是关键字）
      */
     private String taskContent;
-    /**
+    /*
      * 开始时间
      */
     @JsonFormat(pattern="yyyy.MM.dd")
@@ -53,13 +53,13 @@ public class Task extends BaseEntity {
     /**
      * 每小时薪资
      */
-    private double hourlyPay;
+    private Double hourlyPay;
     @TableField(exist = false)
-    private double hourlyPayHotel;
+    private Double hourlyPayHotel;
     /**
      * 需要的总人数
      */
-    private double needWorkers=0;
+    private Integer needWorkers=0;
     /**
      * 任务状态
      * 1：人力未接单 ；2 ：人力已接单 ；3： 人力派单中； 4 ：派单完成； 5 ：正在做； 6 ：已完成。  8：人力公司拒绝接单
@@ -102,6 +102,9 @@ public class Task extends BaseEntity {
      *  已付金额 (这个字段不清楚何时赋值,因为系统暂时是线下支付)
      */
     private Double havePayMoney=0.0;
+
+    @TableField(exist = false)
+    private Double unConfirmedPay=0.0;
 
     public Integer getStatus() {
         return status;
