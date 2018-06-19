@@ -76,7 +76,7 @@ public class WorkerUnbind {
 
     private boolean comparaTime(OffsetDateTime createTime, int maxNum) {
         OffsetDateTime nowTime = OffsetDateTime.now();
-        long leaveTime = nowTime.getLong(ChronoField.INSTANT_SECONDS) - createTime.getLong(ChronoField.INSTANT_SECONDS);
+        long leaveTime = nowTime.toEpochSecond() - createTime.toEpochSecond();
         return (leaveTime / 3600) >= (maxNum * 24);
     }
 }
