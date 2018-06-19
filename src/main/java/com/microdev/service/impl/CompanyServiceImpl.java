@@ -1087,7 +1087,12 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }
         for (WorkLog workLog1 : workLogList) {
             if (workLog1.getEmployerConfirmStatus() == null || workLog1.getEmployerConfirmStatus() == 0) {
-                workLog1.setStatus(Integer.valueOf(record.getStatus()));
+                if ("1".equals(record.getStatus())) {
+                    workLog1.setStatus(2);
+                } else if ("2".equals(record.getStatus())) {
+                    workLog1.setStatus(1);
+                }
+
                 workLog1.setEmployerConfirmStatus(1);
                 workLogMapper.updateById(workLog1);
                 break;

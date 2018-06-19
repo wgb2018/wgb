@@ -22,7 +22,6 @@ import java.util.Map;
 @RestController
 public class HrCompanyController {
 
-    private static final Logger logger = LoggerFactory.getLogger(HrCompanyController.class);
     @Autowired
     CompanyService companyService;
     @Autowired
@@ -44,7 +43,7 @@ public class HrCompanyController {
      */
     @PostMapping("/hrcompanies/hotels")
     public ResultDO getHrCompaniesHotels(@RequestBody PagingDO<CompanyQueryDTO> paging) {
-        logger.error("getHrCompaniesHotels:" + paging.toString());
+
         return companyService.hrCompanyHotels(paging.getPaginator(),paging.getSelector());
     }
     /**

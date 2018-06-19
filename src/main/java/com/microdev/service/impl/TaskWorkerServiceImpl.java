@@ -294,7 +294,6 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         }
         TaskWorkerQuery query = new TaskWorkerQuery();
         query.setWorkerId(applyParamDTO.getId());
-        query.setTaskStatus(1);
         return taskWorkerMapper.selectCurTasCount(query);
     }
 

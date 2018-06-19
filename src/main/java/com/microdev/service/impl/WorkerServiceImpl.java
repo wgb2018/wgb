@@ -524,6 +524,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         Message m = new Message();
         m.setSupplementTime(time);
         m.setContent(info.getReason());
+
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applySupplementMessage");
         Map map = new HashMap<String,Object> ();
         map.put("message_type",1);
@@ -823,9 +824,15 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         OffsetDateTime startDay = taskWorker.getFromDate();
         OffsetDateTime nowDate = OffsetDateTime.now();
         OffsetDateTime endDay = taskWorker.getToDate();
+        DateTimeFormatter t1 = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
         if (nowDate.compareTo(startDay) < 0) {
             log.info("任务还没有开始");
+            WorkerDetail detail = new WorkerDetail();
+            detail.setTime(OffsetDateTime.now().format(t1));
+            List<WorkerDetail> list = new ArrayList<>();
+            list.add(detail);
             return response;
         }
         if (nowDate.compareTo(endDay) < 0) {
@@ -841,8 +848,6 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         boolean expire;
 
         // 查询打卡记录
-        DateTimeFormatter t1 = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
         List<WorkerDetail> detailList = new ArrayList<>();//存放小时工所有打卡记录
         List<WorkerOneDayInfo> list = workLogMapper.selectUserPunchDetail(taskWorkerId);
@@ -855,7 +860,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         if (list == null || list.size() == 0) {
             if (holidayList == null || holidayList.size() == 0) {
                 //没有打卡也没有请假
-                while (startDay.compareTo(nowDate) <= 0 && nowDate.getDayOfYear() <= endDay.getDayOfYear()) {
+                while (startDay.compareTo(nowDate) <= 0 && startDay.compareTo(endDay) < 0) {
                     if (startDay.getDayOfYear() == nowDate.getDayOfYear() && (nowDate.toOffsetTime().compareTo(dayEnd)) < 0) {
                         //如果是当天且没有到下班时间
                         detail = new WorkerDetail();
@@ -867,7 +872,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                         sysStatus = new HashMap<>();
                         initMapStatus(hotelStatus, 4);
                         initMapStatus(sysStatus, 5);
-                       
+
                         detail.setHotelStatus(hotelStatus);
                         detail.setSysStatus(sysStatus);
                         detail.setExpire("0");
@@ -891,10 +896,10 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
                     detail.setHotelStatus(hotelStatus);
                     detail.setSysStatus(sysStatus);
-                    expire = (nowDate.toEpochSecond() - startDay.toEpochSecond()) / 3600  >= 168 ? true : false;
+                    expire = (nowDate.toEpochSecond() - startDay.toEpochSecond()) / 3600 >= 168 ? true : false;
                     if (expire) {
                         detail.setExpire("1");
-                    } else  {
+                    } else {
                         detail.setExpire("0");
                     }
                     workList.add(workLog);
@@ -909,7 +914,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             } else {
                 while (true) {
                     if (startDay.compareTo(nowDate) > 0) break;
-                    if (startDay.getDayOfYear() > endDay.getDayOfYear()) break;
+                    if (startDay.compareTo(endDay) > 0) break;
                     detail = new WorkerDetail();
                     workList = new ArrayList<>();
                     workLog = new PunchInfo();
@@ -919,7 +924,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     initMapStatus(sysStatus, 5);
                     long time = 0L;
                     int num = 0;
-                    expire = (nowDate.toEpochSecond() - startDay.toEpochSecond()) / 3600  >= 168 ? true : false;
+                    expire = (nowDate.toEpochSecond() - startDay.toEpochSecond()) / 3600 >= 168 ? true : false;
                     for (Holiday holiday : holidayList) {
                         OffsetDateTime holidayFormDay = holiday.getFromDate();
                         OffsetDateTime holidayToDay = holiday.getToDate();
@@ -948,7 +953,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                                         num++;
                                         time += end - holidayFormDay.getLong(ChronoField.SECOND_OF_DAY);
                                     }
-                                } else if (holidayToDay.getDayOfYear() == startDay.getDayOfYear()){
+                                } else if (holidayToDay.getDayOfYear() == startDay.getDayOfYear()) {
                                     num++;
                                     if (holidayToDay.toEpochSecond() >= startDay.getDayOfYear()) {
                                         time += startDay.getLong(ChronoField.SECOND_OF_DAY) - holidayFormDay.getLong(ChronoField.SECOND_OF_DAY);
@@ -983,7 +988,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                             }
                         }
                     }
-                    if (num > 0  && time < (end - start)) {
+                    if (num > 0 && time < (end - start)) {
                         workLog = new PunchInfo();
                         sysStatus.put("comeLate", 1);
                         workLog.setStartTime("--");
@@ -993,7 +998,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     }
                     if (expire) {
                         detail.setExpire("1");
-                    } else  {
+                    } else {
                         detail.setExpire("0");
                     }
                     detail.setTime(startDay.format(t1));
@@ -1005,7 +1010,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             }
         } else {
             //有打卡记录
-            int pNum = 0;
+
             for (WorkerOneDayInfo param : list) {
                 if (startDay.getDayOfYear() > endDay.getDayOfYear()) break;
                 detail = new WorkerDetail();
@@ -1015,7 +1020,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
                 String[] currentEndTime = null;
                 if (!StringUtils.isEmpty(param.getToDate())) {
-                    currentEndTime = param.getToDate ().split (",");
+                    currentEndTime = param.getToDate().split(",");
                 }
                 String[] confirmStatuAgrs = param.getEmployerConfirmStatus().split(",");
                 String[] statuAgrs = param.getStatus().split(",");
@@ -1025,7 +1030,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
                 //如果当天没有打卡记录
                 while (startDay.getDayOfYear() != time.getDayOfYear() && startDay.compareTo(nowDate) < 0) {
-                    expire = (nowDate.toEpochSecond() - startDay.toEpochSecond()) / 3600  >= 168 ? true : false;
+                    expire = (nowDate.toEpochSecond() - startDay.toEpochSecond()) / 3600 >= 168 ? true : false;
 
                     int minutes = judgeTime(startDay.getYear(), startDay.getDayOfYear(), dayStart, dayEnd, holidayList);
                     if (hotelStatus == null || sysStatus == null) {
@@ -1053,7 +1058,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                             workLog.setEndTime("--");
                             workLog.setStartTime("--");
                             sysStatus.put("leave", 1);
-                      
+
                             hotelStatus.put("leave", 1);
                             if (startDay.getDayOfYear() == nowDate.getDayOfYear() && (nowDate.toOffsetTime().compareTo(dayEnd)) < 0) {
 
@@ -1078,7 +1083,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     detail.setSysStatus(sysStatus);
                     if (expire) {
                         detail.setExpire("1");
-                    } else  {
+                    } else {
                         detail.setExpire("0");
                     }
                     detail.setWorkList(workList);
@@ -1094,7 +1099,6 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     detail = new WorkerDetail();
                     workList = new ArrayList<>();
                 }
-              
                 //每天工作时间(分钟)及应付薪酬
 
                 detail.setWorkHour(param.getTotalTime());
@@ -1104,16 +1108,15 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 sysStatus = new HashMap<>();
                 initMapStatus(hotelStatus, 4);
                 initMapStatus(sysStatus, 5);                //有打卡记录
-                expire = (nowDate.toEpochSecond() - startDay.toEpochSecond()) / 3600  >= 168 ? true : false;
+                expire = (nowDate.toEpochSecond() - startDay.toEpochSecond()) / 3600 >= 168 ? true : false;
                 if (expire) {
                     detail.setExpire("1");
-                } else  {
+                } else {
                     detail.setExpire("0");
                 }
-
                 //判断是否是旷工
-                if ("3".equals(statuAgrs[pNum]) && "1".equals(confirmStatuAgrs[pNum])) {
-                    sysStatus.put("stay", 1);
+                if ("3".equals(statuAgrs[0]) && "1".equals(confirmStatuAgrs[0])) {
+
                     hotelStatus.put("stay", 1);
                     workLog = new PunchInfo();
                     workLog.setEndTime("--");
@@ -1132,9 +1135,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
                 Date t = null;
                 try {
-                    t = timeFormat.parse (currentStartTime[0]);
+                    t = timeFormat.parse(currentStartTime[0]);
                 } catch (ParseException e) {
-                    e.printStackTrace ( );
+                    e.printStackTrace();
                 }
                 workLog = new PunchInfo();
                 OffsetTime tc = OffsetTime.ofInstant(Instant.ofEpochMilli(t.getTime()), ZoneId.systemDefault());
@@ -1165,10 +1168,10 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                             Date start2 = null;
                             Date end1 = null;
                             try {
-                                start2 = timeFormat.parse (currentStartTime[i]);
-                                end1 = timeFormat.parse (currentEndTime[i - 1]);
+                                start2 = timeFormat.parse(currentStartTime[i]);
+                                end1 = timeFormat.parse(currentEndTime[i - 1]);
                             } catch (ParseException e) {
-                                e.printStackTrace ( );
+                                e.printStackTrace();
                             }
                             OffsetTime cStart2 = OffsetTime.ofInstant(Instant.ofEpochMilli(start2.getTime()), ZoneId.systemDefault());
                             OffsetTime cEnd1 = OffsetTime.ofInstant(Instant.ofEpochMilli(end1.getTime()), ZoneId.systemDefault());
@@ -1197,13 +1200,13 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                             Date start2 = null;
                             Date end1 = null;
                             try {
-                                start2 = timeFormat.parse (currentStartTime[i]);
-                                end1 = timeFormat.parse (currentEndTime[i - 1]);
+                                start2 = timeFormat.parse(currentStartTime[i]);
+                                end1 = timeFormat.parse(currentEndTime[i - 1]);
                             } catch (ParseException e) {
-                                e.printStackTrace ( );
+                                e.printStackTrace();
                             }
-                                OffsetTime ts2 = OffsetTime.ofInstant(Instant.ofEpochMilli(start2.getTime()), ZoneId.systemDefault());
-                                OffsetTime te1 = OffsetTime.ofInstant(Instant.ofEpochMilli(end1.getTime()), ZoneId.systemDefault());
+                            OffsetTime ts2 = OffsetTime.ofInstant(Instant.ofEpochMilli(start2.getTime()), ZoneId.systemDefault());
+                            OffsetTime te1 = OffsetTime.ofInstant(Instant.ofEpochMilli(end1.getTime()), ZoneId.systemDefault());
                             if (ts2.compareTo(te1) <= 0) {
                                 //正常
                             } else {
@@ -1231,6 +1234,24 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                             }
                             workList.add(workLog);
                         }
+                    } else {
+                        //校验结束时间
+                        try {
+                            Date end1 = timeFormat.parse(currentEndTime[0]);
+                            OffsetTime te = OffsetTime.ofInstant(Instant.ofEpochMilli(end1.getTime()), ZoneId.systemDefault());
+                            if (dayEnd.compareTo(te) > 0) {
+                                int n = judgeTime(startDay.getYear(), startDay.getDayOfYear(), dayStart, dayEnd, holidayList);
+                                if (n > 0) {
+                                    sysStatus.put("leave", 1);
+                                    hotelStatus.put("leave", 1);
+                                } else {
+                                    sysStatus.put("earlier", 1);
+                                }
+                            }
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 } else {
                     //忘打卡
@@ -1254,6 +1275,13 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                         workList.add(workLog);
                     }
                 }
+
+                //判断是否有请假
+                int n = judgeTime(startDay.getYear(), startDay.getDayOfYear(), dayStart, dayEnd, holidayList);
+                if (n > 0) {
+                    sysStatus.put("leave", 1);
+                    hotelStatus.put("leave", 1);
+                }
                 detail.setWorkList(workList);
                 detail.setSysStatus(sysStatus);
                 detail.setHotelStatus(hotelStatus);
@@ -1262,7 +1290,41 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 startDay = startDay.plusDays(1);
                 hotelStatus = null;
                 sysStatus = null;
-                pNum++;
+            }
+            //如果任务没有结束
+            while (startDay.compareTo(nowDate) <= 0 && startDay.compareTo(endDay) <= 0) {
+                expire = (nowDate.toEpochSecond() - startDay.toEpochSecond()) / 3600 >= 168 ? true : false;
+                detail = new WorkerDetail();
+                workList = new ArrayList<>();
+                hotelStatus = new HashMap<>();
+                sysStatus = new HashMap<>();
+                initMapStatus(hotelStatus, 4);
+                initMapStatus(sysStatus, 5);
+                workLog = new PunchInfo();
+                workLog.setStartTime("--");
+                workLog.setEndTime("--");
+                workList.add(workLog);
+                int num = judgeTime(startDay.getYear(), startDay.getDayOfYear(), dayStart, dayEnd, holidayList);
+                if (num > 0) {
+                    sysStatus.put("leave", 1);
+                    hotelStatus.put("leave", 1);
+                    if (num < (end - start)/60) {
+                        sysStatus.put("earlier", 1);
+                    }
+                } else {
+                    sysStatus.put("stay", 1);
+                }
+                detail.setHotelStatus(hotelStatus);
+                detail.setSysStatus(sysStatus);
+                detail.setTime(startDay.format(t1));
+                detail.setWorkList(workList);
+                if (expire) {
+                    detail.setExpire("1");
+                } else {
+                    detail.setExpire("0");
+                }
+                detailList.add(detail);
+                startDay = startDay.plusDays(1);
             }
         }
         if (detailList == null || detailList.size() == 0) {
@@ -1275,11 +1337,12 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
     /**
      * 判断时间是否再请假时间中
-     * @param year               打卡日期的年份
-     * @param day               打卡的在一年中的天数
-     * @param startTime         打卡的开始时间
-     * @param endTime           打卡的结束时间
-     * @param holidayList       请假集合
+     *
+     * @param year        打卡日期的年份
+     * @param day         打卡的在一年中的天数
+     * @param startTime   打卡的开始时间
+     * @param endTime     打卡的结束时间
+     * @param holidayList 请假集合
      * @return
      */
     private int judgeTime(int year, int day, OffsetTime startTime, OffsetTime endTime, List<Holiday> holidayList) {
@@ -1290,13 +1353,13 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             OffsetDateTime to = holiday.getToDate();
             if (from.getYear() > year) {
                 continue;
-            } else if (from.getYear() < year){
+            } else if (from.getYear() < year) {
                 if (to.getYear() < year) {
                     continue;
                 } else {
                     if (to.getDayOfYear() < day) continue;
                     //请假结束日期大于打卡日期
-                    if (to.getDayOfYear() > day)  {
+                    if (to.getDayOfYear() > day) {
                         num += (int) (endTime.getLong(ChronoField.SECOND_OF_DAY) - startTime.getLong(ChronoField.SECOND_OF_DAY));
                         break;
                     } else {
@@ -1349,7 +1412,6 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         return num;
     }
-
 
 
 }
