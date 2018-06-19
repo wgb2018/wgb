@@ -42,9 +42,9 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     List<AwaitHandleInfo> selectWorkerAwaitHandleInfo(@Param("workerId") String workerId);
 
-    List<AwaitHandleInfo> selectHrAwaitHandleInfo(@Param("hrId") String hrId);
+    List<AwaitHandleInfo> selectHrAwaitHandleInfo(@Param("hrId") String hrId,@Param("type") Integer type);
 
-    List<AwaitHandleInfo> selectHotelAwaitHandleInfo(@Param("hotelId") String hotelId);
+    List<AwaitHandleInfo> selectHotelAwaitHandleInfo(@Param("hotelId") String hotelId,@Param("type") Integer type);
 
     int selectWorkerUnbindCount();
 
