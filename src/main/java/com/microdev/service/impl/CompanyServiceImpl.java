@@ -1067,9 +1067,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 WorkLog workLog = new WorkLog();
                 workLog.setCreateTime(createTime);
                 workLog.setModifyTime(OffsetDateTime.now());
-                workLog.setFromDate(OffsetDateTime.ofInstant(Instant.ofEpochSecond(taskWorker.getDayStartTime().getLong(ChronoField.SECOND_OF_DAY)), taskWorker.getDayStartTime().getOffset().normalized()));
-                workLog.setToDate(OffsetDateTime.ofInstant(Instant.ofEpochSecond(taskWorker.getDayEndTime().getLong(ChronoField.SECOND_OF_DAY)), taskWorker.getDayEndTime().getOffset().normalized()));
-                workLog.setToDate(createTime);
+                workLog.setFromDate(OffsetDateTime.of(createTime.getYear(), createTime.getMonthValue(), createTime.getDayOfMonth(), taskWorker.getDayStartTime().getHour(), taskWorker.getDayStartTime().getMinute(), 0, 0, createTime.getOffset()));
+                workLog.setToDate(OffsetDateTime.of(createTime.getYear(), createTime.getMonthValue(), createTime.getDayOfMonth(), taskWorker.getDayEndTime().getHour(), taskWorker.getDayEndTime().getMinute(), 0, 0, createTime.getOffset()));
                 workLog.setMinutes(0);
                 workLog.setStatus(3);
                 workLog.setEmployerConfirmStatus(1);

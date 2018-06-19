@@ -850,7 +850,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         if (list == null || list.size() == 0) {
             if (holidayList == null || holidayList.size() == 0) {
                 //没有打卡也没有请假
-                while (startDay.compareTo(nowDate) <= 0) {
+                while (startDay.compareTo(nowDate) <= 0 && nowDate.getDayOfYear() <= endDay.getDayOfYear()) {
                     if (startDay.getDayOfYear() == nowDate.getDayOfYear() && (nowDate.toOffsetTime().compareTo(dayEnd)) < 0) {
                         //如果是当天且没有到下班时间
                         detail = new WorkerDetail();
@@ -904,6 +904,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             } else {
                 while (true) {
                     if (startDay.compareTo(nowDate) > 0) break;
+                    if (startDay.getDayOfYear() > endDay.getDayOfYear()) break;
                     detail = new WorkerDetail();
                     workList = new ArrayList<>();
                     workLog = new PunchInfo();
@@ -999,7 +1000,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             }
         } else {
             //有打卡记录
+            int pNum = 0;
             for (WorkerOneDayInfo param : list) {
+                if (startDay.getDayOfYear() > endDay.getDayOfYear()) break;
                 detail = new WorkerDetail();
                 workList = new ArrayList<>();
                 OffsetDateTime time = param.getCreateTime();
@@ -1009,6 +1012,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 if (!StringUtils.isEmpty(param.getToDate())) {
                     currentEndTime = param.getToDate ().split (",");
                 }
+                String[] confirmStatuAgrs = param.getEmployerConfirmStatus().split(",");
+                String[] statuAgrs = param.getStatus().split(",");
                 String confirmStatus = param.getEmployerConfirmStatus();
                 String status = param.getStatus();
                 boolean flag = false;
@@ -1101,7 +1106,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 }
 
                 //判断是否是旷工
-                if ("3".equals(status) && "1".equals(confirmStatus)) {
+                if ("3".equals(statuAgrs[pNum]) && "1".equals(confirmStatuAgrs[pNum])) {
                     sysStatus.put("stay", 1);
                     hotelStatus.put("stay", 1);
                     workLog = new PunchInfo();
@@ -1251,7 +1256,12 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 startDay = startDay.plusDays(1);
                 hotelStatus = null;
                 sysStatus = null;
+                pNum++;
             }
+        }
+        if (detailList == null || detailList.size() == 0) {
+            WorkerDetail detail1 = new WorkerDetail();
+            detailList.add(detail1);
         }
         response.setList(detailList);
         return response;

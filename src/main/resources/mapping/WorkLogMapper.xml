@@ -160,8 +160,8 @@
             resultType="com.microdev.param.WorkerOneDayInfo">
 SELECT GROUP_CONCAT( DATE_FORMAT(m.from_date, '%H:%i') ORDER BY m.create_time ASC ) AS fromDate,
 GROUP_CONCAT( IFNULL(DATE_FORMAT( m.to_date, '%H:%i' ),'') ORDER BY m.create_time ASC ) AS toDate,
-GROUP_CONCAT( IFNULL(m.STATUS, 0 ) ) AS STATUS,
-GROUP_CONCAT( IFNULL( m.employer_confirm_status, 0 ) ) AS employerConfirmStatus,
+GROUP_CONCAT( IFNULL(m.STATUS, 0 ) ORDER BY m.create_time ASC) AS STATUS,
+GROUP_CONCAT( IFNULL( m.employer_confirm_status, 0 ) ORDER BY m.create_time ASC) AS employerConfirmStatus,
 
 m.create_time AS createTime,SUM(IFNULL(m.minutes,0)) AS totalTime  FROM
 (
@@ -175,7 +175,10 @@ SELECT from_date, to_date,STATUS ,employer_confirm_status,create_time,id,minutes
 	</select>
 
     <select id = "selectUnreadPunchCount" resultType="java.lang.String">
-        SELECT id FROM work_log WHERE to_date IS NULL AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= DATE(create_time) and worker_id = '' GROUP BY DATE_FORMAT(create_time,'%Y.%m.%d')
+        SELECT wl.id FROM work_log wl
+        INNER JOIN task_worker tw
+        ON tw.id = wl.`task_worker_id`
+        WHERE wl.to_date IS NULL AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= DATE(wl.create_time) AND tw.worker_id = #{workerId} GROUP BY DATE_FORMAT(wl.create_time,'%Y.%m.%d')
     </select>
 
     <select id="selectUnreadInfoOne" resultType="com.microdev.model.WorkLog">
