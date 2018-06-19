@@ -13,7 +13,7 @@ public class Maths {
     public static double add(double v1,double v2){
         BigDecimal b1 = new BigDecimal (Double.toString(v1));
         BigDecimal b2 = new BigDecimal(Double.toString(v2));
-        return b1.add(b2).doubleValue();
+        return round (b1.add(b2).doubleValue(),1);
     }
     /**
      * 提供精确的减法运算。
@@ -24,7 +24,8 @@ public class Maths {
     public static double sub(double v1,double v2){
         BigDecimal b1 = new BigDecimal(Double.toString(v1));
         BigDecimal b2 = new BigDecimal(Double.toString(v2));
-        return b1.subtract(b2).doubleValue();
+        new BigDecimal (v1);
+        return round(b1.subtract(b2).doubleValue(),1);
     }
     /**
      * 提供精确的乘法运算。

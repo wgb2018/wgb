@@ -72,7 +72,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
     @Override
     public ResultDO getTaskHrCompanyById(String id) {
         HrTaskDetails map = taskHrCompanyMapper.selectByTaskId(id);
-        map.setUnConfirmedPay (messageMapper.selectUnConfirmePay (0,map.getHotelTaskId ()));
+        map.setUnConfirmedPay (messageMapper.selectUnConfirmePay (0,map.getHotelTaskId (),map.getPid ()));
         if (map == null) {
             return ResultDO.buildSuccess(new HashMap<String, Object>());
         }
@@ -252,6 +252,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
                     task.setStatus (7);
                 }
             }
+            task.setUnConfirmedPay (messageMapper.selectUnConfirmePay (0,task.getTaskId (),task.getPid ()));
         }
         PageInfo<TaskHrCompany> pageInfo = new PageInfo<>(list);
         HashMap<String, Object> result = new HashMap<>();

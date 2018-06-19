@@ -674,11 +674,11 @@ ON u.`worker_id` = m2.worker_id
         <where>
             <if test="payType == 0">
                 and message_type = 8 and status = 0 and applicant_type = 3 and apply_type = 2
-                and task_id = #{taskId}
+                and task_id = #{taskId1} and hr_task_id = #{taskId2}
             </if>
             <if test="payType == 1">
                 and message_type = 8 and status = 0 and applicant_type = 2 and apply_type = 1
-                and hr_task_id = #{taskId}
+                and hr_task_id = #{taskId1} and worker_task_id = #{taskId2}
             </if>
         </where>
     </select>

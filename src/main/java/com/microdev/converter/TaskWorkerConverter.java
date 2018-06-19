@@ -45,6 +45,7 @@ public class TaskWorkerConverter {
         viewModel.setTaskTypeText(taskWorker.getTaskTypeText());
         viewModel.setTaskContent(taskWorker.getTaskContent());
         viewModel.setHotelName(taskWorker.getHotelName());
+        viewModel.setUnConfirmedPay (taskWorker.getUnConfirmedPay ());
         return viewModel;
     }
 }
