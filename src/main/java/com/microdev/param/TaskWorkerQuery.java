@@ -29,7 +29,7 @@ public class TaskWorkerQuery {
     //1 未结算
     //2 结算中
     //3 已结算
-    private Integer payStatus;
+    private Integer payStatus = 0;
 
     private String ofDate;
 

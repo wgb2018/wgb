@@ -71,6 +71,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     DictService dictService;
     @Autowired
     FeedBackMapper feedBackMapper;
+    @Autowired
+    VersionMapper versionMapper;
     @Override
     public User create(User user) throws Exception{
         try{
@@ -96,6 +98,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
     @Override
     public TokenDTO login(UserDTO login) throws Exception {
+        if(!versionMapper.selectVersion ().equals ("1.0.0")){
+            throw new Exception ("请更新版本");
+        }
         User user = userMapper.findByMobile(login.getMobile());
         UserDTO userDTO = new UserDTO();
         String userId = user.getPid();
@@ -111,6 +116,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
     @Override
     public TokenDTO register(UserDTO register) throws Exception{
+        if(!versionMapper.selectVersion ().equals ("1.0.0")){
+            throw new Exception ("请更新版本");
+        }
         if (register.getUserType() == UserType.platform) {
             throw new AuthorizationException("无权限注册该用户");
         }
