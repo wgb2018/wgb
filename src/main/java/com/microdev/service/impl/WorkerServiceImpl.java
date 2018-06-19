@@ -105,11 +105,12 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         TaskHrCompany taskHrCompany = null;
         OffsetTime time = OffsetDateTime.now ().toOffsetTime ();
         OffsetTime timeA = time.minusMinutes (30);
+        OffsetDateTime ti = OffsetDateTime.now ().minusMinutes (30);
                 //取进行中的任务
         TaskWorker taskWorker = taskWorkerMapper.findWorkerNowTask(
                 userId, TaskWorkerStatus.ACCEPTED.ordinal(),
                 //结束60分钟内的任务 仍然当作当前任务 以便进行打卡签退操作(如若改动 需与前端保持一致)
-                OffsetDateTime.now(), time,timeA);
+                ti, time,timeA);
         //如果没有当前进行中的任务 则获取最近的下一个任务
         if (taskWorker == null) {
             OffsetDateTime of = OffsetDateTime.now ();

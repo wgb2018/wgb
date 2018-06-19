@@ -63,7 +63,7 @@
         select
         <include refid="TaskWorker_Query_List"/>
         from task_worker
-        where user_id = #{userId} and status = 1 and to_date &gt;= #{nowTime} and from_date &lt;= #{nowTime}
+        where user_id = #{userId} and status = 1 and to_date &gt;= #{nowTime} and from_date &lt;= now()
         and day_start_time &lt;= #{time} and day_end_time &gt;=#{timeA}
         and deleted = 0 and status != 3
         order by create_time desc limit 1
