@@ -63,9 +63,9 @@
         select
         <include refid="TaskWorker_Query_List"/>
         from task_worker
-        where user_id = #{userId} and status = 1 and to_date &gt;= #{nowTime} and from_date &lt;= #{nowTime}
+        where user_id = #{userId} and status = 1 and to_date &gt;= #{nowTime} and from_date &lt;= now()
         and day_start_time &lt;= #{time} and day_end_time &gt;=#{timeA}
-        and deleted = 0
+        and deleted = 0 and status != 3
         order by create_time desc limit 1
     </select>
     <select id="findWorkerNextTask" resultType="com.microdev.model.TaskWorker">
@@ -74,7 +74,7 @@
         from task_worker
         where user_id = #{userId} and status = 1 and to_date &gt;= now() and from_date &lt;= #{nowTime}
         and day_start_time &gt;= #{time}
-        and deleted = 0
+        and deleted = 0 and status != 3
         order by from_date asc limit 1
     </select>
     <select id="findWorkerBeforeTask" resultType="com.microdev.model.TaskWorker">
@@ -122,8 +122,7 @@
             <if test="taskTypeCode != null and taskTypeCode !=''">
                 and t.task_type_code = #{taskTypeCode}
             </if>
-            <if test="taskStatus != null and taskStatus !=''">
-                <if test="taskStatus == 0">
+                <if test="taskStatus == 6">
                     and t.status = 1 and t.to_date &gt;= now()
                 </if>
                 <if test="taskStatus &lt; 3">
@@ -135,7 +134,6 @@
                 <if test="taskStatus == 5">
                     and (t.to_date &lt; now() and t.status = 1) or t.status = 3
                 </if>
-            </if>
             <if test="payStatus != null and payStatus !=''">
                 <if test="payStatus == 1">
                     and t.have_pay_money == 0
@@ -174,7 +172,7 @@
         </if>
     </select>
     <select id="selectHrId" parameterType="java.lang.String" resultType="java.util.Map">
-        SELECT th.`hotel_id` AS hotelId, th.`hr_company_id` AS hrCompanyId, tw.`hotel_name` AS hotelName,th.id as hrTaskId,th.task_id as taskId,th.task_type_text,tw.worker_id
+        SELECT th.`hotel_id` AS hotelId, th.`hr_company_id` AS hrCompanyId, tw.`hotel_name` AS hotelName,th.id as hrTaskId,th.task_id as taskId,th.task_type_text,tw.worker_id as workerId
         FROM task_worker tw
         INNER JOIN task_hr_company th
         ON tw.`task_hr_id` = th.`id`
@@ -242,8 +240,7 @@
             <if test="taskTypeCode != null and taskTypeCode !=''">
                 and t.task_type_code = #{taskTypeCode}
             </if>
-            <if test="taskStatus != null and taskStatus !=''">
-                <if test="taskStatus == 0">
+                <if test="taskStatus == 6">
                     and t.status = 1 and t.to_date &gt;= now()
                 </if>
                 <if test="taskStatus &lt; 3">
@@ -255,7 +252,6 @@
                 <if test="taskStatus == 5">
                     and (t.to_date &lt; now() and t.status = 1) or t.status = 3
                 </if>
-            </if>
             <if test="payStatus != null and payStatus !=''">
                 <if test="payStatus == 1">
                     and t.have_pay_money == 0

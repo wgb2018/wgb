@@ -16,10 +16,11 @@
             <result column="taskWorkerId" jdbcType="VARCHAR" property="taskWorkerId"/>
         </association>
     </resultMap>
-    <select id="findFirstByTaskWorkerId" parameterType="java.lang.String" resultType="com.microdev.model.WorkLog">
+    <select id="findFirstByTaskWorkerId" resultType="com.microdev.model.WorkLog">
         SELECT
         <include refid="WorkLog_Column_List"/>
-        FROM work_log WHERE task_worker_id = #{taskWorkerId} and deleted = FALSE
+        FROM work_log WHERE task_worker_id = #{taskWorkId} and deleted = FALSE
+        and create_time &lt;#{end} and create_time &gt;=#{begin}
         order by punch_date desc limit 1
     </select>
     <select id="findByTaskWorkId" parameterType="java.lang.String" resultType="com.microdev.model.WorkLog">

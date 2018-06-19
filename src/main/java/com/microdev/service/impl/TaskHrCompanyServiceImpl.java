@@ -1,5 +1,7 @@
 package com.microdev.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -70,25 +72,26 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
     @Override
     public ResultDO getTaskHrCompanyById(String id) {
         HrTaskDetails map = taskHrCompanyMapper.selectByTaskId(id);
+        map.setUnConfirmedPay (messageMapper.selectUnConfirmePay (0,map.getHotelTaskId (),map.getPid ()));
         if (map == null) {
             return ResultDO.buildSuccess(new HashMap<String, Object>());
         }
-        if(map.getStatus () >= 4){
-            if(map.getToDate ().isBefore (OffsetDateTime.now()) && map.getFromDate ().isBefore (OffsetDateTime.now())){
-                map.setStatus (6);
-            }else if(map.getFromDate ().isBefore (OffsetDateTime.now())){
-                map.setStatus (7);
+        if(map.getStatus() == 5){
+            if(map.getToDate().isAfter (OffsetDateTime.now()) && (map.getFromDate()).isBefore (OffsetDateTime.now())){
+                map.setStatus(6);
+            }else if((map.getFromDate()).isBefore (OffsetDateTime.now())){
+                map.setStatus(7);
             }
         }
         map.setPayStatus ("未结算");
-        if (map.getWorkersHavePay () > 0) {
-            map.setPayStatus ("结算中");
+        if (map.getWorkersHavePay() > 0) {
+            map.setPayStatus("结算中");
         }
-        if (map.getWorkersShouldPay () > 0
-                && map.getWorkersShouldPay () - map.getWorkersHavePay () <= 0) {
-            map.setPayStatus ("已结算");
+        if (map.getWorkersShouldPay() > 0
+                && (map.getWorkersShouldPay() - map.getWorkersHavePay() <= 0)) {
+            map.setPayStatus("已结算");
         }
-        List<Map<String, Object>> list = taskWorkerMapper.selectTaskWorkById(map.getPid ());
+        List<Map<String, Object>> list = taskWorkerMapper.selectTaskWorkById((String) map.getPid());
         List<Map<String, Object>> confirmedList = new ArrayList<>();
         List<Map<String, Object>> refusedList = new ArrayList<>();
         List<Map<String, Object>> distributedList = new ArrayList<>();
@@ -104,9 +107,9 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             }
 
         }
-        map.setConfirmedSet (confirmedList);
-        map.setRefusedSet (refusedList);
-        map.setDistributedSet (distributedList);
+        map.setConfirmedSet(confirmedList);
+        map.setRefusedSet(refusedList);
+        map.setDistributedSet(distributedList);
         return ResultDO.buildSuccess(map);
     }
 
@@ -242,13 +245,14 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             task.setHotel(companyMapper.findCompanyById(task.getHotelId()));
             List<Map<String, Object>> lis = taskWorkerMapper.selectTaskWorkCById(task.getPid());
             task.setListWorkerTask(lis);
-            if(task.getStatus () >= 4){
+            if(task.getStatus () == 5){
                 if(task.getToDate ().isAfter (OffsetDateTime.now()) && task.getFromDate ().isBefore (OffsetDateTime.now())){
                     task.setStatus (6);
                 }else if(task.getToDate ().isBefore (OffsetDateTime.now())){
                     task.setStatus (7);
                 }
             }
+            task.setUnConfirmedPay (messageMapper.selectUnConfirmePay (0,task.getTaskId (),task.getPid ()));
         }
         PageInfo<TaskHrCompany> pageInfo = new PageInfo<>(list);
         HashMap<String, Object> result = new HashMap<>();
@@ -289,8 +293,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("hrPayWorkerMessage");
         Message m = new Message();
         m.setTaskId (taskWorker.getHotelTaskId ());
-        m.setMessageCode ("hrPayWorkerMessage");
-        m.setMinutes (bill.getPid ());
+        m.setMessageCode ("hotelPayHrMessage");
         m.setMessageType(8);
         m.setMessageTitle ("人力公司支付小时工");
         m.setStatus (0);
@@ -336,8 +339,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         inform.setReceiveId(taskHrCompany.getHotelId());
         inform.setAcceptType(3);
         inform.setSendType(2);
-        inform.setCreateTime(OffsetDateTime.now());
-        inform.setModifyTime(OffsetDateTime.now());
         informMapper.insertInform(inform);
 
         //生成一个待派发的消息
@@ -597,8 +598,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         inform.setReceiveId(taskHrCompany.getHotelId());
         inform.setAcceptType(3);
         inform.setSendType(2);
-        inform.setCreateTime(OffsetDateTime.now());
-        inform.setModifyTime(OffsetDateTime.now());
         informMapper.insertInform(inform);
         return "成功";
     }
@@ -718,7 +717,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             workerTask.setDayEndTime(taskWorker.getDayEndTime());
             workerTask.setDayStartTime(taskWorker.getDayStartTime());
             workerTask.setToDate(taskWorker.getToDate());
-            workerTask.setFromDate(taskWorker.getToDate());
+            workerTask.setFromDate(taskWorker.getFromDate());
             workerTask.setHotelName(taskHrCompany.getHotelName());
             workerTask.setHourlyPay(taskHrCompany.getHourlyPay());
             workerTask.setTaskContent(taskHrCompany.getTaskContent());
@@ -781,7 +780,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         workerTask.setDayEndTime(taskWorker.getDayEndTime());
         workerTask.setDayStartTime(taskWorker.getDayStartTime());
         workerTask.setToDate(taskWorker.getToDate());
-        workerTask.setFromDate(taskWorker.getToDate ());
+        workerTask.setFromDate(taskWorker.getFromDate());
         workerTask.setHotelName(taskHrCompany.getHotelName());
         workerTask.setHourlyPay(taskHrCompany.getHourlyPay());
         workerTask.setTaskContent(taskHrCompany.getTaskContent());
@@ -852,10 +851,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         if (taskWorker == null) {
             throw new ParamsException("参数错误");
         }
-        if(taskWorker.getFromDate ().isBefore (OffsetDateTime.now ())){
-            informService.sendInformInfo (2,1,"由于人力公司未及时处理您的取消任务申请，此申请默认拒绝",taskWorker.getWorkerId (),"取消任务处理超时");
-            return ResultDO.buildSuccess("任务已开始，处理超时");
-        }
+
         String content = taskWorker.getHrCompanyName() + "拒绝了你的取消任务申请，希望你能完成该任务。";
         informService.sendInformInfo(2, 1, content, message.getWorkerId(), "申请取消被拒绝");
         return ResultDO.buildSuccess("成功");
@@ -880,14 +876,9 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         message.setStatus(1);
         messageMapper.updateById(message);
 
-
         TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(message.getHrTaskId());
         if (taskHrCompany == null) {
             throw new ParamsException("人力任务查询不到.");
-        }
-        if(taskHrCompany.getFromDate ().isBefore (OffsetDateTime.now ())){
-            informService.sendInformInfo (2,1,"由于人力公司未及时处理您的取消任务申请，此申请默认拒绝",workerId,"取消任务处理超时");
-            return ResultDO.buildSuccess("任务已开始，处理超时");
         }
         //更新人力任务
         taskHrCompany.setRefusedWorkers(taskHrCompany.getRefusedWorkers() + 1);
@@ -950,6 +941,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         String notice = messageService.installContent(param, "workTaskMessage");
         Map<String, Object> result = new HashMap<>();
         result.put("hrCompanyId", taskHrCompany.getHrCompanyId());
+        result.put("taskHrId", taskHrCompany.getTaskId());
         result.put("workerId", workerId);
         result.put("workerTaskId", workerTask.getPid());
         result.put("hotelId", taskHrCompany.getHotelId());
@@ -983,34 +975,31 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         }
         message.setStatus(1);
         messageMapper.updateAllColumnById(message);
-        Bill bill = billMapper.selectById (message.getMinutes ());
-        if(bill == null){
-            throw new ParamsException("未查到相关支付记录");
-        }
+
         TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(message.getHrTaskId());
         if (taskHrCompany == null) {
             throw new ParamsException("查询不到人力任务信息");
         }
         if ("0".equals(status)) {
-            String content = taskHrCompany.getHrCompanyName() + "拒绝了你发起的一笔支付信息，金额为" + bill.getPayMoney () + "，拒绝理由为" + message.getContent();
+            String content = taskHrCompany.getHrCompanyName() + "拒绝了你发起的一笔支付信息，金额为" + message.getMinutes() + "，拒绝理由为" + message.getContent();
             informService.sendInformInfo(2, 3, content, message.getHotelId(), "账目被拒绝");
-            bill.setStatus (2);
-            billMapper.updateById (bill);
         } else if ("1".equals(status)) {
             //确认收入
-            taskHrCompany.setHavePayMoney(taskHrCompany.getHavePayMoney() + Double.valueOf(bill.getPayMoney ()));
+            taskHrCompany.setHavePayMoney(taskHrCompany.getHavePayMoney() + Double.valueOf(message.getMinutes()));
             taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
             Task task = taskMapper.selectById(taskHrCompany.getTaskId());
             if (task == null) {
                 throw new ParamsException("找不到任务信息");
             }
-            task.setHavePayMoney(task.getHavePayMoney() + Double.valueOf(bill.getPayMoney ()));
+            task.setHavePayMoney(task.getHavePayMoney() + Double.valueOf(message.getMinutes()));
             taskMapper.updateAllColumnById(task);
-
-            String content = taskHrCompany.getHrCompanyName() + "同意了你发起的一笔支付信息，金额为" + Double.valueOf(bill.getPayMoney ());
+            //新增酒店支付人力明细
+            HotelPayHrDetails details = new HotelPayHrDetails();
+            details.setTaskHrId(taskHrCompany.getPid());
+            details.setThisPayMoney(Double.valueOf(message.getMinutes()));
+            hotelPayHrDetailsService.saveBean(details);
+            String content = taskHrCompany.getHrCompanyName() + "同意了你发起的一笔支付信息，金额为" + Double.valueOf(message.getMinutes());
             informService.sendInformInfo(2, 3, content, message.getHotelId(), "账目已同意");
-            bill.setStatus (1);
-            billMapper.updateById (bill);
         } else {
             throw new ParamsException("参数错误");
         }
@@ -1072,7 +1061,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         taskWork.setWorkerId(user.getWorkerId());
         taskWork.setUserName(user.getUsername());
         taskWork.setStatus(0);
-        taskWork.setFromDate(taskWorker.getFromDate());
+        taskWork.setFromDate(taskHrCompany.getFromDate());
         taskWork.setToDate(taskHrCompany.getToDate());
         taskWork.setHourlyPay(taskHrCompany.getHourlyPay());
         taskWork.setTaskTypeCode(taskHrCompany.getTaskTypeCode());
@@ -1105,7 +1094,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
      */
     @Override
     public int selectHrCurTaskCount(ApplyParamDTO applyParamDTO) {
-        if (StringUtils.isEmpty(applyParamDTO.getId())) {
+        if (StringUtils.isEmpty(applyParamDTO.getId()) || StringUtils.isEmpty(applyParamDTO.getRoleType())) {
             return 0;
         }
         TaskHrQueryDTO queryDTO = new TaskHrQueryDTO();

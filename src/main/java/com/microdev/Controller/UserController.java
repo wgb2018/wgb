@@ -170,7 +170,7 @@ public class UserController {
      * 客户端 token 到期时，在不打扰用户的情况下重新获取 token
      */
     @GetMapping("/oauth/refresh-token/{refreshToken}")
-    public ResultDO refreshTokenPost(@PathVariable String refreshToken) {
+    public ResultDO refreshTokenPost(@PathVariable String refreshToken) throws Exception{
         return ResultDO.buildSuccess(tokenService.refreshToken(refreshToken));
     }
     /**
@@ -231,25 +231,25 @@ public class UserController {
 //        test.setUsername("TestNew");
 //        userMapper.update(test);
 //        test = userMapper.selectById("f1f33e09884c4b06b8fbe77465bd208d");
-        /*File file;
+        File file;
         String fileURI = null;
         String filePath;
-        file = QRCodeUtil.createQRCode ("f940cd69696d41259d6e15a308a06cf1WGBhotel");
+        file = QRCodeUtil.createQRCode ("3a267b284a1641ed9fb143fb3ff2d6c5WGBhotel");
         filePath = "QRCode".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
         //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
         fileURI = objectStoreService.uploadFile(filePath, file);
 
         System.out.println ("fileURI:"+fileURI);
-        OffsetDateTime of = OffsetDateTime. ofInstant (Instant.ofEpochMilli (new Date().getTime ()),ZoneOffset.systemDefault ());
+        /*OffsetDateTime of = OffsetDateTime. ofInstant (Instant.ofEpochMilli (new Date().getTime ()),ZoneOffset.systemDefault ());
         System.out.println (of);
         System.out.println (new Date().getTime ());
         User test = userMapper.findByMobile("15601173951");
         test.setDeleted(false);
-        userMapper.updateById(test);*/
+        userMapper.updateById(test);
         OffsetDateTime of = OffsetDateTime.now ();
         System.out.println (OffsetDateTime.of (of.getYear (),of.getMonthValue (),of.getDayOfMonth (),0,0,0,0,ZoneOffset.ofHoursMinutes (0,0)).plusDays (1).getHour ());
         Task t = taskMapper.getFirstById ("0af4cbe6642b4d19a7d1b8de07b9a456");
-        System.out.println ("task:"+t);
+        System.out.println ("task:"+t);*/
         return ResultDO.buildSuccess("1");
     }
 	@GetMapping("/{mobile}/verifyMobile/{smsCode}")

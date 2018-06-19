@@ -43,6 +43,7 @@ public class HrTaskDetails {
     private Double shouldPayMoney;
     private Double havePayMoney;
     private Double waitPayMoney;
+    private Double unConfirmedPay=0.0;
     private Double workersHavePay;
     private Double workersShouldPay;
     private Double workersWaitPay;

@@ -332,7 +332,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             } else {
                 punch = punchList.get(0);
             }
-
             Map<String, Object> param = new HashMap<>();
             param.put("id", punch.getId());
             param.put("punchDate", OffsetDateTime.now());
@@ -424,7 +423,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         m.setIsTask(0);
         m.setMessageType(9);
         m.setHrTaskId((String)tp.get("hrTaskId"));
-        m.setHrTaskId((String)tp.get("taskId"));
+        m.setTaskId((String)tp.get("taskId"));
+        m.setMessageTitle ("酒店发起更换小时工的申请通知");
         messageMapper.insert(m);
         return true;
     }

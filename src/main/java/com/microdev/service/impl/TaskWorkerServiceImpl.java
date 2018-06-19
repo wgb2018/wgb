@@ -76,6 +76,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
     @Override
     public ResultDO findWorkTaskById(String workerTaskId) {
         TaskWorker taskWorker=  taskWorkerMapper.findFirstById(workerTaskId);
+        taskWorker.setUnConfirmedPay(messageMapper.selectUnConfirmePay (1,taskWorker.getTaskHrId (),taskWorker.getPid ()));
         return ResultDO.buildSuccess(taskWorkerConverter.toViewModel(taskWorker));
     }
     /**
@@ -265,6 +266,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
             t.setHrCompany (companyMapper.selectById (t.getHrCompanyId ()));
             shouldPayMoney += t.getShouldPayMoney();
             havePayMoney += t.getHavePayMoney();
+            t.setUnConfirmedPay(messageMapper.selectUnConfirmePay (1,t.getTaskHrId (),t.getPid ()));
         }
         extra.put("shouldPayMoney",shouldPayMoney);
         extra.put("havePayMoney",havePayMoney);

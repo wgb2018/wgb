@@ -1,5 +1,6 @@
 package com.microdev.mapper;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +16,7 @@ import org.apache.ibatis.annotations.Update;
 
 public interface WorkerLogMapper extends BaseMapper<WorkLog> {
 
-	WorkLog findFirstByTaskWorkerId(String taskWorkId);
+	WorkLog findFirstByTaskWorkerId(@Param("taskWorkId") String taskWorkId, @Param("begin") OffsetDateTime begin, @Param("end") OffsetDateTime end);
 	
 	List<WorkLog> findByTaskWorkId(String taskWorkId);
 	

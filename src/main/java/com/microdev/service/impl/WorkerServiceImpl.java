@@ -103,30 +103,33 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         Task task = null;
         WorkLog log = null;
         TaskHrCompany taskHrCompany = null;
-        OffsetTime time = OffsetDateTime.now().toOffsetTime();
-        OffsetTime timeA = time.minusMinutes(30);
-        //取进行中的任务
+        OffsetTime time = OffsetDateTime.now ().toOffsetTime ();
+        OffsetTime timeA = time.minusMinutes (30);
+        OffsetDateTime ti = OffsetDateTime.now ().minusMinutes (30);
+                //取进行中的任务
         TaskWorker taskWorker = taskWorkerMapper.findWorkerNowTask(
                 userId, TaskWorkerStatus.ACCEPTED.ordinal(),
                 //结束60分钟内的任务 仍然当作当前任务 以便进行打卡签退操作(如若改动 需与前端保持一致)
-                OffsetDateTime.now(), time, timeA);
+                ti, time,timeA);
         //如果没有当前进行中的任务 则获取最近的下一个任务
         if (taskWorker == null) {
-            OffsetDateTime of = OffsetDateTime.now();
-            taskWorker = taskWorkerMapper.findWorkerNextTask(userId, TaskWorkerStatus.ACCEPTED.ordinal(), OffsetDateTime.ofInstant(new Date(of.getYear() - 1900, of.getMonthValue() - 1, of.getDayOfMonth()).toInstant(), ZoneOffset.systemDefault()).plusDays(1), time);
+            OffsetDateTime of = OffsetDateTime.now ();
+            taskWorker = taskWorkerMapper.findWorkerNextTask(userId, TaskWorkerStatus.ACCEPTED.ordinal(),OffsetDateTime.ofInstant(new Date(of.getYear ()-1900,of.getMonthValue ()-1,of.getDayOfMonth ()).toInstant (),ZoneOffset.systemDefault ()).plusDays (1),time);
         }
         /*//如果没有下一个任务(也没有进行中的任务) 取前一个任务
         if (taskWorker == null) {
             taskWorker = taskWorkerMapper.findWorkerBeforeTask(userId, TaskWorkerStatus.ACCEPTED.ordinal(), OffsetDateTime.now());
         }
-*/
-        GetCurrentTaskResponse response = new GetCurrentTaskResponse();
+*/      GetCurrentTaskResponse response = new GetCurrentTaskResponse();
         if (taskWorker != null) {
             taskHrCompany = taskHrCompanyMapper.queryByTaskId(taskWorker.getTaskHrId());
             task = taskMapper.getFirstById(taskHrCompany.getTaskId());
             //取最近的一条工作记录以获取打卡信息
-            log = workLogMapper.findFirstByTaskWorkerId(taskWorker.getPid());
-        } else {
+            OffsetDateTime of = OffsetDateTime.now ();
+            OffsetDateTime end = OffsetDateTime.ofInstant(new Date(of.getYear ()-1900,of.getMonthValue ()-1,of.getDayOfMonth ()).toInstant (),ZoneOffset.systemDefault ()).plusDays (1);
+            OffsetDateTime begin = OffsetDateTime.ofInstant(new Date(of.getYear ()-1900,of.getMonthValue ()-1,of.getDayOfMonth ()).toInstant (),ZoneOffset.systemDefault ());
+            log = workLogMapper.findFirstByTaskWorkerId(taskWorker.getPid(),begin,end);
+        }else{
             return null;
         }
         if (task != null) {
@@ -166,7 +169,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     }
 
     @Override
-    public String punch(String taskWorkerId, PunchType punchType, OffsetDateTime punchTime, Measure measure) {
+    public String punch(String taskWorkerId, PunchType punchType, OffsetDateTime punchTime,Measure measure) {
         com.microdev.common.context.User user = ServiceContextHolder.getServiceContext().getUser();
 
         TaskWorker taskWorker = taskWorkerMapper.findFirstById(taskWorkerId);
@@ -174,9 +177,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             //未找到小时工任务信息
             return "打卡失败";
         }
-        Company hotel = companyMapper.findCompanyById(taskHrCompanyMapper.queryByTaskId(taskWorkerMapper.findFirstById(taskWorkerId).getTaskHrId()).getHotelId());
-        Double m = LocationUtils.getDistance(hotel.getLatitude(), hotel.getLongitude(), measure.getLatitude(), measure.getLongitude());
-        if (m > 500) {
+        Company hotel = companyMapper.findCompanyById (taskHrCompanyMapper.queryByTaskId (taskWorkerMapper.findFirstById (taskWorkerId).getTaskHrId ()).getHotelId ());
+        Double m = LocationUtils.getDistance (hotel.getLatitude (),hotel.getLongitude (),measure.getLatitude (),measure.getLongitude ());
+        if(m>500){
             return "打卡地点距离工作地超过500米";
         }
         WorkLog log = null;
@@ -193,7 +196,10 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             log.setTaskId(taskMapper.selectTaskIdByTaskWorkerId(taskWorkerId));
             workLogMapper.insert(log);
         } else {
-            log = workLogMapper.findFirstByTaskWorkerId(taskWorkerId);
+            OffsetDateTime of = OffsetDateTime.now ();
+            OffsetDateTime end = OffsetDateTime.ofInstant(new Date(of.getYear ()-1900,of.getMonthValue ()-1,of.getDayOfMonth ()).toInstant (),ZoneOffset.systemDefault ()).plusDays (1);
+            OffsetDateTime begin = OffsetDateTime.ofInstant(new Date(of.getYear ()-1900,of.getMonthValue ()-1,of.getDayOfMonth ()).toInstant (),ZoneOffset.systemDefault ());
+            log = workLogMapper.findFirstByTaskWorkerId(taskWorkerId,begin,end);
             if (log != null) {
                 if (punchType == PunchType.REPAST) {//用餐 用餐次数加1
                     log.setRepastTimes(log.getRepastTimes() + 1);
@@ -319,13 +325,13 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setWorkerId(tp.getWorkerId());
         m.setWorkerTaskId(info.getTaskWorkerId());
         m.setHotelId(tp.getHotelId());
-        TaskWorker taskWorker = taskWorkerMapper.findFirstById(info.getTaskWorkerId());
+        TaskWorker taskWorker = taskWorkerMapper.findFirstById (info.getTaskWorkerId());
         if (taskWorker == null) {
             throw new ParamsException("参数错误");
         }
         m.setHrCompanyId(taskWorker.getHrCompanyId());
         m.setHrTaskId(taskWorker.getTaskHrId());
-        m.setTaskId(taskWorker.getHotelTaskId());
+        m.setTaskId (taskWorker.getHotelTaskId());
         Map<String, String> param = new HashMap<>();
         param.put("userName", tp.getUsername());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -348,7 +354,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
      * 小时工申请加班
      */
     @Override
-
+ 
     public String askWorkOvertime(WorkerSupplementRequest info) {
         if (info == null) {
             throw new ParamsException("参数不能为空");
@@ -381,8 +387,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setWorkerTaskId(info.getTaskWorkerId());
         m.setHotelId(tp.getHotelId());
         m.setHrTaskId(tp.getTaskHrId());
-
-        m.setTaskId(tp.getTaskId());
+  
+        m.setTaskId (tp.getTaskId());
         m.setHrCompanyId(tp.getHrId());
 
         Map<String, String> param = new HashMap<>();
@@ -415,11 +421,11 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         if (!StringUtils.hasLength(info.getTaskWorkerId())) {
             throw new ParamsException("参数taskWorkerId不能为空");
         }
-        Map map = new HashMap<String, Object>();
-        map.put("message_type", 7);
-        map.put("worker_task_id", info.getTaskWorkerId());
-        map.put("status", 0);
-        if (messageMapper.selectByMap(map).size() > 0) {
+        Map map = new HashMap<String,Object> ();
+        map.put("message_type",7);
+        map.put("worker_task_id",info.getTaskWorkerId());
+        map.put("status",0);
+        if(messageMapper.selectByMap (map).size ()>0){
             return "你已提交过申请";
         }
         Message m = new Message();
@@ -435,11 +441,11 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setWorkerId(tp.getWorkerId());
         m.setWorkerTaskId(info.getTaskWorkerId());
         m.setHrCompanyId(tp.getHrId());
-        m.setHrTaskId(tp.getTaskHrId());
-        m.setTaskId(tp.getTaskId());
+        m.setHrTaskId (tp.getTaskHrId());
+        m.setTaskId (tp.getTaskId());
         m.setHotelId(tp.getHotelId());
         Map<String, String> param = new HashMap<>();
-        param.put("userName", tp.getUsername());
+        param.put("userName",  tp.getUsername());
         param.put("taskContent", info.getReason());
         String c = StringKit.templateReplace(mess.getContent(), param);
         m.setMessageContent(c);
@@ -521,29 +527,29 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setContent(info.getReason());
 
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applySupplementMessage");
-        Map map = new HashMap<String, Object>();
-        map.put("message_type", 1);
-        map.put("worker_task_id", info.getTaskWorkerId());
-        map.put("status", 0);
+        Map map = new HashMap<String,Object> ();
+        map.put("message_type",1);
+        map.put("worker_task_id",info.getTaskWorkerId());
+        map.put("status",0);
         Map<String, String> param = new HashMap<>();
-        param.put("userName", tp.getUsername());
+        param.put("userName",  tp.getUsername ());
         param.put("time", info.getTime());
         param.put("taskContent", info.getReason());
         String c = StringKit.templateReplace(mess.getContent(), param);
-        map.put("message_content", c);
-        if (messageMapper.selectByMap(map).size() > 0) {
+        map.put("message_content",c);
+        if(messageMapper.selectByMap (map).size ()>0){
             return "你已提交过申请";
         }
         m.setMessageCode(mess.getCode());
         m.setMessageTitle(mess.getTitle());
-        m.setWorkerId(tp.getWorkerId());
-        m.setWorkerTaskId(info.getTaskWorkerId());
+        m.setWorkerId( tp.getWorkerId());
+        m.setWorkerTaskId (info.getTaskWorkerId());
         m.setMessageType(1);
         m.setApplicantType(1);
         m.setHrTaskId(tp.getTaskHrId());
         m.setWorkerTaskId(info.getTaskWorkerId());
         m.setHotelId(tp.getHotelId());
-        m.setTaskId(tp.getTaskId());
+        m.setTaskId (tp.getTaskId());
         m.setHrCompanyId(tp.getHrId());
         m.setMessageContent(c);
         m.setApplyType(3);
@@ -556,7 +562,6 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
     /**
      * 初始化小时工工作记录打卡状态
-     *
      * @param map
      */
     private void initMapStatus(Map<String, Integer> map, int num) {
@@ -571,99 +576,98 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             map.put("forget", 0);//忘打卡0否1是
     }
 
-    /**
-     * 修改服务类型及服务地区
-     */
-    public void mpdifyAreaAndService(AreaAndServiceRequest request) {
-        System.out.println("param:" + request);
-        if (request.getAreaCodeList() == null) {
-            //删除旧数据
-            if (request.getAreaCode() != null) {
-                companyMapper.deleteAreaRelation(request.getId());
-                companyMapper.deleteCompanyArea(request.getId());
-                //添加区域
-                List<UserArea> areaList = request.getAreaCode();
-                for (UserArea ua : areaList) {
-                    if (ua.getAreaLevel() == 1) {
-                        List<Map<String, String>> list = dictMapper.findCity(ua.getAreaId());
-                        companyMapper.insertAreaRelation(request.getId(), ua.getAreaId(), ua.getAreaLevel(), dictMapper.findProvinceNameById(ua.getAreaId()));
-                        if (list == null) {
-                            companyMapper.insertCompanyArea(request.getId(), ua.getAreaId(), request.getIdType());
-                        }
-                        for (Map<String, String> key : list) {
-                            List<Map<String, String>> list2 = dictMapper.findArea(key.get("areaId"));
-                            System.out.println("2:" + list2);
-                            if (list2 == null) {
-                                companyMapper.insertCompanyArea(request.getId(), key.get("areaId"), request.getIdType());
-                            }
-                            for (Map<String, String> key2 : list2) {
-                                companyMapper.insertCompanyArea(request.getId(), key2.get("areaId"), request.getIdType());
-                            }
-                        }
-                    } else if (ua.getAreaLevel() == 2) {
+	/**
+     *  修改服务类型及服务地区
+     */    public void mpdifyAreaAndService(AreaAndServiceRequest request) {
+         System.out.println ("param:"+request);
+         if(request.getAreaCodeList ()==null){
+             //删除旧数据
+             if(request.getAreaCode()!=null){
+                 companyMapper.deleteAreaRelation(request.getId());
+                 companyMapper.deleteCompanyArea(request.getId());
+                 //添加区域
+                 List<UserArea> areaList = request.getAreaCode();
+                 for (UserArea ua:areaList) {
+                     if(ua.getAreaLevel ()==1){
+                         List<Map<String,String>> list = dictMapper.findCity(ua.getAreaId ());
+                         companyMapper.insertAreaRelation(request.getId(),ua.getAreaId (),ua.getAreaLevel (),dictMapper.findProvinceNameById (ua.getAreaId ()));
+                         if(list == null){
+                             companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
+                         }
+                         for (Map<String,String> key : list) {
+                             List<Map<String,String>> list2 = dictMapper.findArea(key.get("areaId"));
+                             System.out.println ("2:"+list2);
+                             if(list2 == null ){
+                                 companyMapper.insertCompanyArea(request.getId(),key.get("areaId"),request.getIdType ());
+                             }
+                             for (Map<String,String> key2 : list2) {
+                                 companyMapper.insertCompanyArea(request.getId(),key2.get("areaId"),request.getIdType ());
+                             }
+                         }
+                     }else if(ua.getAreaLevel ()==2){
 
-                        companyMapper.insertAreaRelation(request.getId(), ua.getAreaId(), ua.getAreaLevel(), dictMapper.findCityNameById(ua.getAreaId()));
-                        List<Map<String, String>> list2 = dictMapper.findArea(ua.getAreaId());
-                        System.out.println("3:" + list2);
-                        if (list2 == null) {
-                            companyMapper.insertCompanyArea(request.getId(), ua.getAreaId(), request.getIdType());
-                        }
-                        for (Map<String, String> key2 : list2) {
-                            companyMapper.insertCompanyArea(request.getId(), key2.get("areaId"), request.getIdType());
-                        }
-                    } else {
-                        companyMapper.insertAreaRelation(request.getId(), ua.getAreaId(), ua.getAreaLevel(), dictMapper.findAreaNameById(ua.getAreaId()));
-                        companyMapper.insertCompanyArea(request.getId(), ua.getAreaId(), request.getIdType());
-                    }
-                }
-            }
-        } else {
-            //删除旧数据
-            companyMapper.deleteAreaRelation(request.getId());
-            companyMapper.deleteCompanyArea(request.getId());
-            List<String> lis = request.getAreaCodeList();
-            //添加区域
-            for (int i = 0; i < lis.size(); i++) {
-                if (dictMapper.isProvince(lis.get(i)) != null) {//第一级
-                    List<Map<String, String>> list = dictMapper.findCity(lis.get(i));
-                    companyMapper.insertAreaRelation(request.getId(), lis.get(i), 1, dictMapper.findProvinceNameById(lis.get(i)));
-                    if (list == null) {
-                        companyMapper.insertCompanyArea(request.getId(), lis.get(i), request.getIdType());
-                    }
-                    for (Map<String, String> key : list) {
-                        List<Map<String, String>> list2 = dictMapper.findArea(key.get("areaId"));
-                        System.out.println("2:" + list2);
-                        if (list2 == null) {
-                            companyMapper.insertCompanyArea(request.getId(), key.get("areaId"), request.getIdType());
-                        }
-                        for (Map<String, String> key2 : list2) {
-                            companyMapper.insertCompanyArea(request.getId(), key2.get("areaId"), request.getIdType());
-                        }
-                    }
-                } else if (dictMapper.isCity(lis.get(i)) != null) {//第二级
-                    companyMapper.insertAreaRelation(request.getId(), lis.get(i), 2, dictMapper.findCityNameById(lis.get(i)));
-                    List<Map<String, String>> list2 = dictMapper.findArea(lis.get(i));
-                    System.out.println("3:" + list2);
-                    if (list2 == null) {
-                        companyMapper.insertCompanyArea(request.getId(), lis.get(i), request.getIdType());
-                    }
-                    for (Map<String, String> key2 : list2) {
-                        companyMapper.insertCompanyArea(request.getId(), key2.get("areaId"), request.getIdType());
-                    }
-                } else {//第三级
-                    companyMapper.insertAreaRelation(request.getId(), lis.get(i), 3, dictMapper.findAreaNameById(lis.get(i)));
-                    companyMapper.insertCompanyArea(request.getId(), lis.get(i), request.getIdType());
-                }
+                         companyMapper.insertAreaRelation(request.getId(),ua.getAreaId (),ua.getAreaLevel (),dictMapper.findCityNameById (ua.getAreaId ()));
+                         List<Map<String,String>> list2= dictMapper.findArea(ua.getAreaId ());
+                         System.out.println ("3:"+list2);
+                         if(list2 == null ){
+                             companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
+                         }
+                         for (Map<String,String> key2 : list2) {
+                             companyMapper.insertCompanyArea(request.getId(),key2.get("areaId"),request.getIdType ());
+                         }
+                     }else{
+                         companyMapper.insertAreaRelation(request.getId(),ua.getAreaId (),ua.getAreaLevel (),dictMapper.findAreaNameById (ua.getAreaId ()));
+                         companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
+                     }
+                 }
+             }
+         }else{
+             //删除旧数据
+             companyMapper.deleteAreaRelation(request.getId());
+             companyMapper.deleteCompanyArea(request.getId());
+             List<String> lis = request.getAreaCodeList ();
+             //添加区域
+             for(int i=0;i<lis.size ();i++){
+                  if(dictMapper.isProvince (lis.get (i))!=null){//第一级
+                      List<Map<String,String>> list = dictMapper.findCity(lis.get (i));
+                      companyMapper.insertAreaRelation(request.getId(),lis.get (i),1,dictMapper.findProvinceNameById (lis.get (i)));
+                      if(list == null){
+                          companyMapper.insertCompanyArea(request.getId(),lis.get (i),request.getIdType ());
+                      }
+                      for (Map<String,String> key : list) {
+                          List<Map<String,String>> list2 = dictMapper.findArea(key.get("areaId"));
+                          System.out.println ("2:"+list2);
+                          if(list2 == null ){
+                              companyMapper.insertCompanyArea(request.getId(),key.get("areaId"),request.getIdType ());
+                          }
+                          for (Map<String,String> key2 : list2) {
+                              companyMapper.insertCompanyArea(request.getId(),key2.get("areaId"),request.getIdType ());
+                          }
+                      }
+                  }else if (dictMapper.isCity (lis.get (i))!=null){//第二级
+                      companyMapper.insertAreaRelation(request.getId(),lis.get (i),2,dictMapper.findCityNameById (lis.get (i)));
+                      List<Map<String,String>> list2= dictMapper.findArea(lis.get (i));
+                      System.out.println ("3:"+list2);
+                      if(list2 == null ){
+                          companyMapper.insertCompanyArea(request.getId(),lis.get (i),request.getIdType ());
+                      }
+                      for (Map<String,String> key2 : list2) {
+                          companyMapper.insertCompanyArea(request.getId(),key2.get("areaId"),request.getIdType ());
+                      }
+                  }else{//第三级
+                      companyMapper.insertAreaRelation(request.getId(),lis.get (i),3,dictMapper.findAreaNameById (lis.get (i)));
+                      companyMapper.insertCompanyArea(request.getId(),lis.get (i),request.getIdType ());
+                  }
 
-            }
-        }
+             }
+         }
 
-        if (request.getServiceType() != null) {
+        if(request.getServiceType ()!=null){
             taskTypeRelationMapper.deleteTaskTypeRelation(request.getId());
             //添加服务类型
             List<String> serviceType = request.getServiceType();
-            for (int i = 0; i < serviceType.size(); i++) {
-                taskTypeRelationMapper.insertTaskTypeRelation(request.getId(), serviceType.get(i), request.getIdType());
+            for(int i = 0;i<serviceType.size();i++){
+                taskTypeRelationMapper.insertTaskTypeRelation(request.getId(),serviceType.get(i),request.getIdType ());
             }
         }
     }
@@ -673,38 +677,37 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         Map<String, Object> map = workerMapper.queryWorker(id);
         String str = "";
         if (map.get("birthday") != null) {
-            str = map.get("birthday").toString().substring(0, 10);
+            str = map.get("birthday").toString ().substring (0,10);
         }
 
-        map.put("birthday", str);
-        List l1 = dictService.findServiceArea(id);
-        List l2 = dictMapper.queryTypeByUserId(id);
-        map.put("areaCode", l1 == null ? new ArrayList<>() : l1);
-        map.put("serviceType", l2 == null ? new ArrayList<>() : l2);
+        map.put("birthday",str);
+        List l1 = dictService.findServiceArea (id);
+        List l2 = dictMapper.queryTypeByUserId (id);
+        map.put("areaCode",l1==null?new ArrayList<>():l1);
+        map.put("serviceType",l2==null?new ArrayList<>():l2);
         return map;
     }
 
     @Override
     public ResultDO pagingWorkers(Paginator paginator, WorkerQueryDTO workerQueryDTO) {
-        PageHelper.startPage(paginator.getPage(), paginator.getPageSize());
-        System.out.println(workerQueryDTO);
+        PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
+        System.out.println (workerQueryDTO);
         //查询数据集合
-        List<Map<String, Object>> list = workerMapper.queryWorkers(workerQueryDTO);
-        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
-        HashMap<String, Object> result = new HashMap<>();
+        List<Map<String,Object>> list = workerMapper.queryWorkers(workerQueryDTO);
+        PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(list);
+        HashMap<String,Object> result = new HashMap<>();
         //设置获取到的总记录数total：
-        result.put("total", pageInfo.getTotal());
+        result.put("total",pageInfo.getTotal());
         //设置数据集合rows：
-        result.put("result", pageInfo.getList());
-        result.put("page", paginator.getPage());
+        result.put("result",pageInfo.getList());
+        result.put("page",paginator.getPage());
         return ResultDO.buildSuccess(result);
     }
 
     /**
      * 小时工申请绑定人力公司
-     *
-     * @param workerId 小时工workerId
-     * @param set      人力公司id
+     * @param workerId      小时工workerId
+     * @param set           人力公司id
      * @return
      */
     @Override
@@ -714,7 +717,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         User user = userMapper.selectByWorkerId(workerId);
         if (user == null) throw new ParamsException("查询不到用户");
-        DictDTO dict = dictMapper.findByNameAndCode("WorkerBindHrMaxNum", "1");
+        DictDTO dict = dictMapper.findByNameAndCode("WorkerBindHrMaxNum","1");
         Integer maxNum = Integer.parseInt(dict.getText());
         int nowNum = userCompanyMapper.selectWorkerBindCount(user.getPid());
         if (nowNum >= maxNum || (nowNum + set.size()) >= maxNum) {
@@ -744,7 +747,6 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
     /**
      * 小时工处理人力支付
-     *
      * @param messageId
      * @param status    0拒绝1同意
      * @return
@@ -761,8 +763,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         message.setStatus(1);
         messageMapper.updateAllColumnById(message);
-        Bill bill = billMapper.selectById(message.getMinutes());
-        if (bill == null) {
+        Bill bill = billMapper.selectById (message.getRequestId ());
+        if(bill == null){
             throw new ParamsException("未查到相关支付记录");
         }
         User user = userMapper.selectByWorkerId(message.getWorkerId());
@@ -771,41 +773,40 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         if ("0".equals(status)) {
             //拒绝
-
-            String content = "小时工" + user.getNickname() + "拒绝了你发起的一笔支付信息，金额为" + Double.valueOf(bill.getPayMoney());
+            
+            String content = "小时工" + user.getNickname() + "拒绝了你发起的一笔支付信息，金额为" + Double.valueOf(bill.getPayMoney ());
             informService.sendInformInfo(1, 2, content, message.getHrCompanyId(), "账目被拒绝");
-            bill.setStatus(2);
-            billMapper.updateById(bill);
+            bill.setStatus (2);
+            billMapper.updateById (bill);
         } else if ("1".equals(status)) {
             //同意
             TaskWorker taskWorker = taskWorkerMapper.selectById(message.getWorkerTaskId());
             if (taskWorker == null) {
                 throw new ParamsException("查询不到小时工任务信息");
             }
-
-            taskWorker.setHavePayMoney(taskWorker.getHavePayMoney() + Double.valueOf(bill.getPayMoney()));
+         
+            taskWorker.setHavePayMoney(taskWorker.getHavePayMoney() + Double.valueOf(bill.getPayMoney ()));
             taskWorkerMapper.updateAllColumnById(taskWorker);
             TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(message.getHrTaskId());
             if (taskHrCompany == null) {
                 throw new ParamsException("查询不到人力任务");
             }
-
-            taskHrCompany.setWorkersHavePay(taskHrCompany.getWorkersHavePay() + Double.valueOf(bill.getPayMoney()));
+         
+            taskHrCompany.setWorkersHavePay(taskHrCompany.getWorkersHavePay() + Double.valueOf(bill.getPayMoney ()));
             taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
 
             //发送通知
-
-            String content = "小时工" + user.getNickname() + "同意了你发起的一笔支付信息，金额为" + bill.getPayMoney();
+  
+            String content = "小时工" + user.getNickname() + "同意了你发起的一笔支付信息，金额为" + bill.getPayMoney ();
             informService.sendInformInfo(1, 2, content, message.getHrCompanyId(), "账目已同意");
-            bill.setStatus(1);
-            billMapper.updateById(bill);
+            bill.setStatus (1);
+            billMapper.updateById (bill);
         }
         return ResultDO.buildSuccess("成功");
     }
 
     /**
-     * 查询小时工工作记录
-     *
+     *查询小时工工作记录
      * @param taskWorkerId
      * @param workerId
      * @return

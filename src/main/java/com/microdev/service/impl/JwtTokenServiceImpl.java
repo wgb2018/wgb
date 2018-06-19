@@ -4,6 +4,7 @@ import com.microdev.common.exception.AuthenticationException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.mapper.TaskWorkerMapper;
 import com.microdev.mapper.UserMapper;
+import com.microdev.mapper.VersionMapper;
 import com.microdev.model.User;
 import com.microdev.param.TokenDTO;
 import com.microdev.param.TokenProperties;
@@ -39,6 +40,8 @@ public class JwtTokenServiceImpl implements TokenService {
     private UserMapper userMapper;
     @Autowired
     private TokenProperties tokenProperties;
+    @Autowired
+    private VersionMapper versionMapper;
 
     /**
      * 用户登录成功，获取token
@@ -73,7 +76,10 @@ public class JwtTokenServiceImpl implements TokenService {
 
 
     @Override
-    public TokenDTO refreshToken(String refreshToken) {
+    public TokenDTO refreshToken(String refreshToken) throws Exception{
+        if(!versionMapper.selectVersion ().equals ("1.0.0")){
+            throw new Exception ("请更新版本");
+        }
         Claims body = jwtParser(refreshToken);
 
         //判断是否已经过期

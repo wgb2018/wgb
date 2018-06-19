@@ -36,6 +36,8 @@ public class BillServiceImpl extends ServiceImpl<BillMapper,Bill> implements Bil
         HashMap<String,Object> result = new HashMap<>();
         //设置获取到的总记录数total：
         result.put("total",pageInfo.getTotal());
+        result.put("result",pageInfo.getList());
+        result.put("page",paginator.getPage());
         //设置数据集合rows：
         return ResultDO.buildSuccess(result);
     }
@@ -49,6 +51,8 @@ public class BillServiceImpl extends ServiceImpl<BillMapper,Bill> implements Bil
         HashMap<String,Object> result = new HashMap<>();
         //设置获取到的总记录数total：
         result.put("total",pageInfo.getTotal());
+        result.put("result",pageInfo.getList());
+        result.put("page",paginator.getPage());
         //设置数据集合rows：
         return ResultDO.buildSuccess(result);
     }

@@ -18,9 +18,9 @@ public class Bill extends BaseEntity{
     /**
      * 任务ID
      */
-    private String taskId;
+    private String taskId = "";
 
-    private String taskHrId;
+    private String taskHrId = "";
     /**
      * 人力公司ID
      */
