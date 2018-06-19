@@ -11,9 +11,10 @@ import java.time.OffsetDateTime;
 public class MyMetaObjectHandler extends MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
-        metaObject.setValue("createTime", OffsetDateTime.now());
+        if (metaObject.getValue("createTime") == null) {
+            metaObject.setValue("createTime", OffsetDateTime.now());
+        }
         metaObject.setValue("modifyTime", OffsetDateTime.now());
-        System.out.println("------------++++++");
     }
 
     @Override
