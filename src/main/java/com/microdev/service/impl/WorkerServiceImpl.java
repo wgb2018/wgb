@@ -1116,7 +1116,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 }
                 //判断是否是旷工
                 if ("3".equals(statuAgrs[0]) && "1".equals(confirmStatuAgrs[0])) {
-                    sysStatus.put("stay", 1);
+
                     hotelStatus.put("stay", 1);
                     workLog = new PunchInfo();
                     workLog.setEndTime("--");
