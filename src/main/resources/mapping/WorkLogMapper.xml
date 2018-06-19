@@ -118,7 +118,7 @@
 		DATE_FORMAT(wl.`create_time`,'%Y/%m/%d') AS current,IFNULL(th.hourly_pay,0) as price,c.address,c.area,th.task_content as taskContent,c.`leader`,c.`leader_mobile` AS leaderMobile
 		FROM (
 		SELECT m.`create_time`,m.`from_date`,m.`to_date`,m.`task_worker_id` FROM work_log m inner JOIN
-		(SELECT create_time, task_worker_id as pid FROM work_log WHERE to_date IS NULL AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= DATE(create_time)) m3
+		(SELECT create_time, task_worker_id as pid FROM work_log WHERE to_date IS NULL AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= DATE(create_time) AND DATE(create_time) <![CDATA[<>]]> CURDATE()) m3
 		ON DATE(m.`create_time`) = DATE(m3.create_time) and m.task_worker_id = m3.pid
 		) wl
 		INNER JOIN

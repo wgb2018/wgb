@@ -4,9 +4,7 @@ import com.microdev.common.exception.BusinessException;
 import com.microdev.mapper.DictMapper;
 import com.microdev.mapper.MessageMapper;
 import com.microdev.mapper.UserCompanyMapper;
-import com.microdev.mapper.UserMapper;
 import com.microdev.model.Message;
-import com.microdev.model.User;
 import com.microdev.model.UserCompany;
 import com.microdev.param.DictDTO;
 import org.slf4j.Logger;
@@ -16,7 +14,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
-import java.time.temporal.ChronoField;
 import java.util.List;
 
 @Component
@@ -76,7 +73,7 @@ public class WorkerUnbind {
 
     private boolean comparaTime(OffsetDateTime createTime, int maxNum) {
         OffsetDateTime nowTime = OffsetDateTime.now();
-        long leaveTime = nowTime.getLong(ChronoField.INSTANT_SECONDS) - createTime.getLong(ChronoField.INSTANT_SECONDS);
+        long leaveTime = nowTime.toEpochSecond() - createTime.toEpochSecond();
         return (leaveTime / 3600) >= (maxNum * 24);
     }
 }

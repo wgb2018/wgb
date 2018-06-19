@@ -215,7 +215,7 @@
 
     <select id="selectCurTasCount" parameterType="com.microdev.param.TaskWorkerQuery" resultType="java.lang.Integer">
         SELECT COUNT(1) FROM task_worker WHERE worker_id = #{workerId}
-        AND to_date &gt;= NOW() AND from_date &lt;= NOW() AND STATUS = 1
+        AND STATUS = 1 AND to_date >= NOW()
     </select>
     <select id="findAllh" resultType="com.microdev.model.TaskWorker" parameterType="com.microdev.param.TaskWorkerQuery" >
         select
