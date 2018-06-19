@@ -13,4 +13,5 @@ public class QueryCooperateRequest {
     private String leader;
     private String id;
     private String type;
+    private Integer messageCode;
 }

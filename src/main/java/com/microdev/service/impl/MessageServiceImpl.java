@@ -470,10 +470,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         if ("worker".equals(request.getType())) {
             list = messageMapper.selectWorkerAwaitHandleInfo(request.getId());
         } else if ("hotel".equals(request.getType())) {
-            list = messageMapper.selectHotelAwaitHandleInfo(request.getId());
+            list = messageMapper.selectHotelAwaitHandleInfo(request.getId(),request.getMessageCode ());
             HrRefuseTaskNeedWorkers(list);
         } else if ("hr".equals(request.getType())) {
-            list = messageMapper.selectHrAwaitHandleInfo(request.getId());
+            list = messageMapper.selectHrAwaitHandleInfo(request.getId(),request.getMessageCode ());
         } else {
             throw new ParamsException("参数传递错误");
         }

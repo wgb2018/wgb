@@ -334,15 +334,24 @@ company c ON c.id = t.hotel_id
 INNER JOIN task_hr_company th ON th.id = m.`hr_task_id`
 WHERE m.apply_type=2
 AND m.is_task = 0 AND m.status = 0 AND m.hr_company_id= #{hrId}
+        <if test="type !=null">
+            and m.message_type = #{type}
+        </if>
 UNION
 ( SELECT m2.is_task,m2.content,m2.id AS messageId,m2.`create_time`,NULL AS address,u.avatar AS logo,NULL AS task_type_text,NULL AS from_date,
 NULL AS to_date,NULL AS day_start_time,NULL AS day_end_time, NULL AS hotel_name, 0 AS confirmed_workers,0 AS need_workers, 0 AS lackWorkers,NULL AS hotel_id, NULL AS id, message_type AS type,0 AS hourlyPay,
 NULL AS area FROM message m2 INNER JOIN USER u ON u.`worker_id` = m2.`worker_id` WHERE m2.apply_type=2 AND m2.is_task = 1 AND m2.status = 0 AND m2.hr_company_id= #{hrId}
+        <if test="type !=null">
+            and m2.message_type = #{type}
+        </if>
 )
 UNION
 ( SELECT m3.is_task,m3.content,m3.id AS messageId,m3.`create_time`,NULL AS address,c3.`logo`,NULL AS task_type_text,NULL AS from_date, NULL AS to_date,NULL AS day_start_time,NULL AS day_end_time,
 NULL AS hotel_name, 0 AS confirmed_workers,0 AS need_workers, 0 AS lackWorkers,NULL AS hotel_id, NULL AS id, message_type AS type,0 AS hourlyPay,c3.area FROM message m3
 INNER JOIN company c3 ON c3.id = m3.`hotel_id` WHERE m3.apply_type=2 AND m3.is_task = 1 AND m3.status = 0 AND m3.applicant_type = 3 AND m3.hr_company_id= #{hrId}
+        <if test="type !=null">
+            and m3.message_type = #{type}
+        </if>
 ) ORDER BY create_time DESC
     </select>
 
@@ -359,6 +368,9 @@ ON c.id = t.hotel_id
 INNER JOIN task_hr_company tc
 ON tc.id = m.`hr_task_id`
 WHERE m.apply_type=3 AND m.is_task = 0 and m.status = 0 AND m.hotel_id= #{hotelId}
+        <if test="type !=null">
+            and m.message_type = #{type}
+        </if>
 
 UNION
 
@@ -368,6 +380,9 @@ SELECT m3.is_task,m3.content,m3.id AS messageId,m3.`create_time`,IFNULL(c3.`addr
   INNER JOIN company c3
   ON c3.id = m3.`hr_company_id`
   WHERE m3.apply_type=3 AND m3.is_task = 1 and m3.status = 0 AND m3.`applicant_type` = 2  AND m3.hotel_id= #{hotelId}
+        <if test="type !=null">
+            and m3.message_type = #{type}
+        </if>
 )
 ORDER BY create_time DESC
     </select>
