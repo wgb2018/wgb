@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class TaskController {
 
-    private static final Logger log = LoggerFactory.getLogger(TaskController.class);
     @Autowired
     TaskService taskService;
     @Autowired
@@ -46,7 +45,7 @@ public class TaskController {
      */
     @PostMapping("/tasks/search")
     public ResultDO getPageData( @RequestBody PagingDO<TaskQueryDTO> paging) {
-        log.info("getPageData:" + paging.toString());
+
         return taskService.getPageTasks(paging.getPaginator(),paging.getSelector());
     }
     /**
@@ -61,7 +60,7 @@ public class TaskController {
      */
     @PutMapping("/admin/tasks/{workerTaskId}/no-promise/")
     public ResultDO NoPromise(@PathVariable String workerTaskId) {
-        log.info("NoPromise:" + workerTaskId);
+
         return taskWorkerService.noPromise(workerTaskId);
     }
 

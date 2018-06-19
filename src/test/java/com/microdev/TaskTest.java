@@ -12,6 +12,8 @@ import com.microdev.mapper.WorkerLogMapper;
 import com.microdev.model.Message;
 import com.microdev.model.WorkLog;
 import com.microdev.param.*;
+import com.microdev.service.CompanyService;
+import com.microdev.service.MessageService;
 import com.microdev.service.WorkerService;
 import net.sf.json.JSONObject;
 import org.joda.time.DateTime;
@@ -41,6 +43,10 @@ public class TaskTest {
 	private WorkerLogMapper workerLogMapper;
 	@Autowired
 	private WorkerService workerService;
+	@Autowired
+	private CompanyService companyService;
+	@Autowired
+	private MessageService messageService;
 	
 	@Test
 	public void oneTest() {
@@ -70,5 +76,13 @@ public class TaskTest {
 		UserTaskResponse response = workerService.selectUserTaskInfo("14ca1456a97e4c099647d0e8a8629afc", "5b65af4690fe4c378d0449c706d2ffa5");
 		JSONObject json = JSONObject.fromObject(response);
 		System.out.println(json.toString());
+	}
+
+	@Test
+	public void fourTest() {
+		String id = "5b65af4690fe4c378d0449c706d2ffa5";
+		String applyType = "worker";
+		Map<String, Integer> map = messageService.selectUnReadCount(id, applyType);
+		System.out.println(map);
 	}
 }

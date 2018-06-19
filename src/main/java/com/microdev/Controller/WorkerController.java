@@ -2,23 +2,18 @@ package com.microdev.Controller;
 
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
-import com.microdev.common.exception.ParamsException;
 import com.microdev.param.*;
 import com.microdev.param.api.request.PunchRequest;
 import com.microdev.param.api.response.GetCurrentTaskResponse;
 import com.microdev.service.TaskWorkerService;
 import com.microdev.service.WorkLogService;
 import com.microdev.service.WorkerService;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * 小时工相关的Api
@@ -29,8 +24,6 @@ public class WorkerController {
     private WorkerService workerService;
     @Autowired
     private TaskWorkerService taskWorkerService;
-    @Autowired
-    private WorkLogService workLogService;
 
     /**
      * 获取小时工当前任务信息
