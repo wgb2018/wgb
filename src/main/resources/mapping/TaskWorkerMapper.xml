@@ -123,6 +123,9 @@
                 and t.task_type_code = #{taskTypeCode}
             </if>
             <if test="taskStatus != null and taskStatus !=''">
+                <if test="taskStatus == 0">
+                    and t.status = 1 and t.to_date &gt;= now()
+                </if>
                 <if test="taskStatus &lt; 3">
                    and  t.status = #{taskStatus}
                 </if>
@@ -214,7 +217,7 @@
 
     <select id="selectCurTasCount" parameterType="com.microdev.param.TaskWorkerQuery" resultType="java.lang.Integer">
         SELECT COUNT(1) FROM task_worker WHERE worker_id = #{workerId}
-        AND to_date &gt;= NOW() AND from_date &lt;= NOW() AND STATUS = 1
+        AND STATUS = 1 AND to_date >= NOW()
     </select>
     <select id="findAllh" resultType="com.microdev.model.TaskWorker" parameterType="com.microdev.param.TaskWorkerQuery" >
         select
@@ -240,6 +243,9 @@
                 and t.task_type_code = #{taskTypeCode}
             </if>
             <if test="taskStatus != null and taskStatus !=''">
+                <if test="taskStatus == 0">
+                    and t.status = 1 and t.to_date &gt;= now()
+                </if>
                 <if test="taskStatus &lt; 3">
                     and  t.status = #{taskStatus}
                 </if>

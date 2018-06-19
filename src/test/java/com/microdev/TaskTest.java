@@ -73,16 +73,9 @@ public class TaskTest {
 
 	@Test
 	public void threeTest() {
-		UserTaskResponse response = workerService.selectUserTaskInfo("14ca1456a97e4c099647d0e8a8629afc", "5b65af4690fe4c378d0449c706d2ffa5");
+		UserTaskResponse response = workerService.selectUserTaskInfo("ff6730e928464fbfb73684adc84c4eda", "c084372c95944001b43ebad3b8312bf7");
 		JSONObject json = JSONObject.fromObject(response);
 		System.out.println(json.toString());
 	}
 
-	@Test
-	public void fourTest() {
-		String id = "5b65af4690fe4c378d0449c706d2ffa5";
-		String applyType = "worker";
-		Map<String, Integer> map = messageService.selectUnReadCount(id, applyType);
-		System.out.println(map);
-	}
 }
