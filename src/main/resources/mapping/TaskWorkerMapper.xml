@@ -65,7 +65,7 @@
         from task_worker
         where user_id = #{userId} and status = 1 and to_date &gt;= #{nowTime} and from_date &lt;= #{nowTime}
         and day_start_time &lt;= #{time} and day_end_time &gt;=#{timeA}
-        and deleted = 0
+        and deleted = 0 and status != 3
         order by create_time desc limit 1
     </select>
     <select id="findWorkerNextTask" resultType="com.microdev.model.TaskWorker">
@@ -74,7 +74,7 @@
         from task_worker
         where user_id = #{userId} and status = 1 and to_date &gt;= now() and from_date &lt;= #{nowTime}
         and day_start_time &gt;= #{time}
-        and deleted = 0
+        and deleted = 0 and status != 3
         order by from_date asc limit 1
     </select>
     <select id="findWorkerBeforeTask" resultType="com.microdev.model.TaskWorker">

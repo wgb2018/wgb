@@ -195,7 +195,10 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             log.setTaskId(taskMapper.selectTaskIdByTaskWorkerId(taskWorkerId));
             workLogMapper.insert(log);
         } else {
-            log = workLogMapper.findFirstByTaskWorkerId(taskWorkerId);
+            OffsetDateTime of = OffsetDateTime.now ();
+            OffsetDateTime end = OffsetDateTime.ofInstant(new Date(of.getYear ()-1900,of.getMonthValue ()-1,of.getDayOfMonth ()).toInstant (),ZoneOffset.systemDefault ()).plusDays (1);
+            OffsetDateTime begin = OffsetDateTime.ofInstant(new Date(of.getYear ()-1900,of.getMonthValue ()-1,of.getDayOfMonth ()).toInstant (),ZoneOffset.systemDefault ());
+            log = workLogMapper.findFirstByTaskWorkerId(taskWorkerId,begin,end);
             if (log != null) {
                 if (punchType == PunchType.REPAST) {//用餐 用餐次数加1
                     log.setRepastTimes(log.getRepastTimes() + 1);
@@ -521,7 +524,6 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         Message m = new Message();
         m.setSupplementTime(time);
         m.setContent(info.getReason());
-        WorkerCancelTask tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applySupplementMessage");
         Map map = new HashMap<String,Object> ();
         map.put("message_type",1);
@@ -759,7 +761,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         message.setStatus(1);
         messageMapper.updateAllColumnById(message);
-        Bill bill = billMapper.selectById (message.getMinutes ());
+        Bill bill = billMapper.selectById (message.getRequestId ());
         if(bill == null){
             throw new ParamsException("未查到相关支付记录");
         }
