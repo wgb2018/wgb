@@ -1142,7 +1142,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 }
                 workLog = new PunchInfo();
                 OffsetTime tc = OffsetTime.ofInstant(Instant.ofEpochMilli(t.getTime()), ZoneId.systemDefault());
-                if (dayStart.compareTo(tc) < 0) {
+                if (dayStart.getLong(ChronoField.MINUTE_OF_DAY) - tc.getLong(ChronoField.MINUTE_OF_DAY) <= 1) {
                     int minutes = judgeTime(startDay.getYear(), startDay.getDayOfYear(), dayStart, tc, holidayList);
                     if (minutes == 0) {
 
@@ -1186,7 +1186,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                             }
                             OffsetTime cStart2 = OffsetTime.ofInstant(Instant.ofEpochMilli(start2.getTime()), ZoneId.systemDefault());
                             OffsetTime cEnd1 = OffsetTime.ofInstant(Instant.ofEpochMilli(end1.getTime()), ZoneId.systemDefault());
-                            if (cStart2.compareTo(cEnd1) <= 0) {
+                            if (cStart2.getLong(ChronoField.MINUTE_OF_DAY) - cEnd1.getLong(ChronoField.MINUTE_OF_DAY) <= 1) {
 
                             } else {
                                 int minutes = judgeTime(startDay.getYear(), startDay.getDayOfYear(), cEnd1, cStart2, holidayList);
@@ -1227,7 +1227,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                             }
                             OffsetTime ts2 = OffsetTime.ofInstant(Instant.ofEpochMilli(start2.getTime()), ZoneId.systemDefault());
                             OffsetTime te1 = OffsetTime.ofInstant(Instant.ofEpochMilli(end1.getTime()), ZoneId.systemDefault());
-                            if (ts2.compareTo(te1) <= 0) {
+                            if (ts2.getLong(ChronoField.MINUTE_OF_DAY) - te1.getLong(ChronoField.MINUTE_OF_DAY) <= 1) {
                                 //正常
                             } else {
                                 int minutes = judgeTime(startDay.getYear(), startDay.getDayOfYear(), te1, ts2, holidayList);
@@ -1270,7 +1270,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                         try {
                             Date end1 = timeFormat.parse(currentEndTime[0]);
                             OffsetTime te = OffsetTime.ofInstant(Instant.ofEpochMilli(end1.getTime()), ZoneId.systemDefault());
-                            if (dayEnd.compareTo(te) > 0) {
+                            if (dayEnd.getLong(ChronoField.MINUTE_OF_DAY) - te.getLong(ChronoField.MINUTE_OF_DAY) > 1) {
                                 int n = judgeTime(startDay.getYear(), startDay.getDayOfYear(), dayStart, dayEnd, holidayList);
                                 if (n > 0) {
                                     sysStatus.put("leave", 1);
