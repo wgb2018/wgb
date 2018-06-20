@@ -161,4 +161,14 @@ public class MessageController {
         return messageService.selectPcBindApply(paging.getSelector(), paging.getPaginator());
     }
 
+    /**
+     * Pc端查询人力拒绝接单
+     * @param paging
+     * @return
+     */
+    @PostMapping("/message/pc/refuse/task")
+    public ResultDO  selectPcRefuse(@RequestBody PagingDO<ApplyParamDTO> paging) {
+
+        return messageService.selectPcHrRefuseTask(paging.getSelector(), paging.getPaginator());
+    }
 }

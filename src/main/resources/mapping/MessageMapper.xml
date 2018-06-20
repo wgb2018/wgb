@@ -600,7 +600,7 @@ ON m.hr_company_id = c2.id
 
     <select id="selectHotelDeploy" resultType="com.microdev.param.ApplyResponseDTO">
       SELECT m.id AS messageId,m.`content`,m.`minutes` AS amount,t.`from_date`,t.`to_date`,t.`day_start_time`,t.`day_end_time`,t.`task_type_text`,t.`task_content`,t.`status`,t.`hourly_pay` as hourlyPayHotel,
-c.`name` as hrName,c.`leader` as hrLeader,c.`leader_mobile` as hrLeaderMobile,c.`logo`,c.`address`,c.`area`,m.create_time as createTime FROM message m
+c.`name` as hrName,c.`leader` as hrLeader,c.`leader_mobile` as hrLeaderMobile,c.`logo`,c.`address`,c.`area`,m.create_time as createTime,m.message_type as messageType FROM message m
 INNER JOIN task t
 ON t.id = m.`task_id`
 INNER JOIN company c
@@ -696,5 +696,15 @@ ON u.`worker_id` = m2.worker_id
                 and hr_task_id = #{taskId1} and worker_task_id = #{taskId2}
             </if>
         </where>
+    </select>
+
+    <select id = "selectPcHrRefuse" resultType="com.microdev.param.ApplyResponseDTO">
+      SELECT m.id AS messageId,m.`message_type` AS messageType,m.`create_time` AS createTime, t.`task_type_text` AS taskTypeText, c.`name` AS hrName,c.`address` AS address,c.logo,c.`leader` AS hrLeader
+,c.`leader_mobile` AS hrLeaderMobile, m.`content` FROM message m
+INNER JOIN company c
+ON m.`hr_company_id` = c.id
+INNER JOIN task t
+ON t.id = m.`task_id`
+WHERE m.message_type = 10 AND m.apply_type = 2 AND m.hotel_id = #{hotelId}
     </select>
 </mapper>

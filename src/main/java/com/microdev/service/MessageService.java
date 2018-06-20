@@ -202,5 +202,12 @@ public interface MessageService extends IService<Message> {
      */
     ResultDO selectPcBindApply(ApplyParamDTO dto, Paginator paginator);
 
+    /**
+     * Pc端查询人力拒绝接单
+     * @param dto
+     * @param paginator
+     * @return
+     */
+    ResultDO selectPcHrRefuseTask(ApplyParamDTO dto, Paginator paginator);
 
 }
