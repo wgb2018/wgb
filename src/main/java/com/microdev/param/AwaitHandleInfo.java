@@ -1,5 +1,6 @@
 package com.microdev.param;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
@@ -29,4 +30,9 @@ public class AwaitHandleInfo {
     private Integer isTask;
     private String area;
     private String hrConfirmedWorkers;
+    private String taskContent;
+    @JsonFormat(pattern="yyyy.MM.dd hh:mm:ss")
+    private OffsetDateTime createTime;
+    private AwaitTaskResponse taskResponse;
+    private MessageDetailsResponse detailsResponse;
 }

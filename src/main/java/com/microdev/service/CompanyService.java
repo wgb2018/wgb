@@ -65,7 +65,7 @@ public interface CompanyService extends IService<Company> {
     /**
      * 酒店申请替换小时工
      */
-    boolean changeWorker(Map<String, Object> map);
+    String changeWorker(Map<String, Object> map);
     /**
      * 酒店账目明细
      */
