@@ -76,7 +76,7 @@ public interface MessageService extends IService<Message> {
      * @param taskId
      * @param hrTaskId
      */
-    List<Message> hrDistributeTask(List<Map<String, String>> list, String hrId, String hrName, String pattern, String taskId, String hrTaskId);
+    List<Message> hrDistributeTask(List<Map<String, String>> list, String hrId, String hrName, String pattern, String taskId, String hrTaskId,boolean isStop);
 
     /**
      * 人力申请调配消息
@@ -140,7 +140,7 @@ public interface MessageService extends IService<Message> {
      * @param list
      * @param taskHrCompany
      */
-    Message hrDistributeWorkerTask(List<TaskWorker> list, TaskHrCompany taskHrCompany);
+    Message hrDistributeWorkerTask(List<TaskWorker> list, TaskHrCompany taskHrCompany,boolean isStop);
 
     /**
      * 发送消息

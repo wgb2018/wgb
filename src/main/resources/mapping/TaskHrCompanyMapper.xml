@@ -97,7 +97,7 @@
                 and t.status in (4,5) and t.to_date &gt; now()
             </if>
             <if test="status == 7">
-                and t.status = 5 and t.to_date &lt; now()
+                and t.status in(4,5) and t.to_date &lt; now()
             </if>
         </where>
         order by t.create_time desc

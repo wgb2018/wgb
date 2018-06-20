@@ -26,5 +26,4 @@ public class RefusedTaskRequest {
      */
     private String messageId;
 
-    private boolean isStop = false;
 }

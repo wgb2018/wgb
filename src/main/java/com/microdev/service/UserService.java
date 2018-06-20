@@ -22,7 +22,7 @@ public interface UserService extends IService<User>{
        /**
         * 退出登录
         */
-       void logout();
+       ResultDO logout();
        /**
         * 修改密码
         */

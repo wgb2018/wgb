@@ -97,7 +97,6 @@ public class Message extends BaseEntity {
     /**
      * 人力任务id
      */
-    @TableField(exist = false)
     private boolean isStop = false;
     private String hrTaskId;
     public Integer getStatus() {

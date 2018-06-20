@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.Field;
 import java.sql.ParameterMetaData;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
@@ -66,6 +67,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
     InformTemplateMapper informTemplateMapper;
     @Autowired
     MyTimeTask myTimeTask;
+
 
     /**
      * 查看人力资源公司的任务
@@ -165,7 +167,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             m = new HashMap<>();
             TaskWorker taskWorker = new TaskWorker();
             taskWorker.setTaskHrId(hrTask.getPid());
-            ;
             userMapper.queryByWorkerId(id);
             User user = userMapper.queryByWorkerId(id);
             taskWorker.setUserId(user.getPid());
@@ -194,7 +195,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         }
         hrTask.setDistributeWorkers(hrTask.getDistributeWorkers() + hrTaskDis.getWorkerIds().size());
         taskHrCompanyMapper.updateById(hrTask);
-        messageService.hrDistributeTask(list, hrTask.getHrCompanyId(), hrTask.getHrCompanyName(), "workTaskMessage", hotelTask.getPid(), hrTask.getPid());
+        messageService.hrDistributeTask(list, hrTask.getHrCompanyId(), hrTask.getHrCompanyName(), "workTaskMessage", hotelTask.getPid(), hrTask.getPid(),false);
         //短信发送
         /*CreateMessageDTO createMessageDTO =new CreateMessageDTO();
         createMessageDTO.setHotelName(hotel.getName());
@@ -723,7 +724,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             workerTask.setDayEndTime(taskWorker.getDayEndTime());
             workerTask.setDayStartTime(taskWorker.getDayStartTime());
             workerTask.setToDate(taskWorker.getToDate());
-            workerTask.setFromDate(taskWorker.getFromDate());
+            workerTask.setFromDate(taskWorker.getToDate());
             workerTask.setHotelName(taskHrCompany.getHotelName());
             workerTask.setHourlyPay(taskHrCompany.getHourlyPay());
             workerTask.setTaskContent(taskHrCompany.getTaskContent());
@@ -736,16 +737,28 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         }
 
         //给小时工发送消息
-        Message ms = messageService.hrDistributeWorkerTask(list, taskHrCompany);
+        Message ms = messageService.hrDistributeWorkerTask(list, taskHrCompany,true);
         if (message.getApplicantType() == 3) {
             RefusedTaskRequest ref = new RefusedTaskRequest();
             ref.setRefusedReason ("小时工未在规定时间内领取任务，请重新派发");
             ref.setMessageId (ms.getPid ());
             ref.setWorkerTaskId (workerTask.getPid ());
-            ref.setStop (true);
             myTimeTask.setRefusedReq (ref);
             java.util.Timer timer = new Timer(true);
-            timer.schedule(myTimeTask, OffsetDateTime.now ().plusSeconds (15).getLong (ChronoField.SECOND_OF_DAY));
+            Field field;
+            try {
+                field = TimerTask.class.getDeclaredField("state");
+                field.setAccessible(true);
+                field.set(myTimeTask, 0);
+            } catch (NoSuchFieldException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            timer.schedule(myTimeTask, 15*1000);
+
             //给酒店发送通知
             //被替换的小时工
             User oldUser = userMapper.selectByWorkerId(taskWorker.getWorkerId());
@@ -793,7 +806,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         workerTask.setDayEndTime(taskWorker.getDayEndTime());
         workerTask.setDayStartTime(taskWorker.getDayStartTime());
         workerTask.setToDate(taskWorker.getToDate());
-        workerTask.setFromDate(taskWorker.getFromDate());
+        workerTask.setFromDate(taskWorker.getToDate());
         workerTask.setHotelName(taskHrCompany.getHotelName());
         workerTask.setHourlyPay(taskHrCompany.getHourlyPay());
         workerTask.setTaskContent(taskHrCompany.getTaskContent());
@@ -808,12 +821,23 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         //给小时工发送消息
         RefusedTaskRequest ref = new RefusedTaskRequest();
         ref.setRefusedReason ("小时工未在规定时间内领取任务，请重新派发");
-        ref.setMessageId (messageService.hrDistributeWorkerTask(list, taskHrCompany).getPid ());
+        ref.setMessageId (messageService.hrDistributeWorkerTask(list, taskHrCompany,true).getPid ());
         ref.setWorkerTaskId ("");
-        ref.setStop (true);
         myTimeTask.setRefusedReq (ref);
         java.util.Timer timer = new Timer(true);
-        timer.schedule(myTimeTask, OffsetDateTime.now ().plusSeconds (15).getLong (ChronoField.SECOND_OF_DAY));
+        Field field;
+        try {
+            field = TimerTask.class.getDeclaredField("state");
+            field.setAccessible(true);
+            field.set(myTimeTask, 0);
+        } catch (NoSuchFieldException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        timer.schedule(myTimeTask, 15*1000);
 
         User oldUser = userMapper.selectByWorkerId(taskWorker.getWorkerId());
         taskWorkerMapper.updateStatus(taskWorker.getWorkerId(), 3);
@@ -1111,8 +1135,13 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         m.put("hotelId", taskWork.getHotelId());
         list.add(m);
         //发送消息
-        List<Message> ms = messageService.hrDistributeTask(list, taskHrCompany.getHrCompanyId(), taskHrCompany.getHrCompanyName(), "workTaskMessage", task.getPid(), taskHrCompany.getPid());
+        List<Message> ms = messageService.hrDistributeTask(list, taskHrCompany.getHrCompanyId(), taskHrCompany.getHrCompanyName(), "workTaskMessage", task.getPid(), taskHrCompany.getPid(),true);
+        for (Message mg :ms) {
+            System.out.println (mg.getPid ());
+            System.out.println (mg.isStop ());
+        }
         if(message.isStop ()){
+
             if(ms.size() !=1){
                 throw new ParamsException ("数据异常");
             }
@@ -1120,10 +1149,24 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             ref.setRefusedReason ("小时工未在规定时间内领取任务，请重新派发");
             ref.setMessageId (ms.get(0).getPid ());
             ref.setWorkerTaskId ("");
-            ref.setStop (true);
             myTimeTask.setRefusedReq (ref);
+            System.out.println ("myTimeTask:"+myTimeTask.hashCode ());
+            //task.setMap(uuidMap, this);
             java.util.Timer timer = new Timer(true);
-            timer.schedule(myTimeTask, OffsetDateTime.now ().plusSeconds (15).getLong (ChronoField.SECOND_OF_DAY));
+            Field field;
+            try {
+                field = TimerTask.class.getDeclaredField("state");
+                field.setAccessible(true);
+                field.set(myTimeTask, 0);
+            } catch (NoSuchFieldException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            timer.schedule(myTimeTask, 15*1000);
+
         }
         return ResultDO.buildSuccess("派发成功");
 

@@ -95,6 +95,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         }
         messageMapper.updateStatus (message.getPid ());
         TaskWorker taskWorker = taskWorkerMapper.findFirstById(message.getWorkerTaskId());
+        if(!taskWorker.getFromDate ().isEqual (taskWorker.getToDate ())){
             if (taskWorker.getFromDate().isBefore(OffsetDateTime.now())) {
                 System.out.println ("now:"+OffsetDateTime.now()+"AAA:"+taskWorker.getFromDate());
                 taskWorker.setStatus (2);
@@ -102,12 +103,22 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
                 taskWorkerMapper.updateById (taskWorker);
                 return ResultDO.buildSuccess("任务已过期，无法接受");
             }
-
+        }
         //TODO 人数判断
         TaskHrCompany taskHr = taskHrCompanyMapper.queryByTaskId(taskWorker.getTaskHrId());
         if(taskWorker.getFromDate ().isEqual (taskWorker.getToDate ()))  {
             OffsetDateTime of = OffsetDateTime.now();
-            taskWorker.setFromDate (OffsetDateTime.ofInstant (Instant.ofEpochSecond (of.toEpochSecond () - of.toOffsetTime ().getSecond ()+taskHr.getDayStartTime ().getSecond ()),ZoneId.systemDefault ()).plusDays (1));;
+            if(of.toOffsetTime ().isBefore (taskWorker.getDayStartTime ())){
+                taskWorker.setFromDate (OffsetDateTime.ofInstant (Instant.ofEpochSecond (of.toEpochSecond () - of.toOffsetTime ().getSecond ()+taskHr.getDayStartTime ().getSecond ()),ZoneId.systemDefault ()));
+            }else{
+                taskWorker.setFromDate (OffsetDateTime.ofInstant (Instant.ofEpochSecond (of.toEpochSecond () - of.toOffsetTime ().getSecond ()+taskHr.getDayStartTime ().getSecond ()),ZoneId.systemDefault ()).plusDays (1));
+            }
+            if(taskWorker.getToDate ().isBefore (taskWorker.getFromDate ())){
+                taskWorker.setStatus (2);
+                taskWorker.setRefusedReason ("任务即将结束，无法接受");
+                taskWorkerMapper.updateById (taskWorker);
+                return ResultDO.buildSuccess("任务即将结束，无法接受");
+            }
         }
         Integer confirmedWorkers = taskHr.getConfirmedWorkers();
         if (confirmedWorkers == null) {
@@ -165,17 +176,15 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
             throw new ParamsException("消息id不能为空");
         }
         TaskWorker taskWorker = null;
-        if(refusedTaskReq.getMessageId().equals ("0")){
-            taskWorker = taskWorkerMapper.findFirstById(refusedTaskReq.getWorkerTaskId ());
-        }else{
-            Message message = messageMapper.selectById(refusedTaskReq.getMessageId());
+        Message message = messageMapper.selectById(refusedTaskReq.getMessageId());
+        System.out.println (message.getPid ()+"+");
+        System.out.println (message.isStop ()+"+");
             if (message == null || message.getStatus() == 1) {
                 throw new BusinessException("消息已处理");
             }
             message.setStatus(1);
             messageMapper.updateAllColumnById(message);
             taskWorker = taskWorkerMapper.findFirstById(message.getWorkerTaskId());
-        }
         if(taskWorker.getStatus()>0){
             throw new BusinessException("任务状态不是新派发,无法拒绝任务");
         }
@@ -222,10 +231,8 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         m.setApplicantType(1);
         m.setStatus(0);
         m.setIsTask(0);
+        m.setStop (message.isStop ());
         messageMapper.insert(m);
-        if(refusedTaskReq.isStop ()){
-            m.setStop (true);
-        }
         return ResultDO.buildSuccess("拒绝任务成功");
     }
     /**

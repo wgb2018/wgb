@@ -262,7 +262,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      * @param hrTaskId
      */
     @Override
-    public List<Message> hrDistributeTask(List<Map<String, String>> list, String hrId, String hrName, String pattern, String taskId, String hrTaskId) {
+    public List<Message> hrDistributeTask(List<Map<String, String>> list, String hrId, String hrName, String pattern, String taskId, String hrTaskId,boolean isStop) {
         if (list == null || list.size() == 0 || StringUtils.isEmpty(hrId) || StringUtils.isEmpty(pattern)) {
             throw new ParamsException("参数不能为空");
         }
@@ -292,7 +292,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m.setIsTask(0);
             m.setHotelId(param.get("hotelId"));
             m.setHrTaskId(hrTaskId);
-
+            m.setStop (true);
             m.setMessageContent(c);
             messageList.add(m);
         }
@@ -736,7 +736,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      * @param taskHrCompany
      */
     @Override
-    public Message hrDistributeWorkerTask(List<TaskWorker> list, TaskHrCompany taskHrCompany) {
+    public Message hrDistributeWorkerTask(List<TaskWorker> list, TaskHrCompany taskHrCompany,boolean isStop) {
         if (list == null || list.size() == 0 || taskHrCompany == null) {
             throw new ParamsException("消息发送的参数错误");
         }
@@ -766,6 +766,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             message.setWorkerId(worker.getWorkerId());
             message.setWorkerTaskId(worker.getPid());
             message.setTaskId (taskHrCompany.getTaskId ());
+            message.setStop (isStop);
             messageMapper.insert(message);
         }
         return message;

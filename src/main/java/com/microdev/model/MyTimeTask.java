@@ -4,10 +4,12 @@ import com.microdev.param.RefusedTaskRequest;
 import com.microdev.service.TaskWorkerService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Data
 @Component
+@Scope("prototype")
 public class MyTimeTask extends java.util.TimerTask{
     private RefusedTaskRequest refusedReq;
     @Autowired
@@ -20,5 +22,6 @@ public class MyTimeTask extends java.util.TimerTask{
     public void pl(){
         System.out.println ("service:"+taskWorkerService);
         taskWorkerService.refusedTask(refusedReq);
+        this.cancel();
     }
 }
