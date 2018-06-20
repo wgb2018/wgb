@@ -385,7 +385,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
      * 酒店申请替换小时工
      */
     @Override
-    public boolean changeWorker(Map<String, Object> map) {
+    public String changeWorker(Map<String, Object> map) {
         if (map == null) {
             throw new ParamsException("参数不能为空");
         }
@@ -426,7 +426,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         m.setTaskId((String)tp.get("taskId"));
         m.setMessageTitle ("酒店发起更换小时工的申请通知");
         messageMapper.insert(m);
-        return true;
+        return "提交成功";
     }
     /**
      * 酒店账目明细
@@ -779,6 +779,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             Company company = companyMapper.selectById(userCompany.getCompanyId());
             inform.setTitle("解绑成功");
             inform.setContent(company.getName() + "同意了你的申请解绑。你可以添加新的合作人力公司，没人最多只能绑定5家人力公司");
+            company.setActiveWorkers (company.getActiveWorkers () - 1);
+            companyMapper.updateById (company);
+
         }
         informMapper.insertInform(inform);
         return "成功";

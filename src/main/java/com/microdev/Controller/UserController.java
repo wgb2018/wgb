@@ -13,6 +13,7 @@ import com.microdev.common.utils.QRCodeUtil;
 import com.microdev.mapper.DictMapper;
 import com.microdev.mapper.TaskMapper;
 import com.microdev.mapper.UserMapper;
+import com.microdev.model.MyTimeTask;
 import com.microdev.model.Task;
 import com.microdev.model.User;
 import com.microdev.param.*;
@@ -35,6 +36,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
 import java.util.*;
 
 /**
@@ -231,7 +233,7 @@ public class UserController {
 //        test.setUsername("TestNew");
 //        userMapper.update(test);
 //        test = userMapper.selectById("f1f33e09884c4b06b8fbe77465bd208d");
-        File file;
+       /* File file;
         String fileURI = null;
         String filePath;
         file = QRCodeUtil.createQRCode ("3a267b284a1641ed9fb143fb3ff2d6c5WGBhotel");
@@ -239,7 +241,7 @@ public class UserController {
         //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
         fileURI = objectStoreService.uploadFile(filePath, file);
 
-        System.out.println ("fileURI:"+fileURI);
+        System.out.println ("fileURI:"+fileURI);*/
         /*OffsetDateTime of = OffsetDateTime. ofInstant (Instant.ofEpochMilli (new Date().getTime ()),ZoneOffset.systemDefault ());
         System.out.println (of);
         System.out.println (new Date().getTime ());
@@ -250,6 +252,11 @@ public class UserController {
         System.out.println (OffsetDateTime.of (of.getYear (),of.getMonthValue (),of.getDayOfMonth (),0,0,0,0,ZoneOffset.ofHoursMinutes (0,0)).plusDays (1).getHour ());
         Task t = taskMapper.getFirstById ("0af4cbe6642b4d19a7d1b8de07b9a456");
         System.out.println ("task:"+t);*/
+
+
+       /* MyTimeTask my = new MyTimeTask (OffsetDateTime.now()+"","");
+        java.util.Timer timer = new Timer(true);
+        timer.schedule(my, OffsetDateTime.now ().getLong (ChronoField.SECOND_OF_DAY));*/
         return ResultDO.buildSuccess("1");
     }
 	@GetMapping("/{mobile}/verifyMobile/{smsCode}")

@@ -262,7 +262,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      * @param hrTaskId
      */
     @Override
-    public void hrDistributeTask(List<Map<String, String>> list, String hrId, String hrName, String pattern, String taskId, String hrTaskId) {
+    public List<Message> hrDistributeTask(List<Map<String, String>> list, String hrId, String hrName, String pattern, String taskId, String hrTaskId) {
         if (list == null || list.size() == 0 || StringUtils.isEmpty(hrId) || StringUtils.isEmpty(pattern)) {
             throw new ParamsException("参数不能为空");
         }
@@ -297,6 +297,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             messageList.add(m);
         }
         messageMapper.saveBatch(messageList);
+        return messageList;
     }
 
     /**
@@ -477,6 +478,69 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         } else {
             throw new ParamsException("参数传递错误");
         }
+        /*for (AwaitHandleInfo a:list) {
+            a.setTaskResponse(this.selectAwaitTaskDetails(a.getMessageId(),  request.getType(),request.getMessageCode ().toString ()));
+            a.setDetailsResponse (this.selectMessageDetails (a.getMessageId(),  request.getType(),request.getMessageCode ().toString ()));
+        }*/
+        PageInfo<AwaitHandleInfo> pageInfo = new PageInfo<>(list);
+        Map<String, Object> map = new HashMap<>();
+        map.put("page", pageInfo.getPageNum());
+        map.put("total", pageInfo.getTotal());
+        map.put("result", list);
+
+        return ResultDO.buildSuccess(map);
+    }
+
+    @Override
+    public ResultDO showWaitHandleWorkPC(QueryCooperateRequest request, Paginator paginator) {
+        if (StringUtils.isEmpty(request.getId()) || StringUtils.isEmpty(request.getType())) {
+            throw new ParamsException("参数错误");
+        }
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+        List<AwaitHandleInfo> list = null;
+        if ("worker".equals(request.getType())) {
+            list = messageMapper.selectWorkerAwaitHandleInfo(request.getId());
+        } else if ("hotel".equals(request.getType())) {
+            list = messageMapper.selectHotelAwaitHandleInfo(request.getId(),request.getMessageCode ());
+            HrRefuseTaskNeedWorkers(list);
+        } else if ("hr".equals(request.getType())) {
+            list = messageMapper.selectHrAwaitHandleInfo(request.getId(),request.getMessageCode ());
+        } else {
+            throw new ParamsException("参数传递错误");
+        }
+        for (AwaitHandleInfo a:list) {
+            a.setTaskResponse(this.selectAwaitTaskDetails(a.getMessageId(),  request.getType(),request.getMessageCode ().toString ()));
+            a.setDetailsResponse (this.selectMessageDetails (a.getMessageId(),  request.getType(),request.getMessageCode ().toString ()));
+        }
+        //Map<String,Object> map = new HashMap<>();
+        /*for(AwaitHandleInfo a:list){
+            if(request.getMessageCode () == 7){//申请取消
+                map.put ("taskTypeText",a.getTaskTypeText ());
+                map.p
+            }else if(request.getMessageCode () == 4){//申请调配
+
+            }else if(request.getMessageCode () == 9){//申请换人
+
+            }else if(request.getMessageCode () == 8){//收入确认
+
+            }else if(){
+
+            }else if(){
+
+            }else if(){
+
+            }else if(){
+
+            }else if(){
+
+            }else if(){
+
+            }else if(){
+
+            }else if(){
+
+            }
+        }*/
         PageInfo<AwaitHandleInfo> pageInfo = new PageInfo<>(list);
         Map<String, Object> map = new HashMap<>();
         map.put("page", pageInfo.getPageNum());
@@ -672,7 +736,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      * @param taskHrCompany
      */
     @Override
-    public void hrDistributeWorkerTask(List<TaskWorker> list, TaskHrCompany taskHrCompany) {
+    public Message hrDistributeWorkerTask(List<TaskWorker> list, TaskHrCompany taskHrCompany) {
         if (list == null || list.size() == 0 || taskHrCompany == null) {
             throw new ParamsException("消息发送的参数错误");
         }
@@ -704,6 +768,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             message.setTaskId (taskHrCompany.getTaskId ());
             messageMapper.insert(message);
         }
+        return message;
     }
 
     /**

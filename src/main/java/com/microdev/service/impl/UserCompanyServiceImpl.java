@@ -103,10 +103,9 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             }
 
         } else if ("1".equals(status)) {
+            Company company= companyMapper.findCompanyById(message.getHrCompanyId());
             if(userCompany==null){
                 userCompany=new UserCompany();
-
-                Company company= companyMapper.findCompanyById(message.getHrCompanyId());
                 if(company==null){
                     throw new ParamsException("未找到匹配的公司信息");
                 }
@@ -116,6 +115,8 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                 userCompany.setUserType(user.getUserType());
                 flag = false;
             }
+            company.setActiveWorkers (company.getActiveWorkers ()+1);
+            companyMapper.updateById (company);
             //TODO 绑定上限设置
             DictDTO dict = dictMapper.findByNameAndCode("WorkerBindHrMaxNum","1");
             Integer maxNum = Integer.parseInt(dict.getText());
@@ -432,6 +433,8 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             userCompanyMapper.update(userCompany);
             inform.setTitle("绑定成功");
             inform.setContent(company.getName() + "同意了你的绑定申请，成功添加为合作人力公司，添加人力公司代表同意劳务合作协议。合作的人力公司可以向你派发任务，认真完成能获得相应的报酬。");
+            company.setActiveWorkers (company.getActiveWorkers ()+1);
+            companyMapper.updateById (company);
         } else {
             userCompany.setStatus(2);
             userCompanyMapper.update(userCompany);

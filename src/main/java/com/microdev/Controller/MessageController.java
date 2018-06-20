@@ -54,6 +54,14 @@ public class MessageController {
         return messageService.getPageMessages(paging.getPaginator(),paging.getSelector());
     }
 
+    /**
+     *分页查询待处理事务
+     * @return
+     */
+    @PostMapping("/message/await/handle/pc")
+    public ResultDO selectWaitHandleWorkPC(@RequestBody PagingDO<QueryCooperateRequest> paging) {
+        return messageService.showWaitHandleWorkPC(paging.getSelector(), paging.getPaginator());
+    }
 
     /**
      *分页查询待处理事务

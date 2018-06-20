@@ -122,6 +122,7 @@
             <if test="taskTypeCode != null and taskTypeCode !=''">
                 and t.task_type_code = #{taskTypeCode}
             </if>
+            <if test="taskStatus !=null and taskStatus !=''">
                 <if test="taskStatus == 6">
                     and t.status = 1 and t.to_date &gt;= now()
                 </if>
@@ -132,8 +133,9 @@
                     and t.to_date &gt;= now() and t.from_date &lt;= now() and t.status = 1
                 </if>
                 <if test="taskStatus == 5">
-                    and (t.to_date &lt; now() and t.status = 1) or t.status = 3
+                    and ((t.to_date &lt; now() and t.status = 1) or t.status = 3)
                 </if>
+            </if>
             <if test="payStatus != null and payStatus !=''">
                 <if test="payStatus == 1">
                     and t.have_pay_money == 0
@@ -240,6 +242,7 @@
             <if test="taskTypeCode != null and taskTypeCode !=''">
                 and t.task_type_code = #{taskTypeCode}
             </if>
+            <if test="taskStatus !=null and taskStatus !=''">
                 <if test="taskStatus == 6">
                     and t.status = 1 and t.to_date &gt;= now()
                 </if>
@@ -250,8 +253,9 @@
                     and t.to_date &gt;= now() and t.from_date &lt;= now() and t.status = 1
                 </if>
                 <if test="taskStatus == 5">
-                    and (t.to_date &lt; now() and t.status = 1) or t.status = 3
+                    and ((t.to_date &lt; now() and t.status = 1) or t.status = 3)
                 </if>
+            </if>
             <if test="payStatus != null and payStatus !=''">
                 <if test="payStatus == 1">
                     and t.have_pay_money == 0

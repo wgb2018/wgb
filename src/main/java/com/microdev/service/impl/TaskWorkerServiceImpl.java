@@ -26,9 +26,11 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
 
 @Transactional
 @Service
@@ -162,14 +164,18 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         if (StringUtils.isEmpty(refusedTaskReq.getMessageId())) {
             throw new ParamsException("消息id不能为空");
         }
-        Message message = messageMapper.selectById(refusedTaskReq.getMessageId());
-        if (message == null || message.getStatus() == 1) {
-            throw new BusinessException("消息已处理");
+        TaskWorker taskWorker = null;
+        if(refusedTaskReq.getMessageId().equals ("0")){
+            taskWorker = taskWorkerMapper.findFirstById(refusedTaskReq.getWorkerTaskId ());
+        }else{
+            Message message = messageMapper.selectById(refusedTaskReq.getMessageId());
+            if (message == null || message.getStatus() == 1) {
+                throw new BusinessException("消息已处理");
+            }
+            message.setStatus(1);
+            messageMapper.updateAllColumnById(message);
+            taskWorker = taskWorkerMapper.findFirstById(message.getWorkerTaskId());
         }
-        message.setStatus(1);
-        messageMapper.updateAllColumnById(message);
-
-        TaskWorker taskWorker = taskWorkerMapper.findFirstById(message.getWorkerTaskId());
         if(taskWorker.getStatus()>0){
             throw new BusinessException("任务状态不是新派发,无法拒绝任务");
         }
@@ -211,13 +217,15 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         param.put("content", refusedTaskReq.getRefusedReason());
         String c = StringKit.templateReplace(mess.getContent(), param);
         m.setMessageContent(c);
-        m.setHrTaskId(message.getHrTaskId());
+        m.setHrTaskId(taskHr.getPid ());
         m.setApplyType(2);
         m.setApplicantType(1);
         m.setStatus(0);
         m.setIsTask(0);
         messageMapper.insert(m);
-
+        if(refusedTaskReq.isStop ()){
+            m.setStop (true);
+        }
         return ResultDO.buildSuccess("拒绝任务成功");
     }
     /**

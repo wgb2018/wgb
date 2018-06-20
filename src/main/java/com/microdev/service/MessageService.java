@@ -76,7 +76,7 @@ public interface MessageService extends IService<Message> {
      * @param taskId
      * @param hrTaskId
      */
-    void hrDistributeTask(List<Map<String, String>> list, String hrId, String hrName, String pattern, String taskId, String hrTaskId);
+    List<Message> hrDistributeTask(List<Map<String, String>> list, String hrId, String hrName, String pattern, String taskId, String hrTaskId);
 
     /**
      * 人力申请调配消息
@@ -111,7 +111,7 @@ public interface MessageService extends IService<Message> {
      * @return
      */
     ResultDO showWaitHandleWork(QueryCooperateRequest request, Paginator paginator);
-
+    ResultDO showWaitHandleWorkPC(QueryCooperateRequest request, Paginator paginator);
     /**
      * 拒绝任务
      */
@@ -140,7 +140,7 @@ public interface MessageService extends IService<Message> {
      * @param list
      * @param taskHrCompany
      */
-    void hrDistributeWorkerTask(List<TaskWorker> list, TaskHrCompany taskHrCompany);
+    Message hrDistributeWorkerTask(List<TaskWorker> list, TaskHrCompany taskHrCompany);
 
     /**
      * 发送消息

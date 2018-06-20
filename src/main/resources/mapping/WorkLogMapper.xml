@@ -128,7 +128,7 @@
         ON th.id = tw.task_hr_id
         INNER JOIN company c
         ON c.id = th.hotel_id
-        GROUP BY DATE_FORMAT(wl.create_time,'%Y.%m.%d')
+        GROUP BY DATE_FORMAT(wl.create_time,'%Y.%m.%d'),wl.task_worker_id
     </select>
     <select id="selectNoPunchDetail" parameterType="java.util.Map"
             resultType="com.microdev.param.SupplementResponse">

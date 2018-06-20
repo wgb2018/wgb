@@ -1,5 +1,6 @@
 package com.microdev.model;
 
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import lombok.Data;
 
@@ -96,6 +97,8 @@ public class Message extends BaseEntity {
     /**
      * 人力任务id
      */
+    @TableField(exist = false)
+    private boolean isStop = false;
     private String hrTaskId;
     public Integer getStatus() {
         return status;
