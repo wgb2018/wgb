@@ -103,4 +103,8 @@ public interface MessageMapper extends BaseMapper<Message> {
     List<ApplyResponseDTO> selectPcHotelReplace(@Param("hrId") String hrId);
 
     List<ApplyResponseDTO> selectPcHotelPay(@Param("hrId") String hrId);
+
+    List<ApplyResponseDTO> selectPcworkerCancel(@Param("hrId") String hrId);
+
+    List<ApplyResponseDTO> selectPcHrNewTask(@Param("hrId") String hrId);
 }

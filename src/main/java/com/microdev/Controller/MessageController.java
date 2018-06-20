@@ -201,4 +201,26 @@ public class MessageController {
 
         return messageService.selectPcHotelPay(paging.getSelector(), paging.getPaginator());
     }
+
+    /**
+     * PC端查询小时工取消任务
+     * @param paging
+     * @return
+     */
+    @PostMapping("/message/pc/worker/cancel")
+    public ResultDO selectPcWorkerCancel(@RequestBody PagingDO<ApplyParamDTO> paging) {
+
+        return messageService.selectPcWorkerCancelTask(paging.getSelector(), paging.getPaginator());
+    }
+
+    /**
+     * pc端查询新任务
+     * @param paging
+     * @return
+     */
+    @PostMapping("/message/pc/new/task")
+    public ResultDO selectPcNewTask(@RequestBody PagingDO<ApplyParamDTO> paging) {
+
+        return messageService.selectPcHrNewTask(paging.getSelector(), paging.getPaginator());
+    }
 }
