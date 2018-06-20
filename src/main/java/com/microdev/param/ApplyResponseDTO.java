@@ -33,5 +33,5 @@ public class ApplyResponseDTO {
     private String userMobile;//小时工电话
     private String sex;//小时工性别
     private String messageType;//消息类型
-
+    private OffsetDateTime createTime;
 }

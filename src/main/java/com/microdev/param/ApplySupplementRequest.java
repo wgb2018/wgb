@@ -25,4 +25,5 @@ public class ApplySupplementRequest {
     private String mobile;
     private String taskContent;
     private String minutes;
+    private OffsetDateTime createTime;
 }

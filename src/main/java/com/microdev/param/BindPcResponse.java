@@ -14,5 +14,4 @@ public class BindPcResponse {
     private int age;
     private String sex;
     private String mobile;
-
 }
