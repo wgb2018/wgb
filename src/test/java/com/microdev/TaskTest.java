@@ -8,13 +8,13 @@ import java.util.*;
 
 
 import com.microdev.mapper.MessageMapper;
+import com.microdev.mapper.TaskWorkerMapper;
 import com.microdev.mapper.WorkerLogMapper;
 import com.microdev.model.Message;
+import com.microdev.model.TaskWorker;
 import com.microdev.model.WorkLog;
 import com.microdev.param.*;
-import com.microdev.service.CompanyService;
-import com.microdev.service.MessageService;
-import com.microdev.service.WorkerService;
+import com.microdev.service.*;
 import net.sf.json.JSONObject;
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -27,7 +27,6 @@ import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.mapper.TaskMapper;
 import com.microdev.model.Task;
-import com.microdev.service.TaskService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -47,35 +46,40 @@ public class TaskTest {
 	private CompanyService companyService;
 	@Autowired
 	private MessageService messageService;
+	@Autowired
+	private TaskWorkerService taskWorkerService;
+	@Autowired
+	private TaskWorkerMapper taskWorkerMapper;
+	@Autowired
+	private TaskHrCompanyService taskHrCompanyService;
 	
 	@Test
 	public void oneTest() {
-		Map<String, Object> map = new HashMap<>();
-		List<Task> list = taskMapper.selectByMap(map);
-		if (list != null && list.size() > 0) {
-			String id = list.get(0).getPid();
-			ResultDO r = taskService.getTaskById(id);
-			System.out.println(r.toString());
-		}
+		String id = "dea60a58122440e38ef71a4c9027329b";
+		String applyType = "worker";
+		Map<String, Integer> map = messageService.selectUnReadCount(id, applyType);
+		System.out.println(map);
 	}
+
 
 	@Test
 	public void twoest() {
-
-		WorkLog workLog = workerLogMapper.selectById("f291beb1a22b42cfa983f43b35e9b78f");
-		OffsetDateTime time = OffsetDateTime.now();
-		OffsetDateTime off = workLog.getModifyTime();
-		DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		System.out.println(f.format(off));
-		OffsetDateTime second = OffsetDateTime.ofInstant(Instant.ofEpochMilli(off.toEpochSecond()*1000), ZoneId.systemDefault());
-		System.out.println("second:" + f.format(second));
+		String messageId = "a3b753f4820f4993bed2a5b216159857";
+		String status = "1";
+		workerService.workerHandleHrPay(messageId, status);
 	}
 
 	@Test
 	public void threeTest() {
-		UserTaskResponse response = workerService.selectUserTaskInfo("ff6730e928464fbfb73684adc84c4eda", "c084372c95944001b43ebad3b8312bf7");
+		UserTaskResponse response = workerService.selectUserTaskInfo("4211e6889658424d838c11d59500e99f", "dea60a58122440e38ef71a4c9027329b");
 		JSONObject json = JSONObject.fromObject(response);
 		System.out.println(json.toString());
 	}
 
+	@Test
+	public void sixTest() {
+		String messageId = "2e0db17253c34c5fa5d85a1106d25012";
+		String status = "1";
+		taskHrCompanyService.hrHandleIncome(messageId, status);
+	}
 }
