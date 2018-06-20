@@ -97,4 +97,10 @@ public interface MessageMapper extends BaseMapper<Message> {
     int selectIsRepeat(@Param("workerId") String workerId);
 
     Double selectUnConfirmePay(@Param("payType") int payType,@Param("taskId1") String taskId,@Param("taskId2") String taskId2);
+
+    List<ApplyResponseDTO> selectPcHrRefuse(@Param("hotelId") String hotelId);
+
+    List<ApplyResponseDTO> selectPcHotelReplace(@Param("hrId") String hrId);
+
+    List<ApplyResponseDTO> selectPcHotelPay(@Param("hrId") String hrId);
 }

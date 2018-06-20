@@ -181,7 +181,7 @@ SELECT from_date, to_date,STATUS ,employer_confirm_status,create_time,id,minutes
         ON tw.id = wl.`task_worker_id`
         WHERE wl.to_date IS NULL AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= DATE(wl.create_time) AND tw.worker_id = #{workerId}
         AND CASE WHEN DATE_FORMAT(wl.create_time, '%Y-%m-%d') = CURDATE() THEN CURTIME() > DATE_ADD(tw.day_end_time, INTERVAL 30 MINUTE) ELSE 1 = 1 END
-        GROUP BY DATE_FORMAT(wl.create_time,'%Y.%m.%d')
+        GROUP BY DATE_FORMAT(wl.create_time,'%Y.%m.%d'),wl.`task_worker_id`
     </select>
 
     <select id="selectUnreadInfoOne" resultType="com.microdev.model.WorkLog">

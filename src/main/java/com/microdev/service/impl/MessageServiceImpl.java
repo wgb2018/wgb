@@ -982,6 +982,72 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         return ResultDO.buildSuccess(result);
     }
 
+    /**
+     * Pc端查询人力拒绝接单
+     * @param dto
+     * @param paginator
+     * @return
+     */
+    @Override
+    public ResultDO selectPcHrRefuseTask(ApplyParamDTO dto, Paginator paginator) {
+        if (StringUtils.isEmpty(dto.getId())) {
+            throw new ParamsException("参数不能为空");
+        }
+
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+        List<ApplyResponseDTO> list = messageMapper.selectPcHrRefuse(dto.getId());
+        PageInfo<ApplyResponseDTO> pageInfo = new PageInfo<>(list);
+        Map<String, Object> result = new HashMap<>();
+        result.put("page", paginator.getPage());
+        result.put("total", pageInfo.getTotal());
+        result.put("list", list);
+        return ResultDO.buildSuccess(result);
+    }
+
+    /**
+     * Pc端查询酒店替换小时工
+     * @param dto
+     * @param paginator
+     * @return
+     */
+    @Override
+    public ResultDO selectPcHotelReplace(ApplyParamDTO dto, Paginator paginator) {
+
+        if (StringUtils.isEmpty(dto.getId())) {
+            throw new ParamsException("参数不能为空");
+        }
+
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+        List<ApplyResponseDTO> list = messageMapper.selectPcHotelReplace(dto.getId());
+        PageInfo<ApplyResponseDTO> pageInfo = new PageInfo<>(list);
+        Map<String, Object> result = new HashMap<>();
+        result.put("page", paginator.getPage());
+        result.put("total", pageInfo.getTotal());
+        result.put("list", list);
+        return ResultDO.buildSuccess(result);
+    }
+
+    /**
+     * pc端查询酒店支付
+     * @param dto
+     * @param paginator
+     * @return
+     */
+    @Override
+    public ResultDO selectPcHotelPay(ApplyParamDTO dto, Paginator paginator) {
+        if (StringUtils.isEmpty(dto.getId())) {
+            throw new ParamsException("参数错误");
+        }
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+        List<ApplyResponseDTO> list = messageMapper.selectPcHotelPay(dto.getId());
+        PageInfo<ApplyResponseDTO> pageInfo = new PageInfo<>(list);
+        Map<String, Object> result = new HashMap<>();
+        result.put("page", paginator.getPage());
+        result.put("total", pageInfo.getTotal());
+        result.put("list", list);
+        return ResultDO.buildSuccess(result);
+    }
+
     private String transMessageType(String messageType) {
         if (StringUtils.isEmpty(messageType)) return messageType;
         if ("1".equals(messageType)) {

@@ -298,6 +298,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         m.setTaskId (taskWorker.getHotelTaskId ());
         m.setMessageCode ("hotelPayHrMessage");
         m.setMessageType(8);
+        m.setWorkerId(taskWorker.getWorkerId());
+        m.setWorkerTaskId(taskWorker.getPid());
         m.setMessageTitle ("人力公司支付小时工");
         m.setStatus (0);
         m.setHotelId (taskWorker.getHotelId ());
@@ -999,9 +1001,15 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         if (taskHrCompany == null) {
             throw new ParamsException("查询不到人力任务信息");
         }
+        Bill bill = billMapper.selectById (message.getRequestId ());
+        if (bill == null) {
+            return ResultDO.buildError("未查到相关支付记录");
+        }
         if ("0".equals(status)) {
             String content = taskHrCompany.getHrCompanyName() + "拒绝了你发起的一笔支付信息，金额为" + message.getMinutes() + "，拒绝理由为" + message.getContent();
             informService.sendInformInfo(2, 3, content, message.getHotelId(), "账目被拒绝");
+            bill.setStatus (2);
+            billMapper.updateById (bill);
         } else if ("1".equals(status)) {
             //确认收入
             taskHrCompany.setHavePayMoney(taskHrCompany.getHavePayMoney() + Double.valueOf(message.getMinutes()));
@@ -1019,6 +1027,9 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             hotelPayHrDetailsService.saveBean(details);
             String content = taskHrCompany.getHrCompanyName() + "同意了你发起的一笔支付信息，金额为" + Double.valueOf(message.getMinutes());
             informService.sendInformInfo(2, 3, content, message.getHotelId(), "账目已同意");
+
+            bill.setStatus (1);
+            billMapper.updateById (bill);
         } else {
             throw new ParamsException("参数错误");
         }

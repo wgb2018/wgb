@@ -600,7 +600,7 @@ ON m.hr_company_id = c2.id
 
     <select id="selectHotelDeploy" resultType="com.microdev.param.ApplyResponseDTO">
       SELECT m.id AS messageId,m.`content`,m.`minutes` AS amount,t.`from_date`,t.`to_date`,t.`day_start_time`,t.`day_end_time`,t.`task_type_text`,t.`task_content`,t.`status`,t.`hourly_pay` as hourlyPayHotel,
-c.`name` as hrName,c.`leader` as hrLeader,c.`leader_mobile` as hrLeaderMobile,c.`logo`,c.`address`,c.`area` FROM message m
+c.`name` as hrName,c.`leader` as hrLeader,c.`leader_mobile` as hrLeaderMobile,c.`logo`,c.`address`,c.`area`,m.create_time as createTime,m.message_type as messageType FROM message m
 INNER JOIN task t
 ON t.id = m.`task_id`
 INNER JOIN company c
@@ -623,7 +623,7 @@ WHERE m.`status` = 0 AND m.`message_type` = 4 AND m.`apply_type` = 3 AND m.`hote
 
     <select id = "selectPcLeaveApply" resultType="com.microdev.param.ApplySupplementRequest">
         SELECT m.id AS messageId,t.`task_type_text` AS taskTypeText,m.`content`,m.`supplement_time`,m.`supplement_time_end`,c.`name` AS hotelName,c.`address`,c.logo,
-u.`avatar` AS username,u.sex,u.`mobile`,t.`from_date`,t.`to_date`,t.`day_start_time`,t.`day_end_time`,t.`task_content`,m.`message_type`,IFNULL(m.`minutes`,'') as minutes FROM message m
+u.`avatar` AS username,u.sex,u.`mobile`,t.`from_date`,t.`to_date`,t.`day_start_time`,t.`day_end_time`,t.`task_content`,m.`message_type`,IFNULL(m.`minutes`,'') as minutes,m.create_time as createTime FROM message m
 INNER JOIN company c
 ON c.id = m.`hotel_id`
 INNER JOIN task t
@@ -696,5 +696,38 @@ ON u.`worker_id` = m2.worker_id
                 and hr_task_id = #{taskId1} and worker_task_id = #{taskId2}
             </if>
         </where>
+    </select>
+
+    <select id = "selectPcHrRefuse" resultType="com.microdev.param.ApplyResponseDTO">
+      SELECT m.id AS messageId,m.`message_type` AS messageType,m.`create_time` AS createTime, t.`task_type_text` AS taskTypeText, c.`name` AS hrName,c.`address` AS address,c.logo,c.`leader` AS hrLeader
+,c.`leader_mobile` AS hrLeaderMobile, m.`content` FROM message m
+INNER JOIN company c
+ON m.`hr_company_id` = c.id
+INNER JOIN task t
+ON t.id = m.`task_id`
+WHERE m.message_type = 10 AND m.apply_type = 3 AND m.hotel_id = #{hotelId} order by m.create_time desc
+    </select>
+
+    <select id = "selectPcHotelReplace" resultType="com.microdev.param.ApplyResponseDTO">
+      SELECT m.id AS messageId,m.`content` AS content,m.`message_type` AS messageType,t.`task_type_text` AS taskTypeText,t.`task_content` AS taskContent,
+m.`create_time` AS createTime,u.`nickname` AS username,u.`age`,u.`sex`,u.`mobile` AS userMobile,c.`name` AS hotelName,c.`leader` AS hotelLeader,c.`leader_mobile` AS hotelLeaderMobile,
+c.`logo`,c.`address` FROM message m
+INNER JOIN company c
+ON c.id = m.`hotel_id`
+INNER JOIN USER u
+ON u.`worker_id` = m.`worker_id`
+INNER JOIN task t
+ON t.id = m.`task_id`
+WHERE m.`hr_company_id` = #{hrId} AND message_type = 9 AND apply_type = 2 order by m.create_time desc
+    </select>
+
+    <select id="selectPcHotelPay" resultType="com.microdev.param.ApplyResponseDTO">
+        SELECT m.id AS messageId,m.`message_type` AS messageType,m.`create_time` AS createTime,m.`minutes` AS amount,t.`task_type_text` AS taskTypeText,t.`task_content` AS taskContent,
+c.address AS address,c.logo, c.`name` AS hotelName,c.leader AS hotelLeader,c.`leader_mobile` AS hotelLeaderMobile FROM message m
+INNER JOIN company c
+ON c.id = m.`hotel_id`
+INNER JOIN task t
+ON m.`task_id` = t.id
+WHERE m.message_type = 8 AND m.apply_type = 2 AND hr_company_id = #{hrId} order by m.create_time desc
     </select>
 </mapper>
