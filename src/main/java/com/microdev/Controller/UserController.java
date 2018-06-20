@@ -81,8 +81,7 @@ public class UserController {
      */
     @GetMapping("/logout")
     public ResultDO logout() throws Exception {
-        userService.logout();
-        return ResultDO.buildSuccess("用户退出成功");
+        return userService.logout();
     }
     /**
      * 修改密码

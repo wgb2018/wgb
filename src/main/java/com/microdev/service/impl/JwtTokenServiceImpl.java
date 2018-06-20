@@ -77,9 +77,6 @@ public class JwtTokenServiceImpl implements TokenService {
 
     @Override
     public TokenDTO refreshToken(String refreshToken) throws Exception{
-        if(!versionMapper.selectVersion ().equals ("1.0.0")){
-            throw new Exception ("请更新版本");
-        }
         Claims body = jwtParser(refreshToken);
 
         //判断是否已经过期

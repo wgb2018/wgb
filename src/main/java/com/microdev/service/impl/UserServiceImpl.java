@@ -98,9 +98,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
     @Override
     public TokenDTO login(UserDTO login) throws Exception {
-        if(!versionMapper.selectVersion ().equals ("1.0.0")){
-            throw new Exception ("请更新版本");
-        }
         User user = userMapper.findByMobile(login.getMobile());
         UserDTO userDTO = new UserDTO();
         String userId = user.getPid();
@@ -116,9 +113,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
     @Override
     public TokenDTO register(UserDTO register) throws Exception{
-        if(!versionMapper.selectVersion ().equals ("1.0.0")){
-            throw new Exception ("请更新版本");
-        }
         if (register.getUserType() == UserType.platform) {
             throw new AuthorizationException("无权限注册该用户");
         }
@@ -199,10 +193,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
      * 注销登录
      */
     @Override
-    public void logout() {
+    public ResultDO logout() {
         HttpServletRequest request = ServiceContextHolder.getServiceContext().getHttpServletRequest();
         String token = TokenUtil.parseBearerToken(request);
         tokenService.deleteAccessToken(token);
+        return ResultDO.buildSuccess ("用户退出成功");
     }
     /**
      * 修改密码
