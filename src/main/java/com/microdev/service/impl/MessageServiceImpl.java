@@ -499,7 +499,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
         List<AwaitHandleInfo> list = null;
         if ("worker".equals(request.getType())) {
-            list = messageMapper.selectWorkerAwaitHandleInfo(request.getId());
+             list = messageMapper.selectWorkerAwaitHandleInfo(request.getId());
         } else if ("hotel".equals(request.getType())) {
             list = messageMapper.selectHotelAwaitHandleInfo(request.getId(),request.getMessageCode ());
             HrRefuseTaskNeedWorkers(list);
