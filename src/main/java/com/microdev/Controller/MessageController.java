@@ -171,4 +171,26 @@ public class MessageController {
 
         return messageService.selectPcHrRefuseTask(paging.getSelector(), paging.getPaginator());
     }
+
+    /**
+     * Pc端查询酒店申请替换
+     * @param paging
+     * @return
+     */
+    @PostMapping("/message/pc/hotel/replace")
+    public ResultDO selectPcHotelReplace(@RequestBody PagingDO<ApplyParamDTO> paging) {
+
+        return messageService.selectPcHotelReplace(paging.getSelector(), paging.getPaginator());
+    }
+
+    /**
+     * pc端查询酒店支付
+     * @param paging
+     * @return
+     */
+    @PostMapping("/message/pc/hotel/pay")
+    public ResultDO selectPcHotelPay(@RequestBody PagingDO<ApplyParamDTO> paging) {
+
+        return messageService.selectPcHotelPay(paging.getSelector(), paging.getPaginator());
+    }
 }
