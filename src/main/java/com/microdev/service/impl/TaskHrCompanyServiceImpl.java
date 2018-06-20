@@ -1290,7 +1290,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             ref.setRefusedReason ("小时工未在规定时间内领取任务，请重新派发");
             ref.setMessageId (ms.getPid());
             ref.setWorkerTaskId ("");
-            ref.setStop (true);
             myTimeTask.setRefusedReq (ref);
             java.util.Timer timer = new Timer(true);
             timer.schedule(myTimeTask, OffsetDateTime.now ().plusSeconds (15).getLong (ChronoField.SECOND_OF_DAY));
@@ -1377,7 +1376,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
 
             //给小时工发送消息
        
-			messageService.hrDistributeWorkerTask(list, taskHrCompany,true);
+			Message ms = messageService.hrDistributeWorkerTask(list, taskHrCompany,true);
             if (message.getApplicantType() == 3) {
                 //给酒店发送通知
                 //被替换的小时工
@@ -1385,7 +1384,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
                 ref.setRefusedReason ("小时工未在规定时间内领取任务，请重新派发");
                 ref.setMessageId (ms.getPid ());
                 ref.setWorkerTaskId (workerTask.getPid ());
-                ref.setStop (true);
                 myTimeTask.setRefusedReq (ref);
                 java.util.Timer timer = new Timer(true);
                 timer.schedule(myTimeTask, OffsetDateTime.now ().plusSeconds (15).getLong (ChronoField.SECOND_OF_DAY));
