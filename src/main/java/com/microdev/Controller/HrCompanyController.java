@@ -246,4 +246,59 @@ public class HrCompanyController {
     public ResultDO hrcompaniesAgreePost(@PathVariable String messageId,@PathVariable String workerId) {
         return taskHrCompanyService.hrAgreeWorkerRefuseAndPost(messageId, workerId);
     }
+
+    /**
+     * pc端人力处理小时工解绑申请
+     * @param param
+     * @return
+     */
+    @PostMapping("/hrcompanies/handle/worker/unbind")
+    public ResultDO hrcompaniesHandleUnbind(@RequestBody Map<String, String> param) {
+
+        return ResultDO.buildSuccess(companyService.hrUnbindWorker(param.get("messageId"), param.get("status")));
+    }
+
+    /**
+     * pc端人力处理酒店支付
+     * @param param
+     * @return
+     */
+    @PostMapping("/hrcompanies/handle/hotel/account")
+    public ResultDO hrcompaniesHandleHotelAccount(@RequestBody Map<String, String> param) {
+
+        return taskHrCompanyService.hrHandleIncome(param.get("messageId"), param.get("status"));
+    }
+
+    /**
+     * pc端人力处理小时工取消任务
+     * @return
+     */
+    @PostMapping("/hrcompanies/handle/worker/cancel")
+    public ResultDO hrcompaniesHandleWorkerCancel(@RequestBody Map<String, String> param) {
+
+        return taskHrCompanyService.hrHandleWorkerCancel(param.get("messageId"), param.get("status"), param.get("workerId"));
+    }
+
+    /**
+     * pc端人力同意小时工拒绝任务并派发
+     * @param param
+     * @return
+     */
+    @PostMapping("/hrcompanies/pc/distribute")
+    public ResultDO hrcompaniesPcDistribute(@RequestBody Map<String, String> param) {
+
+        return taskHrCompanyService.hrAgreeWorkerRefuseAndPost(param.get("messageId"), param.get("workerId"));
+    }
+
+    /**
+     * pc端人力处理酒店申请替换小时工
+     * @param param
+     * @return
+     */
+    @PostMapping("/hrcompanies/pc/replace/worker")
+    public ResultDO hrcompaniesReplaceWorker(@RequestBody Map<String, String> param) {
+
+        return taskHrCompanyService.hrHandleHotelReplace(param.get("messageId"), param.get("status"), param.get("workerId"));
+    }
+
 }

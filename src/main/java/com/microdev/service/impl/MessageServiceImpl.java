@@ -983,6 +983,48 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         return ResultDO.buildSuccess(result);
     }
 
+    /**
+     * PC端查询小时工取消任务
+     * @param dto
+     * @param paginator
+     * @return
+     */
+    @Override
+    public ResultDO selectPcWorkerCancelTask(ApplyParamDTO dto, Paginator paginator) {
+        if (StringUtils.isEmpty(dto.getId())) {
+            throw new ParamsException("参数错误");
+        }
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+        List<ApplyResponseDTO> list = messageMapper.selectPcworkerCancel(dto.getId());
+        PageInfo<ApplyResponseDTO> pageInfo = new PageInfo<>(list);
+        Map<String, Object> result = new HashMap<>();
+        result.put("page", paginator.getPage());
+        result.put("total", pageInfo.getTotal());
+        result.put("list", list);
+        return ResultDO.buildSuccess(result);
+    }
+
+    /**
+     * pc端查询新任务
+     * @param dto
+     * @param paginator
+     * @return
+     */
+    @Override
+    public ResultDO selectPcHrNewTask(ApplyParamDTO dto, Paginator paginator) {
+        if (StringUtils.isEmpty(dto.getId())) {
+            throw new ParamsException("参数错误");
+        }
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+        List<ApplyResponseDTO> list = messageMapper.selectPcHrNewTask(dto.getId());
+        PageInfo<ApplyResponseDTO> pageInfo = new PageInfo<>(list);
+        Map<String, Object> result = new HashMap<>();
+        result.put("page", paginator.getPage());
+        result.put("total", pageInfo.getTotal());
+        result.put("list", list);
+        return ResultDO.buildSuccess(result);
+    }
+
     private String transMessageType(String messageType) {
         if (StringUtils.isEmpty(messageType)) return messageType;
         if ("1".equals(messageType)) {

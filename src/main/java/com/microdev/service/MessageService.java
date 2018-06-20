@@ -225,4 +225,20 @@ public interface MessageService extends IService<Message> {
      * @return
      */
     ResultDO selectPcHotelPay(ApplyParamDTO dto, Paginator paginator);
+
+    /**
+     * PC端查询小时工取消任务
+     * @param dto
+     * @param paginator
+     * @return
+     */
+    ResultDO selectPcWorkerCancelTask(ApplyParamDTO dto, Paginator paginator);
+
+    /**
+     * pc端查询新任务
+     * @param dto
+     * @param paginator
+     * @return
+     */
+    ResultDO selectPcHrNewTask(ApplyParamDTO dto, Paginator paginator);
 }

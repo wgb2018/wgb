@@ -128,4 +128,22 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
      * @return
      */
     int selectHrCurTaskCount(ApplyParamDTO applyParamDTO);
+
+    /**
+     * pc端人力处理小时工任务取消
+     * @param messageId
+     * @param status
+     * @param workerId
+     * @return
+     */
+    ResultDO hrHandleWorkerCancel(String messageId, String status, String workerId);
+
+    /**
+     * pc端人力处理酒店申请替换小时工
+     * @param messageId
+     * @param status
+     * @param workerId
+     * @return
+     */
+    ResultDO hrHandleHotelReplace(String messageId, String status, String workerId);
 }

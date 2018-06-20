@@ -730,4 +730,25 @@ INNER JOIN task t
 ON m.`task_id` = t.id
 WHERE m.message_type = 8 AND m.apply_type = 2 AND hr_company_id = #{hrId} order by m.create_time desc
     </select>
+
+    <select id="selectPcworkerCancel" resultType="com.microdev.param.ApplyResponseDTO">
+      SELECT  m.id AS messageId,m.`message_type` AS messageType,m.`create_time` AS createTime,t.`task_type_text` AS taskTypeText,t.`task_content` AS taskContent,
+u.`avatar` AS logo,u.`nickname` AS username,u.age, u.`mobile` AS userMobile,u.sex FROM message m
+INNER JOIN USER u
+ON m.`worker_id` = u.`worker_id`
+INNER JOIN task t
+ON t.id = m.`task_id`
+WHERE m.message_type = 7 AND m.`apply_type` = 2 AND m.`hr_company_id` = #{hrId}
+    </select>
+
+    <select id="selectPcHrNewTask" resultType="com.microdev.param.ApplyResponseDTO">
+        SELECT  m.id AS messageId,m.`message_type` AS messageType,m.`create_time` AS createTime,t.`task_type_text` AS taskTypeText,t.`task_content` AS taskContent
+,c.name AS hotelName,c.address,c.logo,c.leader AS hotelLeader,c.leader_mobile AS hotelLeaderMobile,IFNULL(t.`hourly_pay`,0) AS hourlyPayHotel FROM message m
+INNER JOIN company c
+ON c.id = m.`hotel_id`
+INNER JOIN task t
+ON t.id = m.`task_id`
+WHERE m.message_type = 6 AND m.`apply_type` = 2 AND m.`hr_company_id` = #{hrId}
+    </select>
+
 </mapper>
