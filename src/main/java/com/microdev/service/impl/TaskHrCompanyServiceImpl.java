@@ -1137,7 +1137,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
      */
     @Override
     public int selectHrCurTaskCount(ApplyParamDTO applyParamDTO) {
-        if (StringUtils.isEmpty(applyParamDTO.getId()) || StringUtils.isEmpty(applyParamDTO.getRoleType())) {
+        if (StringUtils.isEmpty(applyParamDTO.getId())) {
             return 0;
         }
         TaskHrQueryDTO queryDTO = new TaskHrQueryDTO();
@@ -1247,7 +1247,16 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             result.put("messageTitle", "人力公司派发任务通知书");
             result.put("taskId", taskHrCompany.getTaskId());
             result.put("hrTaskId", taskHrCompany.getPid());
-            messageService.sendMessageInfo(result);
+            Message ms = messageService.sendMessageInfo(result);
+            //设置定时
+            RefusedTaskRequest ref = new RefusedTaskRequest();
+            ref.setRefusedReason ("小时工未在规定时间内领取任务，请重新派发");
+            ref.setMessageId (ms.getPid());
+            ref.setWorkerTaskId ("");
+            ref.setStop (true);
+            myTimeTask.setRefusedReq (ref);
+            java.util.Timer timer = new Timer(true);
+            timer.schedule(myTimeTask, OffsetDateTime.now ().plusSeconds (15).getLong (ChronoField.SECOND_OF_DAY));
         } else {
             throw new ParamsException("参数值错误");
         }
@@ -1330,11 +1339,19 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             list.add(workerTask);
 
             //给小时工发送消息
-            messageService.hrDistributeWorkerTask(list, taskHrCompany);
+            Message ms = messageService.hrDistributeWorkerTask(list, taskHrCompany);
 
             if (message.getApplicantType() == 3) {
                 //给酒店发送通知
                 //被替换的小时工
+                RefusedTaskRequest ref = new RefusedTaskRequest();
+                ref.setRefusedReason ("小时工未在规定时间内领取任务，请重新派发");
+                ref.setMessageId (ms.getPid ());
+                ref.setWorkerTaskId (workerTask.getPid ());
+                ref.setStop (true);
+                myTimeTask.setRefusedReq (ref);
+                java.util.Timer timer = new Timer(true);
+                timer.schedule(myTimeTask, OffsetDateTime.now ().plusSeconds (15).getLong (ChronoField.SECOND_OF_DAY));
                 User oldUser = userMapper.selectByWorkerId(taskWorker.getWorkerId());
                 taskWorkerMapper.updateStatus(taskWorker.getWorkerId(), 3);
                 User newUser = userMapper.selectByWorkerId(list.get(0).getWorkerId());

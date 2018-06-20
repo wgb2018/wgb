@@ -146,7 +146,7 @@ public interface MessageService extends IService<Message> {
      * 发送消息
      * @param param
      */
-    void sendMessageInfo(Map<String, Object> param);
+    Message sendMessageInfo(Map<String, Object> param);
 
     /**
      * 生成消息内容

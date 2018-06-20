@@ -611,7 +611,7 @@ WHERE m.`status` = 0 AND m.`message_type` = 4 AND m.`apply_type` = 3 AND m.`hote
     <select id = "selectHrDeploy" resultType="com.microdev.param.ApplyResponseDTO">
         SELECT m.id AS messageId,m.`content`,m.`minutes` AS amount,t.`from_date`,t.`to_date`,t.`day_start_time`,t.`day_end_time`,t.`task_type_text`,t.`task_content`,t.`status`,t.`hourly_pay` AS hourlyPayHotel,
         c.`name` AS hotelName,c.`leader` AS hotelLeader,c.`leader_mobile` AS hotelLeaderMobile,c.`logo`,c.`address`,c.`area`, u.`nickname` AS username,IF(u.age &lt; 1, 0, u.age) AS age,u.`mobile` AS userMobile,
-        u.sex,m.`message_type` FROM message m
+        u.sex,m.`message_type`,m.create_time as createTime FROM message m
         INNER JOIN task t
         ON t.id = m.`task_id`
         INNER JOIN company c
@@ -644,6 +644,7 @@ WHERE m.`apply_type` = 3  and m.`status` = 0 AND m.`hotel_id` = #{hotelId}
         INNER JOIN USER u
         ON u.`worker_id` = m.`worker_id`
         WHERE m.`apply_type` = 2  AND m.`status` = 0 and m.`message_type` = 12 AND m.`hr_company_id` = #{hrId}
+        ORDER BY m.create_time DESC
     </select>
 
     <select id = "selectPcWorkerBindApply" resultType="com.microdev.param.ApplyBindResponse">
@@ -738,7 +739,7 @@ INNER JOIN USER u
 ON m.`worker_id` = u.`worker_id`
 INNER JOIN task t
 ON t.id = m.`task_id`
-WHERE m.message_type = 7 AND m.`apply_type` = 2 AND m.`hr_company_id` = #{hrId}
+WHERE m.message_type = 7 AND m.`apply_type` = 2 AND m.`hr_company_id` = #{hrId} ORDER BY m.create_time DESC
     </select>
 
     <select id="selectPcHrNewTask" resultType="com.microdev.param.ApplyResponseDTO">

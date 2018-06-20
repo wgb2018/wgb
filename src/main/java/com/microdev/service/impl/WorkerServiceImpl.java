@@ -334,7 +334,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         m.setTaskId (taskWorker.getHotelTaskId());
         Map<String, String> param = new HashMap<>();
         param.put("userName", tp.getUsername());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
         param.put("startTime", info.getTime());
         param.put("taskContent", info.getReason());
         param.put("endTime", info.getEndTime());

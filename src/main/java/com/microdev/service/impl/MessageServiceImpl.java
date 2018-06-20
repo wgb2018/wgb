@@ -776,7 +776,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      * @param param
      */
     @Override
-    public void sendMessageInfo(Map<String, Object> param) {
+    public Message sendMessageInfo(Map<String, Object> param) {
         if (param == null) {
             throw new ParamsException("参数不能为空");
         }
@@ -812,6 +812,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         if (param.get("taskId") != null)
             message.setTaskId ((String)param.get("taskId"));
         messageMapper.insert(message);
+        return message;
     }
 
     /**
