@@ -290,7 +290,7 @@ public class UserController {
         byte[] b = new byte[1024];
         int len = 0;
         while ((len = file.read(b)) != -1) {
-            out.write(b);
+            out.write(b, 0, len);
             out.flush();
         }
         file.close();

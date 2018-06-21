@@ -241,4 +241,13 @@ public interface MessageService extends IService<Message> {
      * @return
      */
     ResultDO selectPcHrNewTask(ApplyParamDTO dto, Paginator paginator);
+
+    /**
+     * pc端查询申请信息
+     * @param id
+     * @param roleType
+     * @return
+     */
+    ResultDO selectPcApply(String id, String roleType);
+
 }

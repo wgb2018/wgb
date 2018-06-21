@@ -4,7 +4,6 @@ import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
 import com.microdev.param.*;
 import com.microdev.service.MessageService;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -222,5 +221,16 @@ public class MessageController {
     public ResultDO selectPcNewTask(@RequestBody PagingDO<ApplyParamDTO> paging) {
 
         return messageService.selectPcHrNewTask(paging.getSelector(), paging.getPaginator());
+    }
+
+    /**
+     * pc端查询申请消息
+     * @param param
+     * @return
+     */
+    @PostMapping("/message/pc/apply/notice")
+    public ResultDO selectApplyNotice(@RequestBody Map<String, String> param) {
+
+        return messageService.selectPcApply(param.get("id"), param.get("roleType"));
     }
 }

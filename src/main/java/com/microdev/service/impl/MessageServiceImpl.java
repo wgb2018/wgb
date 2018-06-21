@@ -1092,6 +1092,31 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         return ResultDO.buildSuccess(result);
     }
 
+    /**
+     * pc端查询申请消息
+     * @param id
+     * @param roleType   人力hr酒店hotel
+     * @return
+     */
+    @Override
+    public ResultDO selectPcApply(String id, String roleType) {
+        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(roleType)) {
+            throw new ParamsException("参数不能为空");
+        }
+        List<MessageResponse> list = null;
+        if ("hr".equals(roleType)) {
+            list = messageMapper.selectPcHrApplyInfo(id);
+        } else if ("hotel".equals(roleType)) {
+            list = messageMapper.selectPcHotelApplyInfo(id);
+        } else {
+            throw new ParamsException("参数的值错误");
+        }
+        if (list == null || list.size() == 0) {
+            list = new ArrayList<>();
+        }
+        return ResultDO.buildSuccess(list);
+    }
+
     private String transMessageType(String messageType) {
         if (StringUtils.isEmpty(messageType)) return messageType;
         if ("1".equals(messageType)) {

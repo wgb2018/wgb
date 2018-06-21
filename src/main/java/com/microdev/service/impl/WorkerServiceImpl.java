@@ -1146,7 +1146,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     int minutes = judgeTime(startDay.getYear(), startDay.getDayOfYear(), dayStart, tc, holidayList);
                     if (minutes == 0) {
 
-                        if ((status.contains("1") || status.contains("6")) && confirmStatus.contains("1")) {
+                        if ((status.contains("1") || status.contains("6") || status.contains("7")) && confirmStatus.contains("1")) {
                             hotelStatus.put("comeLate", 1);
                         } else {
                             sysStatus.put("comeLate", 1);
@@ -1192,7 +1192,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                                 int minutes = judgeTime(startDay.getYear(), startDay.getDayOfYear(), cEnd1, cStart2, holidayList);
                                 if (minutes == 0) {
 
-                                    if ((status.contains("1") || status.contains("6")) && confirmStatus.contains("1")) {
+                                    if ((status.contains("1") || status.contains("6") || status.contains("7")) && confirmStatus.contains("1")) {
                                         hotelStatus.put("comeLate", 1);
                                     } else {
                                         sysStatus.put("comeLate", 1);
@@ -1233,7 +1233,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                                 int minutes = judgeTime(startDay.getYear(), startDay.getDayOfYear(), te1, ts2, holidayList);
                                 if (minutes == 0) {
 
-                                    if ((status.contains("1") || status.contains("6")) && confirmStatus.contains("1")) {
+                                    if ((status.contains("1") || status.contains("6") || status.contains("7")) && confirmStatus.contains("1")) {
                                         hotelStatus.put("comeLate", 1);
                                     } else {
                                         sysStatus.put("comeLate", 1);
@@ -1257,7 +1257,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                                 //如果当天还没有工作结束，就不判断
                             } else {
 
-                                if (status.contains("4") && confirmStatus.contains("4")) {
+                                if ((status.contains("4") || status.contains("7")) && confirmStatus.contains("1")) {
                                     hotelStatus.put("forget", 1);
                                 } else {
                                     sysStatus.put("forget", 1);
@@ -1297,7 +1297,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
                     } else {
 
-                        if (status.contains("4") && confirmStatus.contains("1")) {
+                        if ((status.contains("4") || status.contains("7")) && confirmStatus.contains("1")) {
                             hotelStatus.put("forget", 1);
                         } else {
                             sysStatus.put("forget", 1);

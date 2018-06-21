@@ -183,6 +183,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
      */
     @Override
     public ResultDO getHrWorkers(Paginator paginator, HrQueryWorkerDTO queryDTO) {
+
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         //查询数据集合
         Map<String,Object> map = new HashMap<>();
