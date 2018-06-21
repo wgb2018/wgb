@@ -779,7 +779,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             Company company = companyMapper.selectById(userCompany.getCompanyId());
             inform.setTitle("解绑成功");
             inform.setContent(company.getName() + "同意了你的申请解绑。你可以添加新的合作人力公司，没人最多只能绑定5家人力公司");
-            company.setActiveWorkers (company.getActiveWorkers () - 1);
+            if (company.getActiveWorkers () != null && company.getActiveWorkers () > 1) {
+                company.setActiveWorkers (company.getActiveWorkers () - 1);
+            }
             companyMapper.updateById (company);
 
         }

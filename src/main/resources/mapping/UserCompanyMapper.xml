@@ -13,7 +13,7 @@
     </sql>
     <sql id="User_Query_List" >
         id as pid, create_time, deleted, modify_time, activated, avatar, birthday, email, mobile, nickname, password,
-        sex, user_type, username, worker_id, user_code
+        sex, user_type, username, worker_id, user_code,age
     </sql>
     <update id="addNoPromiseTasks">
         UPDATE user_company SET no_Promise_Tasks = no_Promise_Tasks + 1 Where user_id = #{userId} and company_id=#{companyId}
