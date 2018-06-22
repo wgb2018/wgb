@@ -310,8 +310,16 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             throw new ParamsException("结束时间不能为空");
         }
 
-        OffsetDateTime time = DateUtil.strToOffSetDateTime(info.getTime(), "yyyy/MM/dd HH:mm");
-        OffsetDateTime endTime = DateUtil.strToOffSetDateTime(info.getEndTime(), "yyyy/MM/dd HH:mm");
+        OffsetDateTime time = null;
+        OffsetDateTime endTime = null;
+        try {
+            time = DateUtil.strToOffSetDateTime(info.getTime(), "yyyy/MM/dd HH:mm");
+            endTime = DateUtil.strToOffSetDateTime(info.getEndTime(), "yyyy/MM/dd HH:mm");
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return "日期格式错误，请用yyyy/MM/dd HH:mm格式";
+        }
+
         Message m = new Message();
         m.setSupplementTime(time);
         m.setSupplementTimeEnd(endTime);
@@ -347,7 +355,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
         messageMapper.insert(m);
 
-        return "成功";
+        return "操作成功";
     }
 
     /**
@@ -372,7 +380,13 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             throw new ParamsException("加时时间不能小于0");
         }
 
-        OffsetDateTime time = DateUtil.strToOffSetDateTime(info.getTime(), "yyyy/MM/dd");
+        OffsetDateTime time = null;
+        try {
+            time = DateUtil.strToOffSetDateTime(info.getTime(), "yyyy/MM/dd");
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return "日期格式错误，请用yyyy/MM/dd HH:mm格式";
+        }
         Message m = new Message();
         m.setContent(info.getReason());
         m.setSupplementTime(time);
@@ -404,7 +418,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
         messageMapper.insert(m);
 
-        return "成功";
+        return "操作成功";
     }
 
     /**
@@ -521,7 +535,13 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         if (repeat > 0) {
             return "你已经提交过补签申请";
         }
-        OffsetDateTime time = DateUtil.strToOffSetDateTime(info.getTime(), "yyyy/MM/dd HH:mm");
+        OffsetDateTime time = null;
+        try {
+            time = DateUtil.strToOffSetDateTime(info.getTime(), "yyyy/MM/dd HH:mm");
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return "日期格式错误，请用yyyy/MM/dd HH:mm格式";
+        }
         Message m = new Message();
         m.setSupplementTime(time);
         m.setContent(info.getReason());
@@ -802,7 +822,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             bill.setStatus (1);
             billMapper.updateById (bill);
         }
-        return ResultDO.buildSuccess("成功");
+        return ResultDO.buildSuccess("操作成功");
     }
 
     /**

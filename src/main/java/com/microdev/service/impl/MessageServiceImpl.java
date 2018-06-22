@@ -154,7 +154,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             list.add(m);
         }
         messageMapper.saveBatch(list);
-        return "成功";
+        return "操作成功";
     }
 
     /**

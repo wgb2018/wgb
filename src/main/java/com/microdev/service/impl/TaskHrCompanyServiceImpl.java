@@ -580,7 +580,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             return ResultDO.buildSuccess("你已提交过申请");
         }
         messageMapper.insert(m);
-        return ResultDO.buildSuccess("成功");
+        return ResultDO.buildSuccess("操作成功");
     }
 
     /**
@@ -606,7 +606,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         inform.setAcceptType(3);
         inform.setSendType(2);
         informMapper.insertInform(inform);
-        return "成功";
+        return "操作成功";
     }
 
     /**
@@ -664,7 +664,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         m.setIsTask(0);
         messageMapper.insert(m);
 
-        return "成功";
+        return "操作成功";
     }
 
     /**
@@ -874,7 +874,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         }
         String content = company.getName() + "拒绝了你的换人申请。";
         informService.sendInformInfo(2, 3, content, message.getHotelId(), "换人被拒绝");
-        return ResultDO.buildSuccess("成功");
+        return ResultDO.buildSuccess("操作成功");
     }
 
     /**
@@ -901,7 +901,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
 
         String content = taskWorker.getHrCompanyName() + "拒绝了你的取消任务申请，希望你能完成该任务。";
         informService.sendInformInfo(2, 1, content, message.getWorkerId(), "申请取消被拒绝");
-        return ResultDO.buildSuccess("成功");
+        return ResultDO.buildSuccess("操作成功");
     }
 
     /**
@@ -1001,7 +1001,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         result.put("taskId", taskHrCompany.getTaskId());
         result.put("hrTaskId", taskHrCompany.getPid());
         messageService.sendMessageInfo(result);
-        return ResultDO.buildSuccess("成功");
+        return ResultDO.buildSuccess("操作成功");
     }
 
     /**
@@ -1059,7 +1059,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         } else {
             throw new ParamsException("参数错误");
         }
-        return ResultDO.buildSuccess("成功");
+        return ResultDO.buildSuccess("操作成功");
     }
 
     /**
@@ -1296,7 +1296,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         } else {
             throw new ParamsException("参数值错误");
         }
-        return ResultDO.buildSuccess("成功");
+        return ResultDO.buildSuccess("操作成功");
     }
 
     /**
@@ -1400,6 +1400,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         } else {
             throw new ParamsException("参数值错误");
         }
-        return ResultDO.buildSuccess("成功");
+        return ResultDO.buildSuccess("操作成功");
     }
 }

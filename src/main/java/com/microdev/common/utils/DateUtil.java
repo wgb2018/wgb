@@ -95,16 +95,11 @@ public class DateUtil {
      * @param str
      * @return
      */
-    public static OffsetDateTime strToOffSetDateTime(String str, String pattern) {
+    public static OffsetDateTime strToOffSetDateTime(String str, String pattern) throws ParseException {
         SimpleDateFormat format = new SimpleDateFormat(pattern);
-        try {
-            Date d = format.parse(str);
-            return OffsetDateTime.ofInstant(Instant.ofEpochMilli(d.getTime()), ZoneId.systemDefault());
 
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
+        Date d = format.parse(str);
+        return OffsetDateTime.ofInstant(Instant.ofEpochMilli(d.getTime()), ZoneId.systemDefault());
     }
 
 

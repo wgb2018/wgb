@@ -583,7 +583,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             list.add(message);
         }
         messageMapper.saveBatch(list);
-        return "成功";
+        return "操作成功";
     }
 
     /**
@@ -644,7 +644,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }
 
         informMapper.insertInform(inform);
-        return "申请成功";    }
+        return "操作成功";    }
     /**
      * 酒店申请绑定人力资源公司或人力公司申请绑定酒店
      */
@@ -743,7 +743,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }
 
         messageService.hotelBindHrCompany(dto.getSet(), company, "applyBindMessage", type);
-        return ResultDO.buildSuccess("申请成功");
+        return ResultDO.buildSuccess("操作成功");
     }
 
     /**
@@ -791,7 +791,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
         }
         informMapper.insertInform(inform);
-        return "成功";
+        return "操作成功";
     }
 
     /**
