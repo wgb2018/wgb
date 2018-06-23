@@ -295,7 +295,6 @@ FROM message m
 INNER JOIN
 (
 	SELECT t.task_type_text,DATE_FORMAT(t.from_date,'%Y.%m.%d') AS fromDate,DATE_FORMAT(t.to_date, '%Y.%m.%d') AS toDate,DATE_FORMAT(t.day_start_time, '%H:%i') AS dayStartTime,
-	DATE_FORMAT(t.day_end_time, '%H:%i') AS dayEndTime,t.hourly_pay, a.hotel_name,a.confirmed_workers,a.need_workers,a.hotel_id,a.id FROM task_worker t LEFT JOIN task a ON t.hotel_task_id = a.id
 	DATE_FORMAT(t.day_end_time, '%H:%i') AS dayEndTime,t.hourly_pay, a.hotel_name,a.confirmed_workers,a.need_workers,a.hotel_id,a.id FROM task_worker t left join task a on t.hotel_task_id = a.id
         where t.status = 0
 ) t
@@ -756,23 +755,4 @@ ON t.id = m.`task_id`
 WHERE m.message_type = 6 AND m.`apply_type` = 2 AND m.`hr_company_id` = #{hrId}
     </select>
 
-    <select id = "selectPcHrApplyInfo" resultType="com.microdev.param.MessageResponse">
-        SELECT message_type as messageType,DATE_FORMAT(create_time, '%Y.%m.%d %H:%i') as createTime,message_content as messageContent,content FROM message WHERE STATUS = 0 AND apply_type = 2 AND message_type IN (7,8,9,10,12) AND hr_company_id = #{hrId}
-    </select>
-
-    <select id = "selectPcHotelApplyInfo" resultType="com.microdev.param.MessageResponse">
-        SELECT message_type as messageType,DATE_FORMAT(create_time, '%Y.%m.%d %H:%i') as createTime,message_content as messageContent,content FROM message WHERE STATUS = 0 AND apply_type = 3 AND message_type IN (1,2,3,4,10) AND hotel_id = #{hotelId}
-    </select>
-
-    <select id = "selectReplaceCount" resultType="java.lang.Integer">
-        SELECT COUNT(1)  FROM message WHERE STATUS = 0 AND apply_type = 2 AND message_type = 9 AND worker_task_id = #{taskWorkerId}
-    </select>
-
-    <select id="selectPcHrApplyInfoCount" resultType="java.lang.Integer">
-        select count(1) from message WHERE STATUS = 0 AND apply_type = 2 AND message_type IN (7,8,9,10,12) AND hr_company_id = #{hrId}
-    </select>
-
-    <select id = "selectPcHotelApplyInfoCount" resultType="java.lang.Integer">
-        select count(1) from message WHERE STATUS = 0 AND apply_type = 3 AND message_type IN (1,2,3,4,10) AND hotel_id = #{hotelId}
-    </select>
 </mapper>
