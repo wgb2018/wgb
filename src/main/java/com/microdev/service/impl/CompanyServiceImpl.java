@@ -404,6 +404,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             throw new ParamsException("参数hrCompanyId不能为空");
         }
 
+        //查询是否已经有申请替换的消息
+        int count = messageMapper.selectReplaceCount((String)map.get("taskWorkerId"));
+        if (count > 0) {
+            return "已经提交过替换申请，请勿重复提交";
+        }
         Message m = new Message();
         Map<String, Object> tp = taskWorkerMapper.selectHrId((String)map.get("taskWorkerId"));
         MessageTemplate mess = messageTemplateMapper.findFirstByCode("applyChangeMessage");
@@ -580,7 +585,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             list.add(message);
         }
         messageMapper.saveBatch(list);
-        return "成功";
+        return "操作成功";
     }
 
     /**
@@ -641,7 +646,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }
 
         informMapper.insertInform(inform);
-        return "申请成功";    }
+        return "操作成功";    }
     /**
      * 酒店申请绑定人力资源公司或人力公司申请绑定酒店
      */
@@ -740,7 +745,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }
 
         messageService.hotelBindHrCompany(dto.getSet(), company, "applyBindMessage", type);
-        return ResultDO.buildSuccess("申请成功");
+        return ResultDO.buildSuccess("操作成功");
     }
 
     /**
@@ -781,12 +786,14 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             Company company = companyMapper.selectById(userCompany.getCompanyId());
             inform.setTitle("解绑成功");
             inform.setContent(company.getName() + "同意了你的申请解绑。你可以添加新的合作人力公司，没人最多只能绑定5家人力公司");
-            company.setActiveWorkers (company.getActiveWorkers () - 1);
+            if (company.getActiveWorkers () != null && company.getActiveWorkers () > 1) {
+                company.setActiveWorkers (company.getActiveWorkers () - 1);
+            }
             companyMapper.updateById (company);
 
         }
         informMapper.insertInform(inform);
-        return "成功";
+        return "操作成功";
     }
 
     /**
@@ -1083,13 +1090,14 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            return ResultDO.buildSuccess("成功");
+            return ResultDO.buildSuccess("操作成功");
         }
         List<WorkLog> workLogList = workLogMapper.selectByDate(record);
         if (workLogList == null || workLogList.size() == 0) {
             logger.info("hotelHandleWorkerRecord:" + record.toString());
             return ResultDO.buildError("查询不到工作记录");
         }
+        boolean flag = true;
         for (WorkLog workLog1 : workLogList) {
             if (workLog1.getEmployerConfirmStatus() == null || workLog1.getEmployerConfirmStatus() == 0) {
                 if ("1".equals(record.getStatus())) {
@@ -1100,11 +1108,31 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
                 workLog1.setEmployerConfirmStatus(1);
                 workLogMapper.updateById(workLog1);
+                flag = false;
                 break;
             }
         }
 
-        return ResultDO.buildSuccess("成功");
+        if (flag) {
+            for (WorkLog workLog1 : workLogList) {
+                if ("1".equals(record.getStatus())) {
+                    if (workLog1.getStatus() == 1 && workLog1.getEmployerConfirmStatus() == 1) {
+                        workLog1.setStatus(6);
+                        workLogMapper.updateById(workLog1);
+                        break;
+                    }
+                } else if ("2".equals(record.getStatus())) {
+                    if (workLog1.getStatus() == 2 && workLog1.getEmployerConfirmStatus() == 1) {
+                        workLog1.setStatus(6);
+                        workLogMapper.updateById(workLog1);
+                        break;
+                    }
+                }
+
+            }
+        }
+
+        return ResultDO.buildSuccess("操作成功");
     }
 
 }

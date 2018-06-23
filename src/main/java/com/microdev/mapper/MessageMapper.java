@@ -94,7 +94,7 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     List<ApplyBindResponse> selectPcHrBind(@Param("hrId") String hrId);
 
-    int selectIsRepeat(@Param("workerId") String workerId);
+    int selectIsRepeat(@Param("workerTaskId") String workerTaskId,@Param("workerId") String workerId);
 
     Double selectUnConfirmePay(@Param("payType") int payType,@Param("taskId1") String taskId,@Param("taskId2") String taskId2);
 
@@ -107,4 +107,14 @@ public interface MessageMapper extends BaseMapper<Message> {
     List<ApplyResponseDTO> selectPcworkerCancel(@Param("hrId") String hrId);
 
     List<ApplyResponseDTO> selectPcHrNewTask(@Param("hrId") String hrId);
+
+    List<MessageResponse> selectPcHrApplyInfo(@Param("hrId") String hrId);
+
+    List<MessageResponse> selectPcHotelApplyInfo(@Param("hotelId") String hotelId);
+
+    int selectReplaceCount(@Param("taskWorkerId") String taskWorkerId);
+
+    int selectPcHrApplyInfoCount(@Param("hrId") String hrId);
+
+    int selectPcHotelApplyInfoCount(@Param("hotelId") String hotelId);
 }

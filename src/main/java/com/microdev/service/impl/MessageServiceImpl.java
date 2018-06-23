@@ -154,7 +154,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             list.add(m);
         }
         messageMapper.saveBatch(list);
-        return "成功";
+        return "操作成功";
     }
 
     /**
@@ -776,7 +776,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      * @param param
      */
     @Override
-    public void sendMessageInfo(Map<String, Object> param) {
+    public Message sendMessageInfo(Map<String, Object> param) {
         if (param == null) {
             throw new ParamsException("参数不能为空");
         }
@@ -812,6 +812,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         if (param.get("taskId") != null)
             message.setTaskId ((String)param.get("taskId"));
         messageMapper.insert(message);
+        return message;
     }
 
     /**
@@ -1088,6 +1089,31 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         result.put("total", pageInfo.getTotal());
         result.put("list", list);
         return ResultDO.buildSuccess(result);
+    }
+
+    /**
+     * pc端查询申请消息
+     * @param id
+     * @param roleType   人力hr酒店hotel
+     * @return
+     */
+    @Override
+    public ResultDO selectPcApply(String id, String roleType) {
+        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(roleType)) {
+            throw new ParamsException("参数不能为空");
+        }
+        List<MessageResponse> list = null;
+        if ("hr".equals(roleType)) {
+            list = messageMapper.selectPcHrApplyInfo(id);
+        } else if ("hotel".equals(roleType)) {
+            list = messageMapper.selectPcHotelApplyInfo(id);
+        } else {
+            throw new ParamsException("参数的值错误");
+        }
+        if (list == null || list.size() == 0) {
+            list = new ArrayList<>();
+        }
+        return ResultDO.buildSuccess(list);
     }
 
     private String transMessageType(String messageType) {

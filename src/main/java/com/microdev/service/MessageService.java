@@ -146,7 +146,7 @@ public interface MessageService extends IService<Message> {
      * 发送消息
      * @param param
      */
-    void sendMessageInfo(Map<String, Object> param);
+    Message sendMessageInfo(Map<String, Object> param);
 
     /**
      * 生成消息内容
@@ -241,4 +241,13 @@ public interface MessageService extends IService<Message> {
      * @return
      */
     ResultDO selectPcHrNewTask(ApplyParamDTO dto, Paginator paginator);
+
+    /**
+     * pc端查询申请信息
+     * @param id
+     * @param roleType
+     * @return
+     */
+    ResultDO selectPcApply(String id, String roleType);
+
 }

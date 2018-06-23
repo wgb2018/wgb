@@ -262,26 +262,7 @@ public class UserController {
        /* MyTimeTask my = new MyTimeTask (OffsetDateTime.now()+"","");
         java.util.Timer timer = new Timer(true);
         timer.schedule(my, OffsetDateTime.now ().getLong (ChronoField.SECOND_OF_DAY));*/
-
-
-
-       /*String  path = getClass().getResource("/").getFile();
-        path = URLDecoder.decode(path,  "utf-8")+File.separator + "static" + File.separator;
-        System.out.println (path);
-
-        HtmlUtil.convert2Html (path+"aaa.docx",path,"aaa1.html");*/
-
-
-
-        List<Map<String,Object>> list = workerMapper.queryAllWorker ();
-        PageHelper.startPage(1,10);
-        PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(list);
-        HashMap<String,Object> result = new HashMap<>();
-        //设置获取到的总记录数total：
-        result.put("total",pageInfo.getTotal());
-        result.put("result",pageInfo.getList());
-        result.put("page",1);
-        return ResultDO.buildSuccess(result);
+        return ResultDO.buildSuccess("1");
     }
 	@GetMapping("/{mobile}/verifyMobile/{smsCode}")
     public ResultDO verifyMobile(@PathVariable String mobile, @PathVariable String smsCode) {
@@ -311,8 +292,6 @@ public class UserController {
         }
         FileInputStream file = new FileInputStream(f);
         response.setContentType("text/html;charset=utf-8");
-        //response.setContentType("application/octet-stream;charset=UTF-8");
-        //response.setContentType ("application/ms-word");
         response.setCharacterEncoding("utf-8");
         byte[] b = new byte[1024];
         int len = 0;
