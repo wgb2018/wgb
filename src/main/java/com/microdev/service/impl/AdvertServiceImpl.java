@@ -46,6 +46,7 @@ public class AdvertServiceImpl extends ServiceImpl<AdvertMapper,Advert> implemen
         advert.setTheCover(param.getTheCover ());
         advert.setAdvertType (param.getAdvertType ());
         advert.setStatus (param.getStatus ());
+        advert.setLocation (param.getLocation ());
         if(param.getStatus () == 1){
             advert.setReleaseTime (OffsetDateTime.now ());
         }

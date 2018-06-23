@@ -216,6 +216,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
             throw new ParamsException("参数错误");
         }
         TaskHrCompany taskHr =  taskHrCompanyMapper.queryByTaskId (PayHrParam.getTaskHrId ());
+
         //插入支付记录
                 Bill bill = new Bill();
                 bill.setTaskId(taskHr.getTaskId ());
@@ -247,6 +248,13 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         String c = StringKit.templateReplace(mess.getContent(), param);
         m.setMessageContent (c);
         messageService.insert (m);
+        taskHr.setUnConfirmedPay (taskHr.getUnConfirmedPay ()+PayHrParam.getPayMoney ());
+        taskHr.setHavePayMoney (taskHr.getHavePayMoney ()+PayHrParam.getPayMoney ());
+        taskHrCompanyMapper.updateById (taskHr);
+        Task task = taskMapper.selectById (taskHr.getTaskId ());
+        task.setUnConfirmedPay (task.getUnConfirmedPay ()+PayHrParam.getPayMoney ());
+        task.setHavePayMoney (task.getHavePayMoney ()+PayHrParam.getPayMoney ());
+        taskMapper.updateById (task);
         return ResultDO.buildSuccess("消息发送成功");
     }
 
@@ -324,6 +332,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
 
         if (task == null) {
             throw new BusinessException("任务找不到");
+        }
+        if(task.getFromDate ().isBefore (OffsetDateTime.now ())){
+            return ResultDO.buildSuccess("任务已执行，派发失败");
         }
         request.setHotelId(task.getHotelId());
         Company hotel=companyMapper.findCompanyById(task.getHotelId());

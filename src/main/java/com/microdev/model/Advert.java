@@ -25,4 +25,6 @@ public class Advert extends BaseEntity{
     private String title;
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private OffsetDateTime releaseTime;
+
+    private String location;
 }

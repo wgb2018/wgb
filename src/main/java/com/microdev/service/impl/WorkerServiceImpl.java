@@ -179,9 +179,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         Company hotel = companyMapper.findCompanyById (taskHrCompanyMapper.queryByTaskId (taskWorkerMapper.findFirstById (taskWorkerId).getTaskHrId ()).getHotelId ());
         Double m = LocationUtils.getDistance (hotel.getLatitude (),hotel.getLongitude (),measure.getLatitude (),measure.getLongitude ());
-        if(m>500){
+        /*if(m>500){
             return "打卡地点距离工作地超过500米";
-        }
+        }*/
         WorkLog log = null;
         Task task = null;
         TaskHrCompany taskHrCompany = null;
@@ -693,7 +693,12 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         System.out.println (workerQueryDTO);
         //查询数据集合
-        List<Map<String,Object>> list = workerMapper.queryWorkers(workerQueryDTO);
+        List<Map<String,Object>> list = null;
+        if(workerQueryDTO.getHrId () == null){
+            list = workerMapper.queryAllWorker ();
+        }else{
+            list = workerMapper.queryWorkers(workerQueryDTO);
+        }
         PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(list);
         HashMap<String,Object> result = new HashMap<>();
         //设置获取到的总记录数total：
@@ -773,28 +778,26 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         if ("0".equals(status)) {
             //拒绝
-            
             String content = "小时工" + user.getNickname() + "拒绝了你发起的一笔支付信息，金额为" + Double.valueOf(bill.getPayMoney ());
             informService.sendInformInfo(1, 2, content, message.getHrCompanyId(), "账目被拒绝");
             bill.setStatus (2);
             billMapper.updateById (bill);
-        } else if ("1".equals(status)) {
-            //同意
             TaskWorker taskWorker = taskWorkerMapper.selectById(message.getWorkerTaskId());
             if (taskWorker == null) {
                 throw new ParamsException("查询不到小时工任务信息");
             }
-         
-            taskWorker.setHavePayMoney(taskWorker.getHavePayMoney() + Double.valueOf(bill.getPayMoney ()));
+            taskWorker.setHavePayMoney(taskWorker.getHavePayMoney() - bill.getPayMoney ());
+            taskWorker.setUnConfirmedPay (taskWorker.getUnConfirmedPay () - bill.getPayMoney ());
             taskWorkerMapper.updateAllColumnById(taskWorker);
             TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(message.getHrTaskId());
             if (taskHrCompany == null) {
                 throw new ParamsException("查询不到人力任务");
             }
-         
-            taskHrCompany.setWorkersHavePay(taskHrCompany.getWorkersHavePay() + Double.valueOf(bill.getPayMoney ()));
+            taskHrCompany.setWorkerUnConfirmed (taskHrCompany.getWorkerUnConfirmed () - bill.getPayMoney ());
+            taskHrCompany.setWorkersHavePay(taskHrCompany.getWorkersHavePay() - bill.getPayMoney ());
             taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
-
+        } else if ("1".equals(status)) {
+            //同意
             //发送通知
   
             String content = "小时工" + user.getNickname() + "同意了你发起的一笔支付信息，金额为" + bill.getPayMoney ();

@@ -10,9 +10,9 @@ public class Version extends BaseEntity{
 
     private String content;
 
-    private String bug;
+    private String type;
 
-    private String change;
+    private String isUpdate;
 
     private String address;
 }

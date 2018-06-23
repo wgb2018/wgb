@@ -19,4 +19,6 @@ public class AdvertParam {
     private Integer advertType;
 
     private String pid;
+
+    private String location;
 }

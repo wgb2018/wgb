@@ -186,19 +186,14 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         //查询数据集合
         Map<String,Object> map = new HashMap<>();
-        /*map.put("company_id",queryDTO.getHrId());
-        map.put("status","1 or status = 3");*/
         Wrapper<UserCompany> et = null;
-
         if(queryDTO.getUserName ()!=null){
             et = new EntityWrapper<UserCompany> ().where("company_id={0}",queryDTO.getHrId()).in("status","1,3");
         }else{
             et = new EntityWrapper<UserCompany> ().where("company_id={0}",queryDTO.getHrId()).in("status","1,3");
         }
-
         List<User> list = null;
         User us = null;
-        //List<String> ids = new ArrayList<>();
         HashMap<String,Object> result = new HashMap<>();
         if(queryDTO.getTaskId()==null) {
             List<UserCompany> list1 = userCompanyMapper.selectAllWorker(queryDTO);

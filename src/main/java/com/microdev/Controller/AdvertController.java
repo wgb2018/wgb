@@ -56,6 +56,7 @@ public class AdvertController {
         advert.setContent (param.getContent ());
         advert.setDescription (param.getDescription ());
         advert.setTitle (param.getTitle ());
+        advert.setLocation (param.getLocation ());
         if(advert.getStatus () == 0 && param.getStatus () == 1){
             advert.setReleaseTime (OffsetDateTime.now ());
         }

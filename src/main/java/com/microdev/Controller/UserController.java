@@ -2,6 +2,8 @@ package com.microdev.Controller;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.microdev.Constant;
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
@@ -9,10 +11,10 @@ import com.microdev.common.exception.ParamsException;
 import com.microdev.common.oss.ObjectStoreService;
 import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.FileUtil;
+import com.microdev.common.utils.HtmlUtil;
 import com.microdev.common.utils.QRCodeUtil;
-import com.microdev.mapper.DictMapper;
-import com.microdev.mapper.TaskMapper;
-import com.microdev.mapper.UserMapper;
+import com.microdev.mapper.*;
+import com.microdev.model.Bill;
 import com.microdev.model.MyTimeTask;
 import com.microdev.model.Task;
 import com.microdev.model.User;
@@ -61,6 +63,10 @@ public class UserController {
     SmsFacade smsFacade;
 	@Autowired
     TaskMapper taskMapper;
+	@Autowired
+    VersionMapper versionMapper;
+	@Autowired
+    WorkerMapper workerMapper;
 	/**
      * 创建用户
      */
@@ -256,7 +262,26 @@ public class UserController {
        /* MyTimeTask my = new MyTimeTask (OffsetDateTime.now()+"","");
         java.util.Timer timer = new Timer(true);
         timer.schedule(my, OffsetDateTime.now ().getLong (ChronoField.SECOND_OF_DAY));*/
-        return ResultDO.buildSuccess("1");
+
+
+
+       /*String  path = getClass().getResource("/").getFile();
+        path = URLDecoder.decode(path,  "utf-8")+File.separator + "static" + File.separator;
+        System.out.println (path);
+
+        HtmlUtil.convert2Html (path+"aaa.docx",path,"aaa1.html");*/
+
+
+
+        List<Map<String,Object>> list = workerMapper.queryAllWorker ();
+        PageHelper.startPage(1,10);
+        PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(list);
+        HashMap<String,Object> result = new HashMap<>();
+        //设置获取到的总记录数total：
+        result.put("total",pageInfo.getTotal());
+        result.put("result",pageInfo.getList());
+        result.put("page",1);
+        return ResultDO.buildSuccess(result);
     }
 	@GetMapping("/{mobile}/verifyMobile/{smsCode}")
     public ResultDO verifyMobile(@PathVariable String mobile, @PathVariable String smsCode) {
@@ -274,23 +299,25 @@ public class UserController {
         path = URLDecoder.decode(path,  "utf-8");
         File f = null;
         if ("1".equals(param)) {
-            f = new File( path, File.separator + "static" + File.separator +  "BindingsOfHRAndHourlyWorkers.txt");
+            f = new File( path, File.separator + "static" + File.separator +  "UserProtocolAndPrivacyClause.html");
         } else if ("2".equals(param)) {
             f = new File(path, File.separator + "static" + File.separator + "IntroductionOfNewFunctions.txt");
         } else if ("3".equals(param)) {
             f = new File(path + File.separator + "static" + File.separator + "CooperationBetweenHumanCompaniesAndHotels.txt");
         } else if ("4".equals(param)) {
-            f = new File(path + File.separator + "static" + File.separator + "UserProtocolAndPrivacyClause.txt");
+            f = new File(path + File.separator + "static" + File.separator + "BindingsOfHRAndHourlyWorkers.txt");
         } else {
             throw new ParamsException("参数错误");
         }
         FileInputStream file = new FileInputStream(f);
         response.setContentType("text/html;charset=utf-8");
+        //response.setContentType("application/octet-stream;charset=UTF-8");
+        //response.setContentType ("application/ms-word");
         response.setCharacterEncoding("utf-8");
         byte[] b = new byte[1024];
         int len = 0;
         while ((len = file.read(b)) != -1) {
-            out.write(b);
+            out.write(b,0,len);
             out.flush();
         }
         file.close();
@@ -331,6 +358,14 @@ public class UserController {
     @PostMapping("/feedback/insert")
     public ResultDO feedbackInsert( @RequestBody FeedBackParam request) throws Exception{
         return ResultDO.buildSuccess (userService.feedbackInsert(request));
+    }
+
+    /**
+     * 版本管理
+     */
+    @GetMapping("/check/version")
+    public ResultDO checkVersion() throws Exception{
+        return ResultDO.buildSuccess (versionMapper.selectVersion ());
     }
 
 

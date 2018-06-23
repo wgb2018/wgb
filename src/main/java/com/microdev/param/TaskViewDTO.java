@@ -97,6 +97,8 @@ public class TaskViewDTO {
      */
     private Double waitPayMoney=0.0;
 
+    private Double unConfirmedPay=0.0;
+
     private String payStatus;
     /**
      * 任务状态

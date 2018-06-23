@@ -67,7 +67,6 @@ public class Company extends BaseEntity {
     /**
      *  活跃人数
      */
-    @TableField(exist = false)
     private Integer activeWorkers;
 
 	@TableField(exist = false)

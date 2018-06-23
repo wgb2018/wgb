@@ -13,7 +13,7 @@ public interface WorkerMapper extends BaseMapper<Worker> {
 
     Worker queryById(String workerId);
 	Map<String,Object> queryWorker(String id);
-
+    List<Map<String,Object>> queryAllWorker();
 	List<Map<String,Object>> queryWorkers(WorkerQueryDTO workerQueryDTO);
 }
 

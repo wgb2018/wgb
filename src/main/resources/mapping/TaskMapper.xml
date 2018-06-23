@@ -4,7 +4,7 @@
     <sql id="Task_Query_Param">
         id as pid, create_time, deleted, modify_time,
         confirmed_workers, from_date, have_pay_money, hourly_pay, minutes, need_workers, refused_workers, repast_times, should_pay_money,
-        status, task_content, task_type_code, task_type_text, to_date, hotel_id, day_start_time, day_end_time, hotel_name
+        status, task_content, task_type_code, task_type_text, to_date, hotel_id, day_start_time, day_end_time, hotel_name, un_confirmed_pay
     </sql>
     <resultMap type="com.microdev.param.TaskViewDTO" id="dotMap">
         <id column="id" jdbcType="VARCHAR" property="pid"/>
@@ -142,8 +142,8 @@
     </select>
     <select id="findTaskAndHrInfoById" parameterType="java.lang.String"
             resultMap="dotMap">
-        SELECT t.id AS pid, t.task_type_text AS taskTypeText,t.`task_content` AS
-        taskContent,t.day_start_time as dayStartTime,day_end_time as dayEndTime,t.`from_date` AS fromDate, t.`to_date` AS toDate,t.status,
+        SELECT t.id AS pid, t.task_type_text AS taskTypeText,t.`task_content` AS taskContent,t.un_confirmed_pay as unConfirmedPay,
+        t.day_start_time as dayStartTime,day_end_time as dayEndTime,t.`from_date` AS fromDate, t.`to_date` AS toDate,t.status,
         t.`hourly_pay` AS hourlyPay,t.`need_workers` AS
         needWorkers,t.`hotel_name` AS HotelName,t.`confirmed_workers` AS
         confirmedWorkers,

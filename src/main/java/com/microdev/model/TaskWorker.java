@@ -100,7 +100,6 @@ public class TaskWorker extends BaseEntity {
     @TableField(exist = false)
     private Double paidPayMoney=0.0;
 
-    @TableField(exist = false)
     private Double unConfirmedPay=0.0;
     /**
      *  每小时支付给小时工价钱

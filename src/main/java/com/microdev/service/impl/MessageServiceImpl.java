@@ -292,7 +292,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m.setIsTask(0);
             m.setHotelId(param.get("hotelId"));
             m.setHrTaskId(hrTaskId);
-            m.setStop (true);
+            m.setStop (isStop);
             m.setMessageContent(c);
             messageList.add(m);
         }
@@ -441,7 +441,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 message.setApplicantType(1);
                 message.setApplyType(2);
                 message.setMessageType(5);
-
             } else {
                 message.setApplyType(1);
                 message.setApplicantType(2);

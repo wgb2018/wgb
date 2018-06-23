@@ -4,7 +4,7 @@
     <sql id="Company_Column_List">
         id as pid, create_time, deleted, modify_time,address,
         business_license, company_type, confirmed_time, latitude, leader, leader_mobile, address_code ,area,
-        logo, longitude, name, status, labor_dispatch_card, qr_code
+        logo, longitude, name, status, labor_dispatch_card, qr_code,active_workers
     </sql>
     <sql id="Company_Query_Param">
         <if test="name != null and name != ''">

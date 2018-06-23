@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.microdev.mapper.VersionMapper">
+    <sql id="Version_Column_List">
+        id as pid, create_time, deleted, modify_time, version_code, content, address, type, is_update
+    </sql>
+    <select id="queryVersions" resultType="com.microdev.model.Version" parameterType="com.microdev.param.VersionRequest">
+        select <include refid="Version_Column_List" /> from version
+        <where>
+            <if test="id != null and id != ''">
+                id = #{id}
+            </if>
+            <if test="versionCode != null and versionCode != ''">
+                and version_code = #{versionCode}
+            </if>
+            <if test="content != null and content != ''">
+                and content = #{content}
+            </if>
+            <if test="isUpdate != null and isUpdate != ''">
+                and is_update = #{isUpdate}
+            </if>
+            <if test="type != null and type != ''">
+                and type = #{type}
+            </if>
+            <if test="address != null and address != ''">
+                and address like concat('%', #{address},'%')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+</mapper>

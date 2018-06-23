@@ -93,19 +93,21 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
          //设置数据集合rows：
         result.put("result",list);
         result.put("page",paginator.getPage());
-        if(queryDTO.getObservertype () == 0){
-            String total = dictMapper.findByNameAndCode ("WorkerBindHrMaxNum","1").getText ();
-            Map<String,Object> map = new HashMap <> ();
+        if(queryDTO.getObservertype () != null){
+            if(queryDTO.getObservertype () == 0){
+                String total = dictMapper.findByNameAndCode ("WorkerBindHrMaxNum","1").getText ();
+                Map<String,Object> map = new HashMap <> ();
             /*map.put("user_id",userMapper.queryByWorkerId (queryDTO.getObserverId ()).getPid ());
             System.out.println ("userId:"+userMapper.queryByWorkerId (queryDTO.getObserverId ()).getPid ());
             map.put("status","1 or status = 3");*/
-            Wrapper<UserCompany> et = new EntityWrapper<UserCompany> ().where("user_id={0}",userMapper.queryByWorkerId (queryDTO.getObserverId ()).getPid ()).in("status","1,3");
-            //userCompanyMapper.selectList (et);
-            Integer num = userCompanyMapper.selectList(et).size();
-            map.clear ();
-            map.put("bindTotalNum",Integer.parseInt (total));
-            map.put("bindNum",num);
-            return ResultDO.buildSuccess("您已经绑定"+num+"家人力公司，还可以绑定"+total+"家人力公司",result,map,null);
+                Wrapper<UserCompany> et = new EntityWrapper<UserCompany> ().where("user_id={0}",userMapper.queryByWorkerId (queryDTO.getObserverId ()).getPid ()).in("status","1,3");
+                //userCompanyMapper.selectList (et);
+                Integer num = userCompanyMapper.selectList(et).size();
+                map.clear ();
+                map.put("bindTotalNum",Integer.parseInt (total));
+                map.put("bindNum",num);
+                return ResultDO.buildSuccess("您已经绑定"+num+"家人力公司，还可以绑定"+total+"家人力公司",result,map,null);
+            }
         }
         return ResultDO.buildSuccess(result);
     }

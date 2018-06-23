@@ -80,7 +80,7 @@ public class HotelController {
     /**
      * 审核酒店
      */
-    @PutMapping("/hotels/{id}/status/{code}")
+    @GetMapping("/hotels/{id}/status/{code}")
     public ResultDO getById(@PathVariable String id,@PathVariable Integer code) {
         return companyService.confirmCompany(id,code);
     }

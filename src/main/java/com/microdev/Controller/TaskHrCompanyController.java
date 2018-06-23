@@ -30,15 +30,14 @@ public class TaskHrCompanyController {
      * 接受任务
      */
     @PostMapping("/hr-tasks/accept")
-    public ResultDO accept(@RequestBody  Map<String, String> map) {
-        taskHrCompanyService.TaskHraccept(map.get("messageId"));
-        return ResultDO.buildSuccess("接受任务成功");
+    public ResultDO accept(@RequestBody Map<String, String> map) {
+        return ResultDO.buildSuccess(taskHrCompanyService.TaskHraccept(map.get("messageId")));
     }
     /**
      * 拒绝任务
      */
     @PostMapping("/hr-tasks/refuse")
-    public ResultDO refuse(@RequestBody  Map<String, String> map) {
+    public ResultDO refuse(@RequestBody Map<String, String> map) {
         taskHrCompanyService.TaskHrrefuse(map.get("messageId"), map.get("reason"));
         return ResultDO.buildSuccess("拒绝任务成功");
     }
@@ -61,7 +60,7 @@ public class TaskHrCompanyController {
      * 人力公司结算小时工
      */
     @PostMapping("/hr/pay/worker")
-    public ResultDO hrPayWorker(@RequestBody PayParam PayHrParam) {
+    public ResultDO hrPayWorker(@RequestBody PayParam PayHrParam) throws Exception{
         return taskHrCompanyService.hrPayWorkers(PayHrParam);
     }
     /**

@@ -24,11 +24,11 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
     /**
      * 人力公司支付小时工
      */
-    ResultDO hrPayWorkers(PayParam PayHrParam);
+    ResultDO hrPayWorkers(PayParam PayHrParam) throws Exception;
     /**
      * 人力公司接受任务
      */
-    void TaskHraccept(String messageId);
+    String TaskHraccept(String messageId);
     /**
      * 人力公司拒绝任务
      */
