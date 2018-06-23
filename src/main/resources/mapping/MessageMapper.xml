@@ -684,7 +684,7 @@ ON u.`worker_id` = m2.worker_id
 
     <select id = "selectIsRepeat" resultType="java.lang.Integer">
         SELECT COUNT(1) FROM message WHERE STATUS = 0 AND applicant_type = 1 AND apply_type = 3 AND message_type = 1
-        and worker_id = #{workerId}
+        and worker_task_id = #{workerTaskId} and worker_id = #{workerId}
     </select>
     <select id="selectUnConfirmePay" resultType="java.lang.Double">
         select sum(minutes) from message

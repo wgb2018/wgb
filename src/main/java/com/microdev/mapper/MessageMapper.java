@@ -94,7 +94,7 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     List<ApplyBindResponse> selectPcHrBind(@Param("hrId") String hrId);
 
-    int selectIsRepeat(@Param("workerId") String workerId);
+    int selectIsRepeat(@Param("workerTaskId") String workerTaskId,@Param("workerId") String workerId);
 
     Double selectUnConfirmePay(@Param("payType") int payType,@Param("taskId1") String taskId,@Param("taskId2") String taskId2);
 

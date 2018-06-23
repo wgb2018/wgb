@@ -509,7 +509,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         Map<String, Object> result = new HashMap<>();
         result.put("page", paginator.getPage());
-        result.put("total", paginator.getPageSize());
+        result.put("total", info.getTotal());
         result.put("list", list);
         return result;
     }
@@ -533,7 +533,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
 
         WorkerCancelTask tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());
-        int repeat = messageMapper.selectIsRepeat(tp.getWorkerId());
+        int repeat = messageMapper.selectIsRepeat(info.getTaskWorkerId(), tp.getWorkerId());
         if (repeat > 0) {
             return "你已经提交过补签申请";
         }
