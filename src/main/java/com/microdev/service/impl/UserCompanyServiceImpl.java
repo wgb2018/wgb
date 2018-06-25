@@ -321,7 +321,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         OffsetDateTime applyTime = null;
         for (WorkerBindCompany work : list) {
             if (work.getStatus() == 3) {
-                applyTime = work.getConfirmedDate ();
+                applyTime = work.getModifyTime();
                 long leaveMinute = (nowTime.toEpochSecond() - applyTime.toEpochSecond()) / 60;
                 int hour = (int)(leaveMinute % 60 == 0 ? leaveMinute / 60 : (leaveMinute / 60) + 1);
                 hour = maxNum * 24 - hour <= 0 ? 0 : maxNum * 24 - hour;

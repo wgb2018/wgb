@@ -9,6 +9,7 @@ public class WorkerBindCompany {
 
     private OffsetDateTime createTime;
     private OffsetDateTime confirmedDate;
+    private OffsetDateTime modifyTime;
     //绑定状态
     private Integer status;
     private String name;
