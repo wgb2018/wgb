@@ -143,6 +143,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
             fileURI = objectStoreService.uploadFile(filePath, file);
             worker.setQrCode (fileURI);
+            worker.setBindCompanys (true);
+            worker.setActiveCompanys (0);
             workerMapper.updateById (worker);
             System.out.println ("workerID:"+worker.getPid());
             newUser.setWorkerId(worker.getPid());
@@ -153,6 +155,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             company.setLeaderMobile(register.getMobile());
             company.setName ("wgb"+UUID.randomUUID ().toString ().toLowerCase ().substring (1,7));
             company.setCompanyType(1);
+            company.setBindWorkers (true);
+            company.setBindCompanys (true);
+            company.setActiveWorkers (0);
+            company.setActiveCompanys (0);
             companyMapper.insert(company);
             file = QRCodeUtil.createQRCode (company.getPid ()+"WGB"+register.getUserType());
             filePath = "QRCode".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
@@ -167,6 +173,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             company.setLeader (newUser.getNickname ());
             company.setCompanyType(2);
             company.setName ("wgb"+UUID.randomUUID ().toString ().toLowerCase ().substring (1,7));
+            company.setBindWorkers (true);
+            company.setBindCompanys (true);
+            company.setActiveWorkers (0);
+            company.setActiveCompanys (0);
             companyMapper.insert(company);
             file = QRCodeUtil.createQRCode (company.getPid ()+"WGB"+register.getUserType());
             filePath = "QRCode".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);

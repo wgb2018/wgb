@@ -20,7 +20,7 @@
     </update>
     <select id="findByNameAndCode" resultType="com.microdev.param.DictDTO">
         SELECT id as pid,name,code,text,ordinal,remark,extend
-        FROM dict WHERE name = #{name} and code = #{code}
+        FROM dict WHERE name = #{name}
     </select>
     <select id="findOne" resultType="com.microdev.model.Dict" parameterType="java.lang.String">
         select

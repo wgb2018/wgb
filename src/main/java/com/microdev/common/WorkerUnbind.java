@@ -29,7 +29,7 @@ public class WorkerUnbind {
 
     @Scheduled(cron = "0 0 * * * ?")
     public void scanUnbindMessage() {
-        DictDTO dict = dictMapper.findByNameAndCode("MaxUnbindDay","22");
+        DictDTO dict = dictMapper.findByNameAndCode("MaxUnbindDay","9");
         if (dict != null) {
             Integer maxNum = Integer.parseInt(dict.getText());
             int num = messageMapper.selectWorkerUnbindCount();

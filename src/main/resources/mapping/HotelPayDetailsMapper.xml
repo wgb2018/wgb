@@ -8,5 +8,4 @@
         insert into hotel_pay_hr_details values(#{pid},#{createTime},#{deleted},#{modifyTime},
         #{taskHrId},#{thisPayMoney})
     </insert>
-
 </mapper>

@@ -54,6 +54,8 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
     TaskHrCompanyMapper taskHrCompanyMapper;
     @Autowired
     TaskMapper taskMapper;
+    @Autowired
+    WorkerMapper workerMapper;
     /**
      * 小时工绑定人力公司
      */
@@ -82,7 +84,6 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         if ("0".equals(status)) {
             inform.setTitle("绑定被拒绝");
             inform.setContent("小时工" + user.getNickname() + "拒绝了你的绑定申请。");
-
             if(userCompany==null){
                 userCompany=new UserCompany();
 
@@ -114,11 +115,44 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                 userCompany.setUserId(user.getPid());
                 userCompany.setUserType(user.getUserType());
                 flag = false;
+                Worker worker = workerMapper.queryById (user.getWorkerId ());
+                if(worker.getActiveCompanys () == null){
+                    worker.setActiveCompanys (0);
+                }
+                if(worker.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("WorkerBindHrMaxNum","7").getText ())){
+                    userCompany.setStatus(2);
+                    userCompanyMapper.updateAllColumnById(userCompany);
+                    inform.setTitle("绑定被拒绝");
+                    inform.setContent(user.getNickname ()+"已达到可绑定人力公司的个数上限");
+                    informMapper.insertInform(inform);
+                    ResultDO.buildSuccess ("超出小时工绑定人力公司数目上限");
+                }
+                worker.setActiveCompanys (worker.getActiveCompanys ()+1);
+                if(worker.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("WorkerBindHrMaxNum","7").getText ())){
+                    worker.setBindCompanys (false);
+                }
+                workerMapper.updateById (worker);
+                if(company.getActiveWorkers () == null){
+                    company.setActiveWorkers (0);
+                }
+                if(company.getActiveWorkers () == Integer.parseInt (dictMapper.findByNameAndCode ("HrBindWorkerMaxNum","10").getText ())){
+                    userCompany.setStatus(2);
+                    userCompanyMapper.updateAllColumnById(userCompany);
+                    inform.setTitle("绑定被拒绝");
+                    inform.setContent("已达到可绑定小时工的个数上限");
+                    informMapper.insertInform(inform);
+                    ResultDO.buildSuccess ("超出人力公司绑定小时工数目上限");
+                }
+                company.setActiveWorkers (company.getActiveWorkers ()+1);
+                if(company.getActiveWorkers () == Integer.parseInt (dictMapper.findByNameAndCode ("HrBindWorkerMaxNum","10").getText ())){
+                    company.setBindWorkers (false);
+                }
+                companyMapper.updateById (company);
             }
-            company.setActiveWorkers (company.getActiveWorkers ()+1);
+            /*company.setActiveWorkers (company.getActiveWorkers ()+1);
             companyMapper.updateById (company);
             //TODO 绑定上限设置
-            DictDTO dict = dictMapper.findByNameAndCode("WorkerBindHrMaxNum","1");
+            DictDTO dict = dictMapper.findByNameAndCode("WorkerBindHrMaxNum","7");
             Integer maxNum = Integer.parseInt(dict.getText());
             Wrapper<UserCompany>  wrapper = new EntityWrapper<>();
             wrapper.and("user_id", userCompany.getUserId());
@@ -126,8 +160,9 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             wrapper.in("status", new Integer[]{0, 1, 3});
             Integer hasBindNum = userCompanyMapper.selectCount(wrapper);
             if (hasBindNum >= maxNum) {
+
                 throw new BusinessException("已达到可绑定人力公司的个数上限");
-            }
+            }*/
             //TODO 已绑定是否返回重复绑定提示
             userCompany.setStatus(1);
             if (flag) {
@@ -162,7 +197,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             throw new ParamsException("未找到匹配的信息");
         }
         //TODO 已绑定是否返回重复绑定提示WorkerRelieveHrDays
-        DictDTO dict= dictMapper.findByNameAndCode("WorkerRelieveHrDays","1");
+        DictDTO dict= dictMapper.findByNameAndCode("WorkerRelieveHrDays","8");
         Integer days=Integer.parseInt(dict.getText());
         userCompany.setStatus(3);
         OffsetDateTime releaseTime=OffsetDateTime.now().plusDays(days);
@@ -183,10 +218,9 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
      */
     @Override
     public ResultDO getHrWorkers(Paginator paginator, HrQueryWorkerDTO queryDTO) {
-
-        PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         //查询数据集合
         Map<String,Object> map = new HashMap<>();
+        Map<String,Object> map1 = new HashMap <> ();
         Wrapper<UserCompany> et = null;
         if(queryDTO.getUserName ()!=null){
             et = new EntityWrapper<UserCompany> ().where("company_id={0}",queryDTO.getHrId()).in("status","1,3");
@@ -197,6 +231,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         User us = null;
         HashMap<String,Object> result = new HashMap<>();
         if(queryDTO.getTaskId()==null) {
+            PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
             List<UserCompany> list1 = userCompanyMapper.selectAllWorker(queryDTO);
             for (UserCompany u:list1) {
                 us = userMapper.selectById(u.getUserId());
@@ -210,12 +245,17 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             //设置数据集合rows：
             result.put("result",pageInfo.getList());
             result.put("page",paginator.getPage());
+
+            Company company = companyMapper.findCompanyById (queryDTO.getHrId ());
+            map1.put ("bindNum",company.getActiveWorkers ());
+            map1.put("bindTotalNum",Integer.parseInt (dictMapper.findByNameAndCode ("HrBindWorkerMaxNum","10").getText ()));
             //list = userMapper.selectBatchIds(ids);
         }else{
             boolean ifTimeConflict = false;
             list = userCompanyMapper.getSelectableWorker(queryDTO);
             Task task = taskMapper.getFirstById (taskHrCompanyMapper.queryByTaskId (queryDTO.getTaskId()).getTaskId ());
             Iterator<User> it = list.iterator ();
+            int num = 0;
             while(it.hasNext ()){
                 List<TaskWorker> li = taskWorkerMapper.findByUserId (it.next ().getPid ());
                 for (TaskWorker ts:li) {
@@ -224,22 +264,23 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                             ifTimeConflict = true;
                             break;
                         }
-                    };
+                    }
                 }
                 if(ifTimeConflict){
                     System.out.println ("去除时间冲突的小时工："+it);
                     it.remove ();
                     ifTimeConflict = false;
+                    num++;
                 }
             }
-            PageInfo<User> pageInfo = new PageInfo<User>(list);
+            list = list.subList (paginator.getPage ()*paginator.getPageSize () - 1,(paginator.getPage ()-1)*paginator.getPageSize ());
             //设置获取到的总记录数total：
-            result.put("total",pageInfo.getTotal());
+            result.put("total",list.size () - num);
             //设置数据集合rows：
-            result.put("result",pageInfo.getList());
+            result.put("result",list);
             result.put("page",paginator.getPage());
         }
-        return ResultDO.buildSuccess(result);
+        return ResultDO.buildSuccess(null,result,map1,null);
     }
 
     @Override
@@ -278,10 +319,10 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         OffsetDateTime applyTime = null;
         for (WorkerBindCompany work : list) {
             if (work.getStatus() == 3) {
-                applyTime = work.getCreateTime();
-                long leaveMinute = nowTime.getLong(ChronoField.MINUTE_OF_DAY) - applyTime.getLong(ChronoField.MINUTE_OF_DAY);
+                applyTime = work.getConfirmedDate ();
+                long leaveMinute = applyTime.getLong(ChronoField.MINUTE_OF_DAY) - nowTime.getLong(ChronoField.MINUTE_OF_DAY);
                 int hour = (int)(leaveMinute % 60 == 0 ? leaveMinute / 60 : (leaveMinute / 60) + 1);
-                DictDTO dict = dictMapper.findByNameAndCode("MaxUnbindDay","22");
+                DictDTO dict = dictMapper.findByNameAndCode("MaxUnbindDay","9");
                 Integer maxNum = Integer.parseInt(dict.getText());
                 hour = maxNum * 24 - hour <= 0 ? 0 : maxNum * 24 - hour;
                 work.setHour(hour/24 + "天" + hour%24 + "小时");
@@ -295,7 +336,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         result.put("result",list);
         result.put("page",paginator.getPage());
         Map<String, Object> extra = new HashMap<>();
-        String total = dictMapper.findByNameAndCode ("WorkerBindHrMaxNum","1").getText ();
+        String total = dictMapper.findByNameAndCode ("WorkerBindHrMaxNum","7").getText ();
         int num = userCompanyMapper.selectBindCountByWorkerId(queryDTO.getWorkerId());
         extra.put("bindTotalNum",Integer.parseInt (total));
         extra.put("bindNum",num);
@@ -425,12 +466,40 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         }
         Company company = companyMapper.selectById(userCompany.getCompanyId());
         if ("1".equals(status)) {
+            if(company.getActiveWorkers () == null){
+                company.setActiveWorkers (0);
+            }
+            if(company.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HrBindWorkerMaxNum","10").getText ())){
+                userCompany.setStatus(2);
+                userCompanyMapper.update(userCompany);
+                inform.setTitle("绑定被拒绝");
+                inform.setContent(company.getName() + "人力公司超出了绑定小时工数目上限");
+                return ResultDO.buildSuccess ("超过人力公司绑定小时工数目上限");
+            }
+            Worker worker = workerMapper.queryById (userMapper.queryByUserId (userCompany.getUserId ()).getWorkerId ());
+            if(worker.getActiveCompanys () == null){
+                worker.setActiveCompanys (0);
+            }
+            if(worker.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("WorkerBindHrMaxNum","7").getText ())){
+                userCompany.setStatus(2);
+                userCompanyMapper.update(userCompany);
+                inform.setTitle("绑定被拒绝");
+                inform.setContent("超过小时工绑定人力公司数目上限");
+                return ResultDO.buildSuccess ("超过小时工绑定人力公司数目上限");
+            }
+            worker.setActiveCompanys (worker.getActiveCompanys ()+1);
+            if(worker.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("WorkerBindHrMaxNum","7").getText ())){
+                worker.setBindCompanys (false);
+            }
+            company.setActiveWorkers (company.getActiveWorkers ()+1);
+            if(company.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HrBindWorkerMaxNum","10").getText ())){
+                company.setBindWorkers (false);
+            }
+            companyMapper.updateById (company);
             userCompany.setStatus(1);
             userCompanyMapper.update(userCompany);
             inform.setTitle("绑定成功");
             inform.setContent(company.getName() + "同意了你的绑定申请，成功添加为合作人力公司，添加人力公司代表同意劳务合作协议。合作的人力公司可以向你派发任务，认真完成能获得相应的报酬。");
-            company.setActiveWorkers (company.getActiveWorkers ()+1);
-            companyMapper.updateById (company);
         } else {
             userCompany.setStatus(2);
             userCompanyMapper.update(userCompany);

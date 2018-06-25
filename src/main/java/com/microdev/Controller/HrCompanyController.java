@@ -125,7 +125,6 @@ public class HrCompanyController {
      */
     @GetMapping("/hrcompanies/{messageId}/unbind/{status}")
     public ResultDO hrCompanyUnbindWorker(@PathVariable String messageId,@PathVariable String status) {
-
         return ResultDO.buildSuccess(companyService.hrUnbindWorker(messageId, status));
     }
 

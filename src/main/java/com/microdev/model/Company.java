@@ -68,6 +68,14 @@ public class Company extends BaseEntity {
      *  活跃人数
      */
     private Integer activeWorkers;
+    /**
+     *  活跃人数
+     */
+    private Integer activeCompanys;
+
+    private boolean bindCompanys = true;
+
+    private boolean bindWorkers = true;
 
 	@TableField(exist = false)
     private List <UserArea> areaCode;

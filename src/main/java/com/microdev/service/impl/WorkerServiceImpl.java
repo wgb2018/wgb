@@ -179,9 +179,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         Company hotel = companyMapper.findCompanyById (taskHrCompanyMapper.queryByTaskId (taskWorkerMapper.findFirstById (taskWorkerId).getTaskHrId ()).getHotelId ());
         Double m = LocationUtils.getDistance (hotel.getLatitude (),hotel.getLongitude (),measure.getLatitude (),measure.getLongitude ());
-        /*if(m>500){
+        if(m>500){
             return "打卡地点距离工作地超过500米";
-        }*/
+        }
         WorkLog log = null;
         Task task = null;
         TaskHrCompany taskHrCompany = null;
@@ -718,17 +718,28 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         List<Map<String,Object>> list = null;
         if(workerQueryDTO.getHrId () == null){
             list = workerMapper.queryAllWorker ();
+            PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(list);
+            HashMap<String,Object> result = new HashMap<>();
+            //设置获取到的总记录数total：
+            result.put("total",pageInfo.getTotal());
+            //设置数据集合rows：
+            result.put("result",pageInfo.getList());
+            result.put("page",paginator.getPage());
+            return ResultDO.buildSuccess(result);
         }else{
             list = workerMapper.queryWorkers(workerQueryDTO);
+            PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(list);
+            HashMap<String,Object> result = new HashMap<>();
+            result.put("total",pageInfo.getTotal());
+            //设置数据集合rows：
+            result.put("result",pageInfo.getList());
+            result.put("page",paginator.getPage());
+            Map<String,Object> map = new HashMap <> ();
+            Company company = companyMapper.findCompanyById (workerQueryDTO.getHrId ());
+            map.put ("bindNum",company.getActiveWorkers ());
+            map.put("bindTotalNum",Integer.parseInt (dictMapper.findByNameAndCode ("HrBindWorkerMaxNum","10").getText ()));
+            return ResultDO.buildSuccess(null,result,map,null);
         }
-        PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(list);
-        HashMap<String,Object> result = new HashMap<>();
-        //设置获取到的总记录数total：
-        result.put("total",pageInfo.getTotal());
-        //设置数据集合rows：
-        result.put("result",pageInfo.getList());
-        result.put("page",paginator.getPage());
-        return ResultDO.buildSuccess(result);
     }
 
     /**
@@ -744,7 +755,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         User user = userMapper.selectByWorkerId(workerId);
         if (user == null) throw new ParamsException("查询不到用户");
-        DictDTO dict = dictMapper.findByNameAndCode("WorkerBindHrMaxNum","1");
+        DictDTO dict = dictMapper.findByNameAndCode("WorkerBindHrMaxNum","7");
         Integer maxNum = Integer.parseInt(dict.getText());
         int nowNum = userCompanyMapper.selectWorkerBindCount(user.getPid());
         if (nowNum >= maxNum || (nowNum + set.size()) >= maxNum) {
