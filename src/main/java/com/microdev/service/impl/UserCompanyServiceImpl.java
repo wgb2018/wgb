@@ -273,7 +273,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                     num++;
                 }
             }
-            list = list.subList (paginator.getPage ()*paginator.getPageSize () - 1,(paginator.getPage ()-1)*paginator.getPageSize ());
+            list = list.subList ((paginator.getPage ()-1)*paginator.getPageSize (),paginator.getPage ()*paginator.getPageSize ());
             //设置获取到的总记录数total：
             result.put("total",list.size () - num);
             //设置数据集合rows：

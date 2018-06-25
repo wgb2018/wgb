@@ -23,7 +23,7 @@ public class DictDTO {
     /**
      * 顺序      0
      */
-    private int ordinal;
+    private int ordinal = 0;
     /**
      * 备注
      */

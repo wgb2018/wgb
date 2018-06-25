@@ -250,7 +250,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             task.setHotel(companyMapper.findCompanyById(task.getHotelId()));
             List<Map<String, Object>> lis = taskWorkerMapper.selectTaskWorkCById(task.getPid());
             task.setListWorkerTask(lis);
-            if(task.getStatus () == 5){
+            if(task.getStatus () >= 4 ){
                 if(task.getToDate ().isAfter (OffsetDateTime.now()) && task.getFromDate ().isBefore (OffsetDateTime.now())){
                     task.setStatus (6);
                 }else if(task.getToDate ().isBefore (OffsetDateTime.now())){

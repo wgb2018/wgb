@@ -23,7 +23,7 @@ public class DictAdminController {
      * 创建字典
      */
     @ResponseStatus(HttpStatus.CREATED)
-    @PutMapping
+    @PostMapping("/create")
     public ResultDO create(@RequestBody DictDTO dictDTO) {
         return ResultDO.buildSuccess(dictService.create(dictDTO));
     }
@@ -31,7 +31,7 @@ public class DictAdminController {
     /**
      * 修改字典
      */
-    @PatchMapping
+    @PostMapping("/update")
     public ResultDO update(@RequestBody DictDTO dictDTO) {
         dictService.update(dictDTO);
         return ResultDO.buildSuccess("修改成功");
@@ -40,7 +40,7 @@ public class DictAdminController {
     /**
      * 删除字典
      */
-    @DeleteMapping("/{id}")
+    @GetMapping("/delete/{id}")
     public ResultDO delete(@PathVariable String id) {
         dictService.delete(id);
         return ResultDO.buildSuccess("删除成功");

@@ -104,10 +104,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             map.put("status","1 or status = 3");*/
                 Wrapper<UserCompany> et = new EntityWrapper<UserCompany> ().where("user_id={0}",userMapper.queryByWorkerId (queryDTO.getObserverId ()).getPid ()).in("status","1,3");
                 //userCompanyMapper.selectList (et);
+                Worker worker = workerMapper.queryById (queryDTO.getObserverId ());
                 Integer num = userCompanyMapper.selectList(et).size();
                 map.clear ();
                 map.put("bindTotalNum",Integer.parseInt (total));
-                map.put("bindNum",num);
+                map.put("bindNum",worker.getActiveCompanys ());
                 return ResultDO.buildSuccess("您已经绑定"+num+"家人力公司，还可以绑定"+(Integer.parseInt (total)-num)+"家人力公司",result,map,null);
             }else if(queryDTO.getObservertype () == 1){
                 String total = dictMapper.findByNameAndCode ("HotelBindHrMaxNum","4").getText ();
