@@ -316,14 +316,14 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
 
         List<WorkerBindCompany> list = userCompanyMapper.selectHrCompanyByUserId(queryDTO.getWorkerId());
         OffsetDateTime nowTime = OffsetDateTime.now();
+        DictDTO dict = dictMapper.findByNameAndCode("MaxUnbindDay","9");
+        Integer maxNum = Integer.parseInt(dict.getText());
         OffsetDateTime applyTime = null;
         for (WorkerBindCompany work : list) {
             if (work.getStatus() == 3) {
                 applyTime = work.getConfirmedDate ();
-                long leaveMinute = applyTime.getLong(ChronoField.MINUTE_OF_DAY) - nowTime.getLong(ChronoField.MINUTE_OF_DAY);
+                long leaveMinute = (nowTime.toEpochSecond() - applyTime.toEpochSecond()) / 60;
                 int hour = (int)(leaveMinute % 60 == 0 ? leaveMinute / 60 : (leaveMinute / 60) + 1);
-                DictDTO dict = dictMapper.findByNameAndCode("MaxUnbindDay","9");
-                Integer maxNum = Integer.parseInt(dict.getText());
                 hour = maxNum * 24 - hour <= 0 ? 0 : maxNum * 24 - hour;
                 work.setHour(hour/24 + "天" + hour%24 + "小时");
             }
