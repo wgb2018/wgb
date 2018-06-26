@@ -164,7 +164,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         notice.setAcceptType(2);
         notice.setSendType(1);
         notice.setTitle("任务已接受");
-        notice.setContent("小时工" + user.getNickname () + "接受了你派发的任务");
+        notice.setContent("小时工" + user.getNickname() + "接受了你派发的任务");
         informMapper.insertInform(notice);
         return ResultDO.buildSuccess("任务领取成功");
     }

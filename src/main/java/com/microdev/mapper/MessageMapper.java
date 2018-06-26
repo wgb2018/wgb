@@ -113,8 +113,4 @@ public interface MessageMapper extends BaseMapper<Message> {
     List<MessageResponse> selectPcHotelApplyInfo(@Param("hotelId") String hotelId);
 
     int selectReplaceCount(@Param("taskWorkerId") String taskWorkerId);
-
-    int selectPcHrApplyInfoCount(@Param("hrId") String hrId);
-
-    int selectPcHotelApplyInfoCount(@Param("hotelId") String hotelId);
 }

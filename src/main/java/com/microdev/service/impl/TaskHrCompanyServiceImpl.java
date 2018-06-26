@@ -30,6 +30,8 @@ import org.springframework.util.StringUtils;
 
 import javax.xml.transform.dom.DOMSource;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.ParameterMetaData;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
@@ -151,14 +153,15 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             hrTask = taskHrCompanyMapper.queryByTaskId (message.getHrTaskId ( ));
             hrTask.setHourlyPay (hrTaskDis.getHourlyPay ( ));
         } else {
-            hrTask = taskHrCompanyMapper.queryByTaskId (hrTaskDis.getHrTaskId ( ));
+            hrTask = taskHrCompanyMapper.queryByTaskId(hrTaskDis.getHrTaskId());
         }
-        /* if (message == null) {
+       /* if (message == null) {
             throw new ParamsException("查询不到消息");
         }*/
+
         // 获取人力公司任务和酒店任务信息
         if (hrTask == null) {
-            throw new ParamsException ("人力公司参数有误");
+            throw new ParamsException("人力公司参数有误");
         }
         if(hrTask.getFromDate ().isBefore (OffsetDateTime.now ())){
             hrTask.setStatus (3);
@@ -229,11 +232,11 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
      */
     @Override
     public ResultDO getPageTasks(Paginator paginator, TaskHrQueryDTO taskHrQueryDTO) {
-        PageHelper.startPage (paginator.getPage ( ), paginator.getPageSize ( ));
-        String date = taskHrQueryDTO.getOfDate ( );
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize());
+        String date = taskHrQueryDTO.getOfDate();
         if (date != null) {
-            Integer year = Integer.parseInt (date.split ("-")[0]);
-            Integer month = Integer.parseInt (date.split ("-")[1]);
+            Integer year = Integer.parseInt(date.split("-")[0]);
+            Integer month = Integer.parseInt(date.split("-")[1]);
             if (month == 12) {
                 taskHrQueryDTO.setFromDate (OffsetDateTime.of
                         (year, 12, 1, 0, 0, 0, 0,
@@ -985,7 +988,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
          * @return
          */
         @Override
-        public ResultDO hrRefuseHotelSwapWorker (String messageId){
+        public ResultDO hrRefuseHotelSwapWorker (String messageId) {
             if (StringUtils.isEmpty (messageId)) {
                 throw new ParamsException ("参数错误");
             }
@@ -995,45 +998,62 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             }
             message.setStatus (1);
             messageMapper.updateById (message);
+            /**
+             * 人力拒绝酒店调换小时工的申请
+             *
+             * @param messageId
+             * @return
+             */
+            @Override
+            public ResultDO hrRefuseHotelSwapWorker (String messageId){
+                if (StringUtils.isEmpty (messageId)) {
+                    throw new ParamsException ("参数错误");
+                }
+                Message message = messageMapper.selectById (messageId);
+                if (message == null || message.getStatus ( ) == 1) {
+                    throw new ParamsException ("已处理");
+                }
+                message.setStatus (1);
+                messageMapper.updateById (message);
 
-            //给酒店发送一条通知
-            Company company = companyMapper.findCompanyById (message.getHrCompanyId ( ));
-            if (company == null) {
-                throw new BusinessException ("人力公司查询不到");
-            }
-            String content = company.getName ( ) + "拒绝了你的换人申请。";
-            informService.sendInformInfo (2, 3, content, message.getHotelId ( ), "换人被拒绝");
-            try {
-                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (message.getHotelId ( )).getLeaderMobile ( ), content));
-            } catch (APIConnectionException e) {
-                e.printStackTrace ( );
-            } catch (APIRequestException e) {
+                //给酒店发送一条通知
+                Company company = companyMapper.findCompanyById (message.getHrCompanyId ( ));
+                if (company == null) {
+                    throw new BusinessException ("人力公司查询不到");
+                }
+                String content = company.getName ( ) + "拒绝了你的换人申请。";
+                informService.sendInformInfo (2, 3, content, message.getHotelId ( ), "换人被拒绝");
+                try {
+                    jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (message.getHotelId ( )).getLeaderMobile ( ), content));
+                } catch (APIConnectionException e) {
+                    e.printStackTrace ( );
+                } catch (APIRequestException e) {
 
+                }
+                return ResultDO.buildSuccess ("操作成功");
             }
-            return ResultDO.buildSuccess ("操作成功");
         }
-
-        /**
-         * 人力拒绝小时工取消任务
-         *
-         * @param messageId
-         * @return
-         */
-        @Override
-        public ResultDO hrHandleWorkerTaskCancel (String messageId){
-            if (StringUtils.isEmpty (messageId)) {
-                throw new ParamsException ("参数错误");
-            }
-            Message message = messageMapper.selectById (messageId);
-            if (message == null) {
-                throw new ParamsException ("参数错误");
-            }
-            message.setStatus (1);
-            messageMapper.updateById (message);
-            TaskWorker taskWorker = taskWorkerMapper.selectById (message.getWorkerTaskId ( ));
-            if (taskWorker == null) {
-                throw new ParamsException ("参数错误");
-            }
+    /**
+     * 人力拒绝小时工取消任务
+     *
+     * @param messageId
+     * @return
+     */
+    @Override
+    public ResultDO hrHandleWorkerTaskCancel(String messageId) {
+        if (StringUtils.isEmpty(messageId)) {
+            throw new ParamsException("参数错误");
+        }
+        Message message = messageMapper.selectById(messageId);
+        if (message == null || message.getStatus() == 1) {
+            throw new ParamsException("已处理");
+        }
+        message.setStatus(1);
+        messageMapper.updateById(message);
+        TaskWorker taskWorker = taskWorkerMapper.selectById(message.getWorkerTaskId());
+        if (taskWorker == null) {
+            throw new ParamsException("参数错误");
+        }
 
             String content = taskWorker.getHrCompanyName ( ) + "拒绝了你的取消任务申请，希望你能完成该任务。";
             informService.sendInformInfo (2, 1, content, message.getWorkerId ( ), "申请取消被拒绝");
@@ -1047,24 +1067,24 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             return ResultDO.buildSuccess ("操作成功");
         }
 
-        /**
-         * 人力同意小时工取消任务并派发新任务
-         *
-         * @param messageId
-         * @param workerId
-         * @return
-         */
-        @Override
-        public ResultDO hrAgrreWorkerTaskCancel (String messageId, String workerId){
-            if (StringUtils.isEmpty (messageId) || StringUtils.isEmpty (workerId)) {
-                throw new ParamsException ("参数错误");
-            }
-            Message message = messageMapper.selectById (messageId);
-            if (message == null) {
-                throw new ParamsException ("参数错误");
-            }
-            message.setStatus (1);
-            messageMapper.updateById (message);
+    /**
+     * 人力同意小时工取消任务并派发新任务
+     *
+     * @param messageId
+     * @param workerId
+     * @return
+     */
+    @Override
+    public ResultDO hrAgrreWorkerTaskCancel(String messageId, String workerId) {
+        if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(workerId)) {
+            throw new ParamsException("参数错误");
+        }
+        Message message = messageMapper.selectById(messageId);
+        if (message == null || message.getStatus() == 1) {
+            throw new ParamsException("已处理");
+        }
+        message.setStatus(1);
+        messageMapper.updateById(message);
 
             TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById (message.getHrTaskId ( ));
             if (taskHrCompany == null) {
@@ -1156,24 +1176,24 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             return ResultDO.buildSuccess ("操作成功");
         }
 
-        /**
-         * 人力公司处理酒店支付
-         *
-         * @param messageId
-         * @param status    0拒绝1同意
-         * @return
-         */
-        @Override
-        public ResultDO hrHandleIncome (String messageId, String status){
-            if (StringUtils.isEmpty (messageId) || StringUtils.isEmpty (status)) {
-                throw new ParamsException ("参数不能为空");
-            }
-            Message message = messageMapper.selectById (messageId);
-            if (message == null) {
-                throw new ParamsException ("查询不到消息");
-            }
-            message.setStatus (1);
-            messageMapper.updateAllColumnById (message);
+    /**
+     * 人力公司处理酒店支付
+     *
+     * @param messageId
+     * @param status    0拒绝1同意
+     * @return
+     */
+    @Override
+    public ResultDO hrHandleIncome(String messageId, String status) {
+        if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(status)) {
+            throw new ParamsException("参数不能为空");
+        }
+        Message message = messageMapper.selectById(messageId);
+        if (message == null || message.getStatus() == 1) {
+            throw new ParamsException("已处理");
+        }
+        message.setStatus(1);
+        messageMapper.updateAllColumnById(message);
 
             TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById (message.getHrTaskId ( ));
             if (taskHrCompany == null) {
@@ -1251,12 +1271,12 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
                 throw new ParamsException ("参数不能为空");
             }
 
-            Message message = messageMapper.selectById (messageId);
-            if (message == null) {
-                throw new ParamsException ("查询不到消息");
-            }
-            message.setStatus (1);
-            messageMapper.updateAllColumnById (message);
+        Message message = messageMapper.selectById(messageId);
+        if (message == null || message.getStatus() == 1) {
+            throw new ParamsException("已处理");
+        }
+        message.setStatus(1);
+        messageMapper.updateAllColumnById(message);
 
             TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById (message.getHrTaskId ( ));
             if (taskHrCompany == null) {
@@ -1382,15 +1402,15 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         @Override
         public ResultDO hrHandleWorkerCancel (String messageId, String status, String workerId){
 
-            if (StringUtils.isEmpty (messageId) || StringUtils.isEmpty (status)) {
-                throw new ParamsException ("参数不能为空");
-            }
-            Message message = messageMapper.selectById (messageId);
-            if (message == null) {
-                throw new ParamsException ("参数错误");
-            }
-            message.setStatus (1);
-            messageMapper.updateById (message);
+        if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(status)) {
+            throw new ParamsException("参数不能为空");
+        }
+        Message message = messageMapper.selectById(messageId);
+        if (message == null || message.getStatus() == 1) {
+            throw new ParamsException("已处理");
+        }
+        message.setStatus(1);
+        messageMapper.updateById(message);
 
             TaskWorker taskWorker = taskWorkerMapper.selectById (message.getWorkerTaskId ( ));
             if (taskWorker == null) {
@@ -1517,7 +1537,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
                 throw new ParamsException ("参数错误");
             }
             Message message = messageMapper.selectById (messageId);
-            if (message == null) {
+            if (message == null || message.getStatus() == 1) {
                 throw new ParamsException ("查找不到消息");
             }
             message.setStatus (1);
