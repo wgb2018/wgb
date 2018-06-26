@@ -450,7 +450,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             return ResultDO.buildError("参数错误");
         }
         Message message = messageMapper.selectById(messageId);
-        if (message == null) {
+        if (message == null || message.getStatus() == 1) {
             return ResultDO.buildError("消息id错误");
         }
         message.setStatus(1);

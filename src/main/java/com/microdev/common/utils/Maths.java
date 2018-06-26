@@ -25,7 +25,7 @@ public class Maths {
         BigDecimal b1 = new BigDecimal(Double.toString(v1));
         BigDecimal b2 = new BigDecimal(Double.toString(v2));
         new BigDecimal (v1);
-        return round(b1.subtract(b2).doubleValue(),1);
+        return round(b1.subtract(b2).doubleValue(),2);
     }
     /**
      * 提供精确的乘法运算。

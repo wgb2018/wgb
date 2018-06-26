@@ -26,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.ParameterMetaData;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
@@ -136,6 +138,9 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         TaskHrCompany hrTask = null;
         if (StringUtils.hasLength(hrTaskDis.getMessageId())) {
             message = messageMapper.selectById(hrTaskDis.getMessageId());
+            if (message == null || message.getStatus() == 1) {
+                throw new ParamsException("已处理");
+            }
             message.setStatus(1);
             messageMapper.updateAllColumnById(message);
             hrTask = taskHrCompanyMapper.queryByTaskId(message.getHrTaskId());
@@ -243,6 +248,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         Double workersHavePay = 0.0;
         for (TaskHrCompany task : list) {
             task.setHrCompany(companyMapper.findCompanyById(task.getHrCompanyId()));
+            task.setPaidPayMoney(Maths.sub(task.getShouldPayMoney(), task.getHavePayMoney()));
+            task.setHavePayMoney(Maths.sub(task.getHavePayMoney(), task.getUnConfirmedPay()));
             shouldPayMoney += task.getShouldPayMoney();
             havePayMoney += task.getHavePayMoney();
             workersShouldPay += task.getWorkersShouldPay();
@@ -438,6 +445,9 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         PageHelper.startPage(paginator.getPage(), paginator.getPageSize());
         //查询数据集合
         List<TaskHrCompany> list = taskHrCompanyMapper.queryHotelBill(request);
+        for (TaskHrCompany taskHr : list) {
+            taskHr.setPaidPayMoney(Maths.sub(taskHr.getShouldPayMoney(), taskHr.getHavePayMoney()));
+        }
         PageInfo<TaskHrCompany> pageInfo = new PageInfo<>(list);
         HashMap<String, Object> result = new HashMap<>();
         //设置获取到的总记录数total：
@@ -455,6 +465,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         }
         map.put("shouldPayMoney", should_pay_money);
         map.put("havePayMoney", have_pay_money);
+
         map.put("paidPayMoney", Maths.sub(should_pay_money, have_pay_money));
         return ResultDO.buildSuccess(null, result, map, null);
     }
@@ -612,6 +623,9 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             throw new ParamsException("参数不能为空");
         }
         Message message = messageMapper.selectByHrId(id);
+        if (message == null || message.getStatus() == 1) {
+            return "已处理";
+        }
         messageMapper.updateStatus(message.getPid());
         TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId(id);
         taskMapper.updateStatus(taskHrCompany.getTaskId(), 2);
@@ -699,8 +713,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         }
 
         Message message = messageMapper.selectById(request.getMessageId());
-        if (message == null) {
-            throw new BusinessException("查询不到消息");
+        if (message == null || message.getStatus() == 1) {
+            throw new BusinessException("已处理");
         }
         message.setStatus(1);
         messageMapper.updateById (message);
@@ -886,8 +900,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             throw new ParamsException("参数错误");
         }
         Message message = messageMapper.selectById(messageId);
-        if (message == null) {
-            throw new ParamsException("查找不到消息");
+        if (message == null || message.getStatus() == 1) {
+            throw new ParamsException("已处理");
         }
         message.setStatus(1);
         messageMapper.updateById(message);
@@ -914,8 +928,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             throw new ParamsException("参数错误");
         }
         Message message = messageMapper.selectById(messageId);
-        if (message == null) {
-            throw new ParamsException("参数错误");
+        if (message == null || message.getStatus() == 1) {
+            throw new ParamsException("已处理");
         }
         message.setStatus(1);
         messageMapper.updateById(message);
@@ -942,8 +956,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             throw new ParamsException("参数错误");
         }
         Message message = messageMapper.selectById(messageId);
-        if (message == null) {
-            throw new ParamsException("参数错误");
+        if (message == null || message.getStatus() == 1) {
+            throw new ParamsException("已处理");
         }
         message.setStatus(1);
         messageMapper.updateById(message);
@@ -1044,8 +1058,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             throw new ParamsException("参数不能为空");
         }
         Message message = messageMapper.selectById(messageId);
-        if (message == null) {
-            throw new ParamsException("查询不到消息");
+        if (message == null || message.getStatus() == 1) {
+            throw new ParamsException("已处理");
         }
         message.setStatus(1);
         messageMapper.updateAllColumnById(message);
@@ -1105,8 +1119,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         }
 
         Message message = messageMapper.selectById(messageId);
-        if (message == null) {
-            throw new ParamsException("查询不到消息");
+        if (message == null || message.getStatus() == 1) {
+            throw new ParamsException("已处理");
         }
         message.setStatus(1);
         messageMapper.updateAllColumnById(message);
@@ -1232,8 +1246,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             throw new ParamsException("参数不能为空");
         }
         Message message = messageMapper.selectById(messageId);
-        if (message == null) {
-            throw new ParamsException("参数错误");
+        if (message == null || message.getStatus() == 1) {
+            throw new ParamsException("已处理");
         }
         message.setStatus(1);
         messageMapper.updateById(message);
@@ -1349,8 +1363,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             throw new ParamsException("参数错误");
         }
         Message message = messageMapper.selectById(messageId);
-        if (message == null) {
-            throw new ParamsException("查找不到消息");
+        if (message == null || message.getStatus() == 1) {
+            throw new ParamsException("已处理");
         }
         message.setStatus(1);
         messageMapper.updateById(message);

@@ -343,6 +343,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }
         Inform inform = new Inform();
         Message oldMsg = messageMapper.selectById(id);
+        if (oldMsg == null || oldMsg.getStatus() == 1) {
+            return "已处理";
+        }
         oldMsg.setStatus(1);
         messageMapper.updateById(oldMsg);
 
@@ -627,6 +630,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             throw new ParamsException("参数不能为空");
         }
         Message m = messageMapper.selectById(id);
+        if (m == null || m.getStatus() == 1) {
+            return "已处理";
+        }
         m.setStatus(1);
         messageMapper.updateById(m);
 
@@ -787,7 +793,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             throw new ParamsException("参数错误");
         }
         Message message = messageMapper.selectById(messageId);
-        if (message == null) {
+        if (message == null || message.getStatus() == 1) {
             throw new ParamsException("消息参数错误");
         }
         message.setStatus(1);
@@ -903,8 +909,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             throw new ParamsException("参数错误");
         }
         Message message = messageMapper.selectById(messageId);
-        if (message == null) {
-            throw new BusinessException("查询不到这个消息");
+        if (message == null || message.getStatus() == 1) {
+            throw new BusinessException("已处理");
         }
         message.setStatus(1);
         messageMapper.updateById(message);
@@ -1077,8 +1083,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             throw new ParamsException("参数错误");
         }
         Message message = messageMapper.selectById(messageId);
-        if (message == null) {
-            throw new BusinessException("查询不到消息记录");
+        if (message == null || message.getStatus() == 1) {
+            throw new BusinessException("已处理");
         }
         message.setStatus(1);
         messageMapper.updateById(message);
@@ -1129,8 +1135,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             throw new ParamsException("派发的人力公司不能为空");
         }
         Message message = messageMapper.selectById(request.getMessageId());
-        if (message == null) {
-            throw new ParamsException("查询不到消息");
+        if (message == null || message.getStatus() == 1) {
+            throw new ParamsException("已处理");
         }
         message.setStatus(1);
         messageMapper.updateById(message);
