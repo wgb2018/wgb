@@ -255,7 +255,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             list = userCompanyMapper.getSelectableWorker(queryDTO);
             Task task = taskMapper.getFirstById (taskHrCompanyMapper.queryByTaskId (queryDTO.getTaskId()).getTaskId ());
             Iterator<User> it = list.iterator ();
-            int num = 0;
+
             while(it.hasNext ()){
                 List<TaskWorker> li = taskWorkerMapper.findByUserId (it.next ().getPid ());
                 for (TaskWorker ts:li) {
@@ -270,12 +270,13 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                     System.out.println ("去除时间冲突的小时工："+it);
                     it.remove ();
                     ifTimeConflict = false;
-                    num++;
+
                 }
             }
-            list = list.subList ((paginator.getPage ()-1)*paginator.getPageSize (),paginator.getPage ()*paginator.getPageSize ());
             //设置获取到的总记录数total：
-            result.put("total",list.size () - num);
+            result.put("total",list.size ());
+            list = list.subList ((paginator.getPage ()-1)*paginator.getPageSize (),paginator.getPage ()*paginator.getPageSize ()<list.size ()?paginator.getPage ()*paginator.getPageSize ():list.size ());
+
             //设置数据集合rows：
             result.put("result",list);
             result.put("page",paginator.getPage());
