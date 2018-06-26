@@ -255,7 +255,6 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             list = userCompanyMapper.getSelectableWorker(queryDTO);
             Task task = taskMapper.getFirstById (taskHrCompanyMapper.queryByTaskId (queryDTO.getTaskId()).getTaskId ());
             Iterator<User> it = list.iterator ();
-            int num = 0;
             while(it.hasNext ()){
                 List<TaskWorker> li = taskWorkerMapper.findByUserId (it.next ().getPid ());
                 for (TaskWorker ts:li) {
@@ -270,12 +269,15 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                     System.out.println ("去除时间冲突的小时工："+it);
                     it.remove ();
                     ifTimeConflict = false;
-                    num++;
                 }
             }
-            list = list.subList ((paginator.getPage ()-1)*paginator.getPageSize (),paginator.getPage ()*paginator.getPageSize ());
+            result.put("total",list.size ());
+            int size = list.size();
+            int a = (paginator.getPage ()-1)*paginator.getPageSize ();
+            int b = paginator.getPage ()*paginator.getPageSize ()<size?paginator.getPage ()*paginator.getPageSize ():size;
+            list = list.subList (a,b);
+            //list = list.subList (0,2);
             //设置获取到的总记录数total：
-            result.put("total",list.size () - num);
             //设置数据集合rows：
             result.put("result",list);
             result.put("page",paginator.getPage());
@@ -385,6 +387,11 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             userCompany.setCompanyType(2);
             userCompany.setUserId(str);
             userCompany.setStatus(0);
+            if(userCompanyMapper.selectByWorkerIdHrId (hrId,str) == null){
+                userCompanyList.add(userCompany);
+            }else{
+                continue;
+            }
             userCompanyList.add(userCompany);
         }
         userCompanyMapper.saveBatch(userCompanyList);
@@ -487,7 +494,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                 inform.setContent("超过小时工绑定人力公司数目上限");
                 return ResultDO.buildSuccess ("超过小时工绑定人力公司数目上限");
             }
-            worker.setActiveCompanys (worker.getActiveCompanys ()+1);
+            worker.setActiveCompanys (worker.getActiveCompanys ()+ 1);
             if(worker.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("WorkerBindHrMaxNum","7").getText ())){
                 worker.setBindCompanys (false);
             }
@@ -495,6 +502,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             if(company.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HrBindWorkerMaxNum","10").getText ())){
                 company.setBindWorkers (false);
             }
+            workerMapper.updateById (worker);
             companyMapper.updateById (company);
             userCompany.setStatus(1);
             userCompanyMapper.update(userCompany);

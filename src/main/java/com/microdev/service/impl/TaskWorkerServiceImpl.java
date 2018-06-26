@@ -153,6 +153,10 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         taskHrCompanyMapper.updateById(taskHr);
 
         //添加一个通知消息
+        User user = userMapper.selectByWorkerId(taskWorker.getWorkerId());
+        if (user == null) {
+            return ResultDO.buildSuccess("查询不到小时工的信息");
+        }
         Inform notice = new Inform();
         notice.setCreateTime(OffsetDateTime.now());
         notice.setModifyTime(OffsetDateTime.now());
@@ -160,7 +164,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         notice.setAcceptType(2);
         notice.setSendType(1);
         notice.setTitle("任务已接受");
-        notice.setContent("小时工" + taskWorker.getUserName() + "接受了你派发的任务");
+        notice.setContent("小时工" + user.getNickname () + "接受了你派发的任务");
         informMapper.insertInform(notice);
         return ResultDO.buildSuccess("任务领取成功");
     }
@@ -269,6 +273,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         HashMap<String,Object> extra = new HashMap<>();
         Double shouldPayMoney = 0.0;
         Double havePayMoney=0.0;
+        Double UnConfirmedPay = 0.0;
         for (TaskWorker t:list) {
             if(t.getToDate ().isAfter (OffsetDateTime.now ()) && t.getFromDate ().isBefore (OffsetDateTime.now ()) && t.getStatus () == 1){
                 t.setStatus (4);
@@ -281,11 +286,12 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
             t.setHrCompany (companyMapper.selectById (t.getHrCompanyId ()));
             shouldPayMoney += t.getShouldPayMoney();
             havePayMoney += t.getHavePayMoney();
+            UnConfirmedPay += t.getUnConfirmedPay ();
             t.setUnConfirmedPay(messageMapper.selectUnConfirmePay (1,t.getTaskHrId (),t.getPid ()));
         }
         extra.put("shouldPayMoney",shouldPayMoney);
         extra.put("havePayMoney",havePayMoney);
-        extra.put("paidPayMoney", Maths.sub(shouldPayMoney, havePayMoney));
+        extra.put("paidPayMoney", Maths.getTwoDecimal (shouldPayMoney - havePayMoney - UnConfirmedPay,2));
         PageInfo<TaskWorker> pageInfo = new PageInfo<>(list);
         HashMap<String,Object> result = new HashMap<>();
         //设置获取到的总记录数total：

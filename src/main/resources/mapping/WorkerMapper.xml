@@ -37,10 +37,12 @@
         )b on a.id = b.id
         where a.id not IN
         (select worker_id from user where id in (select user_id from user_company where company_id = #{hrId} and status IN (0,1,3)))
-        ) order by u.create_time desc
+        )
         <if test="name != null and name !=''">
             and u.nickname like '%${name}%'
         </if>
+        order by u.create_time desc
+
     </select>
     <select id="queryAllWorker" resultType="java.util.Map">
         select u.id as pid,u.age as age,u.create_time as createTime,u.modify_time as modifyTime,u.activated as activated,u.avatar

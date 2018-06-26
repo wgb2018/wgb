@@ -1,6 +1,8 @@
 package com.microdev.service.impl;
 
 
+import cn.jiguang.common.resp.APIConnectionException;
+import cn.jiguang.common.resp.APIRequestException;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -11,6 +13,7 @@ import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.PagedList;
 import com.microdev.common.paging.Paginator;
+import com.microdev.common.utils.JPushManage;
 import com.microdev.common.utils.StringKit;
 import com.microdev.converter.TaskConverter;
 import com.microdev.mapper.*;
@@ -81,7 +84,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     private TaskService taskService;
     @Autowired
     private WorkerMapper workerMapper;
-
+    @Autowired
+    JpushClient jpushClient;
     @Override
     public ResultDO pagingCompanys(Paginator paginator, CompanyQueryDTO queryDTO) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
@@ -343,6 +347,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }
         Inform inform = new Inform();
         Message oldMsg = messageMapper.selectById(id);
+        if (oldMsg == null || oldMsg.getStatus() == 1) {
+            return "已处理";
+        }
         oldMsg.setStatus(1);
         messageMapper.updateById(oldMsg);
 
@@ -399,11 +406,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             }
 
             inform.setTitle("申请补签成功");
-            inform.setContent(c.getName() + "同意了你的补签申请。" + oldMsg.getMessageContent());
+            inform.setContent(c.getName() + "同意了你的补签申请。");
         } else if ("0".equals(status)) {
 
             inform.setTitle("申请补签被拒绝");
-            inform.setContent(c.getName() + "拒绝了你的补签申请。" + oldMsg.getMessageContent());
+            inform.setContent(c.getName() + "拒绝了你的补签申请。");
         } else {
             throw new ParamsException("参数错误");
         }
@@ -827,7 +834,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             if(worker.getActiveCompanys () == null){
                 worker.setActiveCompanys (0);
             }
-            if(worker.getActiveCompanys () > 1){
+            if(worker.getActiveCompanys () >= 1){
                 worker.setActiveCompanys (worker.getActiveCompanys () - 1);
             }else{
                 throw new ParamsException("数据异常");
@@ -1110,6 +1117,13 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }
         String content = StringKit.templateReplace(informTemplate.getContent(), map);
         informService.sendInformInfo (3,1,content,message.getWorkerId (), informTemplate.getTitle());
+        try {
+            jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (message.getWorkerId ( )).getMobile ( ), content));
+        } catch (APIConnectionException e) {
+            e.printStackTrace ( );
+        } catch (APIRequestException e) {
+
+        }
         return ResultDO.buildSuccess("处理成功");
     }
 
@@ -1136,6 +1150,13 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         messageMapper.updateById(message);
         if(taskMapper.getFirstById (message.getTaskId()).getFromDate ().isBefore (OffsetDateTime.now ())){
             informService.sendInformInfo (3,2,"由于酒店未及时处理您的调配申请，此申请默认拒绝",message.getHrCompanyId (),"申请调配处理超时");
+            try {
+                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (message.getHotelId ( )).getLeaderMobile ( ), "由于酒店未及时处理您的调配申请，此申请默认拒绝"));
+            } catch (APIConnectionException e) {
+                e.printStackTrace ( );
+            } catch (APIRequestException e) {
+
+            }
             return ResultDO.buildSuccess("任务已开始，处理超时");
         }
         request.setTaskId(message.getTaskId());
@@ -1150,6 +1171,13 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         map.put("hotel",companyMapper.findCompanyById (message.getHotelId ()).getName ());
         String content = StringKit.templateReplace(inf.getContent (), map);
         informService.sendInformInfo (inf.getSendType (),2,content,message.getHrCompanyId (),inf.getTitle ());
+        try {
+            jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (message.getHotelId ( )).getLeaderMobile ( ), content));
+        } catch (APIConnectionException e) {
+            e.printStackTrace ( );
+        } catch (APIRequestException e) {
+
+        }
         TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId (message.getHrTaskId ());
         //taskHrCompany.setNeedWorkers (taskHrCompany.getNeedWorkers()-Integer.parseInt (message.getMinutes ()));
         taskHrCompany.setStatus (5);

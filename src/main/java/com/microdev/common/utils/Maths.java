@@ -1,6 +1,7 @@
 package com.microdev.common.utils;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 public class Maths {
     private static final int DEF_DIV_SCALE = 10; //这个类不能实例化
@@ -13,7 +14,7 @@ public class Maths {
     public static double add(double v1,double v2){
         BigDecimal b1 = new BigDecimal (Double.toString(v1));
         BigDecimal b2 = new BigDecimal(Double.toString(v2));
-        return round (b1.add(b2).doubleValue(),1);
+        return getTwoDecimal(b1.add(b2).doubleValue(),2);
     }
     /**
      * 提供精确的减法运算。
@@ -24,8 +25,7 @@ public class Maths {
     public static double sub(double v1,double v2){
         BigDecimal b1 = new BigDecimal(Double.toString(v1));
         BigDecimal b2 = new BigDecimal(Double.toString(v2));
-        new BigDecimal (v1);
-        return round(b1.subtract(b2).doubleValue(),1);
+        return getTwoDecimal(b1.subtract(b2).doubleValue(),2);
     }
     /**
      * 提供精确的乘法运算。
@@ -78,5 +78,12 @@ public class Maths {
         BigDecimal b = new BigDecimal(Double.toString(v));
         BigDecimal one = new BigDecimal("1");
         return b.divide(one,scale,BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
+    /**
+     * 将数据保留两位小数
+     */
+    public static double getTwoDecimal(double num,int n) {
+        num = num * Math.pow(10, n);
+        return (Math.round(num)) / (Math.pow(10, n));
     }
 }

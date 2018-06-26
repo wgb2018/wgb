@@ -100,7 +100,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     public TokenDTO login(UserDTO login) throws Exception {
         User user = userMapper.findByMobile(login.getMobile());
         UserDTO userDTO = new UserDTO();
-        String userId = user.getPid();
+        if(user == null){
+            throw new ParamsException("用户不存在");
+        }
         userDTO.setId(user.getPid());
         userDTO.setNickname(user.getNickname());
         userDTO.setRoleList(new ArrayList<>(user.getRoles()));
@@ -116,7 +118,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         if (register.getUserType() == UserType.platform) {
             throw new AuthorizationException("无权限注册该用户");
         }
-        //smsService.checkSmsCode(register.getMobile(), SmsType.register.name(), register.getSmsCode());
+        smsFacade.checkSmsCode(register.getMobile(), SmsType.register.name(), register.getSmsCode());
         if (userMapper.findByMobile(register.getMobile()) != null) {
             throw new ParamsException("手机号码已经存在");
         }

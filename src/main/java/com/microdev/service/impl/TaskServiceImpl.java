@@ -1,5 +1,7 @@
 package com.microdev.service.impl;
 
+import cn.jiguang.common.resp.APIConnectionException;
+import cn.jiguang.common.resp.APIRequestException;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -8,6 +10,7 @@ import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.DateUtil;
+import com.microdev.common.utils.JPushManage;
 import com.microdev.common.utils.StringKit;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
@@ -53,6 +56,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
     private InformService informService;
     @Autowired
     private MessageTemplateMapper messageTemplateMapper;
+    @Autowired
+    JpushClient jpushClient;
     /**
      * 创建酒店任务
      */
@@ -248,12 +253,17 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         String c = StringKit.templateReplace(mess.getContent(), param);
         m.setMessageContent (c);
         messageService.insert (m);
+        try {
+            jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (taskHr.getHrCompanyId ()).getLeaderMobile ( ), m.getMessageContent ()));
+        } catch (APIConnectionException e) {
+            e.printStackTrace ( );
+        } catch (APIRequestException e) {
+            e.printStackTrace ( );
+        }
         taskHr.setUnConfirmedPay (taskHr.getUnConfirmedPay ()+PayHrParam.getPayMoney ());
-        taskHr.setHavePayMoney (taskHr.getHavePayMoney ()+PayHrParam.getPayMoney ());
         taskHrCompanyMapper.updateById (taskHr);
         Task task = taskMapper.selectById (taskHr.getTaskId ());
         task.setUnConfirmedPay (task.getUnConfirmedPay ()+PayHrParam.getPayMoney ());
-        task.setHavePayMoney (task.getHavePayMoney ()+PayHrParam.getPayMoney ());
         taskMapper.updateById (task);
         return ResultDO.buildSuccess("消息发送成功");
     }
@@ -365,6 +375,13 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
 
         String content = StringKit.templateReplace(inf.getContent (), map);
         informService.sendInformInfo (3,2,content,message.getHrCompanyId (),"拒绝任务成功");
+        try {
+            jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (message.getHotelId ( )).getLeaderMobile ( ), content));
+        } catch (APIConnectionException e) {
+            e.printStackTrace ( );
+        } catch (APIRequestException e) {
+
+        }
         return ResultDO.buildSuccess("任务发布成功");
     }
 

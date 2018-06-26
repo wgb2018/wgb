@@ -1,5 +1,7 @@
 package com.microdev.service.impl;
 
+import cn.jiguang.common.resp.APIConnectionException;
+import cn.jiguang.common.resp.APIRequestException;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -9,6 +11,7 @@ import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.DateUtil;
+import com.microdev.common.utils.JPushManage;
 import com.microdev.common.utils.LocationUtils;
 import com.microdev.common.utils.StringKit;
 import com.microdev.converter.WorkLogConverter;
@@ -84,7 +87,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     private InformService informService;
     @Autowired
     private BillMapper billMapper;
-
+    @Autowired
+    JpushClient jpushClient;
     @Override
     public GetCurrentTaskResponse getCurrentTask(String workerId) {
         User user = userMapper.queryByWorkerId(workerId);
@@ -180,7 +184,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         Company hotel = companyMapper.findCompanyById (taskHrCompanyMapper.queryByTaskId (taskWorkerMapper.findFirstById (taskWorkerId).getTaskHrId ()).getHotelId ());
         Double m = LocationUtils.getDistance (hotel.getLatitude (),hotel.getLongitude (),measure.getLatitude (),measure.getLongitude ());
         if(m>500){
-            return "打卡地点距离工作地超过500米";
+            return "打卡地点距离工作地"+m+"米,超过500米";
         }
         WorkLog log = null;
         Task task = null;
@@ -774,7 +778,12 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             userCompany.setUserId(user.getPid());
             userCompany.setCompanyId(str);
             userCompany.setStatus(0);
-            userCompanyList.add(userCompany);
+            if(userCompanyMapper.selectByWorkerIdHrId (str,user.getPid ()) == null){
+                userCompanyList.add(userCompany);
+            }else{
+                continue;
+            }
+
         }
         userCompanyMapper.saveBatch(userCompanyList);
         //发送消息
@@ -813,13 +822,19 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             //拒绝
             String content = "小时工" + user.getNickname() + "拒绝了你发起的一笔支付信息，金额为" + Double.valueOf(bill.getPayMoney ());
             informService.sendInformInfo(1, 2, content, message.getHrCompanyId(), "账目被拒绝");
+            try {
+                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (message.getHotelId ( )).getLeaderMobile ( ), content));
+            } catch (APIConnectionException e) {
+                e.printStackTrace ( );
+            } catch (APIRequestException e) {
+
+            }
             bill.setStatus (2);
             billMapper.updateById (bill);
             TaskWorker taskWorker = taskWorkerMapper.selectById(message.getWorkerTaskId());
             if (taskWorker == null) {
                 throw new ParamsException("查询不到小时工任务信息");
             }
-            taskWorker.setHavePayMoney(taskWorker.getHavePayMoney() - bill.getPayMoney ());
             taskWorker.setUnConfirmedPay (taskWorker.getUnConfirmedPay () - bill.getPayMoney ());
             taskWorkerMapper.updateAllColumnById(taskWorker);
             TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(message.getHrTaskId());
@@ -827,14 +842,33 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 throw new ParamsException("查询不到人力任务");
             }
             taskHrCompany.setWorkerUnConfirmed (taskHrCompany.getWorkerUnConfirmed () - bill.getPayMoney ());
-            taskHrCompany.setWorkersHavePay(taskHrCompany.getWorkersHavePay() - bill.getPayMoney ());
             taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
         } else if ("1".equals(status)) {
             //同意
             //发送通知
-  
+            TaskWorker taskWorker = taskWorkerMapper.selectById(message.getWorkerTaskId());
+            if (taskWorker == null) {
+                throw new ParamsException("查询不到小时工任务信息");
+            }
+            taskWorker.setHavePayMoney(taskWorker.getHavePayMoney() + bill.getPayMoney ());
+            taskWorker.setUnConfirmedPay (taskWorker.getUnConfirmedPay () - bill.getPayMoney ());
+            taskWorkerMapper.updateAllColumnById(taskWorker);
+            TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(message.getHrTaskId());
+            if (taskHrCompany == null) {
+                throw new ParamsException("查询不到人力任务");
+            }
+            taskHrCompany.setWorkerUnConfirmed (taskHrCompany.getWorkerUnConfirmed () - bill.getPayMoney ());
+            taskHrCompany.setWorkersHavePay(taskHrCompany.getWorkersHavePay() + bill.getPayMoney ());
+            taskHrCompanyMapper.updateAllColumnById(taskHrCompany);
             String content = "小时工" + user.getNickname() + "同意了你发起的一笔支付信息，金额为" + bill.getPayMoney ();
             informService.sendInformInfo(1, 2, content, message.getHrCompanyId(), "账目已同意");
+            try {
+                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (message.getHotelId ( )).getLeaderMobile ( ), content));
+            } catch (APIConnectionException e) {
+                e.printStackTrace ( );
+            } catch (APIRequestException e) {
+
+            }
             bill.setStatus (1);
             billMapper.updateById (bill);
         }

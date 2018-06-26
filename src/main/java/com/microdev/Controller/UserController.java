@@ -1,5 +1,14 @@
 package com.microdev.Controller;
 
+import cn.jiguang.common.ClientConfig;
+import cn.jiguang.common.resp.APIConnectionException;
+import cn.jiguang.common.resp.APIRequestException;
+import cn.jpush.api.JPushClient;
+import cn.jpush.api.push.PushResult;
+import cn.jpush.api.push.model.Platform;
+import cn.jpush.api.push.model.PushPayload;
+import cn.jpush.api.push.model.audience.Audience;
+import cn.jpush.api.push.model.notification.Notification;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.github.pagehelper.PageHelper;
@@ -12,6 +21,7 @@ import com.microdev.common.oss.ObjectStoreService;
 import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.FileUtil;
 import com.microdev.common.utils.HtmlUtil;
+import com.microdev.common.utils.Maths;
 import com.microdev.common.utils.QRCodeUtil;
 import com.microdev.mapper.*;
 import com.microdev.model.Bill;
@@ -40,6 +50,8 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoField;
 import java.util.*;
+
+import static cn.jpush.api.push.model.notification.PlatformNotification.ALERT;
 
 /**
  * 用户前台相关Api
@@ -194,22 +206,9 @@ public class UserController {
      */
     /*@GetMapping("/{fileType}/files/{fileAddress}")*/
     //@GetMapping("/files")
-    @RequestMapping(value = "/files", method = RequestMethod.POST, consumes = "multipart/form-data",name="fileRequest")
-    public ResultDO uploadFile1(MultipartFile file) throws Exception {
-        //File file = new File("C:\\D盘\\test.txt");
-       // System.out.println (file);
-        String filePath = "aaa".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
-
-        //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
-        String fileURI = objectStoreService.uploadObject (filePath, file.getBytes ());
-
-
-        //返回地址给前端
-        return ResultDO.buildSuccess("上传文件成功", fileURI);
-    }
-    @PostMapping("/files/{fileType}")
+    @PostMapping("/files")
     public ResultDO uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
-
+        System.out.println (file);
         String filePath = "avater".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
 
         //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
@@ -262,7 +261,31 @@ public class UserController {
        /* MyTimeTask my = new MyTimeTask (OffsetDateTime.now()+"","");
         java.util.Timer timer = new Timer(true);
         timer.schedule(my, OffsetDateTime.now ().getLong (ChronoField.SECOND_OF_DAY));*/
-        return ResultDO.buildSuccess("1");
+        /*JPushClient jpushClient = new JPushClient("8a5e85f2ec95f9bcf0ac980c", "6eb088f46e8e8bb874118f2d", null, ClientConfig.getInstance());
+
+        // For push, all you need do is to build PushPayload object.
+        PushPayload payload = PushPayload.newBuilder()
+                .setPlatform(Platform.all())
+                .setAudience(Audience.alias("13146540995"))
+                .setNotification(Notification.alert("你好"))
+                .build();
+
+        try {
+            PushResult result = jpushClient.sendPush(payload);
+            //LOG.info("Got result - " + result);
+
+        } catch (APIConnectionException e) {
+            // Connection error, should retry later
+            //LOG.error("Connection error, should retry later", e);
+
+        } catch (APIRequestException e) {
+            // Should review the error, and fix the request
+            *//*LOG.error("Should review the error, and fix the request", e);
+            LOG.info("HTTP Status: " + e.getStatus());
+            LOG.info("Error Code: " + e.getErrorCode());
+            LOG.info("Error Message: " + e.getErrorMessage());*//*
+        }*/
+        return ResultDO.buildSuccess(Maths.round (0.2355213,2 ));
     }
 	@GetMapping("/{mobile}/verifyMobile/{smsCode}")
     public ResultDO verifyMobile(@PathVariable String mobile, @PathVariable String smsCode) {

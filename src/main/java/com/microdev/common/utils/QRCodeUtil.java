@@ -31,10 +31,10 @@ public class QRCodeUtil {
         File file = null;
         try {
             BitMatrix bitMatrix = new MultiFormatWriter ( ).encode (text, BarcodeFormat.QR_CODE, width, height, hints);
-            /*String  path = text.getClass().getResource("/").getFile();
+            String  path = text.getClass().getResource("/").getFile();
             path = URLDecoder.decode(path,  "utf-8");
-            file = new File( path, File.separator + "static" + File.separator +  "QRCode."+format);*/
-            file = new File("/home/micro-worker/wgb/static/QRCode"+format);
+            file = new File( path, File.separator + "static" + File.separator +  "QRCode."+format);
+            //file = new File("/home/micro-worker/wgb/static/QRCode."+format);
             MatrixToImageWriter.writeToFile (bitMatrix, format, file);
 
         } catch (WriterException e) {

@@ -1,5 +1,7 @@
 package com.microdev.service.impl;
 
+import cn.jiguang.common.resp.APIConnectionException;
+import cn.jiguang.common.resp.APIRequestException;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -7,6 +9,7 @@ import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
+import com.microdev.common.utils.JPushManage;
 import com.microdev.common.utils.StringKit;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
@@ -39,6 +42,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     private WorkerLogMapper workerLogMapper;
     @Autowired
     private TaskWorkerService taskWorkerService;
+    @Autowired
+    JpushClient jpushClient;
+    @Autowired
+    CompanyMapper companyMapper;
+    @Autowired
+    UserMapper userMapper;
 
     /**
      * 创建消息模板
@@ -143,14 +152,29 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 m.setApplicantType(3);
                 m.setHotelId(applyCompany.getPid());
                 m.setHrCompanyId(id);
+                try {
+                    jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (id).getLeaderMobile ( ), m.getMessageContent ()));
+                } catch (APIConnectionException e) {
+                    e.printStackTrace ( );
+                } catch (APIRequestException e) {
+                    e.printStackTrace ( );
+                }
             } else {
                 m.setApplyType(3);
                 m.setApplicantType(2);
                 m.setHotelId(id);
                 m.setHrCompanyId(applyCompany.getPid());
+                try {
+                    jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (id).getLeaderMobile ( ), m.getMessageContent ()));
+                } catch (APIConnectionException e) {
+                    e.printStackTrace ( );
+                } catch (APIRequestException e) {
+                    e.printStackTrace ( );
+                }
             }
 
             m.setMessageContent(content);
+
             list.add(m);
         }
         messageMapper.saveBatch(list);
@@ -202,7 +226,25 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m.setHrCompanyId(it.next());
             m.setApplyType(2);
             m.setIsTask(1);
+            Map<String,Object> map = new HashMap <> ();
+            map.put ("message_code",mess.getCode());
+            map.put("status",0);
+            map.put ("applicant_type",1);
+            map.put ("worker_id",workerId);
+            map.put ("message_type",m.getMessageType ());
+            map.put("apply_type",2);
+            map.put("is_task",1);
+            if(messageMapper.selectByMap (map) != null){
+                throw new ParamsException("申请已提交，请勿重复提交");
+            }
             list.add(m);
+            try {
+                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (workerId).getMobile ( ), m.getMessageContent ()));
+            } catch (APIConnectionException e) {
+                e.printStackTrace ( );
+            } catch (APIRequestException e) {
+
+            }
         }
         messageMapper.saveBatch(list);
     }
@@ -246,6 +288,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m.setTaskId(dto.getTaskId());
             m.setMessageContent(c);
             m.setHrTaskId(dto.getPid());
+            try {
+                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (dto.getHrCompanyId()).getLeaderMobile ( ), m.getMessageContent ()));
+            } catch (APIConnectionException e) {
+                e.printStackTrace ( );
+            } catch (APIRequestException e) {
+                e.printStackTrace ( );
+            }
 
             list.add(m);
         }
@@ -294,6 +343,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m.setHrTaskId(hrTaskId);
             m.setStop (isStop);
             m.setMessageContent(c);
+            try {
+                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (m.getWorkerId ()).getMobile ( ), m.getMessageContent ()));
+            } catch (APIConnectionException e) {
+                e.printStackTrace ( );
+            } catch (APIRequestException e) {
+
+            }
             messageList.add(m);
         }
         messageMapper.saveBatch(messageList);
@@ -335,6 +391,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         map.put("number", number);
         String str = StringKit.templateReplace(mess.getContent(), map);
         m.setMessageContent(str);
+        try {
+            jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (c.getHotelId()).getLeaderMobile ( ), m.getMessageContent ()));
+        } catch (APIConnectionException e) {
+            e.printStackTrace ( );
+        } catch (APIRequestException e) {
+            e.printStackTrace ( );
+        }
         messageMapper.insert(m);
     }
 
@@ -441,12 +504,27 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 message.setApplicantType(1);
                 message.setApplyType(2);
                 message.setMessageType(5);
+
+                try {
+                    jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (s).getLeaderMobile ( ), name + "向您发出了申请绑定申请"));
+                } catch (APIConnectionException e) {
+                    e.printStackTrace ( );
+                } catch (APIRequestException e) {
+                    e.printStackTrace ( );
+                }
             } else {
                 message.setApplyType(1);
                 message.setApplicantType(2);
                 message.setWorkerId(s);
                 message.setHrCompanyId(id);
                 message.setMessageType(5);
+                try {
+                    jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (s).getMobile ( ), name + "向您发出了申请绑定申请"));
+                } catch (APIConnectionException e) {
+                    e.printStackTrace ( );
+                } catch (APIRequestException e) {
+
+                }
             }
             message.setContent(name + "向您发出了申请绑定申请");
             messageList.add(message);
@@ -511,35 +589,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             a.setTaskResponse(this.selectAwaitTaskDetails(a.getMessageId(),  request.getType(),request.getMessageCode ().toString ()));
             a.setDetailsResponse (this.selectMessageDetails (a.getMessageId(),  request.getType(),request.getMessageCode ().toString ()));
         }
-        //Map<String,Object> map = new HashMap<>();
-        /*for(AwaitHandleInfo a:list){
-            if(request.getMessageCode () == 7){//申请取消
-                map.put ("taskTypeText",a.getTaskTypeText ());
-                map.p
-            }else if(request.getMessageCode () == 4){//申请调配
-
-            }else if(request.getMessageCode () == 9){//申请换人
-
-            }else if(request.getMessageCode () == 8){//收入确认
-
-            }else if(){
-
-            }else if(){
-
-            }else if(){
-
-            }else if(){
-
-            }else if(){
-
-            }else if(){
-
-            }else if(){
-
-            }else if(){
-
-            }
-        }*/
         PageInfo<AwaitHandleInfo> pageInfo = new PageInfo<>(list);
         Map<String, Object> map = new HashMap<>();
         map.put("page", pageInfo.getPageNum());
@@ -579,11 +628,25 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             message.setHrCompanyId(param.get("endId"));
             message.setApplicantType(1);
             message.setApplyType(2);
+            try {
+                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (message.getHrCompanyId ()).getLeaderMobile ( ), message.getMessageContent ()));
+            } catch (APIConnectionException e) {
+                e.printStackTrace ( );
+            } catch (APIRequestException e) {
+                e.printStackTrace ( );
+            }
         } else {
             message.setHrCompanyId(param.get("startId"));
             message.setHotelId(param.get("endId"));
             message.setApplicantType(2);
             message.setApplyType(3);
+            try {
+                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (message.getHotelId ()).getLeaderMobile ( ), message.getMessageContent ()));
+            } catch (APIConnectionException e) {
+                e.printStackTrace ( );
+            } catch (APIRequestException e) {
+                e.printStackTrace ( );
+            }
         }
         messageMapper.insert(message);
     }
@@ -767,6 +830,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             message.setTaskId (taskHrCompany.getTaskId ());
             message.setStop (isStop);
             messageMapper.insert(message);
+            try {
+                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (message.getWorkerId ( )).getMobile ( ), message.getMessageContent ()));
+            } catch (APIConnectionException e) {
+                e.printStackTrace ( );
+            } catch (APIRequestException e) {
+
+            }
         }
         return message;
     }
@@ -812,6 +882,31 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         if (param.get("taskId") != null)
             message.setTaskId ((String)param.get("taskId"));
         messageMapper.insert(message);
+        if(message.getApplyType() == 0 && message.getApplyType() == 1){
+            try {
+                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (message.getWorkerId ( )).getMobile ( ), message.getMessageContent ()));
+            } catch (APIConnectionException e) {
+                e.printStackTrace ( );
+            } catch (APIRequestException e) {
+
+            }
+        }else if(message.getApplyType() == 2){
+            try {
+                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (message.getHrCompanyId ()).getLeaderMobile ( ), message.getMessageContent ()));
+            } catch (APIConnectionException e) {
+                e.printStackTrace ( );
+            } catch (APIRequestException e) {
+                e.printStackTrace ( );
+            }
+        }else if(message.getApplyType () == 3){
+            try {
+                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (message.getHotelId ()).getLeaderMobile ( ), message.getMessageContent ()));
+            } catch (APIConnectionException e) {
+                e.printStackTrace ( );
+            } catch (APIRequestException e) {
+                e.printStackTrace ( );
+            }
+        }
         return message;
     }
 
