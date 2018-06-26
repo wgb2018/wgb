@@ -153,6 +153,10 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         taskHrCompanyMapper.updateById(taskHr);
 
         //添加一个通知消息
+        User user = userMapper.selectByWorkerId(taskWorker.getWorkerId());
+        if (user == null) {
+            return ResultDO.buildSuccess("查询不到小时工的信息");
+        }
         Inform notice = new Inform();
         notice.setCreateTime(OffsetDateTime.now());
         notice.setModifyTime(OffsetDateTime.now());
@@ -160,7 +164,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         notice.setAcceptType(2);
         notice.setSendType(1);
         notice.setTitle("任务已接受");
-        notice.setContent("小时工" + taskWorker.getUserName() + "接受了你派发的任务");
+        notice.setContent("小时工" + user.getNickname() + "接受了你派发的任务");
         informMapper.insertInform(notice);
         return ResultDO.buildSuccess("任务领取成功");
     }

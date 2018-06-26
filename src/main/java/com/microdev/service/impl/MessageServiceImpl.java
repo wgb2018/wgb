@@ -606,24 +606,32 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         if ("12".equals(type)) {
 
             response = messageMapper.selectWorkerApply(messageId);
-            response.setOriginator(response.getName());
+            if (response != null) {
+                response.setOriginator(response.getName());
+            }
         } else if ("13".equals(type)) {
             if ("hr".equals(messagetype)) {
                 response = messageMapper.selectCompanyApply(messageId);
-                response.setOriginator(response.getCompanyName());
             } else if ("hotel".equals(messagetype)) {
                 response = messageMapper.hotelHrApplyCooperate(messageId);
-                response.setOriginator(response.getCompanyName());
+
             } else {
                 throw new ParamsException("用户类型错误");
+            }
+            if (response != null) {
+                response.setOriginator(response.getCompanyName());
             }
         } else if ("5".equals(type)) {
             if ("hr".equals(messagetype)) {
                 response = messageMapper.selectWorkerApply(messageId);
-                response.setOriginator(response.getName());
+                if (response != null) {
+                    response.setOriginator(response.getName());
+                }
             } else if ("worker".equals(messagetype)) {
                 response = messageMapper.hotelHrApplyCooperate(messageId);
-                response.setOriginator(response.getCompanyName());
+                if (response != null) {
+                    response.setOriginator(response.getCompanyName());
+                }
             } else {
                 throw new ParamsException("用户类型错误");
             }
@@ -634,39 +642,59 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             } else if ("hr".equals(messagetype)){
                 response = messageMapper.selectPayConfirm(messageId, "1");
             }
-            response.setOriginator(response.getCompanyName());
+            if (response != null) {
+                response.setOriginator(response.getCompanyName());
+            }
 
         } else if ("1".equals(type) ) {
 
             response = messageMapper.selectSupplementApply(messageId);
-            response.setOriginator(response.getName());
+            if (response != null) {
+                response.setOriginator(response.getName());
+            }
+
         } else if ("2".equals(type)){
 
             response = messageMapper.selectOvertimeApply(messageId);
-            response.setOriginator(response.getName());
+            if (response != null) {
+                response.setOriginator(response.getName());
+            }
         } else if ("3".equals(type)) {
 
             response = messageMapper.selectLeaveApply(messageId);
-            response.setOriginator(response.getName());
+            if (response != null) {
+                response.setOriginator(response.getName());
+            }
         } else if ("4".equals(type)) {
             response = messageMapper.selectApplyAllocate(messageId);
-            response.setOriginator(response.getCompanyName());
+            if (response != null) {
+                response.setOriginator(response.getCompanyName());
+            }
+
         } else if ("7".equals(type)) {
             response = messageMapper.selectWorkerApply(messageId);
-
-            response.setOriginator(response.getName());
+            if (response != null) {
+                response.setOriginator(response.getName());
+            }
         } else if ("9".equals(type)) {
             response = messageMapper.selectWorkerApply(messageId);
-
-            String companyName = messageMapper.selectCompanyNameByMessageId(messageId);
-            response.setOriginator(companyName);
+            if (response != null) {
+                String companyName = messageMapper.selectCompanyNameByMessageId(messageId);
+                response.setOriginator(companyName);
+            }
         } else if ("10".equals(type)) {
             if ("hr".equals(messagetype)) {
                 response = messageMapper.selectWorkerApply(messageId);
-                response.setOriginator(response.getName());
+                if (response != null) {
+                    response.setOriginator(response.getName());
+                }
+
             } else if ("hotel".equals(messagetype)) {
                 response = messageMapper.selectHotelApply(messageId);
-                response.setOriginator(response.getCompanyName());
+                if (response != null) {
+                    response.setOriginator(response.getCompanyName());
+                }
+
             } else {
                 throw new ParamsException("用户类型错误");
             }
