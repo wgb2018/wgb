@@ -40,7 +40,7 @@ public interface WorkerLogMapper extends BaseMapper<WorkLog> {
 
 	WorkLog selectUnreadInfoOne(@Param("taskWorkerId") String taskWorkerId,@Param("date") String date);
 
-	List<String> selectUnreadPunchCount(@Param ("workerId") String workerId);
+	int selectUnreadPunchCount(@Param ("workerId") String workerId);
 
 	List<WorkLog> selectByDate(HotelHandleWorkerRecord record);
 }
