@@ -118,7 +118,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         if (register.getUserType() == UserType.platform) {
             throw new AuthorizationException("无权限注册该用户");
         }
-        smsFacade.checkSmsCode(register.getMobile(), SmsType.register.name(), register.getSmsCode());
+        //smsFacade.checkSmsCode(register.getMobile(), SmsType.register.name(), register.getSmsCode());
         if (userMapper.findByMobile(register.getMobile()) != null) {
             throw new ParamsException("手机号码已经存在");
         }

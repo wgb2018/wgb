@@ -809,7 +809,7 @@ WHERE m.message_type = 6 AND m.`apply_type` = 2 AND m.`hr_company_id` = #{hrId}
     </select>
 
     <select id = "selectHrHandleInfoPc" resultType="com.microdev.param.AwaitHandleInfo">
-        SELECT m.is_task,m.content,m.id AS messageId,m.create_time AS createTime,IFNULL(c.address,'') AS address,c.logo,t.task_type_text,t.fromDate,t.toDate,t.dayStartTime,t.dayEndTime
+        SELECT m.is_task,m.content,m.minutes AS amount,m.id AS messageId,c.leader as hotelLeader,c.leader_mobile as hotelLeaderMobile,m.create_time AS createTime,IFNULL(c.address,'') AS address,c.logo,t.task_type_text,t.fromDate,t.toDate,t.dayStartTime,t.dayEndTime
         ,t.hotel_name,IFNULL(th.confirmed_workers,0) AS confirmedWorkers,IFNULL(th.need_workers,0) AS needWorkers,t.task_content AS taskContent,
         IFNULL(th.need_workers,0)-IFNULL(th.confirmed_workers,0) AS lackWorkers,m.`hotel_id` AS hotelId,t.id ,message_type AS type,t.hourlyPay,c.area
         FROM message m
@@ -827,7 +827,7 @@ WHERE m.message_type = 6 AND m.`apply_type` = 2 AND m.`hr_company_id` = #{hrId}
             AND m.message_type = #{type}
         </if>
         UNION
-        ( SELECT m2.is_task,m2.content,m2.id AS messageId,m2.`create_time` AS createTime,NULL AS address,u.avatar AS logo,NULL AS task_type_text,NULL AS fromDate,
+        ( SELECT m2.is_task,m2.content,m2.minutes AS amount,m2.id AS messageId,null as hotelLeader,null as hotelLeaderMobile,m2.`create_time` AS createTime,NULL AS address,u.avatar AS logo,NULL AS task_type_text,NULL AS fromDate,
         NULL AS toDate,NULL AS dayStartTime,NULL AS dayEndTime, NULL AS hotel_name, 0 AS confirmedWorkers,0 AS needWorkers,NULL AS taskContent, 0 AS lackWorkers,
         NULL AS hotelId, NULL AS id, message_type AS type,0 AS hourlyPay,
         NULL AS AREA FROM message m2 INNER JOIN USER u ON u.`worker_id` = m2.`worker_id` WHERE m2.apply_type=2 AND m2.is_task = 1 AND m2.status = 0 AND m2.hr_company_id= #{hrId}
@@ -836,7 +836,7 @@ WHERE m.message_type = 6 AND m.`apply_type` = 2 AND m.`hr_company_id` = #{hrId}
         </if>
         )
         UNION
-        ( SELECT m3.is_task,m3.content,m3.id AS messageId,m3.`create_time` AS createTime,NULL AS address,c3.`logo`,NULL AS task_type_text,NULL AS fromDate, NULL AS toDate,NULL AS dayStartTime,NULL AS dayEndTime,NULL AS hotel_name,
+        ( SELECT m3.is_task,m3.content,m3.minutes AS amount,m3.id AS messageId,null as hotelLeader,null as hotelLeaderMobile,m3.`create_time` AS createTime,NULL AS address,c3.`logo`,NULL AS task_type_text,NULL AS fromDate, NULL AS toDate,NULL AS dayStartTime,NULL AS dayEndTime,NULL AS hotel_name,
         0 AS confirmedWorkers,0 AS needWorkers,NULL AS taskContent, 0 AS lackWorkers,NULL AS hotelId, NULL AS id, message_type AS type,0 AS hourlyPay,c3.area FROM message m3
         INNER JOIN company c3 ON c3.id = m3.`hotel_id` WHERE m3.apply_type=2 AND m3.is_task = 1 AND m3.status = 0 AND m3.applicant_type = 3 AND m3.hr_company_id= #{hrId}
         <if test="type !=null">

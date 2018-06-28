@@ -99,7 +99,6 @@ public class ResultDO {
         if (extra == null) {
             extra = new HashMap<String, Object>();
         }
-
         extra.put(key, value);
         return this;
     }

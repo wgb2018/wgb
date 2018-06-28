@@ -244,6 +244,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
      */
     @Override
     public ResultDO pagesTaskWorkers(Paginator paginator, TaskWorkerQuery taskQueryDTO) {
+        System.out.println ("taskQueryDTO:"+taskQueryDTO);
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         String date = taskQueryDTO.getOfDate();
         if (date != null) {
@@ -284,10 +285,10 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
             t.setUser (userMapper.queryByUserId (t.getUserId ()));
             t.setHotel (companyMapper.selectById (t.getHotelId ()));
             t.setHrCompany (companyMapper.selectById (t.getHrCompanyId ()));
-            shouldPayMoney += t.getShouldPayMoney();
-            havePayMoney += t.getHavePayMoney();
-            UnConfirmedPay += t.getUnConfirmedPay ();
-            t.setUnConfirmedPay(messageMapper.selectUnConfirmePay (1,t.getTaskHrId (),t.getPid ()));
+            shouldPayMoney = Maths.getTwoDecimal (t.getShouldPayMoney() + shouldPayMoney,2);
+            havePayMoney = Maths.getTwoDecimal (t.getHavePayMoney() + havePayMoney,2);
+            UnConfirmedPay = Maths.getTwoDecimal (t.getUnConfirmedPay () + UnConfirmedPay,2);
+            //t.setUnConfirmedPay(messageMapper.selectUnConfirmePay (1,t.getTaskHrId (),t.getPid ()));
         }
         extra.put("shouldPayMoney",shouldPayMoney);
         extra.put("havePayMoney",havePayMoney);

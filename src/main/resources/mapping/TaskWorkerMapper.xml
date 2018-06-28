@@ -98,8 +98,8 @@
     </select>
     <select id="findAll" parameterType="com.microdev.param.TaskWorkerQuery" resultType="com.microdev.model.TaskWorker">
         select
-        t.id as pid, t.create_time, t.deleted, t.modify_time,t.un_confirmed_pay as unConfirmedPay,
-        t.confirmed_date, t.have_pay_money, t.minutes, t.no_promise, t.refused_reason, t.repast_times,t.should_pay_money - t.have_pay_money - t.un_confirmed_pay as  paidPayMoney,
+        t.id as pid, t.create_time, t.deleted, t.modify_time,CAST(t.un_confirmed_pay as DECIMAL(18,2)) as unConfirmedPay,
+        t.confirmed_date, CAST(t.have_pay_money as DECIMAL(18,2)) as havePayMoney, t.minutes, t.no_promise, t.refused_reason, t.repast_times,CAST(t.should_pay_money - t.have_pay_money - t.un_confirmed_pay as DECIMAL(18,2)) as  paidPayMoney,
         t.settled, t.settled_date, t.should_pay_money, t.status, t.worker_id, t.task_hr_id, t.user_id, t.user_name,t.hourly_pay,t.hr_company_name,t.hotel_name,
         t.hotel_id,t.from_date,t.to_date,t.day_start_time,t.day_end_time,t.task_type_code,t.task_type_text,t.task_content,t.hr_company_id,t.hotel_task_id
         from task_worker t left join company c on t.hr_company_id = c.id
@@ -121,6 +121,9 @@
             </if>
             <if test="taskTypeCode != null and taskTypeCode !=''">
                 and t.task_type_code = #{taskTypeCode}
+            </if>
+            <if test="hrTaskId !=null and hrTaskId !=''">
+                and t.task_hr_id = #{hrTaskId}
             </if>
             <if test="taskStatus !=null and taskStatus !=''">
                 <if test="taskStatus == 6">
@@ -159,7 +162,7 @@
         where task_hr_id =#{HrTaskId}
     </select>
     <select id="queryHrCompanyBill" resultType="com.microdev.model.TaskWorker" parameterType="com.microdev.param.BillRequest">
-        select  sum(w.should_pay_money) as should_pay_money,sum(w.have_pay_money) as have_pay_money,sum(w.minutes) as minutes,sum(w.should_pay_money) - sum(w.have_pay_money) -sum(w.un_confirmed_pay) as paidPayMoney,
+        select  sum(CAST(w.should_pay_money as DECIMAL(18,2))) as should_pay_money,sum(CAST(w.have_pay_money as DECIMAL(18,2))) as have_pay_money,sum(w.minutes) as minutes,CAST(sum(w.should_pay_money) - sum(w.have_pay_money) -sum(w.un_confirmed_pay) as DECIMAL(18,2)) as paidPayMoney,
         w.user_id,u.nickname as userName from task_worker w left join user u on w.user_id = u.id
         where w.hr_company_id = #{id}
         <if test = "name != null and name != ''">
@@ -224,8 +227,8 @@
     </select>
     <select id="findAllh" resultType="com.microdev.model.TaskWorker" parameterType="com.microdev.param.TaskWorkerQuery" >
         select
-        t.id as pid, t.create_time, t.deleted, t.modify_time,
-        t.confirmed_date, t.have_pay_money, t.minutes, t.no_promise, t.refused_reason, t.repast_times,
+        t.id as pid, t.create_time, t.deleted, t.modify_time,CAST(t.un_confirmed_pay as DECIMAL(18,2)) as unConfirmedPay,
+        t.confirmed_date, CAST(t.have_pay_money as DECIMAL(18,2)) as havePayMoney, t.minutes, t.no_promise, t.refused_reason, t.repast_times,CAST(t.should_pay_money - t.have_pay_money - t.un_confirmed_pay as DECIMAL(18,2)) as  paidPayMoney,
         t.settled, t.settled_date, t.should_pay_money, t.status, t.worker_id, t.task_hr_id, t.user_id, t.user_name,t.hourly_pay,t.hr_company_name,t.hotel_name,
         t.hotel_id,t.from_date,t.to_date,t.day_start_time,t.day_end_time,t.task_type_code,t.task_type_text,t.task_content,t.hr_company_id,t.hotel_task_id
         from task_worker t left join company c on t.hotel_id = c.id

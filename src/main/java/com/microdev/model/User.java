@@ -64,6 +64,8 @@ public class User extends BaseEntity{
 	private Integer age;
 
 	private String qrCode;
+
+	private int msNum;
     /**
      * 用户所属角色集合
      */

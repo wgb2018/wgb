@@ -108,8 +108,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         WorkLog log = null;
         TaskHrCompany taskHrCompany = null;
         OffsetTime time = OffsetDateTime.now ().toOffsetTime ();
-        OffsetTime timeA = time.minusMinutes (30);
-        OffsetDateTime ti = OffsetDateTime.now ().minusMinutes (30);
+        OffsetTime timeA = time.minusMinutes (43);
+        OffsetDateTime ti = OffsetDateTime.now ().minusMinutes (43);
                 //取进行中的任务
         TaskWorker taskWorker = taskWorkerMapper.findWorkerNowTask(
                 userId, TaskWorkerStatus.ACCEPTED.ordinal(),
@@ -183,8 +183,11 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         Company hotel = companyMapper.findCompanyById (taskHrCompanyMapper.queryByTaskId (taskWorkerMapper.findFirstById (taskWorkerId).getTaskHrId ()).getHotelId ());
         Double m = LocationUtils.getDistance (hotel.getLatitude (),hotel.getLongitude (),measure.getLatitude (),measure.getLongitude ());
-        if(m>500){
+        /*if(m>500){
             return "打卡地点距离工作地"+m+"米,超过500米";
+        }*/
+        if(!taskWorker.getToDate ().isAfter (OffsetDateTime.now ().minusMinutes (43))){
+            return "超过打卡正常时间,打卡失败";
         }
         WorkLog log = null;
         Task task = null;

@@ -312,6 +312,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         bill.setHotelId (taskWorker.getHotelId ( ));
         bill.setPayMoney (PayHrParam.getPayMoney ( ));
         bill.setHrCompanyId (taskWorker.getHrCompanyId ( ));
+        bill.setWorkerId (taskWorker.getWorkerId ());
         bill.setDeleted (false);
         bill.setPayType (2);
         bill.setStatus (0);

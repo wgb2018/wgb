@@ -19,7 +19,7 @@
         b.*,c.name as hrCompanyName,c.logo as hrCompanyLogo,u.nickname as workerName,u.avatar as workerAvatar
         FROM bill b inner join company c on b.hr_company_id = c.id left join user u on b.worker_id = u.worker_id
         WHERE
-        b.task_hr_id = #{hrCompanyTaskId} and b.hr_company_id = #{hrCompanyId} and b.worker_id = #{workerId}
+        b.task_hr_id = #{hrCompanyTaskId} and b.worker_id = #{workerId}
         order by create_time desc
     </select>
 
