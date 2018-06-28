@@ -113,4 +113,8 @@ public interface MessageMapper extends BaseMapper<Message> {
     List<MessageResponse> selectPcHotelApplyInfo(@Param("hotelId") String hotelId);
 
     int selectReplaceCount(@Param("taskWorkerId") String taskWorkerId);
+
+    List<AwaitHandleInfo> selectHotelHandleInfoPc(@Param("hotelId") String hotelId,@Param("type") Integer type);
+
+    List<AwaitHandleInfo> selectHrHandleInfoPc(@Param("hrId") String hrId,@Param("type") Integer type);
 }
