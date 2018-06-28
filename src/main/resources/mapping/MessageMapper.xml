@@ -743,7 +743,7 @@ AND worker_id = #{workerId})
         WHERE m3.apply_type=3 AND m3.is_task = 1 AND m3.status = 0 AND m3.`applicant_type` = 2  AND m3.hotel_id= #{hotelId}
 
         )
-        )
+        ) thotel
     </select>
 
     <select id="selectHotelDeploy" resultType="com.microdev.param.ApplyResponseDTO">
