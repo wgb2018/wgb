@@ -285,9 +285,8 @@ public class UserController {
             LOG.info("Error Code: " + e.getErrorCode());
             LOG.info("Error Message: " + e.getErrorMessage());*//*
         }*/
-        Test t = new Test ();
 
-        return ResultDO.buildSuccess(t.getA ());
+        return ResultDO.buildSuccess("");
     }
 	@GetMapping("/{mobile}/verifyMobile/{smsCode}")
     public ResultDO verifyMobile(@PathVariable String mobile, @PathVariable String smsCode) {

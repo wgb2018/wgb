@@ -30,8 +30,6 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     int updateByMapId(Message mess);
 
-    int selectUnReadMessage(Map<String, Object> param);
-
     int selectUnReadCount(Map<String, Object> param);
 
     List<Map<String, Object>> selectMessageDetails(String id);
@@ -117,4 +115,10 @@ public interface MessageMapper extends BaseMapper<Message> {
     List<AwaitHandleInfo> selectHotelHandleInfoPc(@Param("hotelId") String hotelId,@Param("type") Integer type);
 
     List<AwaitHandleInfo> selectHrHandleInfoPc(@Param("hrId") String hrId,@Param("type") Integer type);
+
+    int selectUnReadWorkerCount(@Param("workerId") String workerId);
+
+    int selectUnreadHrCount(@Param("hrId") String hrId);
+
+    int selectUnreadHotelCount(@Param("hotelId") String hotelId);
 }

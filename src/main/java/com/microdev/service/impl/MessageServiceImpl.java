@@ -420,10 +420,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         if ("worker".equals(applyType)) {
             //查询当前任务未读数量
             param.put("curTask", taskWorkerService.selectWorkerCurTaskCount(applyParamDTO));
-            map.put("workerId", id);
-            map.put("roleName", "worker");
+
             //查询未读待处理事物数量
-            param.put("pendingTask", messageMapper.selectUnReadMessage(map));
+            param.put("pendingTask", messageMapper.selectUnReadWorkerCount(id));
+
             //查询未读通知数量
             map = new HashMap<>();
             map.put("status", 0);
@@ -432,19 +432,14 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             param.put("notice", informService.selectCountByParam(map));
 
             //查询补签数量
-            List<String> list = workerLogMapper.selectUnreadPunchCount(applyParamDTO.getId ());
-            if (list == null) {
-                param.put("supplement", 0);
-            } else {
-                param.put("supplement", list.size());
-            }
+            param.put("supplement", workerLogMapper.selectUnreadPunchCount(applyParamDTO.getId ()));
 
         } else if ("hr".equals(applyType)) {
 
             param.put("curTask", taskHrCompanyService.selectHrCurTaskCount(applyParamDTO));
-            map.put("hrId", id);
-            map.put("roleName", "hr");
-            param.put("pendingTask", messageMapper.selectUnReadMessage(map));
+
+            param.put("pendingTask", messageMapper.selectUnreadHrCount(id));
+
             map = new HashMap<>();
             map.put("status", 0);
             map.put("acceptType", 2);
@@ -454,9 +449,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         } else if ("hotel".equals(applyType)) {
 
             param.put("curTask", taskService.selectCurHotelTaskCount(applyParamDTO));
-            map.put("hotelId", id);
-            map.put("roleName", "hotel");
-            param.put("pendingTask", messageMapper.selectUnReadMessage(map));
+
+            param.put("pendingTask", messageMapper.selectUnreadHotelCount(id));
+
             map = new HashMap<>();
             map.put("status", 0);
             map.put("acceptType", 3);
