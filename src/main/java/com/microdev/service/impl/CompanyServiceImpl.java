@@ -826,7 +826,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             if(company.getActiveWorkers () == null){
                 company.setActiveWorkers (0);
             }
-            if (company.getActiveWorkers () > 1) {
+            if (company.getActiveWorkers () >= 1) {
                 company.setActiveWorkers (company.getActiveWorkers () - 1);
             }else{
                 throw new ParamsException("数据异常");
@@ -925,7 +925,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         if (hotelHrCompany == null) {
             throw new BusinessException("查询不到人力酒店关系");
         }
-        Company company = null;
+        Company hotel = null;
+        Company hr = null;
         if ("1".equals(status)) {
 
             inform.setTitle("绑定成功");
@@ -933,75 +934,75 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 inform.setSendType(3);
                 inform.setAcceptType(2);
                 inform.setReceiveId(message.getHrCompanyId());
-                company = companyMapper.selectById(message.getHotelId());
-
-                if(company.getActiveCompanys () == null){
-                    company.setActiveCompanys (0);
+                hotel = companyMapper.selectById(message.getHotelId());
+                hr = companyMapper.selectById(message.getHrCompanyId());
+                if(hotel.getActiveCompanys () == null){
+                    hotel.setActiveCompanys (0);
                 }
-                if(company.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HotelBindHrMaxNum","4").getText ())){
-                    inform.setContent(company.getName() + "超出了绑定人力公司数目上限");
+                if(hotel.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HotelBindHrMaxNum","4").getText ())){
+                    inform.setContent(hotel.getName() + "超出了绑定人力公司数目上限");
                     hotelHrCompany.setStatus(4);
                     hotelHrCompanyMapper.update(hotelHrCompany);
                     return ResultDO.buildSuccess ("超过酒店绑定数目上限");
                 }
-                company.setActiveCompanys (company.getActiveCompanys ()+1);
-                if(company.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HotelBindHrMaxNum","4").getText ())){
-                    company.setBindCompanys (false);
+                if(hr.getActiveCompanys () == null){
+                    hr.setActiveCompanys (0);
                 }
-                companyMapper.updateById (company);
-                company = companyMapper.selectById(message.getHrCompanyId());
-                if(company.getActiveCompanys () == null){
-                    company.setActiveCompanys (0);
-                }
-                if(company.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HrBindHotelMaxNum","5").getText ())){
-                    inform.setContent(company.getName() + "超出了绑定酒店数目上限");
+                if(hr.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HrBindHotelMaxNum","5").getText ())){
+                    inform.setContent(hr.getName() + "超出了绑定酒店数目上限");
                     hotelHrCompany.setStatus(4);
                     hotelHrCompanyMapper.update(hotelHrCompany);
                     return ResultDO.buildSuccess ("超过人力公司绑定数目上限");
                 }
-                company.setActiveCompanys (company.getActiveCompanys ()+1);
-                if(company.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HrBindHotelMaxNum","5").getText ())){
-                    company.setBindCompanys (false);
+                hotel.setActiveCompanys (hotel.getActiveCompanys ()+1);
+                if(hotel.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HotelBindHrMaxNum","4").getText ())){
+                    hotel.setBindCompanys (false);
                 }
-                companyMapper.updateById (company);
-                inform.setContent(company.getName() + "同意了你的绑定申请，成功添加为合作酒店,添加合作酒店代表同意劳务合作协议。你可以接受合作酒店派发的任务，选择小时工，确保能够及时完美的完成任务，可以获得和支出相应的酬劳。");
+                companyMapper.updateById (hotel);
+
+                hr.setActiveCompanys (hr.getActiveCompanys ()+1);
+                if(hr.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HrBindHotelMaxNum","5").getText ())){
+                    hr.setBindCompanys (false);
+                }
+                companyMapper.updateById (hr);
+                inform.setContent(hotel.getName() + "同意了你的绑定申请，成功添加为合作酒店,添加合作酒店代表同意劳务合作协议。你可以接受合作酒店派发的任务，选择小时工，确保能够及时完美的完成任务，可以获得和支出相应的酬劳。");
                 hotelHrCompany.setStatus(0);
                 hotelHrCompanyMapper.update(hotelHrCompany);
             } else if (message.getApplicantType() == 3) {
                 inform.setSendType(2);
                 inform.setAcceptType(3);
                 inform.setReceiveId(message.getHotelId());
-                company = companyMapper.selectById(message.getHrCompanyId());
-                if(company.getActiveCompanys () == null){
-                    company.setActiveCompanys (0);
+                hr = companyMapper.selectById(message.getHrCompanyId());
+                if(hr.getActiveCompanys () == null){
+                    hr.setActiveCompanys (0);
                 }
-                if(company.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HrBindHotelMaxNum","5").getText ())){
-                    inform.setContent(company.getName() + "超出了绑定酒店数目上限");
+                if(hr.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HrBindHotelMaxNum","5").getText ())){
+                    inform.setContent(hr.getName() + "超出了绑定酒店数目上限");
                     hotelHrCompany.setStatus(4);
                     hotelHrCompanyMapper.update(hotelHrCompany);
                     return ResultDO.buildSuccess ("超过人力公司绑定数目上限");
                 }
-                company.setActiveCompanys (company.getActiveCompanys ()+1);
-                if(company.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HrBindHotelMaxNum","5").getText ())){
-                    company.setBindCompanys (false);
+                hotel = companyMapper.selectById(message.getHotelId());
+                if(hotel.getActiveCompanys () == null){
+                    hotel.setActiveCompanys (0);
                 }
-                companyMapper.updateById (company);
-                company = companyMapper.selectById(message.getHotelId());
-                if(company.getActiveCompanys () == null){
-                    company.setActiveCompanys (0);
-                }
-                if(company.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HotelBindHrMaxNum","4").getText ())){
-                    inform.setContent(company.getName() + "超出了绑定人力公司数目上限");
+                if(hotel.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HotelBindHrMaxNum","4").getText ())){
+                    inform.setContent(hotel.getName() + "超出了绑定人力公司数目上限");
                     hotelHrCompany.setStatus(4);
                     hotelHrCompanyMapper.update(hotelHrCompany);
                     return ResultDO.buildSuccess ("超过酒店绑定数目上限");
                 }
-                company.setActiveCompanys (company.getActiveCompanys ()+1);
-                if(company.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HotelBindHrMaxNum","4").getText ())){
-                    company.setBindCompanys (false);
+                hr.setActiveCompanys (hr.getActiveCompanys ()+1);
+                if(hr.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HrBindHotelMaxNum","5").getText ())){
+                    hr.setBindCompanys (false);
                 }
-                companyMapper.updateById (company);
-                inform.setContent(company.getName() + "接受了你的绑定申请，成功添加为合作人力公司。添加人力公司代表同意劳务合作协议，你可以向合作的人力公司派发任务，由合作的的人力公司选择小时工，并支出相应的酬劳，确保能及时完美的完成任务。");
+                companyMapper.updateById (hr);
+                hotel.setActiveCompanys (hotel.getActiveCompanys ()+1);
+                if(hotel.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HotelBindHrMaxNum","4").getText ())){
+                    hotel.setBindCompanys (false);
+                }
+                companyMapper.updateById (hotel);
+                inform.setContent(hr.getName() + "接受了你的绑定申请，成功添加为合作人力公司。添加人力公司代表同意劳务合作协议，你可以向合作的人力公司派发任务，由合作的的人力公司选择小时工，并支出相应的酬劳，确保能及时完美的完成任务。");
             } else {
                 throw new BusinessException("数据错误");
             }
@@ -1013,18 +1014,20 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 inform.setSendType(3);
                 inform.setAcceptType(2);
                 inform.setReceiveId(message.getHrCompanyId());
-                company = companyMapper.selectById(message.getHotelId());
+                hotel = companyMapper.selectById(message.getHotelId());
+                inform.setContent(hotel.getName() + "拒绝了你的绑定申请，等以后有机会希望可以再合作。");
             } else if (message.getApplicantType() == 3) {
                 inform.setSendType(2);
                 inform.setAcceptType(3);
                 inform.setReceiveId(message.getHotelId());
-                company = companyMapper.selectById(message.getHrCompanyId());
+                hr = companyMapper.selectById(message.getHrCompanyId());
+                inform.setContent(hotel.getName() + "拒绝了你的绑定申请，等以后有机会希望可以再合作。");
             } else {
                 throw new BusinessException("数据错误");
             }
             hotelHrCompany.setStatus(4);
             hotelHrCompanyMapper.update(hotelHrCompany);
-            inform.setContent(company.getName() + "拒绝了你的绑定申请，等以后有机会希望可以再合作。");
+
         } else {
             throw new ParamsException("参数错误");
         }

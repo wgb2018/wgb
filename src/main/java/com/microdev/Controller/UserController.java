@@ -24,10 +24,7 @@ import com.microdev.common.utils.HtmlUtil;
 import com.microdev.common.utils.Maths;
 import com.microdev.common.utils.QRCodeUtil;
 import com.microdev.mapper.*;
-import com.microdev.model.Bill;
-import com.microdev.model.MyTimeTask;
-import com.microdev.model.Task;
-import com.microdev.model.User;
+import com.microdev.model.*;
 import com.microdev.param.*;
 import com.microdev.service.SmsFacade;
 import com.microdev.service.TokenService;
@@ -50,6 +47,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoField;
 import java.util.*;
+import java.util.function.DoubleBinaryOperator;
 
 import static cn.jpush.api.push.model.notification.PlatformNotification.ALERT;
 
@@ -79,6 +77,8 @@ public class UserController {
     VersionMapper versionMapper;
 	@Autowired
     WorkerMapper workerMapper;
+	@Autowired
+    TaskHrCompanyMapper taskHrCompanyMapper;
 	/**
      * 创建用户
      */
@@ -285,7 +285,9 @@ public class UserController {
             LOG.info("Error Code: " + e.getErrorCode());
             LOG.info("Error Message: " + e.getErrorMessage());*//*
         }*/
-        return ResultDO.buildSuccess(Maths.round (0.2355213,2 ));
+        Test t = new Test ();
+
+        return ResultDO.buildSuccess(t.getA ());
     }
 	@GetMapping("/{mobile}/verifyMobile/{smsCode}")
     public ResultDO verifyMobile(@PathVariable String mobile, @PathVariable String smsCode) {

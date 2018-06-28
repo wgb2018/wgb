@@ -263,13 +263,13 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         for (TaskHrCompany task : list) {
             task.setHrCompany(companyMapper.findCompanyById(task.getHrCompanyId()));
             task.setPaidPayMoney(Maths.getTwoDecimal (task.getShouldPayMoney() - task.getHavePayMoney() - task.getUnConfirmedPay(),2));
-            task.setWorkerUnConfirmed (Maths.getTwoDecimal (task.getWorkersShouldPay () - task.getWorkersHavePay () - task.getWorkerUnConfirmed (),2));
-            shouldPayMoney += task.getShouldPayMoney();
-            havePayMoney += task.getHavePayMoney();
-            workersShouldPay += task.getWorkersShouldPay();
-            unConfirmedPay += task.getUnConfirmedPay ();
-            workersUnConfirmed += task.getWorkerUnConfirmed ();
-            workersHavePay += task.getWorkersHavePay();
+            task.setWorkersPaidPay (Maths.getTwoDecimal (task.getWorkersShouldPay () - task.getWorkersHavePay () - task.getWorkerUnConfirmed (),2));
+            shouldPayMoney = Maths.getTwoDecimal (task.getShouldPayMoney()+shouldPayMoney,2);
+            havePayMoney = Maths.getTwoDecimal (task.getHavePayMoney()+havePayMoney,2);
+            workersShouldPay = Maths.getTwoDecimal (task.getWorkersShouldPay()+workersShouldPay,2);
+            unConfirmedPay = Maths.getTwoDecimal (task.getUnConfirmedPay ()+unConfirmedPay,2);
+            workersUnConfirmed = Maths.getTwoDecimal (task.getWorkerUnConfirmed ()+workersUnConfirmed,2);
+            workersHavePay = Maths.getTwoDecimal (task.getWorkersHavePay()+workersHavePay,2);
             task.setHotel (companyMapper.findCompanyById (task.getHotelId ( )));
             List <Map <String, Object>> lis = taskWorkerMapper.selectTaskWorkCById (task.getPid ( ));
             task.setListWorkerTask (lis);
@@ -280,7 +280,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
                     task.setStatus (7);
                 }
             }
-            task.setUnConfirmedPay (messageMapper.selectUnConfirmePay (0, task.getTaskId ( ), task.getPid ( )));
         }
         PageInfo <TaskHrCompany> pageInfo = new PageInfo <> (list);
         HashMap <String, Object> result = new HashMap <> ( );
@@ -987,23 +986,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
          * @param messageId
          * @return
          */
-        @Override
-        public ResultDO hrRefuseHotelSwapWorker (String messageId) {
-            if (StringUtils.isEmpty (messageId)) {
-                throw new ParamsException ("参数错误");
-            }
-            Message message = messageMapper.selectById (messageId);
-            if (message == null) {
-                throw new ParamsException ("查找不到消息");
-            }
-            message.setStatus (1);
-            messageMapper.updateById (message);
-            /**
-             * 人力拒绝酒店调换小时工的申请
-             *
-             * @param messageId
-             * @return
-             */
             @Override
             public ResultDO hrRefuseHotelSwapWorker (String messageId){
                 if (StringUtils.isEmpty (messageId)) {
@@ -1032,7 +1014,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
                 }
                 return ResultDO.buildSuccess ("操作成功");
             }
-        }
+
     /**
      * 人力拒绝小时工取消任务
      *

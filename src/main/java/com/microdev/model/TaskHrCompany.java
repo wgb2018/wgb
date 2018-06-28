@@ -126,9 +126,9 @@ public class TaskHrCompany extends BaseEntity {
     @TableField(exist = false)
     private Double workersPaidPay=0.0;
 
-    private Double unConfirmedPay=0.0;
+    private Double unConfirmedPay;
 
-    private Double workerUnConfirmed=0.0;
+    private Double workerUnConfirmed;
     /**
      *  任务描述
      */

@@ -228,6 +228,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
                 bill.setHotelId(taskHr.getHotelId());
                 bill.setPayMoney(PayHrParam.getPayMoney ());
                 bill.setHrCompanyId(taskHr.getHrCompanyId());
+                bill.setTaskHrId (taskHr.getPid ());
                 bill.setDeleted(false);
                 bill.setPayType(1);
                 bill.setStatus (0);
@@ -253,18 +254,18 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         String c = StringKit.templateReplace(mess.getContent(), param);
         m.setMessageContent (c);
         messageService.insert (m);
-        try {
+        /*try {
             jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (taskHr.getHrCompanyId ()).getLeaderMobile ( ), m.getMessageContent ()));
         } catch (APIConnectionException e) {
             e.printStackTrace ( );
         } catch (APIRequestException e) {
             e.printStackTrace ( );
-        }
+        }*/
         taskHr.setUnConfirmedPay (taskHr.getUnConfirmedPay ()+PayHrParam.getPayMoney ());
-        taskHrCompanyMapper.updateById (taskHr);
+        taskHrCompanyMapper.updateAllColumnById (taskHr);
         Task task = taskMapper.selectById (taskHr.getTaskId ());
         task.setUnConfirmedPay (task.getUnConfirmedPay ()+PayHrParam.getPayMoney ());
-        taskMapper.updateById (task);
+        taskMapper.updateAllColumnById (task);
         return ResultDO.buildSuccess("消息发送成功");
     }
 

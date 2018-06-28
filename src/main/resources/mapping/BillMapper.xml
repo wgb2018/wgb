@@ -11,7 +11,7 @@
         b.*,c.name as hrCompanyName,c.logo as hrCompanyLogo,c2.name as hotelName,c2.logo as hotelLogo
         FROM bill b inner join company c on b.hr_company_id = c.id left join company c2 on b.hotel_id = c2.id
         WHERE
-        b.task_id = #{hotelTaskID} and b.hr_company_id = #{hrCompanyId} and b.hotel_id = #{hotelId}
+        b.task_id = #{hotelTaskID} and b.task_hr_id = #{hrTaskId}
         order by b.create_time desc
     </select>
     <select id="selectHrCompanyPayBill" resultType="com.microdev.model.Bill" parameterType="com.microdev.param.HrCompanyPayWorkerRequest">

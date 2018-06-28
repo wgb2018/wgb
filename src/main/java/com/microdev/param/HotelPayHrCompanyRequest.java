@@ -9,5 +9,5 @@ public class HotelPayHrCompanyRequest {
 
     private String hotelId;
 
-    private String hrCompanyId;
+    private String hrTaskId;
 }
