@@ -364,7 +364,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         }
         List<String> list = new ArrayList<>(set);
         List<String> userList = userMapper.selectIdByWorkerId(list);
-        logger.info("-----" + list.toString());
+
         if (set.size() != userList.size()) {
             throw new BusinessException("set包含无效数据");
         }
@@ -372,8 +372,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         if (c == null) {
             throw new ParamsException("人力公司查询不到");
         }
-        System.out.println ("hrId:"+hrId);
-        System.out.println ("userList:"+userList);
+
         int count = userCompanyMapper.selectIsbind(hrId, userList);
         if (count > 0) {
             throw new BusinessException("提交过申请");
@@ -387,12 +386,14 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             userCompany.setCompanyType(2);
             userCompany.setUserId(str);
             userCompany.setStatus(0);
-            if(userCompanyMapper.selectByWorkerIdHrId (hrId,str) == null){
+            UserCompany temp = userCompanyMapper.selectByWorkerIdHrId (hrId,str);
+            if(temp == null){
                 userCompanyList.add(userCompany);
             }else{
+                temp.setStatus(0);
+                userCompanyMapper.updateById(temp);
                 continue;
             }
-            userCompanyList.add(userCompany);
         }
         userCompanyMapper.saveBatch(userCompanyList);
         messageService.bindUserHrCompany(c.getName(), hrId, list, 2);
