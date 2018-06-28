@@ -127,9 +127,9 @@ public class TaskHrCompany extends BaseEntity {
     private Double workersPaidPay=0.0;
 
     private Double unConfirmedPay = 0.0;
+    private Double workerUnConfirmed = 0.0;   
 
-    private Double workerUnConfirmed = 0.0;
-    /**
+	 /**
      *  任务描述
      */
     private String taskContent;

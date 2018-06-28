@@ -23,7 +23,7 @@ public class AwaitHandleInfo {
     /**
      * 1正在做的任务2等待做的任务3派单中的任务4等待派单的任务5等待接单的任务6等待处理的任务7新任务   8申请调换的任务9申 请取消的任务10拒绝接单的任务11申请补签的任务12申请请假的任务13申请加时的任务14申请调配的任务
      */
-    private String type;
+    private Integer type;
     private String logo;
     private String content;
     private String messageId;
@@ -31,6 +31,9 @@ public class AwaitHandleInfo {
     private String area;
     private String hrConfirmedWorkers;
     private String taskContent;
+    private String hotelLeader;
+    private String amount;
+    private String hotelLeaderMobile;
     @JsonFormat(pattern="yyyy.MM.dd hh:mm:ss")
     private OffsetDateTime createTime;
     private AwaitTaskResponse taskResponse;

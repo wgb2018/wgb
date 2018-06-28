@@ -49,6 +49,8 @@ public class SecurityFilter implements Filter {
 
         //OPTIONS请求直接放行
         if ("OPTIONS".equals(method)) {
+            System.out.println (request.getRequestURI ());
+            System.out.println (request.getMethod ());
             chain.doFilter(request, response);
         } else {
             //忽略验证的 url 可以直接放行

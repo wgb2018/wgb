@@ -418,6 +418,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         Map<String, Integer> param = new HashMap<>();
         Map<String, Object> map = new HashMap<>();
         if ("worker".equals(applyType)) {
+            User user = userMapper.selectByWorkerId (id);
+            if(user == null){
+                throw new ParamsException ("数据错误");
+            }
+            user.setMsNum (0);
+            userMapper.updateById (user);
             //查询当前任务未读数量
             param.put("curTask", taskWorkerService.selectWorkerCurTaskCount(applyParamDTO));
 
@@ -435,7 +441,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             param.put("supplement", workerLogMapper.selectUnreadPunchCount(applyParamDTO.getId ()));
 
         } else if ("hr".equals(applyType)) {
-
+            Company comapny = companyMapper.findCompanyById (id);
+            User user = userMapper.findByMobile (comapny.getLeaderMobile ());
+            if(user == null){
+                throw new ParamsException ("数据错误");
+            }
+            user.setMsNum (0);
+            userMapper.updateById (user);
             param.put("curTask", taskHrCompanyService.selectHrCurTaskCount(applyParamDTO));
 
             param.put("pendingTask", messageMapper.selectUnreadHrCount(id));
@@ -447,7 +459,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             param.put("notice", informService.selectCountByParam(map));
 
         } else if ("hotel".equals(applyType)) {
-
+            Company comapny = companyMapper.findCompanyById (id);
+            User user = userMapper.findByMobile (comapny.getLeaderMobile ());
+            if(user == null){
+                throw new ParamsException ("数据错误");
+            }
+            user.setMsNum (0);
+            userMapper.updateById (user);
             param.put("curTask", taskService.selectCurHotelTaskCount(applyParamDTO));
 
             param.put("pendingTask", messageMapper.selectUnreadHotelCount(id));

@@ -36,7 +36,7 @@
             resultType="com.microdev.model.TaskHrCompany">
         select
         t.id as pid, t.create_time, t.deleted, t.modify_time,CAST(t.un_confirmed_pay as DECIMAL(18,2)) as unConfirmedPay,CAST(t.worker_un_confirmed as DECIMAL(18,2)) as workerUnConfirmed,
-        t.hourly_pay, t.confirmed_workers, t.have_pay_money, t.minutes, t.need_workers, t.refused_workers, t.repast_times, t.should_pay_money, t.status, t.workers_have_pay, t.workers_should_pay,
+        t.hourly_pay, t.confirmed_workers, t.have_pay_money, t.minutes, t.need_workers, t.refused_workers, t.repast_times, CAST(t.should_pay_money as DECIMAL(18,2)) as shouldPayMoney, t.status, CAST(t.workers_have_pay as DECIMAL(18,2)) as workersHavePay, CAST(t.workers_should_pay as DECIMAL(18,2)) as workersShouldPay,
         t.should_pay_money - t.have_pay_money - t.un_confirmed_pay as  paidPayMoney,t.workers_should_pay - t.workers_have_pay - t.worker_un_confirmed as workersPaidPay,t.hr_company_id, t.task_id, t.hotel_id, t.hr_company_name, t.hotel_name, t.task_type_code, t.task_type_text, t.task_content, t.refused_reason,t.from_date,t.to_date,t.day_start_time,t.day_end_time,t.hourly_pay_hotel,
         t.distribute_workers
         from task_hr_company t left join company c on t.hotel_id = c.id
@@ -88,7 +88,7 @@
                 and t.status in (1,2,4,5) and t.to_date &gt; now()
             </if>
             <if test="status == 9">
-                and ((t.status = 5 and t.to_date &gt; now()) or t.status = 3)
+                and ((t.status = 5 and t.to_date &lt; now()) or t.status = 3)
             </if>
             <if test="status == 6">
                 and t.status = 5 and t.and to_date &gt; now() and t.from_date &lt; now()
@@ -116,8 +116,8 @@
         group by c.id,c.name
     </select>
     <select id="queryHrCompanyBill" resultType="com.microdev.model.TaskHrCompany" parameterType="com.microdev.param.BillRequest">
-        select  sum(t.should_pay_money) as should_pay_money,sum(t.have_pay_money) as have_pay_money, sum(t.minutes) as minutes,sum(t.un_confirmed_pay) as unConfirmedPay,sum(t.worker_un_confirmed) as workerUnConfirmed,
-        t.hotel_id as hotelId,c.name as hotelName ,sum(t.should_pay_money) - sum(t.have_pay_money) -sum(t.un_confirmed_pay) as paidPayMoney,sum(t.workers_should_pay) - sum(t.workers_have_pay) -sum(t.worker_un_confirmed) as workersPaidPay
+        select  sum(CAST(t.should_pay_money as DECIMAL(18,2))) as should_pay_money,sum(CAST(t.have_pay_money as DECIMAL(18,2))) as have_pay_money, sum(t.minutes) as minutes,sum(CAST(t.un_confirmed_pay as DECIMAL(18,2))) as unConfirmedPay,sum(CAST(t.worker_un_confirmed as DECIMAL(18,2))) as workerUnConfirmed,
+        t.hotel_id as hotelId,c.name as hotelName ,CAST(sum(t.should_pay_money) - sum(t.have_pay_money) -sum(t.un_confirmed_pay) as DECIMAL(18,2)) as paidPayMoney,CAST(sum(t.workers_should_pay) - sum(t.workers_have_pay) -sum(t.worker_un_confirmed) as DECIMAL(18,2)) as workersPaidPay
         from task_hr_company t left join company c on t.hotel_id = c.id
         where t.hr_company_id = #{id}
         <if test = "name != null and name != ''">
