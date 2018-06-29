@@ -177,7 +177,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                 userCompanyMapper.insert(userCompany);
             }
             inform.setTitle("绑定成功");
-            inform.setContent("小时工" + user.getNickname() + "同意了你的绑定申请，成功添加为合作伙伴，添加合作人力公司即代表同意劳务合作协议。你可以接受合作的人力公司派发的任务，确保能够及时完美的完成任务，可以获得相应的酬劳。");
+            inform.setContent("小时工" + user.getNickname() + "同意了你的绑定申请，成功添加为合作伙伴，添加合作人力公司即代表同意劳务合作协议。你可以向小时工派发任务。");
         } else {
             return ResultDO.buildSuccess("失败");
         }
@@ -386,7 +386,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             userCompany.setCompanyType(2);
             userCompany.setUserId(str);
             userCompany.setStatus(0);
-            UserCompany temp = userCompanyMapper.selectByWorkerIdHrId (hrId,str);
+            UserCompany temp = userCompanyMapper.findOneUserCompany (hrId,str);
             if(temp == null){
                 userCompanyList.add(userCompany);
             }else{
