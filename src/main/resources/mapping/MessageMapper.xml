@@ -353,7 +353,7 @@ ORDER BY createTime DESC
         company c ON c.id = t.hotel_id
         INNER JOIN task_hr_company th ON th.id = m.`hr_task_id`
         WHERE m.apply_type=2
-        AND m.is_task = 0 AND m.status = 0 AND m.message_type IN (4,7,8) AND  m.hr_company_id= #{hrId}
+        AND m.is_task = 0 AND m.status = 0 AND m.message_type IN (4,7,8,9) AND  m.hr_company_id= #{hrId}
         )
 
         UNION
@@ -404,7 +404,7 @@ ORDER BY createTime DESC
         ON c.id = t.hotel_id
         INNER JOIN task_hr_company tc
         ON tc.id = m.`hr_task_id`
-        WHERE m.apply_type=3 AND m.is_task = 0 AND m.status = 0 AND m.message_type IN (1,2,3,5,9) AND m.hotel_id= #{hotelId}
+        WHERE m.apply_type=3 AND m.is_task = 0 AND m.status = 0 AND m.message_type IN (1,2,3,4,5,9) AND m.hotel_id= #{hotelId}
         )
 
         UNION
