@@ -244,7 +244,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
      */
     @Override
     public ResultDO pagesTaskWorkers(Paginator paginator, TaskWorkerQuery taskQueryDTO) {
-        System.out.println ("taskQueryDTO:"+taskQueryDTO);
+
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         String date = taskQueryDTO.getOfDate();
         if (date != null) {
