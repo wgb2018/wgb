@@ -295,7 +295,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             } catch (APIRequestException e) {
                 e.printStackTrace ( );
             }
-
             list.add(m);
         }
         messageMapper.saveBatch(list);
