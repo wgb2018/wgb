@@ -28,5 +28,9 @@
         </where>
         order by create_time desc
     </select>
+    <select id="version" resultType="com.microdev.model.Version">
+        select <include refid="Version_Column_List" /> from version where type = #{type}
+        order by create_time desc limit 1
+    </select>
 
 </mapper>

@@ -8,9 +8,7 @@ import com.microdev.param.TaskHrQueryDTO;
 import com.microdev.param.VersionRequest;
 import com.microdev.service.VersionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 版本管理Api
@@ -19,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class VersionController {
     @Autowired
     VersionService versionService;
+    @Autowired
+    VersionMapper versionMapper;
     /**
      * 添加版本记录
      */
@@ -56,5 +56,10 @@ public class VersionController {
     @PostMapping("/search/version")
     public ResultDO selectVersion(@RequestBody PagingDO<VersionRequest> paging) throws Exception{
         return versionService.selectVersion(paging.getPaginator(),paging.getSelector());
+    }
+
+    @GetMapping("/version/{type}")
+    public ResultDO version(@PathVariable String type){
+        return ResultDO.buildSuccess (versionMapper.version(type));
     }
 }

@@ -60,6 +60,7 @@ public interface Constant {
         add("/admin/dicts/*");
         add("/files");
         add("/check/version");
+        add("/version/*");
     }};
 
 

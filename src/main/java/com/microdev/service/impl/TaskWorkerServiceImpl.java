@@ -27,10 +27,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoField;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
+import java.util.*;
 
 @Transactional
 @Service
@@ -120,6 +117,14 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
                 return ResultDO.buildSuccess("任务即将结束，无法接受");
             }
         }
+                List<TaskWorker> li = taskWorkerMapper.findByUserId (userMapper.selectByWorkerId (taskWorker.getWorkerId ()).getPid ());
+                for (TaskWorker ts:li) {
+                    if(!(taskWorker.getDayStartTime ().isAfter (ts.getDayEndTime ()) || ts.getDayStartTime ().isAfter (taskWorker.getDayEndTime ()))){
+                        if(!(taskWorker.getFromDate ().isAfter (ts.getToDate ()) || ts.getFromDate ().isAfter (taskWorker.getToDate ()))){
+                            return ResultDO.buildSuccess("任务存在时间冲突，无法接受");
+                        }
+                    }
+                }
         Integer confirmedWorkers = taskHr.getConfirmedWorkers();
         if (confirmedWorkers == null) {
             confirmedWorkers = 0;

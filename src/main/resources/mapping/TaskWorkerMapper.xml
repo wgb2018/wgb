@@ -94,7 +94,7 @@
         select
         <include refid="TaskWorker_Query_List"/>
         from task_worker
-        where user_id = #{userId} and status in (0,1)
+        where user_id = #{userId} and status in (1,4)
     </select>
     <select id="findAll" parameterType="com.microdev.param.TaskWorkerQuery" resultType="com.microdev.model.TaskWorker">
         select

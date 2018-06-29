@@ -196,6 +196,9 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         if(userCompany==null){
             throw new ParamsException("未找到匹配的信息");
         }
+        if(userCompany.getStatus () == 3){
+            return  ResultDO.buildSuccess("解绑申请已提交过");
+        }
         //TODO 已绑定是否返回重复绑定提示WorkerRelieveHrDays
         DictDTO dict= dictMapper.findByNameAndCode("WorkerRelieveHrDays","8");
         Integer days=Integer.parseInt(dict.getText());

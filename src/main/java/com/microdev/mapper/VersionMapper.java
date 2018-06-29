@@ -15,4 +15,6 @@ public interface VersionMapper extends BaseMapper <Version> {
 
     List<Version> queryVersions(VersionRequest versionRequest);
 
+    Version version(String type);
+
 }
