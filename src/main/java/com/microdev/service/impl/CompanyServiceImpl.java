@@ -812,7 +812,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             columnMap.put("company_id", message.getHrCompanyId());
             columnMap.put("user_id", user.getPid());
             List<UserCompany> list = userCompanyMapper.selectByMap(columnMap);
-            if (list == null || list.size() == 0) {
+                if (list == null || list.size() == 0) {
                 throw new ParamsException("数据异常");
             }
             UserCompany userCompany = list.get(0);
