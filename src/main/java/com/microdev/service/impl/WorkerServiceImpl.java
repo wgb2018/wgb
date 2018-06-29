@@ -781,7 +781,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             userCompany.setUserId(user.getPid());
             userCompany.setCompanyId(str);
             userCompany.setStatus(0);
-            UserCompany temp = userCompanyMapper.selectByWorkerIdHrId (str,user.getPid ());
+            UserCompany temp = userCompanyMapper.findOneUserCompany (str,user.getPid ());
             if(temp == null){
                 userCompanyList.add(userCompany);
             }else{

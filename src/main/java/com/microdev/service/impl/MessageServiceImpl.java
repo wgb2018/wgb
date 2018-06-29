@@ -234,7 +234,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             map.put ("message_type",m.getMessageType ());
             map.put("apply_type",2);
             map.put("is_task",1);
-            if(messageMapper.selectByMap (map) != null){
+            List<Message> messageList = messageMapper.selectByMap (map);
+            if(messageList != null && messageList.size() > 0){
                 throw new ParamsException("申请已提交，请勿重复提交");
             }
             list.add(m);
