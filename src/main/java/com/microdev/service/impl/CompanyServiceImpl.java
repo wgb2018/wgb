@@ -22,8 +22,7 @@ import com.microdev.param.*;
 import com.microdev.service.*;
 import com.microdev.type.UserType;
 import org.apache.ibatis.annotations.Param;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.hibernate.validator.internal.util.logging.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -37,12 +36,12 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.*;
+import java.util.logging.Logger;
 
 @Transactional
 @Service
 public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> implements CompanyService{
 
-    private static final Logger logger = LoggerFactory.getLogger(CompanyServiceImpl.class);
 
     @Autowired
     CompanyMapper companyMapper;
@@ -138,7 +137,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     @Override
     public ResultDO hrCompanyHotels(Paginator paginator, CompanyQueryDTO request) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
-        logger.info(request.toString());
         List<Map<String, Object>> list = companyMapper.queryHotelsByHrId(request);
 
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
@@ -864,7 +862,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         PageHelper.startPage(page, pageNum, true);
         List<Map<String, Object>> list = companyMapper.selectExamineCompanies(hrCompanyId);
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
-        logger.info("size=" + list.size());
         for (Map<String, Object> map : list) {
             for(Map.Entry<String, Object> m : map.entrySet()) {
                 System.out.print("key:" + m.getKey() + ";value=" + m.getValue());
@@ -1230,7 +1227,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }
         List<WorkLog> workLogList = workLogMapper.selectByDate(record);
         if (workLogList == null || workLogList.size() == 0) {
-            logger.info("hotelHandleWorkerRecord:" + record.toString());
             return ResultDO.buildError("查询不到工作记录");
         }
         boolean flag = true;

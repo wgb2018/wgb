@@ -20,12 +20,12 @@ public class JPushManage {
         return PushPayload.alertAll(ALERT);
     }
     public static PushPayload buildPushObject_all_alias_message(String alias,String notification)  {
-        User u = userMapper.findByMobile (alias);
+       /* User u = userMapper.findByMobile (alias);
         if(u == null){
             System.out.println ("推送手机号不存在");
         }
         u.setMsNum (u.getMsNum ()+1);
-        userMapper.updateById (u);
+        userMapper.updateById (u);*/
         if(notification == null){
             notification = "";
         }
@@ -35,7 +35,7 @@ public class JPushManage {
                 .setNotification(Notification.newBuilder ()
                         .setAlert (notification)
                         .addPlatformNotification (IosNotification.newBuilder ()
-                            .setBadge (u.getMsNum ())
+                            //.setBadge (u.getMsNum ())
                             .setSound ("default")
                             .build ())
                         .build ())
