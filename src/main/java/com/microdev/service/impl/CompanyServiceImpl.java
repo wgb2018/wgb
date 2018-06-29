@@ -1000,6 +1000,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 }
                 companyMapper.updateById (hotel);
                 inform.setContent(hr.getName() + "接受了你的绑定申请，成功添加为合作人力公司。添加人力公司代表同意劳务合作协议，你可以向合作的人力公司派发任务，由合作的的人力公司选择小时工，并支出相应的酬劳，确保能及时完美的完成任务。");
+                hotelHrCompany.setStatus(0);
+                hotelHrCompanyMapper.update(hotelHrCompany);
             } else {
                 throw new BusinessException("数据错误");
             }
@@ -1017,7 +1019,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 inform.setSendType(2);
                 inform.setAcceptType(3);
                 inform.setReceiveId(message.getHotelId());
-                hr = companyMapper.selectById(message.getHrCompanyId());
+                hotel = companyMapper.selectById(message.getHrCompanyId());
                 inform.setContent(hotel.getName() + "拒绝了你的绑定申请，等以后有机会希望可以再合作。");
             } else {
                 throw new BusinessException("数据错误");
