@@ -791,7 +791,10 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             }
 
         }
-        userCompanyMapper.saveBatch(userCompanyList);
+        if (userCompanyList.size() > 0) {
+            userCompanyMapper.saveBatch(userCompanyList);
+        }
+
         //发送消息
         messageService.bindUserHrCompany(user.getNickname(), workerId, set, 1);
         return "申请成功";

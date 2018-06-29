@@ -398,7 +398,9 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                 continue;
             }
         }
-        userCompanyMapper.saveBatch(userCompanyList);
+        if (userCompanyList.size() > 0) {
+            userCompanyMapper.saveBatch(userCompanyList);
+        }
         messageService.bindUserHrCompany(c.getName(), hrId, list, 2);
         return "申请已发送";
     }
