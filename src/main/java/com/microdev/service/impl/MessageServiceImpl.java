@@ -432,7 +432,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             param.put("pendingTask", messageMapper.selectUnReadWorkerCount(id));
 
             //查询未读通知数量
-            map = new HashMap<>();
             map.put("status", 0);
             map.put("acceptType", 1);
             map.put("receiveId", id);
@@ -453,7 +452,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
 
             param.put("pendingTask", messageMapper.selectUnreadHrCount(id));
 
-            map = new HashMap<>();
             map.put("status", 0);
             map.put("acceptType", 2);
             map.put("receiveId", id);
@@ -471,7 +469,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
 
             param.put("pendingTask", messageMapper.selectUnreadHotelCount(id));
 
-            map = new HashMap<>();
             map.put("status", 0);
             map.put("acceptType", 3);
             map.put("receiveId", id);
