@@ -34,5 +34,11 @@ public class Worker extends BaseEntity {
     private Integer activeCompanys;
 
     private boolean bindCompanys = true;
+    /**
+     * 0 :未审核
+     * 1 :已审核
+     * 2 :已冻结
+     */
+    private Integer status;
 
 }

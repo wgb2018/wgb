@@ -105,16 +105,17 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
 
         } else if ("1".equals(status)) {
             Company company= companyMapper.findCompanyById(message.getHrCompanyId());
-            if(userCompany==null){
-                userCompany=new UserCompany();
-                if(company==null){
-                    throw new ParamsException("未找到匹配的公司信息");
+            if(userCompany==null) {
+                userCompany = new UserCompany ( );
+                if (company == null) {
+                    throw new ParamsException ("未找到匹配的公司信息");
                 }
                 userCompany.setCompanyId(company.getPid());
                 userCompany.setCompanyType(company.getCompanyType());
                 userCompany.setUserId(user.getPid());
                 userCompany.setUserType(user.getUserType());
                 flag = false;
+            }
                 Worker worker = workerMapper.queryById (user.getWorkerId ());
                 if(worker.getActiveCompanys () == null){
                     worker.setActiveCompanys (0);
@@ -148,21 +149,6 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                     company.setBindWorkers (false);
                 }
                 companyMapper.updateById (company);
-            }
-            /*company.setActiveWorkers (company.getActiveWorkers ()+1);
-            companyMapper.updateById (company);
-            //TODO 绑定上限设置
-            DictDTO dict = dictMapper.findByNameAndCode("WorkerBindHrMaxNum","7");
-            Integer maxNum = Integer.parseInt(dict.getText());
-            Wrapper<UserCompany>  wrapper = new EntityWrapper<>();
-            wrapper.and("user_id", userCompany.getUserId());
-            wrapper.and("company_id", message.getHrCompanyId());
-            wrapper.in("status", new Integer[]{0, 1, 3});
-            Integer hasBindNum = userCompanyMapper.selectCount(wrapper);
-            if (hasBindNum >= maxNum) {
-
-                throw new BusinessException("已达到可绑定人力公司的个数上限");
-            }*/
             //TODO 已绑定是否返回重复绑定提示
             userCompany.setStatus(1);
             if (flag) {
@@ -398,7 +384,9 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                 continue;
             }
         }
-        userCompanyMapper.saveBatch(userCompanyList);
+        if(userCompanyList.size ()>0){
+            userCompanyMapper.saveBatch(userCompanyList);
+        }
         messageService.bindUserHrCompany(c.getName(), hrId, list, 2);
         return "申请已发送";
     }

@@ -2,6 +2,8 @@ package com.microdev.Controller;
 
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
+import com.microdev.mapper.WorkerMapper;
+import com.microdev.model.Worker;
 import com.microdev.param.*;
 import com.microdev.param.api.request.PunchRequest;
 import com.microdev.param.api.response.GetCurrentTaskResponse;
@@ -24,6 +26,8 @@ public class WorkerController {
     private WorkerService workerService;
     @Autowired
     private TaskWorkerService taskWorkerService;
+    @Autowired
+    private WorkerMapper workerMapper;
 
     /**
      * 获取小时工当前任务信息
@@ -165,6 +169,12 @@ public class WorkerController {
     public ResultDO workerHandleAccount(@PathVariable String messageId,@PathVariable String status) {
 
         return workerService.workerHandleHrPay(messageId, status);
+    }
+
+    @GetMapping("/update/Worker/{id}/Status/{status}")
+    public ResultDO updateStatus(@PathVariable String id,@PathVariable String status) {
+        workerMapper.updateStatus(id,status);
+        return ResultDO.buildSuccess ("更新成功");
     }
 
 }

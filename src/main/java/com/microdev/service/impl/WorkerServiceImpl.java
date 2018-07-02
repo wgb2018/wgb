@@ -724,7 +724,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         //查询数据集合
         List<Map<String,Object>> list = null;
         if(workerQueryDTO.getHrId () == null){
-            list = workerMapper.queryAllWorker ();
+            list = workerMapper.queryAllWorker (workerQueryDTO);
             PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(list);
             HashMap<String,Object> result = new HashMap<>();
             //设置获取到的总记录数total：
@@ -791,7 +791,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             }
 
         }
-        userCompanyMapper.saveBatch(userCompanyList);
+        if(userCompanyList.size ()>0){
+            userCompanyMapper.saveBatch(userCompanyList);
+        }
         //发送消息
         messageService.bindUserHrCompany(user.getNickname(), workerId, set, 1);
         return "申请成功";

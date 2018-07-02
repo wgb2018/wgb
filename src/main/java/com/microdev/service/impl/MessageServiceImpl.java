@@ -223,7 +223,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 m.setContent(userName + "向您发出了申请解绑申请");
             }
             m.setMessageContent(c);
-            m.setHrCompanyId(it.next());
+            String hrId = it.next();
+            m.setHrCompanyId(hrId);
             m.setApplyType(2);
             m.setIsTask(1);
             Map<String,Object> map = new HashMap <> ();
@@ -240,7 +241,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             }
             list.add(m);
             try {
-                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (workerId).getMobile ( ), m.getMessageContent ()));
+                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (hrId).getLeaderMobile (), m.getMessageContent ()));
             } catch (APIConnectionException e) {
                 e.printStackTrace ( );
             } catch (APIRequestException e) {

@@ -426,15 +426,15 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         if (StringUtils.isEmpty(map.get("taskWorkerId").toString())) {
             throw new ParamsException("参数taskWorkerId不能为空");
         }
-        if (StringUtils.isEmpty(map.get("hotelId").toString())) {
+        /*if (StringUtils.isEmpty(map.get("hotelId").toString())) {
             throw new ParamsException("参数hotelId不能为空");
-        }
+        }*/
         if ( StringUtils.isEmpty(map.get("reason").toString())) {
             throw new ParamsException("参数reason不能为空");
         }
-        if ( StringUtils.isEmpty(map.get("hrCompanyId").toString())) {
+        /*if ( StringUtils.isEmpty(map.get("hrCompanyId").toString())) {
             throw new ParamsException("参数hrCompanyId不能为空");
-        }
+        }*/
 
         //查询是否已经有申请替换的消息
         int count = messageMapper.selectReplaceCount((String)map.get("taskWorkerId"));
@@ -448,8 +448,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         m.setMessageTitle((String)tp.get("taskTypeText"));
         m.setContent((String)map.get("reason"));
         m.setWorkerId((String)tp.get("workerId"));
-        m.setHrCompanyId((String)map.get("hrCompanyId"));
-        m.setHotelId((String)map.get("hotelId"));
+        m.setHrCompanyId((String)tp.get("hrCompanyId"));
+        m.setHotelId((String)tp.get("hotelId"));
         m.setWorkerTaskId((String)map.get("taskWorkerId"));
         Map<String, String> param = new HashMap<>();
         param.put("userName", (String)tp.get("hotelName"));
