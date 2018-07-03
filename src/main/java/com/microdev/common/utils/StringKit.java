@@ -36,7 +36,7 @@ public class StringKit {
             String value = data.getOrDefault(group, "");
             tplStr = tplStr.replace(m.group(), value);
         }
-        System.out.println ("content:"+tplStr);
+
         return tplStr;
     }
 

@@ -143,7 +143,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         Message message = null;
         TaskHrCompany hrTask = null;
         if (StringUtils.hasLength (hrTaskDis.getMessageId ( ))) {
-            System.out.println ("param:"+hrTaskDis.getMessageId ( ));
+;
             message = messageMapper.selectById (hrTaskDis.getMessageId ( ));
             if (message == null || message.getStatus() == 1) {
                 throw new ParamsException("已处理");
@@ -180,7 +180,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         List <Map <String, String>> list = new ArrayList <> ( );
         Map <String, String> m = null;
         for (String id : hrTaskDis.getWorkerIds ( )) {
-            System.out.println (id);
+
             m = new HashMap <> ( );
             TaskWorker taskWorker = new TaskWorker ( );
             taskWorker.setTaskHrId (hrTask.getPid ( ));
@@ -531,7 +531,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             workers_should_pay = Maths.add (item.getWorkersShouldPay (), workers_should_pay);
             workers_have_pay = Maths.add (item.getWorkersHavePay (), workers_have_pay);
             worker_un_confirmed = Maths.add (item.getWorkerUnConfirmed (), worker_un_confirmed);
-            System.out.println ("horelID:" + item.getHotelId ( ));
+
             item.setHotel (companyMapper.selectById (item.getHotelId ( )));
         }
         map.put ("shouldPayMoney", should_pay_money);

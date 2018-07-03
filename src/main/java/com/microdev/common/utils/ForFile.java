@@ -37,7 +37,7 @@ public class ForFile {
             //如果文件不存在，则创建新的文件
             if(!file.exists()){
                 file.createNewFile();
-                System.out.println("success create file,the file is "+filenameTemp);
+
                 //创建文件成功后，写入内容到文件里
                 filecontent = URLDecoder.decode(filecontent,  "utf-8");
                 writeFileContent(file.getPath (), filecontent);

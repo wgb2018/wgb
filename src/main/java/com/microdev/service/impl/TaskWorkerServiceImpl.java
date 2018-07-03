@@ -94,7 +94,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         TaskWorker taskWorker = taskWorkerMapper.findFirstById(message.getWorkerTaskId());
         if(!taskWorker.getFromDate ().isEqual (taskWorker.getToDate ())){
             if (taskWorker.getFromDate().isBefore(OffsetDateTime.now())) {
-                System.out.println ("now:"+OffsetDateTime.now()+"AAA:"+taskWorker.getFromDate());
+
                 taskWorker.setStatus (2);
                 taskWorker.setRefusedReason ("任务已过期，无法接受");
                 taskWorkerMapper.updateById (taskWorker);
@@ -186,8 +186,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         }
         TaskWorker taskWorker = null;
         Message message = messageMapper.selectById(refusedTaskReq.getMessageId());
-        System.out.println (message.getPid ()+"+");
-        System.out.println (message.isStop ()+"+");
+
             if (message == null || message.getStatus() == 1) {
                 throw new BusinessException("消息已处理");
             }

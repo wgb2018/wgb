@@ -146,7 +146,7 @@ public class UserController {
      */
     @PostMapping ("/base-info")
     public ResultDO modifyBaseInfo(@RequestBody UserDTO userDTO) {
-        System.out.println ("userDTO:"+userDTO);
+
         userService.modifyBaseInfo(userDTO);
         return ResultDO.buildSuccess("修改成功");
     }
@@ -208,7 +208,7 @@ public class UserController {
     //@GetMapping("/files")
     @PostMapping("/files")
     public ResultDO uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
-        System.out.println (file);
+
         String filePath = "avater".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
 
         //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg

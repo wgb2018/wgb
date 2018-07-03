@@ -148,7 +148,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             worker.setBindCompanys (true);
             worker.setActiveCompanys (0);
             workerMapper.updateById (worker);
-            System.out.println ("workerID:"+worker.getPid());
+
             newUser.setWorkerId(worker.getPid());
         } else if(newUser.getUserType().name().equals("hotel")){
             Company company = new Company();
@@ -357,7 +357,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             Integer m =  Integer.parseInt (userDTO.getBirthdayNew ().split (" ")[1].split (":")[1]);
             Integer s =  Integer.parseInt (userDTO.getBirthdayNew ().split (" ")[1].split (":")[2]);
             userDTO.setBirthday (OffsetDateTime.of (year,mouth,day,h,m,s,0, ZoneOffset.UTC));
-            System.out.println ("brithday:"+userDTO.getBirthday ());
+
         }
         com.microdev.common.context.User loginUser = ServiceContextHolder.getServiceContext().getUser();
         User user = userMapper.queryByUserId(loginUser.getId());
@@ -367,7 +367,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println ("userID:"+user);
+
         userMapper.updateById(user);
         if(user.getUserType () == UserType.worker){
             Worker worker = workerMapper.queryById (user.getWorkerId ());
@@ -376,7 +376,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             if(userDTO.getIdCardFront ()!=null && userDTO.getIdCardFront ()!="")worker.setIdcardFront (userDTO.getIdCardFront ());
             if(userDTO.getIdCardNumber ()!=null && userDTO.getIdCardNumber ()!="")worker.setIdcardNumber (userDTO.getIdCardNumber ());
             worker.setPid (user.getWorkerId ());
-            System.out.println ("worker:"+worker);
+
             workerMapper.updateById (worker);
         }else if(user.getUserType () == UserType.hotel || user.getUserType () == UserType.hr) {
             Company company = companyMapper.findFirstByLeaderMobile (user.getMobile ());
@@ -387,7 +387,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                 if(userDTO.getCompany ().getLogo ()!=null && userDTO.getCompany ().getLogo ()!="")company.setLogo (userDTO.getCompany ().getLogo ());
                 if(userDTO.getCompany ().getLaborDispatchCard ()!=null && userDTO.getCompany ().getLaborDispatchCard ()!="")company.setLaborDispatchCard (userDTO.getCompany ().getLaborDispatchCard ());
                 if(userDTO.getCompany ().getArea ()!=null && userDTO.getCompany ().getArea ()!=""){
-                    System.out.println ("userDTO:"+userDTO);
+
                     company.setAddress (userDTO.getCompany ().getAddress ());
                     company.setArea (userDTO.getCompany ().getArea ());
                     company.setAddressCode (userDTO.getCompany ().getAddressCode ());
@@ -395,7 +395,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                     company.setLongitude (userDTO.getCompany ().getLongitude ());
                 }
             }
-            System.out.println ("company:"+company);
+
             companyMapper.updateById (company);
         }
     }
