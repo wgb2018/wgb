@@ -333,6 +333,9 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         m.setApplyType (1);
         m.setIsTask (0);
         m.setHrTaskId (taskWorker.getTaskHrId ( ));
+        m.setMinutes(PayHrParam.getPayMoney ( ) + "");
+        m.setRequestId(bill.getPid());
+
         Map <String, String> param = new HashMap <> ( );
         param.put ("hrName", companyMapper.findCompanyById (taskWorker.getHrCompanyId ( )).getName ( ));
         String c = StringKit.templateReplace (mess.getContent ( ), param);
