@@ -71,7 +71,7 @@ public class AdvertServiceImpl extends ServiceImpl<AdvertMapper,Advert> implemen
         //查询数据集合
         List<Advert> list = advertMapper.queryAdvert(advertQuery);
         PageInfo<Advert> pageInfo = new PageInfo<>(list);
-        System.out.println ("last:"+pageInfo.isHasNextPage ());
+
         HashMap<String,Object> result = new HashMap<>();
         //设置获取到的总记录数total：
         result.put("total",pageInfo.getTotal());

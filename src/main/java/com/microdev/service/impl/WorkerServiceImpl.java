@@ -608,7 +608,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 	/**
      *  修改服务类型及服务地区
      */    public void mpdifyAreaAndService(AreaAndServiceRequest request) {
-         System.out.println ("param:"+request);
+
          if(request.getAreaCodeList ()==null){
              //删除旧数据
              if(request.getAreaCode()!=null){
@@ -625,7 +625,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                          }
                          for (Map<String,String> key : list) {
                              List<Map<String,String>> list2 = dictMapper.findArea(key.get("areaId"));
-                             System.out.println ("2:"+list2);
+
                              if(list2 == null ){
                                  companyMapper.insertCompanyArea(request.getId(),key.get("areaId"),request.getIdType ());
                              }
@@ -637,7 +637,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
                          companyMapper.insertAreaRelation(request.getId(),ua.getAreaId (),ua.getAreaLevel (),dictMapper.findCityNameById (ua.getAreaId ()));
                          List<Map<String,String>> list2= dictMapper.findArea(ua.getAreaId ());
-                         System.out.println ("3:"+list2);
+
                          if(list2 == null ){
                              companyMapper.insertCompanyArea(request.getId(),ua.getAreaId (),request.getIdType ());
                          }
@@ -665,7 +665,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                       }
                       for (Map<String,String> key : list) {
                           List<Map<String,String>> list2 = dictMapper.findArea(key.get("areaId"));
-                          System.out.println ("2:"+list2);
+
                           if(list2 == null ){
                               companyMapper.insertCompanyArea(request.getId(),key.get("areaId"),request.getIdType ());
                           }
@@ -676,7 +676,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                   }else if (dictMapper.isCity (lis.get (i))!=null){//第二级
                       companyMapper.insertAreaRelation(request.getId(),lis.get (i),2,dictMapper.findCityNameById (lis.get (i)));
                       List<Map<String,String>> list2= dictMapper.findArea(lis.get (i));
-                      System.out.println ("3:"+list2);
+
                       if(list2 == null ){
                           companyMapper.insertCompanyArea(request.getId(),lis.get (i),request.getIdType ());
                       }

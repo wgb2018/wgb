@@ -63,22 +63,22 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
      */
     @Override
     public ResultDO createTask(CreateTaskRequest request) {
-        System.out.println ("set:"+request.toString());
+
         if(request.getFromDateL ()!=null){
             request.setFromDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getFromDateL ()+OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getDayStartTimeL ()),ZoneOffset.systemDefault ()).toOffsetTime ().getLong (ChronoField.SECOND_OF_DAY )*1000),ZoneOffset.systemDefault ()));
-            System.out.println (request.getFromDate ());
+
         }
         if(request.getToDateL ()!=null){
             request.setToDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getToDateL ()+OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getDayEndTimeL ()),ZoneOffset.systemDefault ()).toOffsetTime ().getLong (ChronoField.SECOND_OF_DAY )*1000),ZoneOffset.systemDefault ()));
-            System.out.println (request.getToDate ());
+
         }
         if(request.getDayStartTimeL ()!=null){
             request.setDayStartTime (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getDayStartTimeL ()),ZoneOffset.systemDefault ()).toOffsetTime ());
-            System.out.println (request.getDayStartTime ());
+
         }
         if(request.getDayEndTimeL ()!=null){
             request.setDayEndTime (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getDayEndTimeL ()),ZoneOffset.systemDefault ()).toOffsetTime ());
-            System.out.println (request.getDayEndTime ());
+
         }
         Company hotel=companyMapper.findCompanyById(request.getHotelId());
         if (hotel == null || !StringUtils.hasLength(hotel.getPid()) ) {
@@ -189,7 +189,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         }
         //查询数据集合
         List<Task> list = taskMapper.queryTasks(taskQueryDTO);
-        System.out.println (list);
+
         List<TaskViewDTO> data = new ArrayList<>();
         for (Task task:list) {
             data.add(taskConverter.toViewDTOWithOutSet(task));
@@ -447,7 +447,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
 			taskHrCompany.setWorkerSettlementNum (0);
             taskHrCompanyMapper.insert(taskHrCompany);
 
-            System.out.println (taskHrCompany.getPid ());
+
             setHrTask.add(taskHrCompany);
         }
         return setHrTask;

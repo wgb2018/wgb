@@ -117,10 +117,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      */
     @Override
     public String hotelBindHrCompany(Set<String> bindCompany, Company applyCompany, String pattern, Integer type) {
-        System.out.println ("set:"+bindCompany);
-        System.out.println ("applyCompany:"+applyCompany);
-        System.out.println ("pattern:"+pattern);
-        System.out.println ("type:"+type);
+
         if (bindCompany == null || bindCompany.size() == 0 || applyCompany == null) {
             throw new ParamsException("参数不能为空");
         }
@@ -130,7 +127,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
 
         List<Message> list = new ArrayList<>();
         MessageTemplate mess = messageTemplateMapper.findFirstByCode(pattern);
-        System.out.println ("mess:"+mess);
+
         Iterator<String> it = bindCompany.iterator();
         Map<String, String> param = new HashMap<>();
         param.put("userName", applyCompany.getName());

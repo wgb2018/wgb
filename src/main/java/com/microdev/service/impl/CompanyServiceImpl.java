@@ -91,7 +91,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         //查询数据集合
         List<Company> list = companyMapper.queryCompanys(queryDTO);
         PageInfo<Company> pageInfo = new PageInfo<>(list);
-        System.out.println ("last:"+pageInfo.isHasNextPage ());
+
         HashMap<String,Object> result = new HashMap<>();
          //设置获取到的总记录数total：
         result.put("total",pageInfo.getTotal());
@@ -871,12 +871,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         PageHelper.startPage(page, pageNum, true);
         List<Map<String, Object>> list = companyMapper.selectExamineCompanies(hrCompanyId);
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
-        for (Map<String, Object> map : list) {
-            for(Map.Entry<String, Object> m : map.entrySet()) {
-                System.out.print("key:" + m.getKey() + ";value=" + m.getValue());
-            }
-            System.out.println();
-        }
+
         Map<String, Object> param = new HashMap<>();
         param.put("page", page);
         param.put("total", pageInfo.getTotal());

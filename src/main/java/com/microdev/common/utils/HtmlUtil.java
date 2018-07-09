@@ -119,7 +119,7 @@ public class HtmlUtil {
             if(pics!=null){
                 for(int i=0;i<pics.size();i++){
                     Picture pic = (Picture)pics.get(i);
-                    System.out.println();
+
                     try {
                         pic.writeImageContent(new FileOutputStream(outPutFilePath
                                 + pic.suggestFullFileName()));

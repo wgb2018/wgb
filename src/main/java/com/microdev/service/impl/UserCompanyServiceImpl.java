@@ -227,7 +227,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                 us.setAge(DateUtil.CaculateAge(us.getBirthday()));
                 u.setUser(us);
             }
-            System.out.println ("queryDTO:"+queryDTO);
+
             PageInfo<UserCompany> pageInfo = new PageInfo<UserCompany>(list1);
             //设置获取到的总记录数total：
             result.put("total",pageInfo.getTotal());

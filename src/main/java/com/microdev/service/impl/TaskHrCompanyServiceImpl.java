@@ -172,6 +172,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             return ResultDO.buildSuccess ("派单超时");
         }
         //Company hrCompany=companyMapper.findCompanyById(hrTask.getHrCompanyId());
+        taskMapper.updateStatus (hrTask.getTaskId ( ), 3);
         Company hrCompany = companyMapper.findCompanyById (hrTask.getHrCompanyId ( ));
         hrTask.setStatus (4);
         Task hotelTask = taskMapper.getFirstById (hrTask.getTaskId ( ));
