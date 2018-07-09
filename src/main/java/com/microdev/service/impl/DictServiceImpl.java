@@ -35,7 +35,15 @@ public class DictServiceImpl extends ServiceImpl<DictMapper,Dict> implements Dic
         if(oldDic!=null){
             throw new ParamsException("字典编码不能重复");
         }
+        List<String> m = dictMapper.selectMaxCode();
+        int b = 0;
+        for (String a:m) {
+            if(Integer.parseInt (a)>b){
+                b = Integer.parseInt (a);
+            }
+        }
         Dict newDict = dictConverter.toDO(params);
+        newDict.setCode (b + 1 + "");
         newDict.setDeleted(false);
         dictMapper.insert(newDict);
         DictDTO dictDTO = dictConverter.toDTO(newDict);
@@ -47,7 +55,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper,Dict> implements Dic
     public void delete(String id) {
         Dict dict = dictMapper.findOne(id);
         dicts.remove(dict.getName() + "$" + dict.getCode());
-        dictMapper.delete(dict);
+        dictMapper.delete(id);
     }
 
     @Override

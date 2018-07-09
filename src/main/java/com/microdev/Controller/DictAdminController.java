@@ -59,7 +59,7 @@ public class DictAdminController {
      */
     @PostMapping("/search")
     public ResultDO paging(@RequestBody PagingDO<DictDTO> paging) {
-        return ResultDO.buildSuccess(dictService.paging(paging.getPaginator(), paging.getSelector()));
+        return dictService.paging(paging.getPaginator(), paging.getSelector());
     }
 
     /**

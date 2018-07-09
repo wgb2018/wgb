@@ -103,6 +103,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         if(user == null){
             throw new ParamsException("用户不存在");
         }
+        if(login.getPlatform () == PlatformType.PC){
+            if(user.getUserType () == UserType.worker){
+                throw new ParamsException("该用户为小时工，无权限登录");
+            }
+        }
         userDTO.setId(user.getPid());
         userDTO.setNickname(user.getNickname());
         userDTO.setRoleList(new ArrayList<>(user.getRoles()));
@@ -144,6 +149,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             filePath = "QRCode".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
             //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
             fileURI = objectStoreService.uploadFile(filePath, file);
+            worker.setStatus (0);
             worker.setQrCode (fileURI);
             worker.setBindCompanys (true);
             worker.setActiveCompanys (0);

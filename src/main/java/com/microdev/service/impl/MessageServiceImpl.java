@@ -129,7 +129,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         MessageTemplate mess = messageTemplateMapper.findFirstByCode(pattern);
 
         Iterator<String> it = bindCompany.iterator();
-        Map<String, String> param = param = new HashMap<>();
+        Map<String, String> param = new HashMap<>();
         param.put("userName", applyCompany.getName());
         String content = StringKit.templateReplace(mess.getContent(), param);
         Message m = null;
@@ -139,11 +139,16 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m = new Message();
             m.setMessageCode(mess.getCode());
             m.setMessageTitle(mess.getTitle());
-
             m.setStatus(0);
-            m.setMessageType(13);
             m.setIsTask(1);
-            m.setContent(applyCompany.getName() + "向你发出了申请合作申请");
+            if(pattern.equals ("applyBindMessage")){
+                m.setMessageType(13);
+                m.setContent(applyCompany.getName() + "向你发出了合作申请");
+            }else if(pattern.equals ("applyUnbindMessage")){
+                m.setMessageType(12);
+                m.setContent(applyCompany.getName() + "向你发出了解绑申请");
+            }
+            m.setMessageContent(content);
             if (type == 1) {
                 m.setApplyType(2);
                 m.setApplicantType(3);
@@ -169,9 +174,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                     e.printStackTrace ( );
                 }
             }
-
-            m.setMessageContent(content);
-
             list.add(m);
         }
         messageMapper.saveBatch(list);
@@ -214,13 +216,14 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m.setWorkerId(workerId);
             if ("applyBindMessage".equals(pattern)) {
                 m.setMessageType(5);
-                m.setContent(userName + "向您发出了申请绑定申请");
+                m.setContent(userName + "向您发出了绑定申请");
             } else {
                 m.setMessageType(12);
-                m.setContent(userName + "向您发出了申请解绑申请");
+                m.setContent(userName + "向您发出了解绑申请");
             }
             m.setMessageContent(c);
-            m.setHrCompanyId(it.next());
+            String hrId = it.next();
+            m.setHrCompanyId(hrId);
             m.setApplyType(2);
             m.setIsTask(1);
             Map<String,Object> map = new HashMap <> ();
@@ -237,7 +240,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             }
             list.add(m);
             try {
-                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (workerId).getMobile ( ), m.getMessageContent ()));
+                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (hrId).getLeaderMobile (), m.getMessageContent ()));
             } catch (APIConnectionException e) {
                 e.printStackTrace ( );
             } catch (APIRequestException e) {
@@ -513,7 +516,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 message.setMessageType(5);
 
                 try {
-                    jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (s).getLeaderMobile ( ), name + "向您发出了申请绑定申请"));
+                    jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (s).getLeaderMobile ( ), name + "向您发出了绑定申请"));
                 } catch (APIConnectionException e) {
                     e.printStackTrace ( );
                 } catch (APIRequestException e) {
@@ -526,14 +529,14 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 message.setHrCompanyId(id);
                 message.setMessageType(5);
                 try {
-                    jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (s).getMobile ( ), name + "向您发出了申请绑定申请"));
+                    jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (s).getMobile ( ), name + "向您发出了绑定申请"));
                 } catch (APIConnectionException e) {
                     e.printStackTrace ( );
                 } catch (APIRequestException e) {
 
                 }
             }
-            message.setContent(name + "向您发出了申请绑定申请");
+            message.setContent(name + "向您发出了绑定申请");
             messageList.add(message);
         }
         messageMapper.saveBatch(messageList);
@@ -792,7 +795,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         if ("6".equals(type)) {
             if ("worker".equals(messagetype)) {
                 response = messageMapper.selectWorkerAwaitHandleTask(messageId);
-
             } else if ("hr".equals(messagetype)) {
                 response = messageMapper.selectHrAwaitHandleTask(messageId);
             }

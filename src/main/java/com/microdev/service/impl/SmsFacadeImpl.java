@@ -135,6 +135,7 @@ public class SmsFacadeImpl extends ServiceImpl<SmsTemplateMapper,SmsTemplate> im
         String key = SMS_CODE_PREFIX + mobile + SMS_CODE_SPLIT + smsType;
         ValueOperations<String, String> operations = redisTemplate.opsForValue();
         String smsCode = operations.get(key);
+        System.out.println (smsCode+"---"+verifyCode);
         if (smsCode == null || !smsCode.equals(verifyCode)) {
             throw new ParamsException("短信验证码不正确");
         }

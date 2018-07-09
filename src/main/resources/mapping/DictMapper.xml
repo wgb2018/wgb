@@ -10,8 +10,8 @@
         insert into dict values(#{id},#{createTime},#{deleted},#{modifyTime},#{code},
         #{extend},#{name},#{ordinal},#{remark},#{text})
     </insert>
-    <update id="delete" parameterType="com.microdev.model.Dict">
-        update dict set delete = 1 where id = #{id}
+    <update id="delete" >
+        update dict set deleted = 1 where id = #{id}
     </update>
     <update id="update" parameterType="com.microdev.model.Dict">
         update dict set modify_time = #{modifyTime},code = #{code},extend = #{extend},
@@ -20,7 +20,7 @@
     </update>
     <select id="findByNameAndCode" resultType="com.microdev.param.DictDTO">
         SELECT id as pid,name,code,text,ordinal,remark,extend
-        FROM dict WHERE name = #{name} AND code = #{code}
+        FROM dict WHERE name = #{name} AND code = #{code} and deleted = 0
     </select>
     <select id="findOne" resultType="com.microdev.model.Dict" parameterType="java.lang.String">
         select
@@ -30,7 +30,7 @@
     <select id="findByName" resultType="com.microdev.model.Dict" parameterType="java.lang.String">
         select
         <include refid="Dict_Column_List"/>
-        from dict where name = #{name}
+        from dict where name = #{name} and deleted = 0
     </select>
     <select id="findAll" resultType="com.microdev.model.Dict">
         select
@@ -42,8 +42,8 @@
         <include refid="Dict_Column_List"/>
         from dict
         <where>
-            <if test="id != null and id != ''">
-                id = #{id}
+            <if test="pid != null and pid != ''">
+                id = #{pid}
             </if>
             <if test="name != null and name != ''">
                 and name = #{name}
@@ -60,6 +60,7 @@
             <if test="extend != null and extend != ''">
                 and extend like '%${extend}%'
             </if>
+                and deleted = 0
         </where>
     </select>
     <select id="findProvince" resultType="java.util.Map">
@@ -115,5 +116,8 @@
     </select>
     <select id="isArea" resultType="java.lang.Integer" parameterType="java.lang.String">
         select id from area where areaID = #{id} limit 1
+    </select>
+    <select id="selectMaxCode" resultType="java.lang.String">
+        select code from dict
     </select>
 </mapper>

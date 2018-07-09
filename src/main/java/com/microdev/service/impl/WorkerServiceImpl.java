@@ -108,8 +108,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         WorkLog log = null;
         TaskHrCompany taskHrCompany = null;
         OffsetTime time = OffsetDateTime.now ().toOffsetTime ();
-        OffsetTime timeA = time.minusMinutes (43);
-        OffsetDateTime ti = OffsetDateTime.now ().minusMinutes (43);
+        OffsetTime timeA = time.minusMinutes (30);
+        OffsetDateTime ti = OffsetDateTime.now ().minusMinutes (30);
                 //取进行中的任务
         TaskWorker taskWorker = taskWorkerMapper.findWorkerNowTask(
                 userId, TaskWorkerStatus.ACCEPTED.ordinal(),
@@ -183,10 +183,10 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         Company hotel = companyMapper.findCompanyById (taskHrCompanyMapper.queryByTaskId (taskWorkerMapper.findFirstById (taskWorkerId).getTaskHrId ()).getHotelId ());
         Double m = LocationUtils.getDistance (hotel.getLatitude (),hotel.getLongitude (),measure.getLatitude (),measure.getLongitude ());
-        /*if(m>500){
+        if(m>500){
             return "打卡地点距离工作地"+m+"米,超过500米";
-        }*/
-        if(!taskWorker.getToDate ().isAfter (OffsetDateTime.now ().minusMinutes (43))){
+        }
+        if(!taskWorker.getToDate ().isAfter (OffsetDateTime.now ().minusMinutes (30))){
             return "超过打卡正常时间,打卡失败";
         }
         WorkLog log = null;
@@ -720,11 +720,11 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     @Override
     public ResultDO pagingWorkers(Paginator paginator, WorkerQueryDTO workerQueryDTO) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
-
+        System.out.println (workerQueryDTO);
         //查询数据集合
         List<Map<String,Object>> list = null;
         if(workerQueryDTO.getHrId () == null){
-            list = workerMapper.queryAllWorker ();
+            list = workerMapper.queryAllWorker (workerQueryDTO);
             PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(list);
             HashMap<String,Object> result = new HashMap<>();
             //设置获取到的总记录数total：
@@ -743,9 +743,12 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             result.put("page",paginator.getPage());
             Map<String,Object> map = new HashMap <> ();
             Company company = companyMapper.findCompanyById (workerQueryDTO.getHrId ());
-            map.put ("bindNum",company.getActiveWorkers ());
-            map.put("bindTotalNum",Integer.parseInt (dictMapper.findByNameAndCode ("HrBindWorkerMaxNum","10").getText ()));
-            return ResultDO.buildSuccess(null,result,map,null);
+            Integer num = company.getActiveWorkers ();
+            Integer total = Integer.parseInt (dictMapper.findByNameAndCode ("HrBindWorkerMaxNum","10").getText ());
+            map.put ("bindNum",num);
+            map.put("bindTotalNum",total);
+            return ResultDO.buildSuccess("您已经绑定"+num+"个小时工，还可以绑定"+(total - num)+"个小时工"
+                    ,result,map,null);
         }
     }
 
@@ -791,10 +794,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             }
 
         }
-        if (userCompanyList.size() > 0) {
+        if(userCompanyList.size ()>0){
             userCompanyMapper.saveBatch(userCompanyList);
         }
-
         //发送消息
         messageService.bindUserHrCompany(user.getNickname(), workerId, set, 1);
         return "申请成功";

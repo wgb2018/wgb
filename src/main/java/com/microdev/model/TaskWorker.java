@@ -133,6 +133,8 @@ public class TaskWorker extends BaseEntity {
     @JsonFormat(pattern="HH:mm")
     private OffsetTime dayEndTime;
     private String hotelTaskId;
+    private Integer settlementPeriod;
+    private Integer settlementNum;
 
     /**
     * 是否验证

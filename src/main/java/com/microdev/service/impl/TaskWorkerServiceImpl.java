@@ -141,9 +141,9 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
             hotelTask.setConfirmedWorkers(hotelConfirmedWorkers+1);
         }
         if(hotelTask.getConfirmedWorkers() == hotelTask.getNeedWorkers()){
-            taskMapper.updateStatus(hotelTask.getPid(),4);
+            hotelTask.setStatus (4);
         }else{
-            taskMapper.updateStatus(hotelTask.getPid(),3);
+            hotelTask.setStatus (3);
         }
         //TODO 人力公司人数加1
         if (confirmedWorkers + 1 <= taskHr.getNeedWorkers()) {
@@ -293,6 +293,10 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
             havePayMoney = Maths.getTwoDecimal (t.getHavePayMoney() + havePayMoney,2);
             UnConfirmedPay = Maths.getTwoDecimal (t.getUnConfirmedPay () + UnConfirmedPay,2);
             //t.setUnConfirmedPay(messageMapper.selectUnConfirmePay (1,t.getTaskHrId (),t.getPid ()));
+            t.setShouldPayMoney (Maths.getTwoDecimal (t.getShouldPayMoney (),2));
+            t.setHavePayMoney (Maths.getTwoDecimal (t.getHavePayMoney (),2));
+            t.setUnConfirmedPay (Maths.getTwoDecimal (t.getUnConfirmedPay (),2));
+            t.setPaidPayMoney (Maths.getTwoDecimal (t.getPaidPayMoney (),2));
         }
         extra.put("shouldPayMoney",shouldPayMoney);
         extra.put("havePayMoney",havePayMoney);

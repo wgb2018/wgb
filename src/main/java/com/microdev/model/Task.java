@@ -105,6 +105,10 @@ public class Task extends BaseEntity {
 
     private Double unConfirmedPay=0.0;
 
+    private Integer settlementPeriod;
+
+    private Integer settlementNum;
+
     public Integer getStatus() {
         return status;
     }

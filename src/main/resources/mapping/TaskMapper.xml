@@ -4,7 +4,8 @@
     <sql id="Task_Query_Param">
         id as pid, create_time, deleted, modify_time,
         confirmed_workers, from_date, have_pay_money, hourly_pay, minutes, need_workers, refused_workers, repast_times, should_pay_money,
-        status, task_content, task_type_code, task_type_text, to_date, hotel_id, day_start_time, day_end_time, hotel_name, un_confirmed_pay
+        status, task_content, task_type_code, task_type_text, to_date, hotel_id, day_start_time, day_end_time, hotel_name, un_confirmed_pay,
+        settlement_period, settlement_num
     </sql>
     <resultMap type="com.microdev.param.TaskViewDTO" id="dotMap">
         <id column="id" jdbcType="VARCHAR" property="pid"/>
@@ -22,6 +23,8 @@
         <result column="taskContent" jdbcType="VARCHAR" property="taskContent"/>
         <result column="fromDate" jdbcType="TIMESTAMP" property="fromDate"/>
         <result column="needWorkers" jdbcType="INTEGER" property="needWorkers"/>
+        <result column="settlementPeriod" jdbcType="INTEGER" property="settlementPeriod"/>
+        <result column="settlementNum" jdbcType="INTEGER" property="settlementNum"/>
         <collection property="listTaskHr" column="id"
                     ofType="com.microdev.param.TaskHrCompanyViewDTO" select="selectTaskHrCompany"
                     javaType="java.util.List"/>
@@ -146,7 +149,7 @@
         t.day_start_time as dayStartTime,day_end_time as dayEndTime,t.`from_date` AS fromDate, t.`to_date` AS toDate,t.status,
         t.`hourly_pay` AS hourlyPay,t.`need_workers` AS
         needWorkers,t.`hotel_name` AS HotelName,t.`confirmed_workers` AS
-        confirmedWorkers,
+        confirmedWorkers,t.settlement_period as settlementPeriod,t.settlement_num as settlementNum,
         t.`refused_workers` AS refusedWorkers,t.`repast_times` AS repastTimes,t.`minutes` AS
         minutes,IFNULL(t.`should_pay_money`,0.0) AS shouldPayMoney,
         IFNULL(t.`have_pay_money`,0.0) AS

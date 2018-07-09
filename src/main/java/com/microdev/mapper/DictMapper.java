@@ -18,7 +18,7 @@ public interface DictMapper extends BaseMapper<Dict> {
 
     Dict findOne(String id);
 
-    void delete(Dict dict);
+    void delete(String id);
 
     void update(Dict dict);
 
@@ -55,6 +55,7 @@ public interface DictMapper extends BaseMapper<Dict> {
     Integer isProvince(String id);
     Integer isCity(String id);
     Integer isArea(String id);
+    List<String> selectMaxCode();
 
 
 }

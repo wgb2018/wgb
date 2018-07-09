@@ -41,6 +41,7 @@ public class HotelHrCompany extends BaseEntity {
      * 1   合作过
      * 3   待审核
      * 4   拒绝
+     * 5   解绑中
      */
     private Integer status;
 

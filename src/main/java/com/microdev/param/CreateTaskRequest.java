@@ -67,4 +67,8 @@ public class CreateTaskRequest {
     private String messageId;
 
     private String taskHrId;
+
+    private Integer settlementPeriod;
+
+    private Integer settlementNum;
 }

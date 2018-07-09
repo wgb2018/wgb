@@ -3,12 +3,15 @@
 <mapper namespace="com.microdev.mapper.WorkerMapper">
     <sql id="Worker_Column_List">
         id as pid, create_time, deleted, modify_time,
-        idcard_back, idcard_front, idcard_number, health_card,qr_code,active_companys,bind_companys
+        idcard_back, idcard_front, idcard_number, health_card,qr_code,active_companys,bind_companys,status
     </sql>
     <insert id="save" parameterType="com.microdev.model.Worker">
         insert into worker values(#{pid},#{createTime},#{deleted},#{modifyTime},#{idcardBack},#{idcardFront},
         #{idcardNumber},#{healthCard})
     </insert>
+    <update id="updateStatus">
+        update worker set status = #{status} where id = #{id}
+    </update>
     <select id="queryById" parameterType="java.lang.String" resultType="com.microdev.model.Worker">
         select
         <include refid="Worker_Column_List"/>
@@ -18,15 +21,15 @@
         select u.id as pid,u.age as age,u.create_time as createTime,u.modify_time as modifyTime,u.activated as activated,u.avatar
         as avatar,w.qr_code as qrCode,u.birthday as birthday,u.email as email,u.mobile as mobile,u.nickname as nickname,CASE u.`sex` WHEN 'MALE' THEN 'MALE' WHEN
 		'FEMALE' THEN 'FEMALE' ELSE 'UNKNOW' END AS  sex,u.user_type as userType,u.user_code as userCode,w.idcard_back as
-		idcardBack,w.idcard_front as idcardFront,w.idcard_number as idcardNumber,w.health_card as healthCard
+		idcardBack,w.idcard_front as idcardFront,w.idcard_number as idcardNumber,w.health_card as healthCard,w.id as workerId
         from user u left join worker w on u.worker_id = w.id where w.id = #{id}
     </select>
     <select id="queryWorkers" resultType="java.util.Map" parameterType="com.microdev.param.WorkerQueryDTO">
         select u.id as pid,u.age as age,u.create_time as createTime,u.modify_time as modifyTime,u.activated as activated,u.avatar
         as avatar,u.birthday as birthday,u.email as email,u.mobile as mobile,u.nickname as nickname,CASE u.`sex` WHEN 'MALE' THEN 'MALE' WHEN
         'FEMALE' THEN 'FEMALE' ELSE 'UNKNOW' END AS  sex,u.user_type as userType,u.worker_id as workerId,u.user_code as userCode,w.idcard_back as
-        idcardBack,w.idcard_front as idcardFront,w.idcard_number as idcardNumber,w.health_card as healthCard
-        from user u left join worker w on u.worker_id = w.id where w.id in(
+        idcardBack,w.idcard_front as idcardFront,w.idcard_number as idcardNumber,w.health_card as healthCard,w.status as status,w.id as workerId
+        from worker w left join user u on u.worker_id = w.id where w.id in(
         select a.id from
         (select DISTINCT id from task_type_relation where task_type_id In
         (select task_type_id from task_type_relation where id = #{hrId}) and id_type = 0
@@ -44,12 +47,17 @@
         order by u.create_time desc
 
     </select>
-    <select id="queryAllWorker" resultType="java.util.Map">
+    <select id="queryAllWorker" resultType="java.util.Map" parameterType="com.microdev.param.WorkerQueryDTO">
         select u.id as pid,u.age as age,u.create_time as createTime,u.modify_time as modifyTime,u.activated as activated,u.avatar
         as avatar,w.qr_code as qrCode,u.birthday as birthday,u.email as email,u.mobile as mobile,u.nickname as nickname,CASE u.`sex` WHEN 'MALE' THEN 'MALE' WHEN
         'FEMALE' THEN 'FEMALE' ELSE 'UNKNOW' END AS  sex,u.user_type as userType,u.user_code as userCode,w.idcard_back as
-        idcardBack,w.idcard_front as idcardFront,w.idcard_number as idcardNumber,w.health_card as healthCard
-        from user u left join worker w on u.worker_id = w.id
+        idcardBack,w.idcard_front as idcardFront,w.idcard_number as idcardNumber,w.health_card as healthCard,w.status as status,w.id as workerId
+        from worker w left join user u on u.worker_id = w.id
+        <where>
+            <if test="name !=null and name !=''">
+                u.nickname like concat('%', #{name},'%')
+            </if>
+        </where>
     </select>
 
 </mapper>

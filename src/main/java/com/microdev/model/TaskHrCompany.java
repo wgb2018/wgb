@@ -138,6 +138,14 @@ public class TaskHrCompany extends BaseEntity {
      */
     private Integer distributeWorkers = 0;
 
+    private Integer settlementPeriod;
+
+    private Integer settlementNum;
+
+    private Integer workerSettlementPeriod;
+
+    private Integer workerSettlementNum;
+
     public Integer getStatus() {
         return status;
     }

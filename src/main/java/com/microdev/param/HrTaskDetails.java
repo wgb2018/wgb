@@ -53,5 +53,9 @@ public class HrTaskDetails {
     private List<Map<String, Object>> confirmedSet;
     private List<Map<String, Object>> refusedSet;
     private List<Map<String, Object>> distributedSet;
+    private Integer settlementPeriod;
+    private Integer settlementNum;
+    private Integer workerSettlementPeriod;
+    private Integer workerSettlementNum;
 
 }

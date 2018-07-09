@@ -38,6 +38,7 @@ public class HotelHrIdBindDTO {
      */
     private Integer  bindType;
     private Integer  relieveType;
+    private String   reason;
     private Set<String> set = new HashSet<>();
 
 }

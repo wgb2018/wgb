@@ -66,4 +66,6 @@ public class WorkTaskViewModel {
     private Double waitPayMoney=0.0;
     private String payStatus="";
     private Double unConfirmedPay=0.0;
+    private Integer settlementPeriod;
+    private Integer settlementNum;
 }
