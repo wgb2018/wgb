@@ -237,18 +237,19 @@ public class UserController {
 //        test.setUsername("TestNew");
 //        userMapper.update(test);
 //        test = userMapper.selectById("f1f33e09884c4b06b8fbe77465bd208d");
-        /*File file;
+        File file;
         String fileURI = null;
         String filePath;
         //file = QRCodeUtil.createQRCode ("3a267b284a1641ed9fb143fb3ff2d6c5WGBhotel");
         String  path = getClass().getResource("/").getFile();
         path = URLDecoder.decode(path,  "utf-8");
-        file = new File( path, File.separator + "static" + File.separator +  "ht.rar");
-        filePath = "QRCode".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
+        file = new File( path, File.separator + "static" + File.separator +  "app-release.apk");
+        //filePath = "QRCode".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
+        filePath = "WGB".toLowerCase() + "/" + "wgb";
         //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
         fileURI = objectStoreService.uploadFile(filePath, file);
 
-        System.out.println ("fileURI:"+fileURI);*/
+        System.out.println ("fileURI:"+fileURI);
         /*OffsetDateTime of = OffsetDateTime. ofInstant (Instant.ofEpochMilli (new Date().getTime ()),ZoneOffset.systemDefault ());
         System.out.println (of);
         System.out.println (new Date().getTime ());
@@ -288,10 +289,10 @@ public class UserController {
             LOG.info("Error Code: " + e.getErrorCode());
             LOG.info("Error Message: " + e.getErrorMessage());*//*
         }*/
-        String  path = getClass().getResource("/").getFile();
+        /*String  path = getClass().getResource("/").getFile();
         path = URLDecoder.decode(path,  "utf-8");
         File f = null;
-        HtmlUtil.convert2Html (path+File.separator + "static" + File.separator +  "10.docx",path+File.separator + "static" + File.separator,"10.html");
+        HtmlUtil.convert2Html (path+File.separator + "static" + File.separator +  "1.docx",path+File.separator + "static" + File.separator,"1.html");*/
 
 
         return ResultDO.buildSuccess("");
@@ -308,29 +309,25 @@ public class UserController {
     @GetMapping("/protocoldownload/{param}")
     public void fileDownload(@PathVariable String param, HttpServletResponse response) throws IOException {
         OutputStream out = response.getOutputStream();
-        String  path = getClass().getResource("/").getFile();
-        //String  path =  "/home/micro-worker/wgb/static/";
-        path = URLDecoder.decode(path,  "utf-8");
-        System.out.println (param);
         File f = null;
-        if ("1".equals(param)) {
-            //f = new File(path+"1.html");
-            f = new File( path, File.separator + "static" + File.separator +  "9.html");
-        } else if ("2".equals(param)) {
-            //f = new File(path+"2.html");
-            f = new File( path, File.separator + "static" + File.separator + "2.html");
-        } else if ("3".equals(param)) {
-            //f = new File(path+"3.html");
-            f = new File( path, File.separator + "static" + File.separator + "8.html");
-        } else if ("4".equals(param)) {
-            //f = new File(path+"4.html");
-            f = new File(path + File.separator + "static" + File.separator + "7.html");
+        String  path = getClass().getResource("/").getFile();
+        path = URLDecoder.decode(path,  "utf-8");
+        path = path + File.separator + "static" + File.separator;
+        /*String  path =  "/home/micro-worker/wgb/static/";*/
+        System.out.println (param);
+
+        if ("1".equals(param)) {//微工宝用户使用协议及隐私条款
+            f = new File(path+"10.html");
+        } else if ("2".equals(param)) {//新功能介绍
+            f = new File(path+"2.html");
+        } else if ("3".equals(param)) {//人力和酒店
+            f = new File(path+"8.html");
+        } else if ("4".equals(param)) {//人力和小时工
+            f = new File(path+"7.html");
         } else if ("5".equals(param)) {
-            //f = new File(path+"5.html");
-            f = new File(path + File.separator + "static" + File.separator + "9.html");
+            f = new File(path+"10.html");
         } else if ("6".equals(param)) {
-            //f = new File(path+"6.html");
-            f = new File(path + File.separator + "static" + File.separator + "9.html");
+            f = new File(path+"10.html");
         } else {
             throw new ParamsException("参数错误");
         }

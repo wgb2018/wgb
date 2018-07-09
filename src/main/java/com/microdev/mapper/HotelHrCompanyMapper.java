@@ -32,6 +32,10 @@ public interface HotelHrCompanyMapper extends BaseMapper<HotelHrCompany> {
 
     int selectBindCountByHotelId(HotelHrIdBindDTO dto);
 
+    int selectRelieveCountByHotelId(HotelHrIdBindDTO dto);
+
+    int selectRelieveCountByHrId(HotelHrIdBindDTO dto);
+
     int selectBindCountByHrId(HotelHrIdBindDTO dto);
 
     HotelHrCompany selectByHrHotelId(@Param("hrId") String hrId,@Param("hotelId") String hotelId);

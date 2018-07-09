@@ -82,7 +82,7 @@ public class Message extends BaseEntity {
     private String requestId;
 
     /**
-     * 消息类型1补签申请2加时申请3请假申请4调配申请5绑定申请6新任务7申请取消任务8收入确认9申请替换10拒绝接单    * 11待派单12申请解绑13申请合作
+     * 消息类型1补签申请2加时申请3请假申请4调配申请5绑定申请6新任务7申请取消任务8收入确认9申请替换10拒绝接单* 11待派单12申请解绑13申请合作
      */
     private Integer messageType = 0;
 

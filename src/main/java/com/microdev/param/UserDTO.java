@@ -1,5 +1,6 @@
 package com.microdev.param;
 
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.microdev.model.Dict;
 import com.microdev.model.Role;
 import com.microdev.model.UserArea;
@@ -72,6 +73,8 @@ public class UserDTO {
      * 用户二维码
      */
     private String qrCode;
+
+    private String uniqueId;
 
     public Integer getUserCode() {
         return userCode;

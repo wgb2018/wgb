@@ -166,4 +166,8 @@ public interface CompanyService extends IService<Company> {
      * @return
      */
     ResultDO hotelHandleWorkerRecord(HotelHandleWorkerRecord record);
+    /**
+     * 酒店申请解绑人力公司
+     */
+    ResultDO hotelRelieveHrCompanySet(HotelHrIdBindDTO dto);
 }

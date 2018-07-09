@@ -105,5 +105,9 @@ public class TaskViewDTO {
      */
     private Integer status;
 
+    private Integer settlementPeriod;
+
+    private Integer settlementNum;
+
 
 }

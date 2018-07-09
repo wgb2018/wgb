@@ -19,6 +19,10 @@ public class HrTaskDistributeRequest {
      * 人力公司每小时薪资
      */
     private Double hourlyPay;
+
+    private Integer settlementPeriod;
+
+    private Integer settlementNum;
     /**
      * 指定的员工id
      */

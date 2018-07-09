@@ -20,7 +20,7 @@
     </update>
     <select id="findByNameAndCode" resultType="com.microdev.param.DictDTO">
         SELECT id as pid,name,code,text,ordinal,remark,extend
-        FROM dict WHERE name = #{name} AND code = #{code}
+        FROM dict WHERE name = #{name} AND code = #{code} and deleted = 0
     </select>
     <select id="findOne" resultType="com.microdev.model.Dict" parameterType="java.lang.String">
         select
@@ -30,7 +30,7 @@
     <select id="findByName" resultType="com.microdev.model.Dict" parameterType="java.lang.String">
         select
         <include refid="Dict_Column_List"/>
-        from dict where name = #{name}
+        from dict where name = #{name} and deleted = 0
     </select>
     <select id="findAll" resultType="com.microdev.model.Dict">
         select

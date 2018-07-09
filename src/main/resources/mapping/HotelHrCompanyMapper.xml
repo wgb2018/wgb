@@ -120,6 +120,22 @@ union
         AND STATUS IN (0,3)
     </select>
 
+    <select id = "selectRelieveCountByHotelId" parameterType="com.microdev.param.HotelHrIdBindDTO" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM hotel_hr_company WHERE hotel_id = #{hotelId} AND hr_id IN
+        <foreach collection="set" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        AND STATUS = 0
+    </select>
+
+    <select id = "selectRelieveCountByHrId" parameterType="com.microdev.param.HotelHrIdBindDTO" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM hotel_hr_company WHERE hr_id = #{hrId} AND hotel_id IN
+        <foreach collection="set" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        AND STATUS = 0
+    </select>
+
     <select id = "selectBindCountByHrId" parameterType="com.microdev.param.HotelHrIdBindDTO" resultType="java.lang.Integer">
         SELECT COUNT(1) FROM hotel_hr_company WHERE hr_id = #{hrId} AND hotel_id IN
         <foreach collection="set" open="(" close=")" separator="," item="item">

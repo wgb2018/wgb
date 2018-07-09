@@ -141,9 +141,9 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
             hotelTask.setConfirmedWorkers(hotelConfirmedWorkers+1);
         }
         if(hotelTask.getConfirmedWorkers() == hotelTask.getNeedWorkers()){
-            taskMapper.updateStatus(hotelTask.getPid(),4);
+            hotelTask.setStatus (4);
         }else{
-            taskMapper.updateStatus(hotelTask.getPid(),3);
+            hotelTask.setStatus (3);
         }
         //TODO 人力公司人数加1
         if (confirmedWorkers + 1 <= taskHr.getNeedWorkers()) {

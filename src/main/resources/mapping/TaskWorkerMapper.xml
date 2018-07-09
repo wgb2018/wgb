@@ -5,7 +5,8 @@
     id as pid, create_time, deleted, modify_time,
     confirmed_date, have_pay_money, minutes, no_promise, refused_reason, repast_times,
     settled, settled_date, should_pay_money, status, worker_id, task_hr_id, user_id, user_name,hourly_pay,hr_company_name,hotel_name,
-        hotel_id,from_date,to_date,day_start_time,day_end_time,task_type_code,task_type_text,task_content,hr_company_id,hotel_task_id,verification,un_confirmed_pay
+        hotel_id,from_date,to_date,day_start_time,day_end_time,task_type_code,task_type_text,task_content,hr_company_id,hotel_task_id,verification,un_confirmed_pay,
+        settlement_period,settlement_num
 </sql>
     <select id="findFirstById" resultType="com.microdev.model.TaskWorker" parameterType="java.lang.String">
         select
@@ -98,7 +99,7 @@
     </select>
     <select id="findAll" parameterType="com.microdev.param.TaskWorkerQuery" resultType="com.microdev.model.TaskWorker">
         select
-        t.id as pid, t.create_time, t.deleted, t.modify_time,CAST(t.un_confirmed_pay as DECIMAL(18,2)) as unConfirmedPay,
+        t.id as pid, t.create_time, t.deleted, t.modify_time,CAST(t.un_confirmed_pay as DECIMAL(18,2)) as unConfirmedPay,t.settlement_period as settlementPeriod,t.settlement_num as settlementNum,
         t.confirmed_date, CAST(t.have_pay_money as DECIMAL(18,2)) as havePayMoney, t.minutes, t.no_promise, t.refused_reason, t.repast_times,CAST(t.should_pay_money - t.have_pay_money - t.un_confirmed_pay as DECIMAL(18,2)) as  paidPayMoney,
         t.settled, t.settled_date, CAST(t.should_pay_money as DECIMAL(18,2)) as shouldPayMoney, t.status, t.worker_id, t.task_hr_id, t.user_id, t.user_name,t.hourly_pay,t.hr_company_name,t.hotel_name,
         t.hotel_id,t.from_date,t.to_date,t.day_start_time,t.day_end_time,t.task_type_code,t.task_type_text,t.task_content,t.hr_company_id,t.hotel_task_id
@@ -153,7 +154,7 @@
                     and t.have_pay_money &gt;= 0 and t.should_pay_money = t.have_pay_money
                 </if>
             </if>
-        </where> order by t.create_time desc
+        </where> order by t.create_time asc
     </select>
     <select id="findByHrTaskId" resultType="com.microdev.model.TaskWorker">
         select
@@ -276,7 +277,7 @@
                     and t.have_pay_money &gt;= 0 and t.should_pay_money = t.have_pay_money
                 </if>
             </if>
-        </where> order by t.create_time desc
+        </where> order by t.create_time asc
     </select>
 
     <select id = "selectTaskWorkerDate" resultType="com.microdev.model.TaskDateInfo">

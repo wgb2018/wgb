@@ -100,7 +100,7 @@ public class HotelController {
         return ResultDO.buildSuccess(companyService.supplementResponse(param.get("messageId"), param.get("status")));
     }
     /**
-     * 酒店申请替换小时工
+     * 酒店申请替换小时工(任务已开始)
      */
     @PostMapping("/hotels/changeWorker")
     public ResultDO changeWorker(@RequestBody Map<String, Object> map) {
@@ -147,6 +147,13 @@ public class HotelController {
     @PostMapping("/hotels/apply/bindHrCompany")
     public ResultDO bindHrCompany(@RequestBody HotelHrIdBindDTO dto) {
         return companyService.hotelAddHrCompanySet(dto);
+    }
+    /**
+     * 酒店申请解绑人力资源公司
+     */
+    @PostMapping("/hotels/relieve/bindHrCompany")
+    public ResultDO relieveHrCompany(@RequestBody HotelHrIdBindDTO dto) {
+        return companyService.hotelRelieveHrCompanySet(dto);
     }
 
     /**

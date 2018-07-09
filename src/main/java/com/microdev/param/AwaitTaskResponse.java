@@ -35,4 +35,8 @@ public class AwaitTaskResponse {
     private String taskHrId;//人力任务id
     private String workerTaskId;//小时工任务id
     private String taskTypeCode;//任务码
+    private String settlementPeriod;
+    private String settlementNum;
+    private String workerSettlementPeriod;
+    private String workerSettlementNum;
 }

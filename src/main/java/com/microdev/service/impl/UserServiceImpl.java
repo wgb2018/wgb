@@ -103,6 +103,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         if(user == null){
             throw new ParamsException("用户不存在");
         }
+        if(login.getPlatform () == PlatformType.PC){
+            if(user.getUserType () == UserType.worker){
+                throw new ParamsException("该用户为小时工，无权限登录");
+            }
+        }
         userDTO.setId(user.getPid());
         userDTO.setNickname(user.getNickname());
         userDTO.setRoleList(new ArrayList<>(user.getRoles()));

@@ -116,7 +116,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             }else if(queryDTO.getObservertype () == 1){
                 String total = dictMapper.findByNameAndCode ("HotelBindHrMaxNum","4").getText ();
                 Map<String,Object> map = new HashMap <> ();
-                Integer num = companyMapper.selectById (queryDTO.getObserverId ()).getActiveCompanys ();
+                Company company = companyMapper.selectById (queryDTO.getObserverId ());
+                Integer num = company.getActiveCompanys ();
                 map.clear ();
                 map.put("bindTotalNum",Integer.parseInt (total));
                 map.put("bindNum",num);
@@ -148,9 +149,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         result.put("page",paginator.getPage());
         Map<String,Object> map = new HashMap <> ();
         Company company = companyMapper.findCompanyById (request.getId ());
-        map.put ("bindNum",company.getActiveCompanys ());
-        map.put("bindTotalNum",Integer.parseInt (dictMapper.findByNameAndCode ("HrBindHotelMaxNum","5").getText ()));
-        return ResultDO.buildSuccess(null,result,map,null);
+        Integer num = company.getActiveCompanys ();
+        Integer total = Integer.parseInt (dictMapper.findByNameAndCode ("HrBindHotelMaxNum","5").getText ());
+        map.put ("bindNum",num);
+        map.put("bindTotalNum",total);
+        return ResultDO.buildSuccess("您已经绑定"+num+"家用人单位，还可以绑定"+ (total-num) +"家用人单位",result,map,null);
     }
 
     @Override
@@ -315,9 +318,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         result.put("page",paginator.getPage());
         Map<String,Object> map = new HashMap <> ();
         Company company = companyMapper.findCompanyById (request.getId ());
-        map.put ("bindNum",company.getActiveCompanys ());
-        map.put("bindTotalNum",Integer.parseInt (dictMapper.findByNameAndCode ("HotelBindHrMaxNum","4").getText ()));
-        return ResultDO.buildSuccess(null,result,map,null);
+        Integer num = company.getActiveCompanys ();
+        Integer total = Integer.parseInt (dictMapper.findByNameAndCode ("HotelBindHrMaxNum","4").getText ());
+        map.put ("bindNum",num);
+        map.put("bindTotalNum",total);
+        return ResultDO.buildSuccess("您已经绑定"+num+"家人力公司，还可以绑定"+(total-num)+"家人力公司",result,map,null);
     }
 
     @Override
@@ -795,8 +800,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             throw new ParamsException("参数错误");
         }
         Message message = messageMapper.selectById(messageId);
-        if (message == null || message.getStatus() == 1) {
+        if (message == null) {
             throw new ParamsException("消息参数错误");
+        }
+        if(message.getStatus() == 1){
+            throw new ParamsException("消息已处理");
         }
         message.setStatus(1);
         messageMapper.updateById(message);
@@ -819,8 +827,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             userCompany.setStatus(4);
             userCompanyMapper.update(userCompany);
             Company company = companyMapper.selectById(userCompany.getCompanyId());
+            String num = dictMapper.findByNameAndCode ("WorkerBindHrMaxNum","7").getText ();
             inform.setTitle("解绑成功");
-            inform.setContent(company.getName() + "同意了你的申请解绑。你可以添加新的合作人力公司，每人最多只能绑定5家人力公司");
+            inform.setContent(company.getName() + "同意了你的申请解绑。你可以添加新的合作人力公司，每人最多只能绑定"+num+"家人力公司");
             if(company.getActiveWorkers () == null){
                 company.setActiveWorkers (0);
             }
@@ -1266,6 +1275,81 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             }
         }
 
+        return ResultDO.buildSuccess("操作成功");
+    }
+    /**
+     * 酒店申请解绑人力公司
+     */
+    @Override
+    public ResultDO hotelRelieveHrCompanySet(HotelHrIdBindDTO dto) {
+        if (dto == null) {
+            throw new ParamsException("参数不能为空");
+        }
+
+        if (dto.getSet().size() == 0) {
+            throw new ParamsException("解绑的公司不能为空");
+        }
+
+        if(dto.getReason () == null || dto.getReason ().equals ("")){
+            throw new ParamsException("解绑的理由不能为空");
+        }
+        //1: 酒店移除的人力公司
+        //2: 人力移除的酒店
+        Integer type = dto.getRelieveType();
+
+        Set<String> hrSet = dto.getSet();
+
+        List<HotelHrCompany> list = new ArrayList<>();
+        HotelHrCompany hotelHr = null;
+        Company company = null;
+        if (type == 1) {
+            //酒店解绑人力
+            if (StringUtils.isEmpty(dto.getHotelId())) {
+                throw new ParamsException("参数hotelId为空");
+            }
+            int num = hotelHrCompanyMapper.selectRelieveCountByHotelId(dto);
+            if (num != dto.getSet().size()) {
+                throw new BusinessException("已申请解绑,请勿重复");
+            }
+                for (String hrId : hrSet) {
+                    hotelHr = hotelHrCompanyMapper.selectByHrHotelId(hrId,dto.getHotelId());
+                    if (hotelHr == null) {
+                        throw new BusinessException("数据异常，获取绑定关系失败");
+                    } else {
+                        hotelHr.setRelieveType(1);
+                        hotelHr.setStatus (5);
+                        hotelHrCompanyMapper.update(hotelHr);
+                    }
+                }
+            company = companyMapper.selectById(dto.getHotelId());
+
+        } else if (type == 2) {
+            //人力解绑酒店
+            if (StringUtils.isEmpty(dto.getHrId())) {
+                throw new ParamsException("参数hrId为空");
+            }
+            int num = hotelHrCompanyMapper.selectRelieveCountByHrId(dto);
+            if (num != dto.getSet().size()) {
+                throw new BusinessException("已申请解绑,请勿重复");
+            }
+
+                for (String hotelId : hrSet) {
+                    hotelHr = hotelHrCompanyMapper.selectByHrHotelId(dto.getHrId(),hotelId);
+                    if (hotelHr == null) {
+                        throw new BusinessException("数据异常，获取绑定关系失败");
+                    } else {
+                        hotelHr.setRelieveType(2);
+                        hotelHr.setStatus (5);
+                        hotelHrCompanyMapper.update(hotelHr);
+                    }
+                }
+            company = companyMapper.selectById(dto.getHrId());
+        }
+        if (list.size() > 0) {
+            hotelHrCompanyMapper.saveBatch(list);
+        }
+
+        messageService.hotelBindHrCompany(dto.getSet(), company, "applyUnbindMessage", type);
         return ResultDO.buildSuccess("操作成功");
     }
 

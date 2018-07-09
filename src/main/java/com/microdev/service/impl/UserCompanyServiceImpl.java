@@ -271,7 +271,14 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             result.put("result",list);
             result.put("page",paginator.getPage());
         }
-        return ResultDO.buildSuccess(null,result,map1,null);
+        if(map1.isEmpty ()){
+            return ResultDO.buildSuccess(null,result,map1,null);
+        }else{
+            Integer total = Integer.parseInt (map1.get("bindTotalNum").toString ())-Integer.parseInt (map1.get("bindNum").toString ());
+            return ResultDO.buildSuccess(
+                    "您已经绑定"+map1.get("bindNum")+"个小时工，还可以绑定"+total+"个小时工",result,map1,null);
+        }
+
     }
 
     @Override
@@ -331,7 +338,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         int num = userCompanyMapper.selectBindCountByWorkerId(queryDTO.getWorkerId());
         extra.put("bindTotalNum",Integer.parseInt (total));
         extra.put("bindNum",num);
-        return ResultDO.buildSuccess(null, result, extra, null);
+        return ResultDO.buildSuccess("您已经绑定"+num+"家人力公司，还可以绑定"+(Integer.parseInt (total)-num)+"家人力公司", result, extra, null);
     }
 
     @Override
@@ -385,7 +392,11 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             }
         }
         if(userCompanyList.size ()>0){
-            userCompanyMapper.saveBatch(userCompanyList);
+            try {
+                userCompanyMapper.saveBatch (userCompanyList);
+            }catch (Exception e){
+                throw new ParamsException ("申请提交重复");
+            }
         }
         messageService.bindUserHrCompany(c.getName(), hrId, list, 2);
         return "申请已发送";

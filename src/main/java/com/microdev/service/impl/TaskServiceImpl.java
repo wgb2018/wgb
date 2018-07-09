@@ -104,6 +104,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         task.setTaskTypeCode(request.getTaskTypeCode());
         task.setTaskContent(request.getTaskContent());
         task.setHourlyPay(request.getHourlyPay());
+        task.setSettlementPeriod (request.getSettlementPeriod ());
+        task.setSettlementNum (request.getSettlementNum ());
         taskMapper.insert(task);
         Set<TaskHrCompany> set = AddHrTask(task,request);
 
@@ -439,6 +441,10 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
 			taskHrCompany.setDayStartTime (task.getDayStartTime ());
 			taskHrCompany.setDayEndTime (task.getDayEndTime ());
 			taskHrCompany.setDistributeWorkers (0);
+			taskHrCompany.setSettlementNum (task.getSettlementNum ());
+			taskHrCompany.setSettlementPeriod (task.getSettlementPeriod ());
+			taskHrCompany.setWorkerSettlementPeriod (0);
+			taskHrCompany.setWorkerSettlementNum (0);
             taskHrCompanyMapper.insert(taskHrCompany);
 
             System.out.println (taskHrCompany.getPid ());
