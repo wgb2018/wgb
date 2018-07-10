@@ -207,4 +207,5 @@ public class HotelController {
 
         return companyService.hotelHandleWorkerRecord(record);
     }
+
 }

@@ -300,4 +300,14 @@ public class HrCompanyController {
         return taskHrCompanyService.hrHandleHotelReplace(param.get("messageId"), param.get("status"), param.get("workerId"));
     }
 
+    /**
+     * 人力申请解绑用人单位
+     * @param dto
+     * @return
+     */
+    @PostMapping("/hrcompany/relieve/bindHotel")
+    public ResultDO relieveHotel(@RequestBody HotelHrIdBindDTO dto) {
+        return companyService.hotelRelieveHrCompanySet(dto);
+    }
+
 }

@@ -9,6 +9,7 @@ import com.microdev.model.Message;
 import com.microdev.model.TaskHrCompany;
 import com.microdev.model.TaskWorker;
 import com.microdev.param.*;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Map;
@@ -42,9 +43,10 @@ public interface MessageService extends IService<Message> {
      * @param applyCompany 申请绑定的公司
      * @param pattern   采用解绑的或绑定的模板
      * @param type  1  酒店添加(解绑)的人力公司2：人力公司添加(解绑)的酒店
+     * @param reason 解绑原因
      * @return
      */
-    String hotelBindHrCompany(Set<String> bindCompany, Company applyCompany, String pattern, Integer type);
+    String hotelBindHrCompany(Set<String> bindCompany, Company applyCompany, String pattern, Integer type, String reason);
 
     /**
      * 小时工绑定或解绑人力公司
@@ -250,4 +252,11 @@ public interface MessageService extends IService<Message> {
      */
     ResultDO selectPcApply(String id, String roleType);
 
+    /**
+     * 酒店或人力处理解绑合作申请
+     * @param messageId  消息id
+     * @param status     0拒绝1同意
+     * @return
+     */
+    ResultDO hotelHrHandleBind(String messageId, String status);
 }

@@ -162,4 +162,8 @@
             select count(1)
             from task_hr_company where hr_company_id = #{hrCompanyId} and status in (4,5) and to_date &gt; now()
         </select>
+
+    <select id = "selectWorkHrTask" resultType="com.microdev.model.TaskHrCompany">
+        select <include refid="TaskHrCompany_Query_List"/> from task_hr_company where hotel_id = #{hotelId} and status in (1, 2, 4, 5, 6)
+    </select>
 </mapper>
