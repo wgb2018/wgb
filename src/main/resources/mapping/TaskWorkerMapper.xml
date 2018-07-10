@@ -291,4 +291,9 @@
             #{item}
         </foreach>
     </select>
+
+    <select id = "selectByUserHr" resultType="com.microdev.model.TaskWorker">
+        SELECT <include refid="TaskWorker_Query_List" /> FROM task_worker WHERE user_id = #{userId} AND hr_company_id = #{hrId}
+        AND STATUS IN (0,1,4) AND from_date &lt;= NOW() AND to_date &gt;= NOW()
+    </select>
 </mapper>

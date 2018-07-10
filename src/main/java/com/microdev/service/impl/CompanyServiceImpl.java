@@ -841,6 +841,16 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
             userCompany.setStatus(4);
             userCompanyMapper.update(userCompany);
             Company company = companyMapper.selectById(userCompany.getCompanyId());
+            //更新小时工接受该人力的任务
+            List<TaskWorker> taskWorkerList = taskWorkerMapper.selectByUserHr(user.getPid(), company.getPid());
+            if (taskWorkerList != null && taskWorkerList.size() > 0) {
+                for (TaskWorker taskWorker : taskWorkerList) {
+                    taskWorker.setStatus(3);
+                    taskWorker.setRefusedReason("已解除绑定");
+                    taskWorkerMapper.updateById(taskWorker);
+                }
+            }
+
             String num = dictMapper.findByNameAndCode("WorkerBindHrMaxNum", "7").getText();
             inform.setTitle("解绑成功");
             inform.setContent(company.getName() + "同意了你的申请解绑。你可以添加新的合作人力公司，每人最多只能绑定" + num + "家人力公司");
@@ -942,6 +952,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
         HotelHrCompany hotelHrCompany = hotelHrCompanyMapper.findOneHotelHr(message.getHotelId(), message.getHrCompanyId());
         if (hotelHrCompany == null) {
             throw new BusinessException("查询不到人力酒店关系");
+        }
+        if (hotelHrCompany.getStatus() != 3) {
+            return ResultDO.buildError("已处理");
         }
         Company hotel = null;
         Company hr = null;
