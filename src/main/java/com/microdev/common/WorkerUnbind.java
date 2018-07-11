@@ -1,11 +1,9 @@
 package com.microdev.common;
 
 import com.microdev.common.exception.BusinessException;
-import com.microdev.mapper.DictMapper;
-import com.microdev.mapper.MessageMapper;
-import com.microdev.mapper.UserCompanyMapper;
-import com.microdev.model.Message;
-import com.microdev.model.UserCompany;
+import com.microdev.common.exception.ParamsException;
+import com.microdev.mapper.*;
+import com.microdev.model.*;
 import com.microdev.param.DictDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +24,16 @@ public class WorkerUnbind {
     private DictMapper dictMapper;
     @Autowired
     private UserCompanyMapper userCompanyMapper;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private TaskWorkerMapper taskWorkerMapper;
+    @Autowired
+    private CompanyMapper companyMapper;
+    @Autowired
+    private WorkerMapper workerMapper;
+    @Autowired
+    private InformMapper informMapper;
 
     @Scheduled(cron = "0 0 * * * ?")
     public void scanUnbindMessage() {
@@ -65,11 +73,78 @@ public class WorkerUnbind {
                         userCompany.setStatus(4);
                         userCompany.setRelieveTime(OffsetDateTime.now());
                         userCompanyMapper.updateById(userCompany);
+                        relieveBind(userCompany);
                     }
                 }
             }
         }
     }
+
+    private void relieveBind(UserCompany userCompany) {
+        Inform inform = new Inform();
+        inform.setCreateTime(OffsetDateTime.now());
+        inform.setModifyTime(OffsetDateTime.now());
+        inform.setAcceptType(1);
+        inform.setSendType(2);
+
+        User user = userMapper.selectById(userCompany.getUserId());
+        if (user == null) {
+            logger.error("查询不到工作者:" + user.getPid());
+            return;
+        }
+        inform.setReceiveId(user.getWorkerId());
+
+        //更新小时工接受该人力的任务
+        List<TaskWorker> taskWorkerList = taskWorkerMapper.selectByUserHr(user.getPid(), userCompany.getCompanyId());
+        if (taskWorkerList != null && taskWorkerList.size() > 0) {
+            for (TaskWorker taskWorker : taskWorkerList) {
+                taskWorker.setStatus(3);
+                taskWorker.setRefusedReason("已解除绑定");
+                taskWorkerMapper.updateById(taskWorker);
+            }
+        }
+        Company company = companyMapper.selectById(userCompany.getCompanyId());
+        if (company == null) {
+            return;
+        }
+
+        String num = dictMapper.findByNameAndCode("WorkerBindHrMaxNum", "7").getText();
+        inform.setTitle("解绑成功");
+        inform.setContent(company.getName() + "同意了你的申请解绑。你可以添加新的合作人力公司，每人最多只能绑定" + num + "家人力公司");
+        if (company.getActiveWorkers() == null) {
+            company.setActiveWorkers(0);
+        }
+        if (company.getActiveWorkers() >= 1) {
+            company.setActiveWorkers(company.getActiveWorkers() - 1);
+        } else {
+            throw new ParamsException("数据异常");
+        }
+        company.setBindWorkers(true);
+        companyMapper.updateById(company);
+        Worker worker = workerMapper.queryById(user.getWorkerId());
+        if (worker.getActiveCompanys() == null) {
+            worker.setActiveCompanys(0);
+        }
+        if (worker.getActiveCompanys() >= 1) {
+            worker.setActiveCompanys(worker.getActiveCompanys() - 1);
+        } else {
+            throw new ParamsException("数据异常");
+        }
+        worker.setBindCompanys(true);
+        workerMapper.updateById(worker);
+        informMapper.insertInform(inform);
+
+        inform = new Inform();
+        inform.setCreateTime(OffsetDateTime.now());
+        inform.setModifyTime(OffsetDateTime.now());
+        inform.setAcceptType(2);
+        inform.setSendType(1);
+        inform.setReceiveId(userCompany.getCompanyId());
+        inform.setTitle("解绑成功");
+        inform.setContent(user.getNickname() + "解除了绑定关系");
+        informMapper.insertInform(inform);
+    }
+
 
     private boolean comparaTime(OffsetDateTime createTime, int maxNum) {
         OffsetDateTime nowTime = OffsetDateTime.now();

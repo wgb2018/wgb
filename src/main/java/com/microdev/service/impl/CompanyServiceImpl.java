@@ -864,7 +864,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
             }
             company.setBindWorkers(true);
             companyMapper.updateById(company);
-            Worker worker = workerMapper.queryById(userMapper.queryByUserId(userCompany.getUserId()).getWorkerId());
+            Worker worker = workerMapper.queryById(user.getWorkerId());
             if (worker.getActiveCompanys() == null) {
                 worker.setActiveCompanys(0);
             }
