@@ -700,9 +700,12 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             throw new ParamsException("添加的公司不能为空");
         }
         Integer type = dto.getBindType();
-
         Set<String> hrSet = dto.getSet();
-
+        for (String cid : hrSet) {
+           if(companyMapper.findCompanyById (cid).getStatus () == 0){
+               throw new ParamsException("公司状态为未审核，添加失败");
+           }
+        }
         List<HotelHrCompany> list = new ArrayList<>();
         HotelHrCompany hotelHr = null;
         Company company = null;
@@ -742,7 +745,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 }
             }
             company = companyMapper.selectById(dto.getHotelId());
-
+            if(company.getStatus () == 0) throw new ParamsException("公司状态为未审核，添加失败");
         } else if (type == 2) {
             //人力加酒店
             if (StringUtils.isEmpty(dto.getHrId())) {
@@ -779,9 +782,15 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 }
             }
             company = companyMapper.selectById(dto.getHrId());
+            if(company.getStatus () == 0) throw new ParamsException("公司状态为未审核，添加失败");
         }
         if (list.size() > 0) {
-            hotelHrCompanyMapper.saveBatch(list);
+            try{
+                hotelHrCompanyMapper.saveBatch(list);
+            }catch(Exception e){
+                throw new ParamsException ("绑定申请已提交，请勿重复提交");
+            }
+
         }
 
         messageService.hotelBindHrCompany(dto.getSet(), company, "applyBindMessage", type);

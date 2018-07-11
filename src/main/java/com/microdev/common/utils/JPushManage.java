@@ -1,9 +1,12 @@
 package com.microdev.common.utils;
 
 
+import cn.jpush.api.push.model.Message;
+import cn.jpush.api.push.model.Options;
 import cn.jpush.api.push.model.Platform;
 import cn.jpush.api.push.model.PushPayload;
 import cn.jpush.api.push.model.audience.Audience;
+import cn.jpush.api.push.model.notification.AndroidNotification;
 import cn.jpush.api.push.model.notification.IosNotification;
 import cn.jpush.api.push.model.notification.Notification;
 import com.microdev.mapper.UserMapper;
@@ -41,4 +44,21 @@ public class JPushManage {
                         .build ())
                 .build();
     }
+    public static PushPayload buildPushObject_all_message(String alias,String message)  {
+       /* User u = userMapper.findByMobile (alias);
+        if(u == null){
+            System.out.println ("推送手机号不存在");
+        }
+        u.setMsNum (u.getMsNum ()+1);
+        userMapper.updateById (u);*/
+        if(message == null){
+            message = "";
+        }
+        return PushPayload.newBuilder()
+                .setPlatform(Platform.all())
+                .setAudience(Audience.alias(alias))
+                .setMessage (Message.content (message))
+                .build();
+    }
+
 }

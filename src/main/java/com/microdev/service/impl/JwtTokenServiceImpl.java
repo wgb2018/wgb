@@ -1,10 +1,14 @@
 package com.microdev.service.impl;
 
+import cn.jiguang.common.resp.APIConnectionException;
+import cn.jiguang.common.resp.APIRequestException;
 import com.microdev.common.exception.AuthenticationException;
 import com.microdev.common.exception.ParamsException;
+import com.microdev.common.utils.JPushManage;
 import com.microdev.mapper.TaskWorkerMapper;
 import com.microdev.mapper.UserMapper;
 import com.microdev.mapper.VersionMapper;
+import com.microdev.model.JpushClient;
 import com.microdev.model.User;
 import com.microdev.param.TokenDTO;
 import com.microdev.param.TokenProperties;
@@ -15,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -27,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author liutf
@@ -42,6 +49,10 @@ public class JwtTokenServiceImpl implements TokenService {
     private TokenProperties tokenProperties;
     @Autowired
     private VersionMapper versionMapper;
+    @Autowired
+    private RedisTemplate redisTemplate;
+    @Autowired
+    private JpushClient jpushClient;
 
     /**
      * 用户登录成功，获取token
@@ -76,9 +87,8 @@ public class JwtTokenServiceImpl implements TokenService {
 
 
     @Override
-    public TokenDTO refreshToken(String refreshToken) throws Exception{
+    public TokenDTO refreshToken(String refreshToken,String uniqueId) throws Exception{
         Claims body = jwtParser(refreshToken);
-
         //判断是否已经过期
         OffsetDateTime expiration = OffsetDateTime.ofInstant(Instant.ofEpochMilli(body.getExpiration().getTime()), ZoneId.systemDefault());
         if (OffsetDateTime.now().isAfter(expiration)) {
@@ -97,7 +107,19 @@ public class JwtTokenServiceImpl implements TokenService {
         map.put("mobile", user.getMobile());
         map.put("userType", user.getUserType());
         map.put("platform", body.get("platform"));
-
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        String value = operations.get (user.getMobile());
+        if(value != null && !value.equals (uniqueId) && !value.equals ("")){
+            if(user.getUserType() == UserType.worker){
+                try {
+                    jpushClient.jC.sendPush (JPushManage.buildPushObject_all_message (user.getMobile(),uniqueId));
+                } catch (APIConnectionException e) {
+                    e.printStackTrace ( );
+                } catch (APIRequestException e) {
+                    e.printStackTrace ( );
+                }
+            }
+        }
         //重新生成 token
         OffsetDateTime nowDateTime = OffsetDateTime.now();
         OffsetDateTime access_token_date = nowDateTime.plusSeconds(tokenProperties.getAccessTokenLifetimeSeconds());
@@ -108,6 +130,7 @@ public class JwtTokenServiceImpl implements TokenService {
         tokenDTO.setRefresh_token(refreshToken);
         tokenDTO.setToken_type("bearer");
         tokenDTO.setExpires_in(tokenProperties.getAccessTokenLifetimeSeconds());
+        operations.set(user.getMobile (), uniqueId);
         return tokenDTO;
     }
 

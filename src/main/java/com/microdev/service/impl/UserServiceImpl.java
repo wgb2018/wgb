@@ -1,5 +1,7 @@
 package com.microdev.service.impl;
 
+import cn.jiguang.common.resp.APIConnectionException;
+import cn.jiguang.common.resp.APIRequestException;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -10,10 +12,7 @@ import com.microdev.common.exception.AuthorizationException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.oss.ObjectStoreService;
 import com.microdev.common.paging.Paginator;
-import com.microdev.common.utils.FileUtil;
-import com.microdev.common.utils.PasswordHash;
-import com.microdev.common.utils.QRCodeUtil;
-import com.microdev.common.utils.TokenUtil;
+import com.microdev.common.utils.*;
 import com.microdev.converter.UserConverter;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
@@ -24,6 +23,8 @@ import com.microdev.type.SocialType;
 import com.microdev.type.UserSex;
 import com.microdev.type.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -33,6 +34,7 @@ import java.io.File;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Transactional
 @Service
@@ -73,6 +75,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     FeedBackMapper feedBackMapper;
     @Autowired
     VersionMapper versionMapper;
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+    @Autowired
+    private JpushClient jpushClient;
     @Override
     public User create(User user) throws Exception{
         try{
@@ -98,11 +104,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
     @Override
     public TokenDTO login(UserDTO login) throws Exception {
+        System.out.println (login);
         User user = userMapper.findByMobile(login.getMobile());
-        UserDTO userDTO = new UserDTO();
         if(user == null){
             throw new ParamsException("用户不存在");
         }
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        String value = operations.get (login.getMobile ());
+        if(value != null && !value.equals (login.getUniqueId ()) && !value.equals ("")){
+            if(user.getUserType () == UserType.worker){
+                try {
+                    jpushClient.jC.sendPush (JPushManage.buildPushObject_all_message (login.getMobile (),login.getUniqueId ()));
+                } catch (APIConnectionException e) {
+                    e.printStackTrace ( );
+                } catch (APIRequestException e) {
+                    e.printStackTrace ( );
+                }
+            }
+        }
+        UserDTO userDTO = new UserDTO();
         if(login.getPlatform () == PlatformType.PC){
             if(user.getUserType () == UserType.worker){
                 throw new ParamsException("该用户为小时工，无权限登录");
@@ -113,6 +133,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         userDTO.setRoleList(new ArrayList<>(user.getRoles()));
         userDTO.setUserType(user.getUserType());
         if (user != null && PasswordHash.validatePassword(login.getPassword(), user.getPassword())) {
+            operations.set(user.getMobile (), login.getUniqueId ());
             return tokenService.accessToken(userDTO, login.getPlatform().name());
         }
         throw new ParamsException("用户名或密码错误");
@@ -205,16 +226,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         userDTO.setUsername(newUser.getUsername());
         userDTO.setUserType(newUser.getUserType());
         userDTO.setRoleList(roleList);
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        operations.set(register.getMobile (), register.getUniqueId ());
         return tokenService.accessToken(userDTO, register.getPlatform().name());
     }
     /**
      * 注销登录
      */
     @Override
-    public ResultDO logout() {
+    public ResultDO logout(String mobile) {
         HttpServletRequest request = ServiceContextHolder.getServiceContext().getHttpServletRequest();
         String token = TokenUtil.parseBearerToken(request);
         tokenService.deleteAccessToken(token);
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        operations.set(mobile, "");
         return ResultDO.buildSuccess ("用户退出成功");
     }
     /**

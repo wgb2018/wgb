@@ -16,7 +16,7 @@ public interface TokenService {
     /**
      * accessToken快过期的时候refreshToken
      */
-    TokenDTO refreshToken(String refreshToken) throws Exception;
+    TokenDTO refreshToken(String refreshToken,String uniqueId) throws Exception;
 
     /**
      * 根据 accessToken 获取登录用户信息

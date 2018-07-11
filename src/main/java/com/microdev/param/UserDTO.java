@@ -74,7 +74,7 @@ public class UserDTO {
      */
     private String qrCode;
 
-    private String uniqueId;
+    private String uniqueId = "";
 
     public Integer getUserCode() {
         return userCode;
