@@ -284,4 +284,16 @@
         select from_date, to_date, day_start_time, day_end_time
         from task_worker	where id = #{id}
     </select>
+
+    <select id = "selectByHrTaskList" resultType="com.microdev.model.TaskWorker">
+        select <include refid="TaskWorker_Query_List"/> from task_worker where task_hr_id in
+        <foreach collection="list" separator="," item="item" open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id = "selectByUserHr" resultType="com.microdev.model.TaskWorker">
+        SELECT <include refid="TaskWorker_Query_List" /> FROM task_worker WHERE user_id = #{userId} AND hr_company_id = #{hrId}
+        AND STATUS IN (0,1,4) AND from_date &lt;= NOW() AND to_date &gt;= NOW()
+    </select>
 </mapper>

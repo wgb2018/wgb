@@ -233,4 +233,15 @@ public class MessageController {
 
         return messageService.selectPcApply(param.get("id"), param.get("roleType"));
     }
+
+    /**
+     * 酒店或人力处理解绑申请
+     * @param messageId 消息id
+     * @param status    0拒绝1同意
+     * @return
+     */
+    @PostMapping("/message/{messageId}/companyUnbind/{status}")
+    public ResultDO hotelHandleHrBind(@PathVariable String messageId,@PathVariable String status) {
+        return messageService.hotelHrHandleBind(messageId, status);
+    }
 }

@@ -60,4 +60,7 @@ public interface TaskWorkerMapper extends BaseMapper<TaskWorker> {
 
     TaskDateInfo selectTaskWorkerDate(@Param ("id") String id);
 
+    List<TaskWorker> selectByHrTaskList(@Param("list") List<String> list);
+
+    List<TaskWorker> selectByUserHr(@Param("userId") String userId,@Param("hrId") String hrId);
 }

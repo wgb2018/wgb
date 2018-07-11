@@ -52,6 +52,7 @@ public class TaskHrCompany extends BaseEntity {
      * 5: 派单完成
      * 6.执行中
      * 7.已完成
+     * 8.终止
      */
     private Integer status;
     /**

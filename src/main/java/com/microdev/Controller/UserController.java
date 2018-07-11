@@ -350,6 +350,8 @@ public class UserController {
         out.close();
 
     }
+
+
     /**
      * 邀请注册
      */

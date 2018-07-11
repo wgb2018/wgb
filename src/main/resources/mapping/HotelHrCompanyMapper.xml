@@ -148,4 +148,5 @@ union
         select <include refid="query_Column_List"/> from hotel_hr_company
         where hr_id = #{hrId} and hotel_id = #{hotelId}
     </select>
+
 </mapper>

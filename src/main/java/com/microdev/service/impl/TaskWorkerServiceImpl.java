@@ -92,6 +92,9 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         }
         messageMapper.updateStatus (message.getPid ());
         TaskWorker taskWorker = taskWorkerMapper.findFirstById(message.getWorkerTaskId());
+        if (taskWorker.getStatus() == 2 || taskWorker.getStatus() == 3) {
+            return ResultDO.buildSuccess("任务已终止");
+        }
         if(!taskWorker.getFromDate ().isEqual (taskWorker.getToDate ())){
             if (taskWorker.getFromDate().isBefore(OffsetDateTime.now())) {
 
