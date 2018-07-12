@@ -1289,6 +1289,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         if (hotelHrCompany.getStatus() == 1) {
             return ResultDO.buildError("已解绑");
         }
+
+        Inform inform = new Inform();
+
         if ("1".equals(status)) {
             hotelHrCompany.setStatus(1);
             hotelHrCompanyMapper.updateById(hotelHrCompany);
@@ -1313,12 +1316,37 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                     taskWorkerMapper.updateById(taskWorker);
                 }
             }
+            if (applyType == 2) {
+                inform.setSendType(2);
+                inform.setAcceptType(3);
+                inform.setReceiveId(message.getHotelId());
+                inform.setContent("酒店终止了和您的合作");
+            } else if (applyType == 3) {
+                inform.setSendType(3);
+                inform.setAcceptType(2);
+                inform.setReceiveId(message.getHrCompanyId());
+                inform.setContent("人力终止了和您的合作");
+            }
+            inform.setTitle("解绑成功");
         } else if ("0".equals(status)) {
             hotelHrCompany.setStatus(0);
             hotelHrCompanyMapper.updateById(hotelHrCompany);
+            inform.setTitle("解绑被拒绝");
+            if (message.getApplyType() == 2) {
+                inform.setContent("人力拒绝了您的解除合作申请");
+                inform.setReceiveId(message.getHotelId());
+                inform.setAcceptType(3);
+                inform.setSendType(2);
+            } else if (message.getApplyType() == 3){
+                inform.setContent("酒店拒绝了您的解除合作申请");
+                inform.setReceiveId(message.getHrCompanyId());
+                inform.setAcceptType(2);
+                inform.setSendType(3);
+            }
         } else {
             throw new ParamsException("参数值错误");
         }
+        informService.insert(inform);
         return ResultDO.buildSuccess("处理成功");
     }
 

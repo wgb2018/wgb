@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -34,6 +35,10 @@ public class WorkerUnbind {
     private WorkerMapper workerMapper;
     @Autowired
     private InformMapper informMapper;
+    @Autowired
+    private HotelHrCompanyMapper hotelHrCompanyMapper;
+    @Autowired
+    private TaskHrCompanyMapper taskHrCompanyMapper;
 
     @Scheduled(cron = "0 0 * * * ?")
     public void scanUnbindMessage() {
@@ -65,34 +70,92 @@ public class WorkerUnbind {
             for (Message message : list) {
                 boolean flag = comparaTime(message.getCreateTime(), maxNum);
                 if (flag) {
-                    UserCompany userCompany = userCompanyMapper.selectByWorkerIdHrId(message.getHrCompanyId(), message.getWorkerId());
-                    if (userCompany == null) {
-                        logger.error("小时工人力关系查询不到,workerId=" + message.getWorkerId() + ";hrId=" + message.getHrCompanyId());
-                    } else {
-                        //解绑小时工和人力
-                        userCompany.setStatus(4);
-                        userCompany.setRelieveTime(OffsetDateTime.now());
-                        userCompanyMapper.updateById(userCompany);
-                        relieveBind(userCompany);
+                    message.setStatus(1);
+                    messageMapper.updateById(message);
+                    if (message.getApplicantType() == 1) {
+                        UserCompany userCompany = userCompanyMapper.selectByWorkerIdHrId(message.getHrCompanyId(), message.getWorkerId());
+                        if (userCompany == null) {
+                            logger.error("小时工人力关系查询不到,workerId=" + message.getWorkerId() + ";hrId=" + message.getHrCompanyId());
+                        } else {
+                            //解绑小时工和人力
+                            if (userCompany.getStatus() == 3) {
+                                userCompany.setStatus(4);
+                                userCompany.setRelieveTime(OffsetDateTime.now());
+                                userCompanyMapper.updateById(userCompany);
+                                relieveBind(userCompany);
+                            }
+
+                        }
+                    } else if (message.getApplicantType() == 2 || message.getApplicantType() == 3){
+                        HotelHrCompany hotelHrCompany = hotelHrCompanyMapper.selectByHrHotelId(message.getHrCompanyId(), message.getHotelId());
+                        if (hotelHrCompany == null) {
+                            logger.error("人力与用人单位关系查询不到，hrId=" + message.getHrCompanyId() + "; hotelId=" + message.getHotelId());
+                        } else {
+                            //解绑人力和用人单位并将任务终止
+                            if (hotelHrCompany.getStatus() == 5) {
+                                hotelHrCompany.setStatus(1);
+                                hotelHrCompany.setRelieveTime(OffsetDateTime.now());
+                                if (message.getApplicantType() == 2) {
+                                    hotelHrCompany.setRelieveType(2);
+                                } else {
+                                    hotelHrCompany.setRelieveType(3);
+                                }
+                                hotelHrCompanyMapper.updateById(hotelHrCompany);
+                                hotelHrRelieveBind(hotelHrCompany.getHotelId(), message.getApplyType(), message.getContent(), hotelHrCompany.getHrId());
+                            }
+
+                        }
                     }
                 }
             }
         }
     }
 
+    private void hotelHrRelieveBind(String hotelId, Integer applyType, String content, String hrId) {
+        List<TaskHrCompany> list = taskHrCompanyMapper.selectWorkHrTask(hotelId);
+        if (list != null && list.size() > 0) {
+            List<String> hrTaskList = new ArrayList<>();
+            for (TaskHrCompany hrTask : list) {
+                hrTaskList.add(hrTask.getPid());
+                hrTask.setStatus(8);
+                hrTask.setRefusedReason(content);
+                taskHrCompanyMapper.updateById(hrTask);
+            }
+            List<TaskWorker> taskWorkerList = taskWorkerMapper.selectByHrTaskList(hrTaskList);
+            for (TaskWorker taskWorker : taskWorkerList) {
+                taskWorker.setStatus(3);
+                if (applyType == 2) {
+                    taskWorker.setRefusedReason("用人单位终止任务");
+                } else if (applyType == 3) {
+                    taskWorker.setRefusedReason("人力终止任务");
+                }
+                taskWorkerMapper.updateById(taskWorker);
+            }
+            Inform inform = new Inform();
+            inform.setContent(list.get(0).getHrCompanyName() + "解除了和您的合作关系");
+            inform.setTitle("解绑成功");
+            inform.setSendType(2);
+            inform.setAcceptType(3);
+            inform.setReceiveId(hotelId);
+            informMapper.insertInform(inform);
+
+            inform = new Inform();
+            inform.setContent(list.get(0).getHotelName() + "解除了和您的合作关系");
+            inform.setTitle("解绑成功");
+            inform.setSendType(3);
+            inform.setAcceptType(2);
+            inform.setReceiveId(hrId);
+            informMapper.insertInform(inform);
+        }
+    }
+
     private void relieveBind(UserCompany userCompany) {
-        Inform inform = new Inform();
-        inform.setCreateTime(OffsetDateTime.now());
-        inform.setModifyTime(OffsetDateTime.now());
-        inform.setAcceptType(1);
-        inform.setSendType(2);
 
         User user = userMapper.selectById(userCompany.getUserId());
         if (user == null) {
             logger.error("查询不到工作者:" + user.getPid());
             return;
         }
-        inform.setReceiveId(user.getWorkerId());
 
         //更新小时工接受该人力的任务
         List<TaskWorker> taskWorkerList = taskWorkerMapper.selectByUserHr(user.getPid(), userCompany.getCompanyId());
@@ -109,8 +172,7 @@ public class WorkerUnbind {
         }
 
         String num = dictMapper.findByNameAndCode("WorkerBindHrMaxNum", "7").getText();
-        inform.setTitle("解绑成功");
-        inform.setContent(company.getName() + "同意了你的申请解绑。你可以添加新的合作人力公司，每人最多只能绑定" + num + "家人力公司");
+
         if (company.getActiveWorkers() == null) {
             company.setActiveWorkers(0);
         }
@@ -132,6 +194,15 @@ public class WorkerUnbind {
         }
         worker.setBindCompanys(true);
         workerMapper.updateById(worker);
+
+        Inform inform = new Inform();
+        inform.setCreateTime(OffsetDateTime.now());
+        inform.setModifyTime(OffsetDateTime.now());
+        inform.setAcceptType(1);
+        inform.setSendType(2);
+        inform.setReceiveId(user.getWorkerId());
+        inform.setTitle("解绑成功");
+        inform.setContent(company.getName() + "同意了你的申请解绑。你可以添加新的合作人力公司，每人最多只能绑定" + num + "家人力公司");
         informMapper.insertInform(inform);
 
         inform = new Inform();
