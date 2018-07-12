@@ -58,7 +58,7 @@ public interface MessageService extends IService<Message> {
      *            采用解绑的或绑定的模板
      * @return
      */
-    void bindHrCompany(String workerId, Set<String> hrCompanyId, String userName, String pattern);
+    void bindHrCompany(String workerId, Set<String> hrCompanyId, String userName, String pattern, String reason);
 
     /**
      * 酒店向人力公司派发任务

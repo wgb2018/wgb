@@ -10,7 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;import java.util.Set;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 小时工和人力公司关系
@@ -47,6 +49,7 @@ public class WorkerCompanyController {
     /**
      * 小时工申请解绑人力公司
      */
+    @Deprecated
     @GetMapping("/workers/{workId}/unbind/{hrId}")
     public ResultDO unbindHr(@PathVariable String workId,@PathVariable String hrId) {
         return userCompanyService.workerUnbindHr(workId,hrId);
@@ -86,5 +89,16 @@ public class WorkerCompanyController {
     @GetMapping("/hrcompany/{messageId}/bind/{status}")
     public ResultDO hrcompanyBindWorker(@PathVariable String messageId,@PathVariable String status) {
         return userCompanyService.hrRespondWorkerBind(messageId, status);
+    }
+
+    /**
+     * 工作者申请解绑人力
+     * @param param
+     * @return
+     */
+    @PostMapping("/worker/apply/unbind/hr")
+    public ResultDO workerUnbindHr(@RequestBody Map<String, String> param) {
+
+        return userCompanyService.workerApplyUnbindHr(param);
     }
 }

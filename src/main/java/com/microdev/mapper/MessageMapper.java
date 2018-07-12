@@ -121,4 +121,6 @@ public interface MessageMapper extends BaseMapper<Message> {
     int selectUnreadHrCount(@Param("hrId") String hrId);
 
     int selectUnreadHotelCount(@Param("hotelId") String hotelId);
+
+    MessageDetailsResponse selectHrHotelUnbind(@Param("messageId") String messageId,@Param("type") String type);
 }
