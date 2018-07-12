@@ -59,8 +59,11 @@ public interface Constant {
         add("/findbyname/*");
         add("/admin/dicts/*");
         add("/files");
+        add("/files/UE");
         add("/check/version");
         add("/version/*");
+        add("/*/guide");
+        add("/downlaod");
     }};
 
 

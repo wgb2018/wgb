@@ -218,6 +218,29 @@ public class UserController {
         //返回地址给前端
         return ResultDO.buildSuccess("上传文件成功", fileURI);
     }
+    /**
+     * 上传文件
+     * 上传文件到服务器，比如：用户图像、营业执照 等等
+     */
+    /*@GetMapping("/{fileType}/files/{fileAddress}")*/
+    //@GetMapping("/files")
+    @PostMapping("/files/UE")
+    public ImgResponse uploadFileA(@RequestParam("file") MultipartFile file) throws Exception {
+        String filePath = "avater".toLowerCase() + "/" + file.getOriginalFilename ();
+        //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
+        String fileURI = objectStoreService.uploadObject(filePath, file.getBytes());
+        //返回地址给前端
+        ImgResponse im = new ImgResponse ();
+        im.setState ("SUCCESS");
+        im.setTitle (file.getOriginalFilename ());
+        im.setUrl (file.getOriginalFilename ());
+        im.setOriginal (file.getOriginalFilename ());
+        return im;
+    }
+    @GetMapping("/files/UE")
+    public ResultDO uploadFileB() throws Exception {
+        return null;
+    }
     @GetMapping("/user/test")
     public ResultDO test() throws Exception{
         User user = userService.selectById("0ffe5af3-21f2-4f87-bdec-c7bd1106db6f");
@@ -240,7 +263,7 @@ public class UserController {
 
 
         // app 上传
-        File file;
+        /*File file;
         String fileURI = null;
         String filePath;
         //file = QRCodeUtil.createQRCode ("3a267b284a1641ed9fb143fb3ff2d6c5WGBhotel");
@@ -252,7 +275,7 @@ public class UserController {
         //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
         fileURI = objectStoreService.uploadFile(filePath, file);
 
-        System.out.println ("fileURI:"+fileURI);
+        System.out.println ("fileURI:"+fileURI);*/
 
 
 
@@ -300,6 +323,8 @@ public class UserController {
         File f = null;
         HtmlUtil.convert2Html (path+File.separator + "static" + File.separator +  "12.docx",path+File.separator + "static" + File.separator,"12.html");*/
 
+        String str = "wgba001";
+        System.out.println (str.substring (0,4));
 
         return ResultDO.buildSuccess("");
     }
@@ -393,6 +418,4 @@ public class UserController {
     public ResultDO checkVersion() throws Exception{
         return ResultDO.buildSuccess (versionMapper.selectVersion ());
     }
-
-
 }

@@ -19,7 +19,6 @@ public class DirectoryServiceImpl extends ServiceImpl<DirectoryMapper,Directory>
     DirectoryMapper directoryMapper;
     @Override
     public ResultDO selectAll(Directory directory) {
-        directoryMapper.selectByDirectory(directory);
-        return null;
+        return ResultDO.buildSuccess (directoryMapper.selectByDirectory(directory));
     }
 }

@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.microdev.mapper.DirectoryMapper">
-    <sql id="Role_Column_List">
-        id as pid, create_time, deleted, modify_time, code, name
+    <sql id="Directory_Column_List">
+        id as pid, create_time, deleted, modify_time, title, location, content, status
     </sql>
+    <select id="selectByDirectory" resultType="com.microdev.model.Directory" parameterType="com.microdev.model.Directory">
+        select <include refid="Directory_Column_List" /> from directory
+        <where>
+            <if test="location !=null and location !=''">
+                location = #{location}
+            </if>
+            <if test="title !=null and title !=''">
+                and title like concat('%', #{title},'%')
+            </if>
+        </where>
+    </select>
 </mapper>

@@ -57,7 +57,7 @@
                     (select area_id from area_relation where id = #{observerId}) and id_type = 2
                     )b on a.id = b.id
                     where a.id not IN
-                    (select hr_id from hotel_hr_company where hotel_id = #{observerId} and status IN (0,3))
+                    (select hr_id from hotel_hr_company where hotel_id = #{observerId} and status IN (0,3,5))
                     )
                 </if>
                 <if test="observertype == 2">
@@ -70,7 +70,7 @@
                     (select area_id from area_relation where id = #{observerId}) and id_type = 1
                     )b on a.id = b.id
                     where a.id not IN
-                    (select hotel_id from hotel_hr_company where hr_id = #{observerId} and status IN (0,3))
+                    (select hotel_id from hotel_hr_company where hr_id = #{observerId} and status IN (0,3,5))
                     )
                 </if>
             </if>
@@ -89,10 +89,12 @@
         </if>
 
         order by create_time desc-->
-        SELECT c.name,c.company_type as companyType,c.logo,c.address,c.business_license as businessLicense,c.leader,c.leader_mobile as leaderMobile,c.status,c.confirmed_time as confirmedTime,c.latitude,c.longitude,c.id as pid, hh.status AS bindType,c.area FROM company c
+        SELECT c.name,c.company_type as companyType,c.logo,c.address,c.business_license as businessLicense,c.leader,c.leader_mobile as leaderMobile,c.status,c.confirmed_time as confirmedTime,c.latitude,c.longitude,c.id as pid, hh.status AS bindType,c.area,
+        hh.status as relationStatus
+        FROM company c
         INNER JOIN
         (
-        SELECT hotel_id,STATUS FROM hotel_hr_company WHERE hr_id = #{id} AND STATUS IN (0,3,4)
+        SELECT hotel_id,STATUS FROM hotel_hr_company WHERE hr_id = #{id} AND STATUS IN (0,3,4,5)
         ) hh ON c.id = hh.hotel_id
         <if test="name != null and name !=''">
             and c.name like concat('%', #{name},'%')
@@ -100,8 +102,11 @@
         <if test="leader != null and leader !=''">
             and c.leader like concat('%', #{leader},'%')
         </if>
-        <if test="status != null">
+        <if test="status != null and status != 50">
             and hh.status = #{status}
+        </if>
+        <if test="status == 50">
+            and hh.status in (0,5)
         </if>
         <if test="serviceType != null and serviceType !=''">
             and 1 &lt;= (select count(0) from task_type_relation where id = c.id and task_type_id = #{serviceType})
@@ -120,10 +125,12 @@
             and leader like '%${leader}%'
         </if>
         order by create_time desc-->
-        SELECT c.name,c.company_type as companyType,c.logo,c.address,c.business_license as businessLicense,c.leader,c.leader_mobile as leaderMobile,c.status,c.confirmed_time as confirmedTime,c.latitude,c.longitude,c.id as pid, hh.status AS bindType,IFNULL(c.area,'') as area FROM company c
+        SELECT c.name,c.company_type as companyType,c.logo,c.address,c.business_license as businessLicense,c.leader,c.leader_mobile as leaderMobile,c.status,c.confirmed_time as confirmedTime,c.latitude,c.longitude,c.id as pid, hh.status AS bindType,IFNULL(c.area,'') as area,
+        hh.status as relationStatus
+        FROM company c
         INNER JOIN
         (
-        SELECT hr_id, STATUS FROM hotel_hr_company WHERE hotel_id = #{id} AND STATUS IN (0,3,4)
+        SELECT hr_id, STATUS FROM hotel_hr_company WHERE hotel_id = #{id} AND STATUS IN (0,3,4,5)
         ) hh ON c.id = hh.hr_id
         <if test="name != null and name !=''">
             and c.name like concat('%', #{name},'%')
@@ -131,9 +138,12 @@
         <if test="leader != null and leader !=''">
             and c.leader like concat('%', #{leader},'%')
         </if>
-        <if test="status != null">
+        <if test="status != null and status != 50">
         and hh.status = #{status}
-    </if>
+        </if>
+        <if test="status == 50">
+            and hh.status in (0,5)
+        </if>
         <if test="serviceType != null and serviceType !=''">
             and 1 &lt;= (select count(0) from task_type_relation where id = c.id and task_type_id = #{serviceType})
         </if>

@@ -139,7 +139,19 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     public ResultDO hrCompanyHotels(Paginator paginator, CompanyQueryDTO request) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         List<Map<String, Object>> list = companyMapper.queryHotelsByHrId(request);
-
+        OffsetDateTime applyTime = null;
+        OffsetDateTime nowTime = OffsetDateTime.now();
+        DictDTO dict = dictMapper.findByNameAndCode("MaxUnbindDay","9");
+        Integer maxNum = Integer.parseInt(dict.getText());
+        for (Map<String, Object> obj:list) {
+            if(Integer.parseInt (obj.get ("relationStatus").toString ()) == 5){
+                applyTime = hotelHrCompanyMapper.selectByHrHotelId (request.getId (),obj.get("pid").toString ()).getModifyTime ();
+                long leaveMinute = (nowTime.toEpochSecond() - applyTime.toEpochSecond()) / 60;
+                int hour = (int)(leaveMinute % 60 == 0 ? leaveMinute / 60 : (leaveMinute / 60) + 1);
+                hour = maxNum * 24 - hour <= 0 ? 0 : maxNum * 24 - hour;
+                obj.put("hour",hour/24 + "天" + hour%24 + "小时");
+            }
+        }
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
         HashMap<String,Object> result = new HashMap<>();
         //设置获取到的总记录数total：
@@ -309,6 +321,19 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     public ResultDO hotelHrCompanies(Paginator paginator, CompanyQueryDTO request) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         List<Map<String, Object>> list=  companyMapper.queryCompanysByHotelId(request);
+        OffsetDateTime applyTime = null;
+        OffsetDateTime nowTime = OffsetDateTime.now();
+        DictDTO dict = dictMapper.findByNameAndCode("MaxUnbindDay","9");
+        Integer maxNum = Integer.parseInt(dict.getText());
+        for (Map<String, Object> obj:list) {
+            if(Integer.parseInt (obj.get ("relationStatus").toString ()) == 5){
+                applyTime = hotelHrCompanyMapper.selectByHrHotelId (obj.get("pid").toString (),request.getId ()).getModifyTime ();
+                long leaveMinute = (nowTime.toEpochSecond() - applyTime.toEpochSecond()) / 60;
+                int hour = (int)(leaveMinute % 60 == 0 ? leaveMinute / 60 : (leaveMinute / 60) + 1);
+                hour = maxNum * 24 - hour <= 0 ? 0 : maxNum * 24 - hour;
+                obj.put("hour",hour/24 + "天" + hour%24 + "小时");
+            }
+        }
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
         HashMap<String,Object> result = new HashMap<>();
         //设置获取到的总记录数total：
@@ -793,7 +818,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
         }
 
-        messageService.hotelBindHrCompany(dto.getSet(), company, "applyBindMessage", type);
+        messageService.hotelBindHrCompany(dto.getSet(), company, "applyBindMessage", type,null);
         return ResultDO.buildSuccess("操作成功");
     }
 

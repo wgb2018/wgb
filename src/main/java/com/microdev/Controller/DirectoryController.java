@@ -15,9 +15,10 @@ public class DirectoryController {
     /**
      * 编辑用户指南
      */
-    @PostMapping("/directory/edit")
+    @PostMapping("/update/guide")
     public ResultDO edit(@RequestBody Directory directory) {
-        return null;
+        directoryService.updateById (directory);
+        return ResultDO.buildSuccess ("数据更新成功");
     }
     /**
      * 添加用户指南
@@ -36,7 +37,7 @@ public class DirectoryController {
     /**
      * 查看用户指南
      */
-    @PostMapping("/directory/query")
+    @PostMapping("/search/guide")
     public ResultDO query(@RequestBody Directory directory) {
         return directoryService.selectAll(directory);
     }

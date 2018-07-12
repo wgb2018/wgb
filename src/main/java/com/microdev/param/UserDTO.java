@@ -20,6 +20,8 @@ import java.util.*;
  */
 @Data
 public class UserDTO {
+    private String tgCode;
+
     private String id;
     /**
      * 头像路径

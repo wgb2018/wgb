@@ -12,10 +12,7 @@ import com.microdev.common.exception.AuthorizationException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.oss.ObjectStoreService;
 import com.microdev.common.paging.Paginator;
-import com.microdev.common.utils.FileUtil;
-import com.microdev.common.utils.PasswordHash;
-import com.microdev.common.utils.QRCodeUtil;
-import com.microdev.common.utils.TokenUtil;
+import com.microdev.common.utils.*;
 import com.microdev.converter.UserConverter;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
@@ -82,6 +79,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     private StringRedisTemplate redisTemplate;
     @Autowired
     private JpushClient jpushClient;
+    @Autowired
+    private PropagandaMapper propagandaMapper;
     @Override
     public User create(User user) throws Exception{
         try{
@@ -178,8 +177,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             worker.setBindCompanys (true);
             worker.setActiveCompanys (0);
             workerMapper.updateById (worker);
-
             newUser.setWorkerId(worker.getPid());
+            if(register.getTgCode ()!=null){
+                Propaganda pa = propagandaMapper.selectById (register.getTgCode ());
+                if(pa == null){
+                    pa = new Propaganda ();
+                    pa.setName (register.getTgCode ());
+                    pa.setHr (0);
+                    pa.setHotel (0);
+                    pa.setWorker (1);
+                    pa.setTotal (1);
+                    pa.setLeader (register.getTgCode ().substring (0,4));
+                    propagandaMapper.insert (pa);
+                }else{
+                    pa.setTotal (pa.getTotal ()+1);
+                    pa.setWorker (pa.getWorker ()+1);
+                    propagandaMapper.updateById (pa);
+                }
+            }
         } else if(newUser.getUserType().name().equals("hotel")){
             Company company = new Company();
             company.setStatus(0);
@@ -198,6 +213,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             fileURI = objectStoreService.uploadFile(filePath, file);
             company.setQrCode (fileURI);
             companyMapper.updateById (company);
+            if(register.getTgCode ()!=null){
+                Propaganda pa = propagandaMapper.selectById (register.getTgCode ());
+                if(pa == null){
+                    pa = new Propaganda ();
+                    pa.setName (register.getTgCode ());
+                    pa.setHr (0);
+                    pa.setHotel (1);
+                    pa.setWorker (0);
+                    pa.setTotal (1);
+                    pa.setLeader (register.getTgCode ().substring (0,4));
+                    propagandaMapper.insert (pa);
+                }else{
+                    pa.setTotal (pa.getTotal ()+1);
+                    pa.setHotel (pa.getHotel ()+1);
+                    propagandaMapper.updateById (pa);
+                }
+            }
         }else if(newUser.getUserType().name().equals("hr")){
             Company company = new Company();
             company.setStatus(0);
@@ -216,6 +248,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             fileURI = objectStoreService.uploadFile(filePath, file);
             company.setQrCode (fileURI);
             companyMapper.updateById (company);
+            if(register.getTgCode ()!=null){
+                Propaganda pa = propagandaMapper.selectById (register.getTgCode ());
+                if(pa == null){
+                    pa = new Propaganda ();
+                    pa.setName (register.getTgCode ());
+                    pa.setHr (1);
+                    pa.setHotel (0);
+                    pa.setWorker (0);
+                    pa.setTotal (1);
+                    pa.setLeader (register.getTgCode ().substring (0,4));
+                    propagandaMapper.insert (pa);
+                }else{
+                    pa.setTotal (pa.getTotal ()+1);
+                    pa.setHr (pa.getHr ()+1);
+                    propagandaMapper.updateById (pa);
+                }
+            }
         }
         //存入用户
         userMapper.insert(newUser);

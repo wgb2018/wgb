@@ -21,7 +21,7 @@ public class AwaitHandleInfo {
     private String lackWorkers;
     private String hrNeedWorkers;//人力所需人数
     /**
-     * 1正在做的任务2等待做的任务3派单中的任务4等待派单的任务5等待接单的任务6等待处理的任务7新任务   8申请调换的任务9申 请取消的任务10拒绝接单的任务11申请补签的任务12申请请假的任务13申请加时的任务14申请调配的任务
+     * 消息类型1补签申请2加时申请3请假申请4调配申请5绑定申请6新任务7申请取消任务8收入确认9申请替换10拒绝接单* 11待派单12申请解绑13申请合作
      */
     private Integer type;
     private String logo;
@@ -38,4 +38,12 @@ public class AwaitHandleInfo {
     private OffsetDateTime createTime;
     private AwaitTaskResponse taskResponse;
     private MessageDetailsResponse detailsResponse;
+    /**
+     *消息发送者类型1小时工2人力公司3酒店4系统
+     */
+    private int applicantType;
+    /**
+     * 申请类型0代表人力公司派发任务给小时工，1代表被申请方为小时工，2代表被申请方为人力资源公司，      *  3代表被申请方为酒店
+     */
+    private int applyType;
 }
