@@ -1291,8 +1291,17 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         }
 
         Inform inform = new Inform();
-
         if ("1".equals(status)) {
+            Company company = companyMapper.selectById(hotelId);
+            if (company == null) {
+                return ResultDO.buildError("查询不到酒店");
+            }
+            if (company.getActiveCompanys() != null && company.getActiveCompanys() > 0) {
+                company.setActiveCompanys(company.getActiveCompanys() - 1);
+                companyMapper.updateById(company);
+            } else {
+                return ResultDO.buildError("数据异常");
+            }
             hotelHrCompany.setStatus(1);
             hotelHrCompanyMapper.updateById(hotelHrCompany);
             int applyType = message.getApplyType();
