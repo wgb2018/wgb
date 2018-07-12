@@ -93,6 +93,18 @@ public class WorkerUnbind {
                         } else {
                             //解绑人力和用人单位并将任务终止
                             if (hotelHrCompany.getStatus() == 5) {
+                                Company company = companyMapper.selectById(hotelHrCompany.getHotelId());
+                                if (company == null) {
+                                    logger.error("查询不到酒店,hotelId=" + hotelHrCompany.getHotelId());
+                                    continue;
+                                }
+                                if (company.getActiveCompanys() != null && company.getActiveCompanys() > 0) {
+                                    company.setActiveCompanys(company.getActiveCompanys() - 1);
+                                    companyMapper.updateById(company);
+                                } else {
+                                    logger.error("数据异常,hotelId=" + hotelHrCompany.getHotelId());
+                                    continue;
+                                }
                                 hotelHrCompany.setStatus(1);
                                 hotelHrCompany.setRelieveTime(OffsetDateTime.now());
                                 if (message.getApplicantType() == 2) {
