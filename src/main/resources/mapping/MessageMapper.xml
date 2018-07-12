@@ -410,7 +410,7 @@ ORDER BY createTime DESC
         UNION
 
         (
-        SELECT m3.is_task,m3.content,m3.id AS messageId,m3.`create_time` AS createTime,IFNULL(c3.`address`,'') AS address,c3.`logo`,NULL AS task_type_text,NULL AS fromDate, NULL AS toDate,NULL AS dayStartTime,NULL AS dayEndTime,
+        SELECT m3.is_task,m3.message_content as content,m3.id AS messageId,m3.`create_time` AS createTime,IFNULL(c3.`address`,'') AS address,c3.`logo`,NULL AS task_type_text,NULL AS fromDate, NULL AS toDate,NULL AS dayStartTime,NULL AS dayEndTime,
         NULL AS hotel_name, 0 AS confirmedWorkers,0 AS needWorkers,
         0 AS lackWorkers,NULL AS hotel_id, NULL AS id, message_type AS type,0 AS hourlyPay,c3.`area`,0 AS hrNeedWorkers ,0 AS hrConfirmedWorkers FROM message m3
         INNER JOIN company c3
