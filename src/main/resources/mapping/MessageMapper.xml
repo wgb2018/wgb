@@ -991,4 +991,15 @@ WHERE m.message_type = 6 AND m.`apply_type` = 2 AND m.`hr_company_id` = #{hrId}
         </if>
         ) ORDER BY createTime DESC
     </select>
+
+    <select id = "selectHrHotelUnbind" resultType="com.microdev.param.MessageDetailsResponse">
+        SELECT c.name as companyName,c.leader as name,c.leader_mobile as mobile,c.address,c.area,m.message_type,
+DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%i') as createTime,c.logo,m.content,c.id as pid,m.hr_task_id as taskHrId,
+m.worker_task_id as workerTaskId,m.task_id AS taskHotelId FROM
+(SELECT * FROM message WHERE id = #{messageId}) m
+INNER JOIN company c ON <if test = "type == 'hr'"> m.hr_company_id = c.id</if>
+        <if test = "type == hotel">
+          m.hotel_id = c.id
+        </if>
+    </select>
 </mapper>

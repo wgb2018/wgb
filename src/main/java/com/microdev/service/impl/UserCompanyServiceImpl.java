@@ -198,7 +198,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         }
         Set<String> set = new HashSet<>();
         set.add(hrId);
-        messageService.bindHrCompany(user.getWorkerId(), set, user.getNickname(), "applyUnbindMessage");
+        messageService.bindHrCompany(user.getWorkerId(), set, user.getNickname(), "applyUnbindMessage", "");
         return    ResultDO.buildSuccess("解绑已提交");
     }
 
@@ -519,6 +519,42 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         }
         informMapper.insertInform(inform);
         return ResultDO.buildSuccess("绑定成功");
+    }
+
+    /**
+     * 工作者申请解绑人力
+     * @param param
+     * @return
+     */
+    @Override
+    public ResultDO workerApplyUnbindHr(Map<String, String> param) {
+        if (StringUtils.isEmpty(param.get("workerId")) || StringUtils.isEmpty(param.get("hrId"))
+                || StringUtils.isEmpty(param.get("reason"))) {
+            throw new ParamsException("参数不能为空");
+        }
+        UserCompany userCompany= userCompanyMapper.selectByWorkerIdHrId(param.get("hrId"), param.get("workerId"));
+        if(userCompany==null){
+            throw new ParamsException("未找到匹配的信息");
+        }
+        if(userCompany.getStatus () == 3){
+            return  ResultDO.buildSuccess("解绑申请已提交过");
+        }
+        //TODO 已绑定是否返回重复绑定提示WorkerRelieveHrDays
+        DictDTO dict= dictMapper.findByNameAndCode("WorkerRelieveHrDays","8");
+        Integer days=Integer.parseInt(dict.getText());
+        userCompany.setStatus(3);
+        userCompany.setRefusedReason(param.get("reason"));
+        OffsetDateTime releaseTime=OffsetDateTime.now().plusDays(days);
+        userCompany.setRelieveTime(releaseTime);
+        userCompanyMapper.updateById(userCompany);
+        User user = userMapper.selectById(userCompany.getUserId());
+        if (user == null) {
+            throw new ParamsException("用户不存在");
+        }
+        Set<String> set = new HashSet<>();
+        set.add(param.get("hrId"));
+        messageService.bindHrCompany(user.getWorkerId(), set, user.getNickname(), "applyUnbindMessage", param.get("reason"));
+        return    ResultDO.buildSuccess("解绑已提交");
     }
 
 

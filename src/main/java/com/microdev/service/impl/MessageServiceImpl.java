@@ -194,7 +194,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      * @return
      */
     @Override
-    public void bindHrCompany(String workerId, Set<String> hrCompanyId, String userName, String pattern) {
+    public void bindHrCompany(String workerId, Set<String> hrCompanyId, String userName, String pattern, String reason) {
         if (StringUtils.isEmpty(workerId) || hrCompanyId == null || hrCompanyId.size() == 0
                 || StringUtils.isEmpty(userName) || StringUtils.isEmpty(pattern)) {
             throw new ParamsException("参数不能为空");
@@ -223,6 +223,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 m.setContent(userName + "向您发出了绑定申请");
             } else {
                 m.setMessageType(12);
+                m.setContent(reason);
                 m.setContent(userName + "向您发出了解绑申请");
             }
             m.setMessageContent(c);
@@ -675,17 +676,24 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     @Override
     public MessageDetailsResponse selectMessageDetails(String messageId, String messagetype, String type) {
 
-        if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(type)) {
+        if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(type) || StringUtils.isEmpty(messagetype)) {
             throw new ParamsException("参数不能为空");
         }
         MessageDetailsResponse response = null;
         //根据消息id和类型查询待处理信息
         if ("12".equals(type)) {
-
-            response = messageMapper.selectWorkerApply(messageId);
-            if (response != null) {
-                response.setOriginator(response.getName());
+            if ("worker".equals(messagetype)) {
+                response = messageMapper.selectWorkerApply(messageId);
+                if (response != null) {
+                    response.setOriginator(response.getName());
+                }
+            } else if ("hotel".equals(messagetype) || "hr".equals(messagetype)){
+                response = messageMapper.selectHrHotelUnbind(messageId, messagetype);
+                if (response != null) {
+                    response.setOriginator(response.getCompanyName());
+                }
             }
+
         } else if ("13".equals(type)) {
             if ("hr".equals(messagetype)) {
                 response = messageMapper.selectCompanyApply(messageId);

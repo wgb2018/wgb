@@ -64,6 +64,11 @@ public interface UserCompanyService extends IService<UserCompany> {
      */
     ResultDO hrRespondWorkerBind(String messageId, String status);
 
-
+    /**
+     * 工作者申请解绑人力
+     * @param param
+     * @return
+     */
+    ResultDO workerApplyUnbindHr(Map<String, String> param);
 
 }
