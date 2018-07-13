@@ -145,7 +145,13 @@ public class UserDTO {
 
 	private String birthdayNew;
 
+    private String handheldIdentity;
 
+    private Double stature;
+
+    private Double weight;
+
+    private Integer education;
     public String getId() {
         return id;
     }

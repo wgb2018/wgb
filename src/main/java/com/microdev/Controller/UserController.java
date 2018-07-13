@@ -263,7 +263,7 @@ public class UserController {
 
 
         // app 上传
-        /*File file;
+        File file;
         String fileURI = null;
         String filePath;
         //file = QRCodeUtil.createQRCode ("3a267b284a1641ed9fb143fb3ff2d6c5WGBhotel");
@@ -275,7 +275,7 @@ public class UserController {
         //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
         fileURI = objectStoreService.uploadFile(filePath, file);
 
-        System.out.println ("fileURI:"+fileURI);*/
+        System.out.println ("fileURI:"+fileURI);
 
 
 
@@ -323,9 +323,9 @@ public class UserController {
         File f = null;
         HtmlUtil.convert2Html (path+File.separator + "static" + File.separator +  "12.docx",path+File.separator + "static" + File.separator,"12.html");*/
 
-        String str = "wgba001";
+        /*String str = "wgba001";
         System.out.println (str.substring (0,4));
-
+*/
         return ResultDO.buildSuccess("");
     }
 	@GetMapping("/{mobile}/verifyMobile/{smsCode}")

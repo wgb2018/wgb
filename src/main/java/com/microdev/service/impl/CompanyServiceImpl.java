@@ -878,7 +878,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
             String num = dictMapper.findByNameAndCode("WorkerBindHrMaxNum", "7").getText();
             inform.setTitle("解绑成功");
-            inform.setContent(company.getName() + "同意了你的申请解绑。你可以添加新的合作人力公司，每人最多只能绑定5家人力公司");
+            inform.setContent(company.getName() + "同意了你的申请解绑。你可以添加新的合作人力公司，每人最多只能绑定"+num+"家人力公司");
             if(company.getActiveWorkers () == null){
                 company.setActiveWorkers (0);
             }

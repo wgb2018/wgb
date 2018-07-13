@@ -40,5 +40,21 @@ public class Worker extends BaseEntity {
      * 2 :已冻结
      */
     private Integer status;
+    /**
+     * 手持身份证
+     */
+    private String handheldIdentity;
+    /**
+     * 身高
+     */
+    private Double stature;
+    /**
+     * 体重
+     */
+    private Double weight;
+    /**
+     * 学历
+     */
+    private Integer education;
 
 }

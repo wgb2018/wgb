@@ -176,18 +176,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             worker.setQrCode (fileURI);
             worker.setBindCompanys (true);
             worker.setActiveCompanys (0);
+            worker.setHandheldIdentity (register.getHandheldIdentity ());
+            worker.setStature (register.getStature ());
+            worker.setWeight (register.getWeight ());
+            worker.setEducation (register.getEducation ());
             workerMapper.updateById (worker);
             newUser.setWorkerId(worker.getPid());
             if(register.getTgCode ()!=null){
                 Propaganda pa = propagandaMapper.selectById (register.getTgCode ());
                 if(pa == null){
                     pa = new Propaganda ();
-                    pa.setName (register.getTgCode ());
+                    pa.setId (register.getTgCode ());
                     pa.setHr (0);
                     pa.setHotel (0);
                     pa.setWorker (1);
                     pa.setTotal (1);
-                    pa.setLeader (register.getTgCode ().substring (0,4));
+                    try{
+                        pa.setLeader (register.getTgCode ().substring (0,4));
+                    }catch(Exception e){
+                        e.printStackTrace ();
+                        ResultDO.buildSuccess ("邀请码无效");
+                    }
                     propagandaMapper.insert (pa);
                 }else{
                     pa.setTotal (pa.getTotal ()+1);
@@ -217,12 +226,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                 Propaganda pa = propagandaMapper.selectById (register.getTgCode ());
                 if(pa == null){
                     pa = new Propaganda ();
-                    pa.setName (register.getTgCode ());
+                    pa.setId (register.getTgCode ());
                     pa.setHr (0);
                     pa.setHotel (1);
                     pa.setWorker (0);
                     pa.setTotal (1);
-                    pa.setLeader (register.getTgCode ().substring (0,4));
+                    try{
+                        pa.setLeader (register.getTgCode ().substring (0,4));
+                    }catch(Exception e){
+                        e.printStackTrace ();
+                        ResultDO.buildSuccess ("邀请码无效");
+                    }
                     propagandaMapper.insert (pa);
                 }else{
                     pa.setTotal (pa.getTotal ()+1);
@@ -252,12 +266,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                 Propaganda pa = propagandaMapper.selectById (register.getTgCode ());
                 if(pa == null){
                     pa = new Propaganda ();
-                    pa.setName (register.getTgCode ());
+                    pa.setId (register.getTgCode ());
                     pa.setHr (1);
                     pa.setHotel (0);
                     pa.setWorker (0);
                     pa.setTotal (1);
-                    pa.setLeader (register.getTgCode ().substring (0,4));
+                    try{
+                        pa.setLeader (register.getTgCode ().substring (0,4));
+                    }catch(Exception e){
+                        e.printStackTrace ();
+                        ResultDO.buildSuccess ("邀请码无效");
+                    }
                     propagandaMapper.insert (pa);
                 }else{
                     pa.setTotal (pa.getTotal ()+1);
@@ -458,6 +477,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             if(userDTO.getIdCardBack ()!=null && userDTO.getIdCardBack ()!="")worker.setIdcardBack (userDTO.getIdCardBack());
             if(userDTO.getIdCardFront ()!=null && userDTO.getIdCardFront ()!="")worker.setIdcardFront (userDTO.getIdCardFront ());
             if(userDTO.getIdCardNumber ()!=null && userDTO.getIdCardNumber ()!="")worker.setIdcardNumber (userDTO.getIdCardNumber ());
+            if(userDTO.getHandheldIdentity ()!=null && userDTO.getHandheldIdentity ()!="")worker.setHandheldIdentity  (userDTO.getHandheldIdentity ());
+            if(userDTO.getStature ()!=null)worker.setStature  (userDTO.getStature ());
+            if(userDTO.getWeight ()!=null)worker.setWeight (userDTO.getWeight ());
+            if(userDTO.getEducation ()!=null)worker.setEducation (userDTO.getEducation ());
+
             worker.setPid (user.getWorkerId ());
 
             workerMapper.updateById (worker);

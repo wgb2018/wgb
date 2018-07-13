@@ -3,10 +3,14 @@ package com.microdev.model;
 import com.baomidou.mybatisplus.annotations.TableName;
 import lombok.Data;
 
+import java.time.OffsetDateTime;
+
 @Data
 @TableName("Propaganda")
 public class Propaganda {
-    private String name;
+    private String id;
+    private OffsetDateTime createTime;
+    private OffsetDateTime modifyTime;
     private Integer worker;
     private Integer hr;
     private Integer hotel;

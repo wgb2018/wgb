@@ -169,7 +169,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             hrTask.setStatus (3);
             hrTask.setRefusedReason ("派单超时，以为您拒绝此任务");
             taskHrCompanyMapper.updateById (hrTask);
-            return ResultDO.buildSuccess ("派单超时");
+            return ResultDO.buildError ("派单超时");
         }
         //Company hrCompany=companyMapper.findCompanyById(hrTask.getHrCompanyId());
         taskMapper.updateStatus (hrTask.getTaskId ( ), 3);
