@@ -53,8 +53,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     @Autowired
     private TaskHrCompanyMapper taskHrCompanyMapper;
     @Autowired
-    private InformMapper informMapper;
-    /**
+    private InformMapper informMapper;    /**
      * 创建消息模板
      */
     @Override
@@ -681,7 +680,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         MessageDetailsResponse response = null;
         //根据消息id和类型查询待处理信息
         if ("12".equals(type)) {
-            if ("hr".equals(messagetype)) {
+            
+if ("      hr".equals(messagetype)) {
                 Message message = messageMapper.selectById(messageId);
                 if (message != null) {
                     if (message.getApplicantType() == 1) {
@@ -699,10 +699,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             } else if ("hotel".equals(messagetype)) {
                 response = messageMapper.selectHrHotelUnbind(messageId, "hr");
                 if (response != null) {
+
                     response.setOriginator(response.getCompanyName());
                 }
-            }
-        } else if ("13".equals(type)) {
+            }        } else if ("13".equals(type)) {
             if ("hr".equals(messagetype)) {
                 response = messageMapper.selectCompanyApply(messageId);
             } else if ("hotel".equals(messagetype)) {
@@ -1301,15 +1301,27 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         Inform inform = new Inform();
         if ("1".equals(status)) {
             Company company = companyMapper.selectById(hotelId);
-            if (company == null) {
+            Company hrCompany = companyMapper.selectById(hrId);
+            if (company == null ) {
                 return ResultDO.buildError("查询不到酒店");
+            }
+            if (hrCompany == null) {
+                return ResultDO.buildError("查询不到人力");
             }
             if (company.getActiveCompanys() != null && company.getActiveCompanys() > 0) {
                 company.setActiveCompanys(company.getActiveCompanys() - 1);
-                companyMapper.updateById(company);
+
             } else {
                 return ResultDO.buildError("数据异常");
             }
+            if (hrCompany.getActiveCompanys() != null && hrCompany.getActiveCompanys() > 0) {
+                hrCompany.setActiveCompanys(hrCompany.getActiveCompanys() - 1);
+            } else {
+                return ResultDO.buildError("数据异常");
+            }
+            //更新人力及酒店的活跃公司数量
+            companyMapper.updateById(company);
+            companyMapper.updateById(hrCompany);
             hotelHrCompany.setStatus(1);
             hotelHrCompanyMapper.updateById(hotelHrCompany);
             int applyType = message.getApplyType();
@@ -1363,8 +1375,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         } else {
             throw new ParamsException("参数值错误");
         }
-        informMapper.insertInform (inform);
-        return ResultDO.buildSuccess("处理成功");
+            informMapper.insertInform(inform);        return ResultDO.buildSuccess("处理成功");
     }
 
     private String transMessageType(String messageType) {
