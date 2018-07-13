@@ -52,6 +52,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     private HotelHrCompanyMapper hotelHrCompanyMapper;
     @Autowired
     private TaskHrCompanyMapper taskHrCompanyMapper;
+    @Autowired
+    private InformMapper informMapper;
 
     /**
      * 创建消息模板
@@ -224,7 +226,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             } else {
                 m.setMessageType(12);
                 m.setContent(reason);
-                m.setContent(userName + "向您发出了解绑申请");
             }
             m.setMessageContent(c);
             String hrId = it.next();
@@ -682,13 +683,24 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         MessageDetailsResponse response = null;
         //根据消息id和类型查询待处理信息
         if ("12".equals(type)) {
-            if ("worker".equals(messagetype)) {
-                response = messageMapper.selectWorkerApply(messageId);
-                if (response != null) {
-                    response.setOriginator(response.getName());
-                }
-            } else if ("hotel".equals(messagetype) || "hr".equals(messagetype)){
-                response = messageMapper.selectHrHotelUnbind(messageId, messagetype);
+
+            if ("hr".equals(messagetype)) {
+               Message message = messageMapper.selectById(messageId);
+               if (message != null) {
+                   if (message.getApplicantType() == 1) {
+                       response = messageMapper.selectWorkerApply(messageId);
+                       if (response != null) {
+                           response.setOriginator(response.getName());
+                       }
+                   } else if (message.getApplicantType() == 3) {
+                       response = messageMapper.selectHrHotelUnbind(messageId, "hotel");
+                       if (response != null) {
+                           response.setOriginator(response.getCompanyName());
+                       }
+                   }
+               }
+            } else if ("hotel".equals(messagetype)) {
+                response = messageMapper.selectHrHotelUnbind(messageId, "hr");
                 if (response != null) {
                     response.setOriginator(response.getCompanyName());
                 }
@@ -1293,15 +1305,27 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         Inform inform = new Inform();
         if ("1".equals(status)) {
             Company company = companyMapper.selectById(hotelId);
-            if (company == null) {
+            Company hrCompany = companyMapper.selectById(hrId);
+            if (company == null ) {
                 return ResultDO.buildError("查询不到酒店");
+            }
+            if (hrCompany == null) {
+                return ResultDO.buildError("查询不到人力");
             }
             if (company.getActiveCompanys() != null && company.getActiveCompanys() > 0) {
                 company.setActiveCompanys(company.getActiveCompanys() - 1);
-                companyMapper.updateById(company);
+
             } else {
                 return ResultDO.buildError("数据异常");
             }
+            if (hrCompany.getActiveCompanys() != null && hrCompany.getActiveCompanys() > 0) {
+                hrCompany.setActiveCompanys(hrCompany.getActiveCompanys() - 1);
+            } else {
+                return ResultDO.buildError("数据异常");
+            }
+            //更新人力及酒店的活跃公司数量
+            companyMapper.updateById(company);
+            companyMapper.updateById(hrCompany);
             hotelHrCompany.setStatus(1);
             hotelHrCompanyMapper.updateById(hotelHrCompany);
             int applyType = message.getApplyType();
@@ -1355,7 +1379,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         } else {
             throw new ParamsException("参数值错误");
         }
-        informService.insert(inform);
+        informMapper.insertInform(inform);
         return ResultDO.buildSuccess("处理成功");
     }
 

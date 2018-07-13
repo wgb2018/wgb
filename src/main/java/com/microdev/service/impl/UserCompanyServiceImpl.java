@@ -454,7 +454,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
      */
     @Override
     public ResultDO hrRespondWorkerBind(String messageId, String status) {
-        logger.info("hrRespondWorkerBind:" + messageId + ";status=" + status);
+
         if (StringUtils.isEmpty(messageId) || (!"0".equals(status) && !"1".equals(status))) {
             return ResultDO.buildError("参数错误");
         }

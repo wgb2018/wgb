@@ -240,7 +240,7 @@ public class MessageController {
      * @param status    0拒绝1同意
      * @return
      */
-    @PostMapping("/message/{messageId}/companyUnbind/{status}")
+    @GetMapping("/message/{messageId}/companyUnbind/{status}")
     public ResultDO hotelHandleHrBind(@PathVariable String messageId,@PathVariable String status) {
         return messageService.hotelHrHandleBind(messageId, status);
     }

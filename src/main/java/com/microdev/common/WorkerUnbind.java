@@ -94,17 +94,31 @@ public class WorkerUnbind {
                             //解绑人力和用人单位并将任务终止
                             if (hotelHrCompany.getStatus() == 5) {
                                 Company company = companyMapper.selectById(hotelHrCompany.getHotelId());
+                                Company hrCompany = companyMapper.selectById(hotelHrCompany.getHrId());
                                 if (company == null) {
                                     logger.error("查询不到酒店,hotelId=" + hotelHrCompany.getHotelId());
                                     continue;
                                 }
+                                if (hrCompany == null) {
+                                    logger.error("查询不到人力，hrId=" + hotelHrCompany.getHrId());
+                                }
                                 if (company.getActiveCompanys() != null && company.getActiveCompanys() > 0) {
                                     company.setActiveCompanys(company.getActiveCompanys() - 1);
-                                    companyMapper.updateById(company);
+                                    company.setBindCompanys(true);
                                 } else {
                                     logger.error("数据异常,hotelId=" + hotelHrCompany.getHotelId());
                                     continue;
                                 }
+                                if (hrCompany.getActiveCompanys() != null && hrCompany.getActiveCompanys() > 0) {
+                                    hrCompany.setActiveCompanys(hrCompany.getActiveCompanys() - 1);
+                                    hrCompany.setBindCompanys(true);
+                                } else {
+                                    logger.error("数据异常,hrId=" + hotelHrCompany.getHrId());
+                                    continue;
+                                }
+                                //更新人力及酒店的活跃公司数量
+                                companyMapper.updateById(company);
+                                companyMapper.updateById(hrCompany);
                                 hotelHrCompany.setStatus(1);
                                 hotelHrCompany.setRelieveTime(OffsetDateTime.now());
                                 if (message.getApplicantType() == 2) {
