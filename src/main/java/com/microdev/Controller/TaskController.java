@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 酒店任务相关的Api
+ * 用人单位任务相关的Api
  */
 @RestController
 public class TaskController {
@@ -25,7 +25,7 @@ public class TaskController {
     TaskWorkerService taskWorkerService;
 
     /**
-     * 发布酒店任务
+     * 发布用人单位任务
      */
     @PostMapping("/tasks")
     public ResultDO createCompany(@RequestBody CreateTaskRequest createTaskRequest) {
@@ -41,7 +41,7 @@ public class TaskController {
         return taskService.getTaskById(id);
     }
     /**
-     * 分页查询酒店任务
+     * 分页查询用人单位任务
      */
     @PostMapping("/tasks/search")
     public ResultDO getPageData( @RequestBody PagingDO<TaskQueryDTO> paging) {
@@ -49,14 +49,14 @@ public class TaskController {
         return taskService.getPageTasks(paging.getPaginator(),paging.getSelector());
     }
     /**
-     * 酒店按任务给人力公司结账(发送消息)
+     * 用人单位按任务给人力公司结账(发送消息)
      */
     @PostMapping("/hotel/pay/hrCompany")
     public ResultDO payHr(@RequestBody PayParam PayHrParam) {
         return taskService.hotelPayHr(PayHrParam);
     }
     /**
-     * 酒店设置人力公司下哪个任务下哪个小时工违约
+     * 用人单位设置人力公司下哪个任务下哪个小时工违约
      */
     @PutMapping("/admin/tasks/{workerTaskId}/no-promise/")
     public ResultDO NoPromise(@PathVariable String workerTaskId) {
@@ -65,7 +65,7 @@ public class TaskController {
     }
 
     /**
-     * 酒店同意人力拒绝任务并再次派发
+     * 用人单位同意人力拒绝任务并再次派发
      * @param createTaskRequest
      * @return
      */

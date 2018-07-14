@@ -34,11 +34,11 @@ public class Bill extends BaseEntity{
     @TableField(exist = false)
     private String hrCompanyLogo;
     /**
-     * 酒店ID
+     * 用人单位ID
      */
     private String hotelId;
     /**
-     * 酒店名称
+     * 用人单位名称
      */
     @TableField(exist = false)
     private String hotelName;
@@ -59,7 +59,7 @@ public class Bill extends BaseEntity{
     private String workerAvatar;
     /**
      * 支付类型
-     * 1酒店支付人力公司
+     * 1用人单位支付人力公司
      * 2人力公司支付小时工
      */
     private Integer payType;

@@ -20,26 +20,26 @@ public interface TaskService extends IService<Task> {
      */
     ResultDO getPageTasks(Paginator paginator, TaskQueryDTO taskQueryDTO);
     /**
-     * 酒店支付人力公司
+     * 用人单位支付人力公司
      */
     ResultDO hotelPayHr(PayParam PayHrParam);
 
     /**
-     * 酒店再次派发任务
+     * 用人单位再次派发任务
      * @param request
      * @return
      */
     ResultDO hotelAgainSendTask(CreateTaskRequest request);
 
     /**
-     * 酒店同意人力拒绝任务并再次派发
+     * 用人单位同意人力拒绝任务并再次派发
      * @param request
      * @return
      */
     ResultDO hotelAgreeAndSendTask(CreateTaskRequest request);
 
     /**
-     * 查询当前酒店任务数量
+     * 查询当前用人单位任务数量
      * @param applyParamDTO
      * @return
      */

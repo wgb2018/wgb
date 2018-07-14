@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 酒店、人力公司根据ID绑定
+ * 用人单位、人力公司根据ID绑定
  */
 @Data
 public class HotelHrIdBindDTO {
@@ -24,7 +24,7 @@ public class HotelHrIdBindDTO {
         this.relieveType=relieveType;
     }
     /**
-     * 酒店
+     * 用人单位
      */
     private String hotelId;
     /**
@@ -32,9 +32,9 @@ public class HotelHrIdBindDTO {
      */
     private String hrId;
     /**
-     *   记录该关系是酒店添加的人力公司；还是人力公司添加的酒店
-     * 1  酒店添加的人力公司
-     * 2：人力公司添加的酒店
+     *   记录该关系是用人单位添加的人力公司；还是人力公司添加的用人单位
+     * 1  用人单位添加的人力公司
+     * 2：人力公司添加的用人单位
      */
     private Integer  bindType;
     private Integer  relieveType;

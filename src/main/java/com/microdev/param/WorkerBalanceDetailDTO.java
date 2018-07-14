@@ -26,7 +26,7 @@ public class WorkerBalanceDetailDTO {
      */
     private CompanyDTO hrCompany;
     /**
-     * 发布该任务的酒店信息
+     * 发布该任务的用人单位信息
      */
     private CompanyDTO hotel;
 }

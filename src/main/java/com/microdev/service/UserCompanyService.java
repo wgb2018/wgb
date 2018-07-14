@@ -31,7 +31,7 @@ public interface UserCompanyService extends IService<UserCompany> {
 	ResultDO removeHrWorkers(List<String> hrTaskDistributeRequest);
 
     /**
-     *人力申请绑定酒店
+     *人力申请绑定用人单位
      * @param hrId
      * @param set
      * @return

@@ -12,11 +12,11 @@ public class TaskQueryDTO {
      */
     private String Id;
     /**
-     * 酒店Id
+     * 用人单位Id
      */
     private String hotelId;
     /**
-     * 酒店名称
+     * 用人单位名称
      */
     private String hotelName;
     /**

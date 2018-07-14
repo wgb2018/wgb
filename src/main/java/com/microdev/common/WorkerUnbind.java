@@ -96,7 +96,7 @@ public class WorkerUnbind {
                                 Company company = companyMapper.selectById(hotelHrCompany.getHotelId());
                                 Company hrCompany = companyMapper.selectById(hotelHrCompany.getHrId());
                                 if (company == null) {
-                                    logger.error("查询不到酒店,hotelId=" + hotelHrCompany.getHotelId());
+                                    logger.error("查询不到用人单位,hotelId=" + hotelHrCompany.getHotelId());
                                     continue;
                                 }
                                 if (hrCompany == null) {
@@ -116,7 +116,7 @@ public class WorkerUnbind {
                                     logger.error("数据异常,hrId=" + hotelHrCompany.getHrId());
                                     continue;
                                 }
-                                //更新人力及酒店的活跃公司数量
+                                //更新人力及用人单位的活跃公司数量
                                 companyMapper.updateById(company);
                                 companyMapper.updateById(hrCompany);
                                 hotelHrCompany.setStatus(1);

@@ -68,7 +68,7 @@ public class UserCompany extends BaseEntity {
      */
     private String companyId;
     /**
-     * 公司类型，1：酒店，2：人力公司
+     * 公司类型，1：用人单位，2：人力公司
      */
     private Integer companyType;
 

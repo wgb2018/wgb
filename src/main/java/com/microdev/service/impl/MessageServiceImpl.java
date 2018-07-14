@@ -117,6 +117,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     }
 
     /**
+
      * 用人单位绑定或解绑人力公司 人力解绑或绑定用人单位
      */
     @Override
@@ -226,6 +227,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 m.setContent(reason);
             }
             m.setMessageContent(c);
+
             String companyId = it.next();
             m.setHrCompanyId(companyId);
             m.setApplyType(2);
@@ -244,6 +246,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             }
             list.add(m);
             try {
+
                 jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (companyId).getLeaderMobile (), m.getMessageContent ()));
             } catch (APIConnectionException e) {
                 e.printStackTrace ( );
@@ -255,6 +258,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     }
 
     /**
+
      * 用人单位向人力公司派发任务
      * @param set
      * @param hotel
@@ -409,6 +413,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     /**
      * 查询未读消息数量及各个类型的数量
      * @param id            用户角色id
+
      * @param applyType     用户类型worker小时工hr人力公司hotel用人单位
      * @return
      */
@@ -668,6 +673,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     /**
      * 查询消息明细
      * @param messageId   消息id
+
      * @param messagetype 用户类型小时工worker,人力hr用人单位hotel
      * @param type        消息类型
      * @return
@@ -681,7 +687,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         MessageDetailsResponse response = null;
         //根据消息id和类型查询待处理信息
         if ("12".equals(type)) {
-            if ("hr".equals(messagetype)) {
+
                 Message message = messageMapper.selectById(messageId);
                 if (message != null) {
                     if (message.getApplicantType() == 1) {
@@ -802,6 +808,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     /**
      * 查询消息明细---任务信息
      * @param messageId         消息id
+
      * @param messagetype       用户类型小时工worker,人力hr用人单位hotel
      * @param type              消息类型
      * @return
@@ -1154,6 +1161,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     }
 
     /**
+
      * Pc端查询用人单位替换小时工
      * @param dto
      * @param paginator
@@ -1177,6 +1185,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     }
 
     /**
+
      * pc端查询用人单位支付
      * @param dto
      * @param paginator
@@ -1242,6 +1251,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     /**
      * pc端查询申请消息
      * @param id
+
      * @param roleType   人力hr用人单位hotel
      * @return
      */
@@ -1253,8 +1263,19 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         List<MessageResponse> list = null;
         if ("hr".equals(roleType)) {
             list = messageMapper.selectPcHrApplyInfo(id);
+            if (list != null && list.size() > 0) {
+                for (MessageResponse response : list) {
+                    if ("12".equals(response.getMessageType()) && response.getApplicantType() == 3) {
+                        //酒店解绑人力是21
+                        response.setMessageType("21");
+                    }
+                }
+            }
         } else if ("hotel".equals(roleType)) {
+            //人力解绑酒店是22
             list = messageMapper.selectPcHotelApplyInfo(id);
+        } else if ("worker".equals(roleType)) {
+
         } else {
             throw new ParamsException("参数的值错误");
         }
@@ -1265,6 +1286,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     }
 
     /**
+
      * 用人单位或人力处理解绑合作申请
      * @param messageId   消息id
      * @param status      0拒绝1同意
@@ -1303,6 +1325,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             Company company = companyMapper.selectById(hotelId);
             Company hrCompany = companyMapper.selectById(hrId);
             if (company == null ) {
+
                 return ResultDO.buildError("查询不到用人单位");
             }
             if (hrCompany == null) {
@@ -1319,6 +1342,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             } else {
                 return ResultDO.buildError("数据异常");
             }
+
             //更新人力及用人单位的活跃公司数量
             companyMapper.updateById(company);
             companyMapper.updateById(hrCompany);
@@ -1349,13 +1373,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 inform.setSendType(2);
                 inform.setAcceptType(3);
                 inform.setReceiveId(message.getHotelId());
-                inform.setContent(hrCompany.getName ()+"终止了和您的合作");
-            } else if (applyType == 3) {
+                inform.setContent("用人单位拒绝了您的解除合作申请");            } else if (applyType == 3) {
                 inform.setSendType(3);
                 inform.setAcceptType(2);
                 inform.setReceiveId(message.getHrCompanyId());
-                inform.setContent(company.getName ()+"终止了和您的合作");
-            }
+
+                inform.setContent(company.getName() + "终止了和您的合作");            }
             inform.setTitle("解绑成功");
         } else if ("0".equals(status)) {
             hotelHrCompany.setStatus(0);
@@ -1367,6 +1390,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 inform.setAcceptType(3);
                 inform.setSendType(2);
             } else if (message.getApplyType() == 3){
+
                 inform.setContent("用人单位拒绝了您的解除合作申请");
                 inform.setReceiveId(message.getHrCompanyId());
                 inform.setAcceptType(2);
@@ -1375,6 +1399,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         } else {
             throw new ParamsException("参数值错误");
         }
+
             informMapper.insertInform(inform);        return ResultDO.buildSuccess("处理成功");
     }
 
@@ -1411,6 +1436,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     }
 
     /**
+
      * 人力拒绝用人单位任务或调配用人单位任务时，所需人数为人力任务数
      * @param list
      */

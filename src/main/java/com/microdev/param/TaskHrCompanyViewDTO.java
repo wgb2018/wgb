@@ -53,21 +53,21 @@ public class TaskHrCompanyViewDTO {
     private List<Map<String, Object>> refusedList=new ArrayList<>();
     private List<Map<String, Object>> distributedList=new ArrayList<>();
 
-    // 酒店信息
+    // 用人单位信息
     /**
-     * 酒店任务主键
+     * 用人单位任务主键
      */
     private String hotelTaskId;
     /**
-     * 酒店名称
+     * 用人单位名称
      */
     private String hotelName;
     /**
-     * 酒店地址
+     * 用人单位地址
      */
     private String address;
     /**
-     * 酒店每小时薪资
+     * 用人单位每小时薪资
      */
     private double hotelHourlyPay;
     /**

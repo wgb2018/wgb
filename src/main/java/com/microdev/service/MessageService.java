@@ -38,11 +38,11 @@ public interface MessageService extends IService<Message> {
     ResultDO getPageMessages(Paginator paginator, MessageQuery query);
 
     /**
-     * 酒店绑定或解绑人力公司 人力解绑或绑定酒店
+     * 用人单位绑定或解绑人力公司 人力解绑或绑定用人单位
      * @param bindCompany 要绑定的公司id的集合
      * @param applyCompany 申请绑定的公司
      * @param pattern   采用解绑的或绑定的模板
-     * @param type  1  酒店添加(解绑)的人力公司2：人力公司添加(解绑)的酒店
+     * @param type  1  用人单位添加(解绑)的人力公司2：人力公司添加(解绑)的用人单位
      * @param reason 解绑原因
      * @return
      */
@@ -61,7 +61,7 @@ public interface MessageService extends IService<Message> {
     void bindHrCompany(String workerId, Set<String> hrCompanyId, String userName, String pattern, String reason);
 
     /**
-     * 酒店向人力公司派发任务
+     * 用人单位向人力公司派发任务
      * @param set
      * @param hotel
      * @param pattern
@@ -122,7 +122,7 @@ public interface MessageService extends IService<Message> {
     /**
      * 查询消息明细
      * @param messageId   消息id
-     * @param messagetype 用户类型小时工worker,人力hr酒店hotel
+     * @param messagetype 用户类型小时工worker,人力hr用人单位hotel
      * @param type        消息类型
      * @return
      */
@@ -131,7 +131,7 @@ public interface MessageService extends IService<Message> {
     /**
      * 查询待处理事务详情中的任务信息
      * @param messageId         消息id
-     * @param messagetype       用户类型小时工worker,人力hr酒店hotel
+     * @param messagetype       用户类型小时工worker,人力hr用人单位hotel
      * @param type              消息类型
      * @return
      */
@@ -213,7 +213,7 @@ public interface MessageService extends IService<Message> {
     ResultDO selectPcHrRefuseTask(ApplyParamDTO dto, Paginator paginator);
 
     /**
-     * Pc端查询酒店替换小时工
+     * Pc端查询用人单位替换小时工
      * @param dto
      * @param paginator
      * @return
@@ -221,7 +221,7 @@ public interface MessageService extends IService<Message> {
     ResultDO selectPcHotelReplace(ApplyParamDTO dto, Paginator paginator);
 
     /**
-     * pc端查询酒店支付
+     * pc端查询用人单位支付
      * @param dto
      * @param paginator
      * @return
@@ -253,7 +253,7 @@ public interface MessageService extends IService<Message> {
     ResultDO selectPcApply(String id, String roleType);
 
     /**
-     * 酒店或人力处理解绑合作申请
+     * 用人单位或人力处理解绑合作申请
      * @param messageId  消息id
      * @param status     0拒绝1同意
      * @return

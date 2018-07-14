@@ -3,7 +3,7 @@ package com.microdev.param;
 import lombok.Data;
 
 /**
- * @author 创建和修改酒店的数据对象
+ * @author 创建和修改用人单位的数据对象
  */
 @Data
 public class CompanyDTO {
@@ -13,7 +13,7 @@ public class CompanyDTO {
      */
     private String name;
     /**
-     * 公司类型，1：酒店，2：人力公司
+     * 公司类型，1：用人单位，2：人力公司
      */
     private Integer companyType;
     /**

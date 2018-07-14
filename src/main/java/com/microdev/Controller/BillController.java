@@ -22,7 +22,7 @@ public class BillController {
     @Autowired
     BillService BillService;
     /**
-     * 酒店按人力公司查询账目
+     * 用人单位按人力公司查询账目
      *
      */
     @PostMapping("/hotel/bill")
@@ -30,7 +30,7 @@ public class BillController {
         return taskHrCompanyService.getHotelBill(paging.getPaginator (),paging.getSelector ());
     }
     /**
-     * 人力公司按酒店查询账目
+     * 人力公司按用人单位查询账目
      *
      */
     @PostMapping("/hrCompany/bill/hotel")
@@ -54,7 +54,7 @@ public class BillController {
         return taskHrCompanyService.getWorkerBill(paging.getPaginator (),paging.getSelector ());
     }
     /**
-     * 查询酒店支付人力公司记录
+     * 查询用人单位支付人力公司记录
      */
     @PostMapping("/HotelPayHrCompany/Bill")
     public ResultDO queryHotelPayHrCompany(@RequestBody PagingDO<HotelPayHrCompanyRequest> paging) {

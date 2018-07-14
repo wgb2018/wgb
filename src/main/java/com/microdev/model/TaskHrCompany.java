@@ -60,7 +60,7 @@ public class TaskHrCompany extends BaseEntity {
      */
     private String refusedReason;
     /**
-     * 关联的酒店任务
+     * 关联的用人单位任务
      */
 
     private String taskId;
@@ -73,7 +73,7 @@ public class TaskHrCompany extends BaseEntity {
 	@TableField(exist = false)
     private Company hrCompany;
     /**
-     * 酒店
+     * 用人单位
      */
     private String hotelId;
 
@@ -103,11 +103,11 @@ public class TaskHrCompany extends BaseEntity {
      */
     private Integer minutes=0;
     /**
-     *  酒店应付人力公司金额  [  工作时间(时) * 时薪  ]
+     *  用人单位应付人力公司金额  [  工作时间(时) * 时薪  ]
      */
     private Double shouldPayMoney=0.0;
     /**
-     *  酒店已付人力公司金额 (这个字段不清楚何时赋值,因为系统暂时是线下支付)
+     *  用人单位已付人力公司金额 (这个字段不清楚何时赋值,因为系统暂时是线下支付)
      */
     private Double havePayMoney=0.0;
     /**

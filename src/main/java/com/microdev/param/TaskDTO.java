@@ -34,7 +34,7 @@ public class TaskDTO {
      */
     private double hourlyPay;
     /**
-     * 酒店Id
+     * 用人单位Id
      */
     private String hotelId;
     /**

@@ -33,7 +33,7 @@ public class TaskWorker extends BaseEntity {
     private String userName;
 
     /**
-     * ybx 指派该任务的人力公司信息。TaskHrCompany可以关联查询出酒店的任务
+     * ybx 指派该任务的人力公司信息。TaskHrCompany可以关联查询出用人单位的任务
      */
     private String taskHrId;
 
@@ -121,7 +121,7 @@ public class TaskWorker extends BaseEntity {
 
     private String taskContent;
     /**
-     *  酒店名称
+     *  用人单位名称
      */
     private String hotelName;
 

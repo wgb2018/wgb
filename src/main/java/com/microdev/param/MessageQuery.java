@@ -9,7 +9,7 @@ public class MessageQuery {
      */
     private String workerId;
     /**
-     * 酒店
+     * 用人单位
      */
     private String hotelId;
     /**

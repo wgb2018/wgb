@@ -97,6 +97,7 @@ public class UserController {
     /**
      * 用户退出登录
      */
+
     @GetMapping("/logout/{mobile}")
     public ResultDO logout(@PathVariable String mobile) throws Exception {
         return userService.logout(mobile);
@@ -188,6 +189,7 @@ public class UserController {
      * 刷新token
      * 客户端 token 到期时，在不打扰用户的情况下重新获取 token
      */
+   
     @GetMapping("/oauth/{uniqueId}/refresh-token/{refreshToken}")
     public ResultDO refreshTokenPost(@PathVariable String uniqueId , @PathVariable String refreshToken) throws Exception{
         return ResultDO.buildSuccess(tokenService.refreshToken(refreshToken,uniqueId));
@@ -271,6 +273,7 @@ public class UserController {
         path = URLDecoder.decode(path,  "utf-8");
         file = new File( path, File.separator + "static" + File.separator +  "app-release.apk");
         //filePath = "QRCode".toLowerCase() + "/" + FileUtil.fileNameReplaceSHA1(file);
+       
         filePath = "WGB".toLowerCase() + "/" + "Android";
         //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
         fileURI = objectStoreService.uploadFile(filePath, file);
@@ -321,6 +324,7 @@ public class UserController {
         /*String  path = getClass().getResource("/").getFile();
         path = URLDecoder.decode(path,  "utf-8");
         File f = null;
+        
         HtmlUtil.convert2Html (path+File.separator + "static" + File.separator +  "12.docx",path+File.separator + "static" + File.separator,"12.html");*/
 
         /*String str = "wgba001";
@@ -351,9 +355,12 @@ public class UserController {
             f = new File(path+"10.html");
         } else if ("2".equals(param)) {//新功能介绍
             f = new File(path+"2.html");
-        } else if ("3".equals(param)) {//人力和酒店
+        
+        } else if ("3".equals(param)) {//人力和用人单位
+          
             f = new File(path+"12.html");
         } else if ("4".equals(param)) {//人力和小时工
+           
             f = new File(path+"11.html");
         } else if ("5".equals(param)) {
             f = new File(path+"10.html");

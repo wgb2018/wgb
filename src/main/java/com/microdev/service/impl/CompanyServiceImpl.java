@@ -306,19 +306,21 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
      */
     @Override
     public ResultDO hotelRemoveHrCompany(HotelHrIdBindDTO hotelHrDTO) {
-        HotelHrCompany hotelHr=hotelHrCompanyMapper.findOneHotelHr(hotelHrDTO.getHotelId(),hotelHrDTO.getHrId());
-        if(hotelHr==null){
+        HotelHrCompany hotelHr = hotelHrCompanyMapper.findOneHotelHr(hotelHrDTO.getHotelId(), hotelHrDTO.getHrId());
+        if (hotelHr == null) {
             throw new ParamsException("没有发现用人单位和人力公司的绑定记录");
-        }
+        }        }
         hotelHr.setRelieveType(hotelHrDTO.getRelieveType());
         hotelHr.setRelieveTime(OffsetDateTime.now());
         hotelHr.setStatus(1);
         hotelHrCompanyMapper.updateById(hotelHr);
+        
         return  ResultDO.buildSuccess("移除成功");
     }
 
     @Override
     public ResultDO hotelHrCompanies(Paginator paginator, CompanyQueryDTO request) {
+       
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         List<Map<String, Object>> list=  companyMapper.queryCompanysByHotelId(request);
         OffsetDateTime applyTime = null;
@@ -335,10 +337,13 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             }
         }
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
+       
         HashMap<String,Object> result = new HashMap<>();
         //设置获取到的总记录数total：
+       
         result.put("total",pageInfo.getTotal());
         //设置数据集合rows：
+        
         result.put("result",list);
         result.put("page",paginator.getPage());
         Map<String,Object> map = new HashMap <> ();
@@ -363,9 +368,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     }
 
     /**
-     * 用人单位反馈小时工补签申请
-     * @param id        消息id
-     * @param status    0拒绝1同意
      * @return
      */
     @Override
@@ -428,6 +430,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 shouldPayMoney_hoteltohr = new BigDecimal(shouldPayMoney_hoteltohr).
                         setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 
+                
                 taskWorkerMapper.addMinutes(punch.getTaskWorkerId(),minutes,shouldPayMoney_hrtoworker);
                 taskHrCompanyMapper.addMinutes(oldMsg.getHrTaskId(),minutes,shouldPayMoney_hrtoworker,shouldPayMoney_hoteltohr);
                 taskMapper.addMinutes(punch.getTaskId(),minutes,shouldPayMoney_hoteltohr);
@@ -460,6 +463,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         return "提交成功";
     }
     /**
+
      * 用人单位申请替换小时工
      */
     @Override
@@ -514,8 +518,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             e.printStackTrace ( );
         } catch (APIRequestException e) {
 
-        }
-        messageMapper.insert(m);
+        }        messageMapper.insert(m);
         return "提交成功";
     }
 
@@ -543,6 +546,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     }
 
     /**
+
      * 分页查询用人单位事务
      *
      * @param
@@ -570,6 +574,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     }
 
     /**
+
      * 展示用人单位待处理的信息详情
      */
     @Override
@@ -612,6 +617,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     }
 
     /**
+
      * 用人单位再发布
      */
     @Override
@@ -623,6 +629,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             throw new ParamsException("参数hotelId不能为空");
         }
         if (StringUtils.isEmpty(request.getName())) {
+
             throw new ParamsException("用人单位名称不能为空");
         }
         if (!StringUtils.hasLength(request.getTaskContent())) {
@@ -677,6 +684,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     }
 
     /**
+
      * 用人单位处理小时工加时
      *
      * @param id     消息id
@@ -756,6 +764,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     }
 
     /**
+
      * 用人单位申请绑定人力资源公司或人力公司申请绑定用人单位
      */
     @Override
@@ -775,6 +784,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         HotelHrCompany hotelHr = null;
         Company company = null;
         if (type == 1) {
+ 
             //用人单位加人力
             if (StringUtils.isEmpty(dto.getHotelId())) {
                 throw new ParamsException("参数hotelId为空");
@@ -786,6 +796,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             num = hotelHrCompanyMapper.selectIsBind(dto);
             if (num > 0) {
                 for (String hrId : hrSet) {
+     
                     hotelHr = hotelHrCompanyMapper.selectByHrHotelId(hrId,dto.getHotelId());
                     if (hotelHr == null) {
                         hotelHr = new HotelHrCompany();
@@ -812,6 +823,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             company = companyMapper.selectById(dto.getHotelId());
             if(company.getStatus () == 0) throw new ParamsException("公司状态为未审核，添加失败");
         } else if (type == 2) {
+
             //人力加用人单位
             if (StringUtils.isEmpty(dto.getHrId())) {
                 throw new ParamsException("参数hrId为空");
@@ -823,6 +835,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             num = hotelHrCompanyMapper.selectIsBIndByCompanyId(dto);
             if (num > 0) {
                 for (String hotelId : hrSet) {
+
                     hotelHr = hotelHrCompanyMapper.selectByHrHotelId(dto.getHrId(),hotelId);
                     if (hotelHr == null) {
                         hotelHr = new HotelHrCompany();
@@ -850,6 +863,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             if(company.getStatus () == 0) throw new ParamsException("公司状态为未审核，添加失败");
         }
         if (list.size() > 0) {
+
             try{
                 hotelHrCompanyMapper.saveBatch(list);
             }catch(Exception e){
@@ -858,12 +872,14 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
         }
 
+ 
         messageService.hotelBindHrCompany(dto.getSet(), company, "applyBindMessage", type,null);
         return ResultDO.buildSuccess("操作成功");
     }
 
     /**
      * 人力公司同意解绑小时工
+
      * @param messageId     消息id
      * @param status        1同意
      * @return
@@ -877,6 +893,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         if (message == null) {
             throw new ParamsException("消息参数错误");
         }
+
         if(message.getStatus() == 1){
             throw new ParamsException("消息已处理");
         }
@@ -894,6 +911,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             columnMap.put("company_id", message.getHrCompanyId());
             columnMap.put("user_id", user.getPid());
             List<UserCompany> list = userCompanyMapper.selectByMap(columnMap);
+
                 if (list == null || list.size() == 0) {
                 throw new ParamsException("数据异常");
             }
@@ -913,10 +931,12 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
             String num = dictMapper.findByNameAndCode("WorkerBindHrMaxNum", "7").getText();
             inform.setTitle("解绑成功");
+
             inform.setContent(company.getName() + "同意了你的申请解绑。你可以添加新的合作人力公司，每人最多只能绑定"+num+"家人力公司");
             if(company.getActiveWorkers () == null){
                 company.setActiveWorkers (0);
             }
+
             if (company.getActiveWorkers () >= 1) {
                 company.setActiveWorkers (company.getActiveWorkers () - 1);
             }else{
@@ -928,11 +948,13 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             if (worker.getActiveCompanys() == null) {
                 worker.setActiveCompanys(0);
             }
+
             if(worker.getActiveCompanys () >= 1){
                 worker.setActiveCompanys (worker.getActiveCompanys () - 1);
             }else{
                 throw new ParamsException("数据异常");
             }
+
             worker.setBindCompanys (true);
             workerMapper.updateById (worker);
         }
@@ -942,7 +964,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
     /**
      * 人力查询待审核的用人单位信息
-     * @param hrCompanyId
+     *     * @param hrCompanyId
      * @param page
      * @param pageNum
      * @return
@@ -965,7 +987,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
     /**
      * 查询合作的人力公司信息
-     * @param map
+
      * @param page          页码
      * @param pageNum       页数
      * @return
@@ -987,8 +1009,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
     /**
      * 人力处理用人单位绑定申请或用人单位处理人力绑定
-     * @param messageId     消息id
-     * @param status        0拒绝1同意
+     *
+     * @param messageId 消息id
+     * @param status    0拒绝1同意
      * @return
      */
     @Override
@@ -1008,6 +1031,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         inform.setModifyTime(OffsetDateTime.now());
         HotelHrCompany hotelHrCompany = hotelHrCompanyMapper.findOneHotelHr(message.getHotelId(), message.getHrCompanyId());
         if (hotelHrCompany == null) {
+
             throw new BusinessException("查询不到人力用人单位关系");
         }
         if (hotelHrCompany.getStatus() != 3) {
@@ -1024,29 +1048,34 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 inform.setReceiveId(message.getHrCompanyId());
                 hotel = companyMapper.selectById(message.getHotelId());
                 hr = companyMapper.selectById(message.getHrCompanyId());
+
                 if(hotel.getActiveCompanys () == null){
                     hotel.setActiveCompanys (0);
                 }
+
                 if(hotel.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HotelBindHrMaxNum","4").getText ())){
                     inform.setContent(hotel.getName() + "超出了绑定人力公司数目上限");
                     hotelHrCompany.setStatus(4);
                     hotelHrCompanyMapper.update(hotelHrCompany);
-                    return ResultDO.buildSuccess ("超过用人单位绑定数目上限");
-                }
+                    return ResultDO.buildSuccess("超过用人单位绑定数目上限");                }
+
                 if(hr.getActiveCompanys () == null){
                     hr.setActiveCompanys (0);
                 }
-                if(hr.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HrBindHotelMaxNum","5").getText ())){
-                    inform.setContent(hr.getName() + "超出了绑定用人单位数目上限");
-                    hotelHrCompany.setStatus(4);
+                if (hr.getActiveCompanys() == Integer.parseInt(dictMapper.findByNameAndCode("HrBindHotelMaxNum", "5").getText())) {
+                    inform.setContent(hr.getName() + "超出了绑定用人单位数目上限");                    hotelHrCompany.setStatus(4);
                     hotelHrCompanyMapper.update(hotelHrCompany);
+
                     return ResultDO.buildSuccess ("超过人力公司绑定数目上限");
                 }
+
                 hotel.setActiveCompanys (hotel.getActiveCompanys ()+1);
                 if(hotel.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HotelBindHrMaxNum","4").getText ())){
                     hotel.setBindCompanys (false);
                 }
+
                 companyMapper.updateById (hotel);
+
 
                 hr.setActiveCompanys (hr.getActiveCompanys ()+1);
                 if(hr.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HrBindHotelMaxNum","5").getText ())){
@@ -1061,34 +1090,41 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 inform.setAcceptType(3);
                 inform.setReceiveId(message.getHotelId());
                 hr = companyMapper.selectById(message.getHrCompanyId());
+
                 if(hr.getActiveCompanys () == null){
                     hr.setActiveCompanys (0);
                 }
                 if (hr.getActiveCompanys() == Integer.parseInt(dictMapper.findByNameAndCode("HrBindHotelMaxNum", "5").getText())) {
+
                     inform.setContent(hr.getName() + "超出了绑定用人单位数目上限");
                     hotelHrCompany.setStatus(4);
                     hotelHrCompanyMapper.update(hotelHrCompany);
+
                     return ResultDO.buildSuccess ("超过人力公司绑定数目上限");
                 }
                 hotel = companyMapper.selectById(message.getHotelId());
+
                 if(hotel.getActiveCompanys () == null){
                     hotel.setActiveCompanys (0);
                 }
+
                 if(hotel.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HotelBindHrMaxNum","4").getText ())){
                     inform.setContent(hotel.getName() + "超出了绑定人力公司数目上限");
                     hotelHrCompany.setStatus(4);
                     hotelHrCompanyMapper.update(hotelHrCompany);
-                    return ResultDO.buildSuccess ("超过用人单位绑定数目上限");
-                }
+                    return ResultDO.buildSuccess("超过用人单位绑定数目上限");                }
+
                 hr.setActiveCompanys (hr.getActiveCompanys ()+1);
                 if(hr.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HrBindHotelMaxNum","5").getText ())){
                     hr.setBindCompanys (false);
                 }
+
                 companyMapper.updateById (hr);
                 hotel.setActiveCompanys (hotel.getActiveCompanys ()+1);
                 if(hotel.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HotelBindHrMaxNum","4").getText ())){
                     hotel.setBindCompanys (false);
                 }
+
                 companyMapper.updateById (hotel);
                 inform.setContent(hr.getName() + "接受了你的绑定申请，成功添加为合作人力公司。添加人力公司代表同意劳务合作协议，你可以向合作的人力公司派发任务，由合作的的人力公司选择小时工，并支出相应的酬劳，确保能及时完美的完成任务。");
                 hotelHrCompany.setStatus(0);
@@ -1168,9 +1204,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     }
 
     /**
-     *用人单位处理小时工请假
-     * @param messageId    消息id
-     * @param status       0拒绝1同意
+     * 用人单位处理小时工请假
      * @return
      */
     @Override
@@ -1189,6 +1223,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         //发送通知
 
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
         Map<String,String> map = new HashMap <> ();
         InformTemplate informTemplate = null;
         if ("1".equals(status)) {
@@ -1212,10 +1247,13 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             throw new ParamsException("参数错误");
         }
         String content = StringKit.templateReplace(informTemplate.getContent(), map);
+ 
         informService.sendInformInfo (3,1,content,message.getWorkerId (), informTemplate.getTitle());
         try {
+
             jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (message.getWorkerId ( )).getMobile ( ), content));
         } catch (APIConnectionException e) {
+
             e.printStackTrace ( );
         } catch (APIRequestException e) {
 
@@ -1244,11 +1282,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         }
         message.setStatus(1);
         messageMapper.updateById(message);
-        if(taskMapper.getFirstById (message.getTaskId()).getFromDate ().isBefore (OffsetDateTime.now ())){
-            informService.sendInformInfo (3,2,"由于用人单位未及时处理您的调配申请，此申请默认拒绝",message.getHrCompanyId (),"申请调配处理超时");
+        if(taskMapper.getFirstById(message.getTaskId()).getFromDate().isBefore(OffsetDateTime.now())) {
+            informService.sendInformInfo(3, 2, "由于用人单位未及时处理您的调配申请，此申请默认拒绝", message.getHrCompanyId(), "申请调配处理超时");
             try {
-                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (message.getHrCompanyId ()).getLeaderMobile ( ), "由于用人单位未及时处理您的调配申请，此申请默认拒绝"));
-            } catch (APIConnectionException e) {
+                jpushClient.jC.sendPush(JPushManage.buildPushObject_all_alias_message(companyMapper.findCompanyById(message.getHotelId()).getLeaderMobile(), "由于用人单位未未及时处理您的调配申请，此申请默认拒绝"));            } catch (APIConnectionException e) {
+
                 e.printStackTrace ( );
             } catch (APIRequestException e) {
 
@@ -1258,24 +1296,30 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         request.setTaskId(message.getTaskId());
         request.setTaskHrId(message.getHrTaskId());
 
+
         //用人单位再派发
 
         taskService.hotelAgainSendTask(request);
         //申请调配成功通知
+        
         InformTemplate inf = informTemplateMapper.selectByCode (InformType.hr_allocation_success.name ());
         Map<String,String> map = new HashMap <> ();
         map.put("hotel",companyMapper.findCompanyById (message.getHotelId ()).getName ());
         String content = StringKit.templateReplace(inf.getContent (), map);
         informService.sendInformInfo (inf.getSendType (),2,content,message.getHrCompanyId (),inf.getTitle ());
         try {
+            
             jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (message.getHrCompanyId ()).getLeaderMobile ( ), content));
         } catch (APIConnectionException e) {
+     
             e.printStackTrace ( );
         } catch (APIRequestException e) {
 
         }
+       
         TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId (message.getHrTaskId ());
         //taskHrCompany.setNeedWorkers (taskHrCompany.getNeedWorkers()-Integer.parseInt (message.getMinutes ()));
+      
         taskHrCompany.setStatus (5);
         taskHrCompanyMapper.updateById (taskHrCompany);
         return ResultDO.buildSuccess("处理成功");
@@ -1283,7 +1327,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
     /**
      * 用人单位处理小时工工作记录
-     * @param record
+     *     * @param record
      * @return
      */
     @Override
@@ -1376,6 +1420,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         if (dto.getReason() == null || dto.getReason().equals("")) {
             throw new ParamsException("解绑的理由不能为空");
         }
+
         //1: 用人单位移除的人力公司
         //2: 人力移除的用人单位
         Integer type = dto.getRelieveType();
@@ -1384,6 +1429,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         HotelHrCompany hotelHr = null;
         Company company = null;
         if (type == 1) {
+
             //用人单位解绑人力
             if (StringUtils.isEmpty(dto.getHotelId())) {
                 throw new ParamsException("参数hotelId为空");
@@ -1405,6 +1451,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             company = companyMapper.selectById(dto.getHotelId());
 
         } else if (type == 2) {
+
             //人力解绑用人单位
             if (StringUtils.isEmpty(dto.getHrId())) {
                 throw new ParamsException("参数hrId为空");

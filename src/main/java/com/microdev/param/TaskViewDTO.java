@@ -17,11 +17,11 @@ public class TaskViewDTO {
      */
     private String pid;
     /**
-     * 酒店名称
+     * 用人单位名称
      */
     private String hotelName;
     /**
-     * 酒店地址
+     * 用人单位地址
      */
     private String address;
     /**

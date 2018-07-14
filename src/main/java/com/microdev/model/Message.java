@@ -42,7 +42,7 @@ public class Message extends BaseEntity {
      */
     private String workerTaskId;
     /**
-     * 酒店id
+     * 用人单位id
      */
     private String hotelId;
     /**
@@ -50,11 +50,11 @@ public class Message extends BaseEntity {
      */
     private String hrCompanyId;
     /**
-     *消息发送者类型1小时工2人力公司3酒店4系统
+     *消息发送者类型1小时工2人力公司3用人单位4系统
      */
     private int applicantType;
     /**
-     * 申请类型0代表人力公司派发任务给小时工，1代表被申请方为小时工，2代表被申请方为人力资源公司，      *  3代表被申请方为酒店
+     * 申请类型0代表人力公司派发任务给小时工，1代表被申请方为小时工，2代表被申请方为人力资源公司，      *  3代表被申请方为用人单位
      */
     private int applyType;
     /**

@@ -12,4 +12,5 @@ public class MessageResponse {
 	private String messageType;
 	private String createTime;
 	private String content;
+	private int applicantType;
 }
