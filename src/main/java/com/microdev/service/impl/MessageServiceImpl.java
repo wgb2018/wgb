@@ -612,7 +612,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         Map<String, Object> map = new HashMap<>();
         map.put("page", pageInfo.getPageNum());
         map.put("total", pageInfo.getTotal());
-        map.put("result", list);
+        map.put("list", list);
 
         return ResultDO.buildSuccess(map);
     }
