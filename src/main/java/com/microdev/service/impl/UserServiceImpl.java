@@ -182,7 +182,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             worker.setEducation (register.getEducation ());
             workerMapper.updateById (worker);
             newUser.setWorkerId(worker.getPid());
-            if(register.getTgCode ()!=null){
+            if(register.getTgCode ()!=null && !register.getTgCode ().equals ("")){
                 Propaganda pa = propagandaMapper.selectById (register.getTgCode ());
                 if(pa == null){
                     pa = new Propaganda ();
@@ -195,7 +195,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                         pa.setLeader (register.getTgCode ().substring (0,4));
                     }catch(Exception e){
                         e.printStackTrace ();
-                        ResultDO.buildSuccess ("邀请码无效");
+                        throw new ParamsException("邀请码无效");
                     }
                     propagandaMapper.insert (pa);
                 }else{
@@ -222,7 +222,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             fileURI = objectStoreService.uploadFile(filePath, file);
             company.setQrCode (fileURI);
             companyMapper.updateById (company);
-            if(register.getTgCode ()!=null){
+            if(register.getTgCode ()!=null && !register.getTgCode ().equals ("")){
                 Propaganda pa = propagandaMapper.selectById (register.getTgCode ());
                 if(pa == null){
                     pa = new Propaganda ();
@@ -235,7 +235,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                         pa.setLeader (register.getTgCode ().substring (0,4));
                     }catch(Exception e){
                         e.printStackTrace ();
-                        ResultDO.buildSuccess ("邀请码无效");
+                        throw new ParamsException("邀请码无效");
                     }
                     propagandaMapper.insert (pa);
                 }else{
@@ -262,7 +262,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             fileURI = objectStoreService.uploadFile(filePath, file);
             company.setQrCode (fileURI);
             companyMapper.updateById (company);
-            if(register.getTgCode ()!=null){
+            if(register.getTgCode ()!=null && !register.getTgCode ().equals ("")){
                 Propaganda pa = propagandaMapper.selectById (register.getTgCode ());
                 if(pa == null){
                     pa = new Propaganda ();
@@ -275,7 +275,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                         pa.setLeader (register.getTgCode ().substring (0,4));
                     }catch(Exception e){
                         e.printStackTrace ();
-                        ResultDO.buildSuccess ("邀请码无效");
+                        throw new ParamsException("邀请码无效");
                     }
                     propagandaMapper.insert (pa);
                 }else{
@@ -562,7 +562,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         userDTO.setMobile(mobile);
         userDTO.setUserType(userType);
         userDTO.setRoleList((ArrayList<Role>) user.get("roles"));
-        //如果当前的是酒店或者人力公司，那么就查询出他们的公司审核状态
+        //如果当前的是用人单位或者人力公司，那么就查询出他们的公司审核状态
 
         if (userType == UserType.hr || userType == UserType.hotel) {
             Company company = companyMapper.findFirstByLeaderMobile(mobile);

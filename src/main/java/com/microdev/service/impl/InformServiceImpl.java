@@ -124,8 +124,8 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
 
     /**
      * 发送通知
-     * @param sendType      发送类型1小时工2人力3酒店4系统
-     * @param acceptType    接收类型1小时工2人力3酒店
+     * @param sendType      发送类型1小时工2人力3用人单位4系统
+     * @param acceptType    接收类型1小时工2人力3用人单位
      * @param content       通知内容
      * @param receiveId     接收方id
      * @param title         消息标题

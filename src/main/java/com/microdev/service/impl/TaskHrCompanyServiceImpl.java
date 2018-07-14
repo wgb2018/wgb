@@ -161,7 +161,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             throw new ParamsException("查询不到消息");
         }*/
 
-        // 获取人力公司任务和酒店任务信息
+        // 获取人力公司任务和用人单位任务信息
         if (hrTask == null) {
             throw new ParamsException("人力公司参数有误");
         }
@@ -177,7 +177,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         hrTask.setStatus (4);
         Task hotelTask = taskMapper.getFirstById (hrTask.getTaskId ( ));
         if (hotelTask == null) {
-            throw new BusinessException ("任务派发失败：未获取酒店到任务");
+            throw new BusinessException ("任务派发失败：未获取用人单位到任务");
         }
         hotelTask.setStatus (3);
         // Company hotel=companyMapper.findCompanyById(hrTask.getHotelId());
@@ -385,7 +385,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         }
         Task task = taskMapper.selectById (taskHrCompany.getTaskId ( ));
         if (task == null) {
-            throw new ParamsException ("查询不到不到酒店任务");
+            throw new ParamsException ("查询不到不到用人单位任务");
         }
         if (task.getStatus ( ) == 1) {
             taskMapper.updateStatus (taskHrCompany.getTaskId ( ), 2);
@@ -482,7 +482,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
     }
 
     /**
-     * 酒店查询账目
+     * 用人单位查询账目
      */
     @Override
     public ResultDO getHotelBill(Paginator paginator, BillRequest request) {
@@ -526,7 +526,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
     }
 
     /**
-     * 人力公司按酒店查询账目
+     * 人力公司按用人单位查询账目
      */
     @Override
     public ResultDO getCompanyBillHotel(Paginator paginator, BillRequest request) {
@@ -804,7 +804,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         }
         message.setStatus (1);
         messageMapper.updateById (message);
-        //消息发送者是酒店，将小时工任务状态设置为3终止，如果是小时工，将状态置为2
+        //消息发送者是用人单位，将小时工任务状态设置为3终止，如果是小时工，将状态置为2
         TaskWorker taskWorker = taskWorkerMapper.selectById (message.getWorkerTaskId ( ));
         if (taskWorker == null) {
             throw new BusinessException ("查询不到小时工工作任务");
@@ -891,7 +891,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
                 }
                 timer.schedule (myTimeTask, 86400 * 1000);
             }
-            //给酒店发送通知
+            //给用人单位发送通知
             //被替换的小时工
             User oldUser = userMapper.selectByWorkerId (taskWorker.getWorkerId ( ));
             taskWorkerMapper.updateStatus (taskWorker.getWorkerId ( ), 3);
@@ -923,7 +923,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         @Override
         public ResultDO exchangeWorker (String taskWorkerId, String workerId){
 
-            //消息发送者是酒店，将小时工任务状态设置为3终止，如果是小时工，将状态置为2
+            //消息发送者是用人单位，将小时工任务状态设置为3终止，如果是小时工，将状态置为2
             TaskWorker taskWorker = taskWorkerMapper.selectById (taskWorkerId);
             if (taskWorker == null) {
                 throw new BusinessException ("查询不到小时工工作任务");
@@ -1012,7 +1012,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         }
 
         /**
-         * 人力拒绝酒店调换小时工的申请
+         * 人力拒绝用人单位调换小时工的申请
          *
          * @param messageId
          * @return
@@ -1029,7 +1029,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
                 message.setStatus (1);
                 messageMapper.updateById (message);
 
-                //给酒店发送一条通知
+                //给用人单位发送一条通知
                 Company company = companyMapper.findCompanyById (message.getHrCompanyId ( ));
                 if (company == null) {
                     throw new BusinessException ("人力公司查询不到");
@@ -1111,10 +1111,10 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             }
             taskHrCompanyMapper.updateAllColumnById (taskHrCompany);
 
-            //更新酒店任务的已确认小时工人数和拒绝小时工人数
+            //更新用人单位任务的已确认小时工人数和拒绝小时工人数
             Task task = taskMapper.selectById (taskHrCompany.getTaskId ( ));
             if (task == null) {
-                throw new ParamsException ("查询不到酒店任务");
+                throw new ParamsException ("查询不到用人单位任务");
             }
             task.setConfirmedWorkers (task.getConfirmedWorkers ( ) - 1);
             task.setRefusedWorkers (task.getRefusedWorkers ( ) + 1);
@@ -1192,7 +1192,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         }
 
     /**
-     * 人力公司处理酒店支付
+     * 人力公司处理用人单位支付
      *
      * @param messageId
      * @param status    0拒绝1同意
@@ -1251,7 +1251,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
                 task.setHavePayMoney (task.getHavePayMoney ( ) + bill.getPayMoney ( ));
                 task.setUnConfirmedPay (task.getUnConfirmedPay ( ) - bill.getPayMoney ( ));
                 taskMapper.updateAllColumnById (task);
-                //新增酒店支付人力明细
+                //新增用人单位支付人力明细
                 HotelPayHrDetails details = new HotelPayHrDetails ( );
                 details.setTaskHrId (taskHrCompany.getPid ( ));
                 details.setThisPayMoney (Double.valueOf (message.getMinutes ( )));
@@ -1303,7 +1303,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
 
             Task task = taskMapper.selectById (taskHrCompany.getTaskId ( ));
             if (task == null) {
-                throw new ParamsException ("查询不到酒店任务");
+                throw new ParamsException ("查询不到用人单位任务");
             }
             //小时工任务更新
             TaskWorker taskWorker = taskWorkerMapper.selectById (message.getWorkerTaskId ( ));
@@ -1456,10 +1456,10 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
                 }
                 taskHrCompanyMapper.updateAllColumnById (taskHrCompany);
 
-                //更新酒店任务的已确认小时工人数和拒绝小时工人数
+                //更新用人单位任务的已确认小时工人数和拒绝小时工人数
                 Task task = taskMapper.selectById (taskHrCompany.getTaskId ( ));
                 if (task == null) {
-                    throw new ParamsException ("查询不到酒店任务");
+                    throw new ParamsException ("查询不到用人单位任务");
                 }
                 task.setConfirmedWorkers (task.getConfirmedWorkers ( ) - 1);
                 task.setRefusedWorkers (task.getRefusedWorkers ( ) + 1);
@@ -1541,7 +1541,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         }
 
         /**
-         * pc端人力处理酒店申请替换小时工
+         * pc端人力处理用人单位申请替换小时工
          * @param messageId
          * @param status
          * @param workerId
@@ -1574,7 +1574,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
 
                 }
             } else if ("1".equals (status)) {
-                //消息发送者是酒店，将小时工任务状态设置为3终止，如果是小时工，将状态置为2
+                //消息发送者是用人单位，将小时工任务状态设置为3终止，如果是小时工，将状态置为2
                 TaskWorker taskWorker = taskWorkerMapper.selectById (message.getWorkerTaskId ( ));
                 if (taskWorker == null) {
                     throw new BusinessException ("查询不到小时工工作任务");
@@ -1630,7 +1630,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
 
                 Message ms = messageService.hrDistributeWorkerTask (list, taskHrCompany, true);
                 if (message.getApplicantType ( ) == 3) {
-                    //给酒店发送通知
+                    //给用人单位发送通知
                     //被替换的小时工
                     RefusedTaskRequest ref = new RefusedTaskRequest ( );
                     ref.setRefusedReason ("小时工未在规定时间内领取任务，请重新派发");

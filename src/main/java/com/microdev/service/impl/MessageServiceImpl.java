@@ -117,7 +117,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     }
 
     /**
-     * 酒店绑定或解绑人力公司 人力解绑或绑定酒店
+     * 用人单位绑定或解绑人力公司 人力解绑或绑定用人单位
      */
     @Override
     public String hotelBindHrCompany(Set<String> bindCompany, Company applyCompany, String pattern, Integer type, String reason) {
@@ -226,7 +226,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 m.setContent(reason);
             }
             m.setMessageContent(c);
-            m.setHrCompanyId(it.next());
+            String companyId = it.next();
+            m.setHrCompanyId(companyId);
             m.setApplyType(2);
             m.setIsTask(1);
             Map<String,Object> map = new HashMap <> ();
@@ -243,7 +244,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             }
             list.add(m);
             try {
-                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (workerId).getMobile ( ), m.getMessageContent ()));
+                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (companyId).getLeaderMobile (), m.getMessageContent ()));
             } catch (APIConnectionException e) {
                 e.printStackTrace ( );
             } catch (APIRequestException e) {
@@ -254,7 +255,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     }
 
     /**
-     * 酒店向人力公司派发任务
+     * 用人单位向人力公司派发任务
      * @param set
      * @param hotel
      * @param pattern
@@ -408,7 +409,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     /**
      * 查询未读消息数量及各个类型的数量
      * @param id            用户角色id
-     * @param applyType     用户类型worker小时工hr人力公司hotel酒店
+     * @param applyType     用户类型worker小时工hr人力公司hotel用人单位
      * @return
      */
     @Override
@@ -667,7 +668,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     /**
      * 查询消息明细
      * @param messageId   消息id
-     * @param messagetype 用户类型小时工worker,人力hr酒店hotel
+     * @param messagetype 用户类型小时工worker,人力hr用人单位hotel
      * @param type        消息类型
      * @return
      */
@@ -680,8 +681,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         MessageDetailsResponse response = null;
         //根据消息id和类型查询待处理信息
         if ("12".equals(type)) {
-            
-if ("      hr".equals(messagetype)) {
+            if ("hr".equals(messagetype)) {
                 Message message = messageMapper.selectById(messageId);
                 if (message != null) {
                     if (message.getApplicantType() == 1) {
@@ -699,10 +699,10 @@ if ("      hr".equals(messagetype)) {
             } else if ("hotel".equals(messagetype)) {
                 response = messageMapper.selectHrHotelUnbind(messageId, "hr");
                 if (response != null) {
-
                     response.setOriginator(response.getCompanyName());
                 }
-            }        } else if ("13".equals(type)) {
+            }
+        } else if ("13".equals(type)) {
             if ("hr".equals(messagetype)) {
                 response = messageMapper.selectCompanyApply(messageId);
             } else if ("hotel".equals(messagetype)) {
@@ -802,7 +802,7 @@ if ("      hr".equals(messagetype)) {
     /**
      * 查询消息明细---任务信息
      * @param messageId         消息id
-     * @param messagetype       用户类型小时工worker,人力hr酒店hotel
+     * @param messagetype       用户类型小时工worker,人力hr用人单位hotel
      * @param type              消息类型
      * @return
      */
@@ -1154,7 +1154,7 @@ if ("      hr".equals(messagetype)) {
     }
 
     /**
-     * Pc端查询酒店替换小时工
+     * Pc端查询用人单位替换小时工
      * @param dto
      * @param paginator
      * @return
@@ -1177,7 +1177,7 @@ if ("      hr".equals(messagetype)) {
     }
 
     /**
-     * pc端查询酒店支付
+     * pc端查询用人单位支付
      * @param dto
      * @param paginator
      * @return
@@ -1242,7 +1242,7 @@ if ("      hr".equals(messagetype)) {
     /**
      * pc端查询申请消息
      * @param id
-     * @param roleType   人力hr酒店hotel
+     * @param roleType   人力hr用人单位hotel
      * @return
      */
     @Override
@@ -1265,7 +1265,7 @@ if ("      hr".equals(messagetype)) {
     }
 
     /**
-     * 酒店或人力处理解绑合作申请
+     * 用人单位或人力处理解绑合作申请
      * @param messageId   消息id
      * @param status      0拒绝1同意
      * @return
@@ -1303,7 +1303,7 @@ if ("      hr".equals(messagetype)) {
             Company company = companyMapper.selectById(hotelId);
             Company hrCompany = companyMapper.selectById(hrId);
             if (company == null ) {
-                return ResultDO.buildError("查询不到酒店");
+                return ResultDO.buildError("查询不到用人单位");
             }
             if (hrCompany == null) {
                 return ResultDO.buildError("查询不到人力");
@@ -1319,7 +1319,7 @@ if ("      hr".equals(messagetype)) {
             } else {
                 return ResultDO.buildError("数据异常");
             }
-            //更新人力及酒店的活跃公司数量
+            //更新人力及用人单位的活跃公司数量
             companyMapper.updateById(company);
             companyMapper.updateById(hrCompany);
             hotelHrCompany.setStatus(1);
@@ -1349,12 +1349,12 @@ if ("      hr".equals(messagetype)) {
                 inform.setSendType(2);
                 inform.setAcceptType(3);
                 inform.setReceiveId(message.getHotelId());
-                inform.setContent("酒店终止了和您的合作");
+                inform.setContent(hrCompany.getName ()+"终止了和您的合作");
             } else if (applyType == 3) {
                 inform.setSendType(3);
                 inform.setAcceptType(2);
                 inform.setReceiveId(message.getHrCompanyId());
-                inform.setContent("人力终止了和您的合作");
+                inform.setContent(company.getName ()+"终止了和您的合作");
             }
             inform.setTitle("解绑成功");
         } else if ("0".equals(status)) {
@@ -1367,7 +1367,7 @@ if ("      hr".equals(messagetype)) {
                 inform.setAcceptType(3);
                 inform.setSendType(2);
             } else if (message.getApplyType() == 3){
-                inform.setContent("酒店拒绝了您的解除合作申请");
+                inform.setContent("用人单位拒绝了您的解除合作申请");
                 inform.setReceiveId(message.getHrCompanyId());
                 inform.setAcceptType(2);
                 inform.setSendType(3);
@@ -1411,7 +1411,7 @@ if ("      hr".equals(messagetype)) {
     }
 
     /**
-     * 人力拒绝酒店任务或调配酒店任务时，所需人数为人力任务数
+     * 人力拒绝用人单位任务或调配用人单位任务时，所需人数为人力任务数
      * @param list
      */
     private void HrRefuseTaskNeedWorkers(List<AwaitHandleInfo> list) {
