@@ -309,7 +309,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         HotelHrCompany hotelHr = hotelHrCompanyMapper.findOneHotelHr(hotelHrDTO.getHotelId(), hotelHrDTO.getHrId());
         if (hotelHr == null) {
             throw new ParamsException("没有发现用人单位和人力公司的绑定记录");
-        }        }
+        }
         hotelHr.setRelieveType(hotelHrDTO.getRelieveType());
         hotelHr.setRelieveTime(OffsetDateTime.now());
         hotelHr.setStatus(1);

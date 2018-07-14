@@ -708,7 +708,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                     response.setOriginator(response.getCompanyName());
                 }
             }
-        } else if ("13".equals(type)) {
+         else if ("13".equals(type)) {
             if ("hr".equals(messagetype)) {
                 response = messageMapper.selectCompanyApply(messageId);
             } else if ("hotel".equals(messagetype)) {
