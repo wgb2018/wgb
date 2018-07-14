@@ -25,9 +25,9 @@ public class ApplyResponseDTO {
     private String logo;
     private String address;//地址
     private String area;//区域
-    private String hotelName;//酒店名称
-    private String hotelLeader;//酒店负责人
-    private String hotelLeaderMobile;//酒店负责人电话
+    private String hotelName;//用人单位名称
+    private String hotelLeader;//用人单位负责人
+    private String hotelLeaderMobile;//用人单位负责人电话
     private String username;//小时工昵称
     private int age;//小时工年龄
     private String userMobile;//小时工电话

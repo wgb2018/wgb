@@ -6,5 +6,5 @@ import lombok.Data;
 public class ApplyParamDTO {
 
     private String id;//角色id
-    private String roleType;//角色类型小时工worker酒店hotel人力hr
+    private String roleType;//角色类型小时工worker用人单位hotel人力hr
 }

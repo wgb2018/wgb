@@ -3,12 +3,12 @@ package com.microdev.param;
 import lombok.Data;
 
 /**
- * 酒店和人力资源公司绑定的DTO
+ * 用人单位和人力资源公司绑定的DTO
  */
 @Data
 public class CompanyBindDTO {
     /**
-     * 酒店/人力资源公司ID
+     * 用人单位/人力资源公司ID
      */
     private String id;
     /**

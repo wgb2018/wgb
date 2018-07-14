@@ -39,7 +39,7 @@ public class HrCompanyController {
         return companyService.pagingCompanys(paging.getPaginator(),paging.getSelector());
     }
     /**
-     * 获取已添加该人力公司的所有酒店
+     * 获取已添加该人力公司的所有用人单位
      */
     @PostMapping("/hrcompanies/hotels")
     public ResultDO getHrCompaniesHotels(@RequestBody PagingDO<CompanyQueryDTO> paging) {
@@ -47,7 +47,7 @@ public class HrCompanyController {
         return companyService.hrCompanyHotels(paging.getPaginator(),paging.getSelector());
     }
     /**
-     * 获取人力公司可以添加的酒店
+     * 获取人力公司可以添加的用人单位
      *//*
     @GetMapping("/hrcompanies/{id}/hotels")
     public ResultDO getHrCompaniesNotHotels(@PathVariable String id) {
@@ -69,7 +69,7 @@ public class HrCompanyController {
         return companyService.createCompany(companyDTO);
     }
     /**
-     * 人力资源处理合作酒店
+     * 人力资源处理合作用人单位
      */
     @GetMapping("/hrcompanies/{messageId}/add/{status}")
     public ResultDO addHrCompany(@PathVariable String messageId,@PathVariable String status) {
@@ -92,7 +92,7 @@ public class HrCompanyController {
         return companyService.confirmCompany(id,code);
     }
     /**
-     * 人力资源公司移除合作酒店
+     * 人力资源公司移除合作用人单位
      */
     @DeleteMapping("/hrcompanies/{hrCompanyId}/remove/{hotelId}")
     public ResultDO removeHrCompany(@PathVariable String hrCompanyId,@PathVariable String hotelId) {
@@ -100,7 +100,7 @@ public class HrCompanyController {
         return companyService.hotelRemoveHrCompany(hotelHr);
     }
     /**
-     * 人力资源公司申请绑定合作酒店
+     * 人力资源公司申请绑定合作用人单位
      */
     @PostMapping("/hrcompanies/apply/bindCompany")
     public ResultDO bindCompany(@RequestBody HotelHrIdBindDTO dto) {
@@ -129,7 +129,7 @@ public class HrCompanyController {
     }
 
     /**
-     * 人力查询待审核的酒店信息
+     * 人力查询待审核的用人单位信息
      * @param page
      * @return
      */
@@ -150,7 +150,7 @@ public class HrCompanyController {
     }
 
     /**
-     * 人力处理酒店绑定申请
+     * 人力处理用人单位绑定申请
      * @param messageId
      * @param status    0拒绝1同意
      * @return
@@ -162,7 +162,7 @@ public class HrCompanyController {
     }
 
     /**
-     * 人力查询合作的酒店
+     * 人力查询合作的用人单位
      * @param page
      * @return
      */
@@ -191,7 +191,7 @@ public class HrCompanyController {
     }
 
     /**
-     * 人力拒绝酒店的申请调换
+     * 人力拒绝用人单位的申请调换
      * @param messageId
      * @return
      */
@@ -225,7 +225,7 @@ public class HrCompanyController {
     }
 
     /**
-     * 人力处理酒店付款.
+     * 人力处理用人单位付款.
      * @param messageId
      * @param status        0拒绝1同意
      * @return
@@ -258,7 +258,7 @@ public class HrCompanyController {
     }
 
     /**
-     * pc端人力处理酒店支付
+     * pc端人力处理用人单位支付
      * @param param
      * @return
      */
@@ -290,7 +290,7 @@ public class HrCompanyController {
     }
 
     /**
-     * pc端人力处理酒店申请替换小时工
+     * pc端人力处理用人单位申请替换小时工
      * @param param
      * @return
      */

@@ -18,7 +18,7 @@ public interface CompanyService extends IService<Company> {
      */
     ResultDO pagingCompanys(Paginator paginator, CompanyQueryDTO queryDTO);
     /**
-     * 获取已添加该人力公司的所有酒店
+     * 获取已添加该人力公司的所有用人单位
      */
     ResultDO hrCompanyHotels(Paginator paginator, CompanyQueryDTO queryDTO);
 
@@ -27,7 +27,7 @@ public interface CompanyService extends IService<Company> {
      */
     ResultDO getCompanyById(String id);
     /**
-     * 酒店绑定添加合作的人力资源公司
+     * 用人单位绑定添加合作的人力资源公司
      */
     ResultDO hotelAddHrCompanyById(String hotelId, String hrCompanyId, Integer type);
     /**
@@ -43,60 +43,60 @@ public interface CompanyService extends IService<Company> {
      */
     ResultDO confirmCompany(String id,Integer code);
     /**
-     * 酒店移除合作的人力资源公司
+     * 用人单位移除合作的人力资源公司
      */
     ResultDO hotelRemoveHrCompany(HotelHrIdBindDTO hotelHrDTO);
     /**
-     * 获取酒店下的人力公司
+     * 获取用人单位下的人力公司
      */
     ResultDO hotelHrCompanies(Paginator paginator, CompanyQueryDTO request);
     /**
-     * 获取酒店可以添加的人力公司
+     * 获取用人单位可以添加的人力公司
      */
     ResultDO hotelNotHrCompanies(String id);
     /**
-     * 获取人力公司可以添加的酒店
+     * 获取人力公司可以添加的用人单位
      */
     ResultDO hrCompanyNotHotels(String id);
     /**
-     * 酒店反馈补签
+     * 用人单位反馈补签
      */
     String supplementResponse(String id, String status);
     /**
-     * 酒店申请替换小时工
+     * 用人单位申请替换小时工
      */
     String changeWorker(Map<String, Object> map);
     /**
-     * 酒店账目明细
+     * 用人单位账目明细
      */
     Map<String, Object> accountDetail(String hotelId, Integer page, Integer pageSize);
     /**
-     * 分页查询酒店事务
+     * 分页查询用人单位事务
      * @param
      * @return
      */
     PageInfo<Map<String, Object>> hotelWaitTaskDetails(MessageRequest request);
     /**
-     * 展示酒店待处理的信息详情
+     * 展示用人单位待处理的信息详情
      * @param request
      * @return
      */
     ResultDO showWaitInfo(PendRequest request);
     /**
-     * 酒店再发布
+     * 用人单位再发布
      * @param request
      * @return
      */
     String hotelPublish(HotelDeployInfoRequest request);
     /**
-     * 酒店处理小时工加时
+     * 用人单位处理小时工加时
      * @param id
      * @param status
      * @return
      */
     String workExpand(String id, String status);
     /**
-     * 酒店添加人力资源公司
+     * 用人单位添加人力资源公司
      * @param dto
      * @return
      */
@@ -110,7 +110,7 @@ public interface CompanyService extends IService<Company> {
     String hrUnbindWorker(String messageId, String status);
 
     /**
-     * 人力查询待审核的酒店信息
+     * 人力查询待审核的用人单位信息
      * @param hrCompanyId
      * @param page
      * @param pageNum
@@ -128,7 +128,7 @@ public interface CompanyService extends IService<Company> {
     ResultDO selectCooperatorHr(QueryCooperateRequest map, Integer page, Integer pageNum);
 
     /**
-     * 人力处理酒店绑定申请
+     * 人力处理用人单位绑定申请
      * @param messageId     消息id
      * @param status        0拒绝1同意
      * @return
@@ -136,14 +136,14 @@ public interface CompanyService extends IService<Company> {
     ResultDO hrHandlerHotelBind(String messageId, String status);
 
     /**
-     * 人力查询合作的酒店
+     * 人力查询合作的用人单位
      * @param map
      * @return
      */
     ResultDO hrQueryCooperatorHotel(QueryCooperateRequest map, Paginator paginator);
 
     /**
-     * 酒店查询待审核的人力公司
+     * 用人单位查询待审核的人力公司
      * @param request
      * @param paginator
      * @return
@@ -151,7 +151,7 @@ public interface CompanyService extends IService<Company> {
     ResultDO hotelExamineHr(QueryCooperateRequest request, Paginator paginator);
 
     /**
-     * 酒店处理小时工请假
+     * 用人单位处理小时工请假
      * @param messageId    消息id
      * @param status       0拒绝1同意
      * @return
@@ -161,13 +161,13 @@ public interface CompanyService extends IService<Company> {
     ResultDO deploymentHandle(CreateTaskRequest createTaskRequest);
 
     /**
-     * 酒店处理小时工工作记录
+     * 用人单位处理小时工工作记录
      * @param record
      * @return
      */
     ResultDO hotelHandleWorkerRecord(HotelHandleWorkerRecord record);
     /**
-     * 酒店申请解绑人力公司
+     * 用人单位申请解绑人力公司
      */
     ResultDO hotelRelieveHrCompanySet(HotelHrIdBindDTO dto);
 }

@@ -13,7 +13,7 @@ import java.util.List;
 
 
 /**
- * 酒店任务
+ * 用人单位任务
  *
  * @author yinbaoxin
  */
@@ -76,13 +76,13 @@ public class Task extends BaseEntity {
     private Integer refusedWorkers=0;
 
     /**
-     * 酒店信息
+     * 用人单位信息
      */
     private String hotelId;
 
     private String hotelName;
     /**
-     * 酒店任务对应多个HrTask
+     * 用人单位任务对应多个HrTask
      */
     @TableField(exist = false)
     private List<String> listHrTask = new ArrayList<String>();

@@ -59,7 +59,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
     @Autowired
     JpushClient jpushClient;
     /**
-     * 创建酒店任务
+     * 创建用人单位任务
      */
     @Override
     public ResultDO createTask(CreateTaskRequest request) {
@@ -82,11 +82,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         }
         Company hotel=companyMapper.findCompanyById(request.getHotelId());
         if (hotel == null || !StringUtils.hasLength(hotel.getPid()) ) {
-            throw new ParamsException("酒店不存在");
+            throw new ParamsException("用人单位不存在");
         }
-        //TODO 判断酒店状态
+        //TODO 判断用人单位状态
         if(hotel.getStatus()==null ||hotel.getStatus()!=1){
-            throw new ParamsException("酒店状态不是已审核,无法发布任务");
+            throw new ParamsException("用人单位状态不是已审核,无法发布任务");
         }
 
         int needAllWorkers=0;
@@ -215,7 +215,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
 
     }
     /**
-     * 酒店支付人力公司
+     * 用人单位支付人力公司
      */
     @Override
     public ResultDO hotelPayHr(PayParam PayHrParam) {
@@ -241,7 +241,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         m.setTaskId (taskHr.getTaskId ());
         m.setMessageCode ("hotelPayHrMessage");
         m.setMessageType(8);
-        m.setMessageTitle ("酒店支付人力公司");
+        m.setMessageTitle ("用人单位支付人力公司");
         m.setStatus (0);
         m.setHotelId (taskHr.getHotelId ());
         m.setHrCompanyId (taskHr.getHrCompanyId ());
@@ -272,7 +272,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
     }
 
     /**
-     * 酒店再次派发任务
+     * 用人单位再次派发任务
      * @param request
      * @return
      */
@@ -292,11 +292,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         request.setHotelId(task.getHotelId());
         Company hotel=companyMapper.findCompanyById(task.getHotelId());
         if (hotel == null || !StringUtils.hasLength(hotel.getPid()) ) {
-            throw new ParamsException("酒店不存在");
+            throw new ParamsException("用人单位不存在");
         }
-        // 判断酒店状态
+        // 判断用人单位状态
         if(hotel.getStatus()==null ||hotel.getStatus()!=1){
-            throw new ParamsException("酒店状态不是已审核,无法发布任务");
+            throw new ParamsException("用人单位状态不是已审核,无法发布任务");
         }
         int needAllWorkers=0;
         for (TaskHrCompanyDTO item : request.getHrCompanySet()) {
@@ -324,7 +324,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
     }
 
     /**
-     * 酒店同意人力拒绝任务并再次派发
+     * 用人单位同意人力拒绝任务并再次派发
      * @param request
      * @return
      */
@@ -352,11 +352,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         request.setHotelId(task.getHotelId());
         Company hotel=companyMapper.findCompanyById(task.getHotelId());
         if (hotel == null || !StringUtils.hasLength(hotel.getPid()) ) {
-            throw new ParamsException("酒店不存在");
+            throw new ParamsException("用人单位不存在");
         }
-        // 判断酒店状态
+        // 判断用人单位状态
         if(hotel.getStatus()==null ||hotel.getStatus()!=1){
-            throw new ParamsException("酒店状态不是已审核,无法发布任务");
+            throw new ParamsException("用人单位状态不是已审核,无法发布任务");
         }
 
         TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(message.getHrTaskId());
@@ -389,7 +389,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
     }
 
     /**
-     * 查询当前酒店任务数量
+     * 查询当前用人单位任务数量
      * @param applyParamDTO
      * @return
      */

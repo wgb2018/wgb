@@ -320,7 +320,7 @@ public class UserController {
             f = new File(path+"10.html");
         } else if ("2".equals(param)) {//新功能介绍
             f = new File(path+"2.html");
-        } else if ("3".equals(param)) {//人力和酒店
+        } else if ("3".equals(param)) {//人力和用人单位
             f = new File(path+"8.html");
         } else if ("4".equals(param)) {//人力和小时工
             f = new File(path+"7.html");

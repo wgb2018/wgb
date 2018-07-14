@@ -13,12 +13,12 @@ public class AwaitTaskResponse {
     private String dayEndTime;
     private String taskContent;
     private String needWorkers;
-    private String name;//酒店名称
-    private String address;//酒店地址
-    private String leader;//酒店负责人
+    private String name;//用人单位名称
+    private String address;//用人单位地址
+    private String leader;//用人单位负责人
     private String leaderMobile;//负责人联系电话
     private String hourlyPay;//人力每小时支付
-    private String hourlyPayHotel;//酒店每小时支付
+    private String hourlyPayHotel;//用人单位每小时支付
     private String messageTitle;//服务类型
     private String messageType;
     private String hrName;
@@ -27,11 +27,11 @@ public class AwaitTaskResponse {
     private String hrLeader;
     private String hrLeaderMobile;
     private String confirmedWorkers;//已报名人数
-    private String area;//酒店区域
+    private String area;//用人单位区域
     private String messageId;
     private String hrAddress;//人力地址
     private String hrArea;//人力区域
-    private String taskHotelId;//酒店任务id
+    private String taskHotelId;//用人单位任务id
     private String taskHrId;//人力任务id
     private String workerTaskId;//小时工任务id
     private String taskTypeCode;//任务码

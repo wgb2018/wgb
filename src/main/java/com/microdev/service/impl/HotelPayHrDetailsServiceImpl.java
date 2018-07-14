@@ -16,7 +16,7 @@ public class HotelPayHrDetailsServiceImpl extends ServiceImpl<HotelPayDetailsMap
     @Autowired
     private HotelPayDetailsMapper hotelPayDetailsMapper;
     /**
-     * 新增酒店人力信息。
+     * 新增用人单位人力信息。
      * @param details
      */
     @Override

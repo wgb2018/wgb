@@ -36,7 +36,7 @@ public class CompanyViewModelDTO extends CompanyDTO {
     private Boolean deleted;
 
 
-    //酒店人力公司的绑定状态
+    //用人单位人力公司的绑定状态
     private Integer bindStatus;
 
 }

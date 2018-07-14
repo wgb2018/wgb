@@ -7,7 +7,7 @@ import java.time.OffsetDateTime;
 @Data
 public class TaskHrQueryDTO {
     /**
-     * 酒店ID
+     * 用人单位ID
      */
     private String hotelId;
 

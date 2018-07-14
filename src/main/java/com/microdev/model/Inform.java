@@ -12,11 +12,11 @@ public class Inform extends BaseEntity{
      */
     private Integer status = 0;
     /**
-     * 发送类型1小时工2人力3酒店4系统
+     * 发送类型1小时工2人力3用人单位4系统
      */
     private Integer sendType;
     /**
-     * 接收类型1小时工2人力3酒店
+     * 接收类型1小时工2人力3用人单位
      */
     private Integer acceptType;
     /**

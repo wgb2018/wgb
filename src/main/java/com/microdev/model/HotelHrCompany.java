@@ -8,7 +8,7 @@ import java.time.OffsetDateTime;
 /**
  * 公司
  *
- * @author yinbaoxin 重新定义酒店和人力公司的关系
+ * @author yinbaoxin 重新定义用人单位和人力公司的关系
  * 加入 绑定关系和绑定时间等
  */
 @Data
@@ -20,9 +20,9 @@ public class HotelHrCompany extends BaseEntity {
      */
     private OffsetDateTime bindTime;
     /**
-     *   记录该关系是酒店添加的人力公司；还是人力公司添加的酒店
-     * 1  酒店添加的人力公司
-     * 2：人力公司添加的酒店
+     *   记录该关系是用人单位添加的人力公司；还是人力公司添加的用人单位
+     * 1  用人单位添加的人力公司
+     * 2：人力公司添加的用人单位
      */
     private Integer  bindType;
     /**
@@ -31,8 +31,8 @@ public class HotelHrCompany extends BaseEntity {
     private OffsetDateTime relieveTime;
     /**
      *
-     * 1  酒店移除的人力公司
-     * 2：人力移除的酒店
+     * 1  用人单位移除的人力公司
+     * 2：人力移除的用人单位
      */
     private Integer  relieveType;
     /**
@@ -46,7 +46,7 @@ public class HotelHrCompany extends BaseEntity {
     private Integer status;
 
     /**
-     * 酒店信息
+     * 用人单位信息
      */
     private String hotelId;
     /**

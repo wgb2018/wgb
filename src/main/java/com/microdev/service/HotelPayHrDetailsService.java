@@ -7,7 +7,7 @@ import com.microdev.model.HotelPayHrDetails;
 public interface HotelPayHrDetailsService extends IService<HotelPayHrDetails> {
 
     /**
-     * 新增酒店人力信息。
+     * 新增用人单位人力信息。
      * @param details
      */
     void saveBean(HotelPayHrDetails details);

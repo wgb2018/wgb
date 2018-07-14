@@ -10,12 +10,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 创建酒店任务
+ * 创建用人单位任务
  */
 @Data
 public class CreateTaskRequest {
     /**
-     * 酒店Id
+     * 用人单位Id
      */
     private String hotelId;
     /**

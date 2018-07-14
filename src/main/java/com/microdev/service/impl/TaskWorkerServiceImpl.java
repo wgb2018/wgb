@@ -134,7 +134,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         }
         taskWorker.setStatus(1);
         taskWorker.setConfirmedDate(OffsetDateTime.now());
-        //TODO 酒店人数加1
+        //TODO 用人单位人数加1
         Task hotelTask=taskMapper.getFirstById(taskHr.getTaskId());
         Integer hotelConfirmedWorkers=hotelTask.getConfirmedWorkers();
         if(hotelConfirmedWorkers==null){
@@ -209,7 +209,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         taskWorker.setStatus(2);
         taskWorker.setConfirmedDate(OffsetDateTime.now());
         taskWorker.setRefusedReason(refusedTaskReq.getRefusedReason());
-        //TODO 酒店人数
+        //TODO 用人单位人数
         Task hotelTask=taskMapper.getFirstById(taskHr.getTaskId ());
         Integer hotelRefuseWorkers=hotelTask.getRefusedWorkers();
         if(hotelRefuseWorkers==null){

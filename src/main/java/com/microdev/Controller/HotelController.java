@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 /**
- * 酒店信息相关的Api
+ * 用人单位信息相关的Api
  */
 @RestController
 public class HotelController {
@@ -23,14 +23,14 @@ public class HotelController {
     @Autowired
     CompanyService companyService;
     /**
-     * 根据ID查找酒店
+     * 根据ID查找用人单位
      */
     @GetMapping("/hotels/{id}")
     public ResultDO getById(@PathVariable String id) {
         return companyService.getCompanyById(id);
     }
     /**
-     *查找酒店下的人力资源公司
+     *查找用人单位下的人力资源公司
      */
     @PostMapping("/hotels/hrcompanies")
     public ResultDO gethotelHrCompanies(@RequestBody PagingDO<CompanyQueryDTO> paging) {
@@ -38,7 +38,7 @@ public class HotelController {
         return companyService.hotelHrCompanies(paging.getPaginator(),paging.getSelector());
     }
     /**
-     *查找酒店可添加的人力资源公司
+     *查找用人单位可添加的人力资源公司
      *//*
     @GetMapping("/hotels/{id}/nothrcompanies")
     public ResultDO gethotelNoHrCompanies(@PathVariable String id) {
@@ -52,7 +52,7 @@ public class HotelController {
         return companyService.createCompany(companyDTO);
     }
     /**
-     * 酒店处理人力资源公司绑定
+     * 用人单位处理人力资源公司绑定
      */
     @GetMapping("/hotels/{messageId}/add/{status}")
     public ResultDO addHrCompany(@PathVariable String messageId,@PathVariable String status) {
@@ -60,7 +60,7 @@ public class HotelController {
         return companyService.hotelAddHrCompanyById(messageId, status, 1);
     }
     /**
-     * 分页查询酒店信息
+     * 分页查询用人单位信息
      */
     @PostMapping("/hotels/search")
     public ResultDO getPageData(@RequestBody PagingDO<CompanyQueryDTO> paging) {
@@ -70,7 +70,7 @@ public class HotelController {
         return companyService.pagingCompanys(paging.getPaginator(),paging.getSelector());
     }
     /**
-     * 修改酒店基本信息
+     * 修改用人单位基本信息
      */
     @PutMapping("/hotels")
     public ResultDO updateCompany(@RequestBody Company companyDTO) {
@@ -78,14 +78,14 @@ public class HotelController {
         return companyService.updateCompany(companyDTO);
     }
     /**
-     * 审核酒店
+     * 审核用人单位
      */
     @GetMapping("/hotels/{id}/status/{code}")
     public ResultDO getById(@PathVariable String id,@PathVariable Integer code) {
         return companyService.confirmCompany(id,code);
     }
     /**
-     * 酒店移除人力资源公司
+     * 用人单位移除人力资源公司
      */
     @DeleteMapping("/hotels/{hotelId}/remove/{hrCompanyId}")
     public ResultDO removeHrCompany(@PathVariable String hotelId,@PathVariable String hrCompanyId) {
@@ -93,63 +93,63 @@ public class HotelController {
         return companyService.hotelRemoveHrCompany(hotelHr);
     }
     /**
-     * 酒店反馈补签
+     * 用人单位反馈补签
      */
     @PostMapping("/hotels/supplementResponse")
     public ResultDO supplementResponse(@RequestBody Map<String, String> param) {
         return ResultDO.buildSuccess(companyService.supplementResponse(param.get("messageId"), param.get("status")));
     }
     /**
-     * 酒店申请替换小时工(任务已开始)
+     * 用人单位申请替换小时工(任务已开始)
      */
     @PostMapping("/hotels/changeWorker")
     public ResultDO changeWorker(@RequestBody Map<String, Object> map) {
         return ResultDO.buildSuccess(companyService.changeWorker(map));
     }
     /**
-     * 酒店账目明细
+     * 用人单位账目明细
      */
     @PostMapping("/hotels/accountDetails")
     public ResultDO accountDetails(String hotelId, Integer page, Integer pageSize) {
         return ResultDO.buildSuccess(companyService.accountDetail(hotelId, page, pageSize));
     }
     /**
-     * 酒店待处理事务分页信息
+     * 用人单位待处理事务分页信息
      */
     @PostMapping("/hotels/hotelWaitTaskPage")
     public ResultDO hotelWaitTaskPage(@RequestBody MessageRequest request) {
         return ResultDO.buildSuccess(companyService.hotelWaitTaskDetails(request));
     }
     /**
-     * 酒店待处理事务详情
+     * 用人单位待处理事务详情
      */
     @PostMapping("/hotels/hotelWaitTaskDetails")
     public ResultDO hotelWaitTaskDetails(@RequestBody PendRequest request) {
         return ResultDO.buildSuccess(companyService.showWaitInfo(request));
     }
     /**
-     * 酒店再发布
+     * 用人单位再发布
      */
     @PostMapping("/hotels/hotelPublishAgain")
     public ResultDO hotelPublishAgain(@RequestBody HotelDeployInfoRequest request) {
         return ResultDO.buildSuccess(companyService.hotelPublish(request));
     }
     /**
-     * 酒店处理小时工加时
+     * 用人单位处理小时工加时
      */
     @PostMapping("/hotels/handleExpandWork")
     public ResultDO handleExpandWork(@RequestBody Map<String, String> param) {
         return ResultDO.buildSuccess(companyService.workExpand(param.get("messageId"), param.get("status")));
     }
     /**
-     * 酒店申请绑定人力资源公司
+     * 用人单位申请绑定人力资源公司
      */
     @PostMapping("/hotels/apply/bindHrCompany")
     public ResultDO bindHrCompany(@RequestBody HotelHrIdBindDTO dto) {
         return companyService.hotelAddHrCompanySet(dto);
     }
     /**
-     * 酒店申请解绑人力资源公司
+     * 用人单位申请解绑人力资源公司
      */
     @PostMapping("/hotels/relieve/bindHrCompany")
     public ResultDO relieveHrCompany(@RequestBody HotelHrIdBindDTO dto) {
@@ -168,7 +168,7 @@ public class HotelController {
     }
 
     /**
-     * 酒店查询待审核的人力公司
+     * 用人单位查询待审核的人力公司
      * @param paging
      * @return
      */
@@ -178,7 +178,7 @@ public class HotelController {
     }
 
     /**
-     * 酒店处理小时工请假
+     * 用人单位处理小时工请假
      * @param param
      * @return
      */
@@ -188,7 +188,7 @@ public class HotelController {
         return companyService.hotelHandleLeave(param.get("messageId"), param.get("status"));
     }
     /**
-     * 酒店处理人力公司申请调配
+     * 用人单位处理人力公司申请调配
      * @return
      */
     @PostMapping("/apply/for/deployment/handle")
@@ -198,7 +198,7 @@ public class HotelController {
     }
 
     /**
-     * 酒店处理小时工工作记录
+     * 用人单位处理小时工工作记录
      * @param record
      * @return
      */

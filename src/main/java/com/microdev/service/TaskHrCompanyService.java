@@ -34,11 +34,11 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
      */
     void TaskHrrefuse(String messageId, String reason);
     /**
-     * 酒店查询账目
+     * 用人单位查询账目
      */
     ResultDO getHotelBill(Paginator paginator, BillRequest request);
     /**
-     * 人力公司按酒店查询账目
+     * 人力公司按用人单位查询账目
      */
     ResultDO getCompanyBillHotel(Paginator paginator, BillRequest request);
     /**
@@ -85,7 +85,7 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
     ResultDO exchangeWorker(String id,String workerId);
 
     /**
-     * 人力拒绝酒店调换小时工的申请
+     * 人力拒绝用人单位调换小时工的申请
      * @param messageId
      * @return
      */
@@ -107,7 +107,7 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
     ResultDO hrAgrreWorkerTaskCancel(String messageId, String workerId);
 
     /**
-     * 人力公司处理酒店
+     * 人力公司处理用人单位
      * @param messageId
      * @param status        0拒绝1同意
      * @return
@@ -139,7 +139,7 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
     ResultDO hrHandleWorkerCancel(String messageId, String status, String workerId);
 
     /**
-     * pc端人力处理酒店申请替换小时工
+     * pc端人力处理用人单位申请替换小时工
      * @param messageId
      * @param status
      * @param workerId

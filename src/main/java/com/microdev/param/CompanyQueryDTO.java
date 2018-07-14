@@ -17,7 +17,7 @@ public class CompanyQueryDTO {
      */
     private String name;
     /**
-     * 公司类型，1：酒店，2：人力公司
+     * 公司类型，1：用人单位，2：人力公司
      */
     private Integer companyType;
     /**
@@ -42,7 +42,7 @@ public class CompanyQueryDTO {
     private String observerId;
     /**
      * 查看列表者类型
-     * 0:小时工(用户ID) 2:人力公司 1:酒店
+     * 0:小时工(用户ID) 2:人力公司 1:用人单位
      */
     private Integer observertype;
 

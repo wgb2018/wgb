@@ -461,7 +461,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         userDTO.setMobile(mobile);
         userDTO.setUserType(userType);
         userDTO.setRoleList((ArrayList<Role>) user.get("roles"));
-        //如果当前的是酒店或者人力公司，那么就查询出他们的公司审核状态
+        //如果当前的是用人单位或者人力公司，那么就查询出他们的公司审核状态
 
         if (userType == UserType.hr || userType == UserType.hotel) {
             Company company = companyMapper.findFirstByLeaderMobile(mobile);

@@ -25,7 +25,7 @@ public class BillServiceImpl extends ServiceImpl<BillMapper,Bill> implements Bil
     @Autowired
     BillMapper billMapper;
     /**
-     * 酒店按人力公司查询支付记录
+     * 用人单位按人力公司查询支付记录
      */
     @Override
     public ResultDO queryHotelPayHrCompany(Paginator paginator, HotelPayHrCompanyRequest request) {

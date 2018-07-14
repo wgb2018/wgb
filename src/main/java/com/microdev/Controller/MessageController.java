@@ -104,7 +104,7 @@ public class MessageController {
     /**
      * 手机端首页展示未读数量
      * @param id            角色id
-     * @param applyType     角色类型小时工传worker,酒店传hotel，人力传hr
+     * @param applyType     角色类型小时工传worker,用人单位传hotel，人力传hr
      * @return
      */
     @GetMapping("/message/{id}/amount/{applyType}")
@@ -180,7 +180,7 @@ public class MessageController {
     }
 
     /**
-     * Pc端查询酒店申请替换
+     * Pc端查询用人单位申请替换
      * @param paging
      * @return
      */
@@ -191,7 +191,7 @@ public class MessageController {
     }
 
     /**
-     * pc端查询酒店支付
+     * pc端查询用人单位支付
      * @param paging
      * @return
      */
@@ -235,7 +235,7 @@ public class MessageController {
     }
 
     /**
-     * 酒店或人力处理解绑申请
+     * 用人单位或人力处理解绑申请
      * @param messageId 消息id
      * @param status    0拒绝1同意
      * @return
