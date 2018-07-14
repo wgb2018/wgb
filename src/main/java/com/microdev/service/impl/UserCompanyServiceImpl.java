@@ -382,6 +382,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             userCompany.setCompanyType(2);
             userCompany.setUserId(str);
             userCompany.setStatus(0);
+            userCompany.setBindProtocol("/home/micro-worker/wgb/static/12.html");
             UserCompany temp = userCompanyMapper.findOneUserCompany (hrId,str);
             if(temp == null){
                 userCompanyList.add(userCompany);

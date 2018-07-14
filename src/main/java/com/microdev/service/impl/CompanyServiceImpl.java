@@ -804,6 +804,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                         hotelHr.setBindType(type);
                         hotelHr.setHotelId(dto.getHotelId());
                         hotelHr.setHrId(hrId);
+                        hotelHr.setBindProtocol("/home/micro-worker/wgb/static/11.html");
                         list.add(hotelHr);
                     } else {
                         hotelHr.setStatus(3);
@@ -817,6 +818,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                     hotelHr.setBindType(type);
                     hotelHr.setHotelId(dto.getHotelId());
                     hotelHr.setHrId(hrId);
+                    hotelHr.setBindProtocol("/home/micro-worker/wgb/static/11.html");
                     list.add(hotelHr);
                 }
             }
@@ -843,6 +845,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                         hotelHr.setStatus(3);
                         hotelHr.setHotelId(hotelId);
                         hotelHr.setHrId(dto.getHrId());
+                        hotelHr.setBindProtocol("/home/micro-worker/wgb/static/11.html");
                         list.add(hotelHr);
                     } else {
                         hotelHr.setStatus(3);
@@ -856,6 +859,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                     hotelHr.setStatus(3);
                     hotelHr.setHotelId(hotelId);
                     hotelHr.setHrId(dto.getHrId());
+                    hotelHr.setBindProtocol("/home/micro-worker/wgb/static/11.html");
                     list.add(hotelHr);
                 }
             }

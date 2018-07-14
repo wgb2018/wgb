@@ -4,7 +4,8 @@
     <sql id="UserCompany_Query_List">
         id as pid, create_time, deleted, modify_time,
         all_tasks, company_type, confirmed_date, confirmed_tasks, no_promise_tasks,
-        refused_reason, refused_tasks, relieve_time, status, user_type, company_id, user_id
+        refused_reason, refused_tasks, relieve_time, status, user_type, company_id, user_id,
+        bind_protocol
     </sql>
 	<sql id="TaskWorker_Query_List" >
         id as pid, create_time, deleted, modify_time,
@@ -38,7 +39,7 @@
         insert into user_company values(#{pid},#{createTime},#{deleted},#{modifyTime},
         #{allTasks},#{companyType},#{confirmedDate},#{confirmedTasks},#{noPromiseTasks},
         #{refusedReason},#{refusedTasks},#{relieveTime},#{status},#{userType},
-        #{companyId},#{userId})
+        #{companyId},#{userId},#{bindProtocol})
     </insert>
     <update id="update" parameterType="com.microdev.model.UserCompany">
         update user_company set deleted = #{deleted},modify_time = #{modifyTime},all_tasks = #{allTasks},company_type = #{companyType},
@@ -55,10 +56,10 @@
     </select>
 
     <insert id="saveBatch" parameterType="java.util.List">
-        insert into user_company (id, create_time,  modify_time,deleted, all_tasks, company_type, confirmed_date, confirmed_tasks, no_promise_tasks, refused_reason, refused_tasks, relieve_time, status, user_type, company_id, user_id) values
+        insert into user_company (id, create_time,  modify_time,deleted, all_tasks, company_type, confirmed_date, confirmed_tasks, no_promise_tasks, refused_reason, refused_tasks, relieve_time, status, user_type, company_id, user_id,bind_protocol) values
         <foreach collection="list" separator="," item="item">
             (#{item.pid},#{item.createTime},#{item.modifyTime},#{item.deleted},#{item.allTasks},#{item.companyType},#{item.confirmedDate},#{item.confirmedTasks},#{item.noPromiseTasks},#{item.refusedReason},
-            #{item.refusedTasks},#{item.relieveTime},#{item.status},#{item.userType},#{item.companyId},#{item.userId})
+            #{item.refusedTasks},#{item.relieveTime},#{item.status},#{item.userType},#{item.companyId},#{item.userId},#{item.bindProtocol})
         </foreach>
     </insert>
 

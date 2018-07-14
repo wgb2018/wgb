@@ -71,8 +71,10 @@ public class UserCompany extends BaseEntity {
      * 公司类型，1：用人单位，2：人力公司
      */
     private Integer companyType;
-
-
+    /**
+     * 绑定协议
+     */
+    private String bindProtocol;
     public Integer getStatus() {
         return status;
     }

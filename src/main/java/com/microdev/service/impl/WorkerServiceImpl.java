@@ -784,6 +784,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             userCompany.setUserId(user.getPid());
             userCompany.setCompanyId(str);
             userCompany.setStatus(0);
+            userCompany.setBindProtocol("/home/micro-worker/wgb/static/12.html");
             UserCompany temp = userCompanyMapper.findOneUserCompany (str,user.getPid ());
             if(temp == null){
                 userCompanyList.add(userCompany);
