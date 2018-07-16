@@ -112,9 +112,9 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     int selectReplaceCount(@Param("taskWorkerId") String taskWorkerId);
 
-    List<AwaitHandleInfo> selectHotelHandleInfoPc(@Param("hotelId") String hotelId,@Param("type") Integer type);
+    List<AwaitHandleInfoPc> selectHotelHandleInfoPc(@Param("hotelId") String hotelId,@Param("type") Integer type);
 
-    List<AwaitHandleInfo> selectHrHandleInfoPc(@Param("hrId") String hrId,@Param("type") Integer type);
+    List<AwaitHandleInfoPc> selectHrHandleInfoPc(@Param("hrId") String hrId,@Param("type") Integer type);
 
     int selectUnReadWorkerCount(@Param("workerId") String workerId);
 
@@ -123,4 +123,6 @@ public interface MessageMapper extends BaseMapper<Message> {
     int selectUnreadHotelCount(@Param("hotelId") String hotelId);
 
     MessageDetailsResponse selectHrHotelUnbind(@Param("messageId") String messageId,@Param("type") String type);
+
+    List<AwaitHandleInfoPc> selectWorkerAwaitHandleInfoPc(@Param("workerId") String workerId);
 }

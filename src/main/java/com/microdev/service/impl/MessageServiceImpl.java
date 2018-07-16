@@ -568,16 +568,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             list = messageMapper.selectWorkerAwaitHandleInfo(request.getId());
         } else if ("hotel".equals(request.getType())) {
             list = messageMapper.selectHotelAwaitHandleInfo(request.getId(),request.getMessageCode ());
-            HrRefuseTaskNeedWorkers(list);
+            hrRefuseTaskNeedWorkers(list);
         } else if ("hr".equals(request.getType())) {
             list = messageMapper.selectHrAwaitHandleInfo(request.getId(),request.getMessageCode ());
         } else {
             throw new ParamsException("参数传递错误");
         }
-        /*for (AwaitHandleInfo a:list) {
-            a.setTaskResponse(this.selectAwaitTaskDetails(a.getMessageId(),  request.getType(),request.getMessageCode ().toString ()));
-            a.setDetailsResponse (this.selectMessageDetails (a.getMessageId(),  request.getType(),request.getMessageCode ().toString ()));
-        }*/
+
         PageInfo<AwaitHandleInfo> pageInfo = new PageInfo<>(list);
         Map<String, Object> map = new HashMap<>();
         map.put("page", pageInfo.getPageNum());
@@ -593,22 +590,22 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             throw new ParamsException("参数错误");
         }
         PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
-        List<AwaitHandleInfo> list = null;
+        List<AwaitHandleInfoPc> list = null;
         if ("worker".equals(request.getType())) {
-             list = messageMapper.selectWorkerAwaitHandleInfo(request.getId());
+             list = messageMapper.selectWorkerAwaitHandleInfoPc(request.getId());
         } else if ("hotel".equals(request.getType())) {
             list = messageMapper.selectHotelHandleInfoPc(request.getId(),request.getMessageCode ());
-            HrRefuseTaskNeedWorkers(list);
+            hrWorkersAndType(list);
         } else if ("hr".equals(request.getType())) {
             list = messageMapper.selectHrHandleInfoPc(request.getId(),request.getMessageCode ());
         } else {
             throw new ParamsException("参数传递错误");
         }
-        for (AwaitHandleInfo a:list) {
+        /*for (AwaitHandleInfoPc a:list) {
             a.setTaskResponse(this.selectAwaitTaskDetails(a.getMessageId(),  request.getType(),request.getMessageCode ().toString ()));
             a.setDetailsResponse (this.selectMessageDetails (a.getMessageId(),  request.getType(),request.getMessageCode ().toString ()));
-        }
-        PageInfo<AwaitHandleInfo> pageInfo = new PageInfo<>(list);
+        }*/
+        PageInfo<AwaitHandleInfoPc> pageInfo = new PageInfo<>(list);
         Map<String, Object> map = new HashMap<>();
         map.put("page", pageInfo.getPageNum());
         map.put("total", pageInfo.getTotal());
@@ -1441,9 +1438,19 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      * 人力拒绝用人单位任务或调配用人单位任务时，所需人数为人力任务数
      * @param list
      */
-    private void HrRefuseTaskNeedWorkers(List<AwaitHandleInfo> list) {
+    private void hrRefuseTaskNeedWorkers(List<AwaitHandleInfo> list) {
         if (list == null) return;
         for (AwaitHandleInfo info : list) {
+            if ("4".equals(info.getType()) || "10".equals(info.getType())) {
+                info.setNeedWorkers(info.getHrNeedWorkers());
+                info.setConfirmedWorkers(info.getHrConfirmedWorkers());
+            }
+        }
+    }
+
+    private void hrWorkersAndType(List<AwaitHandleInfoPc> list) {
+        if (list == null) return;
+        for (AwaitHandleInfoPc info : list) {
             if ("4".equals(info.getType()) || "10".equals(info.getType())) {
                 info.setNeedWorkers(info.getHrNeedWorkers());
                 info.setConfirmedWorkers(info.getHrConfirmedWorkers());
