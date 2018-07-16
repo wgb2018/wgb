@@ -228,7 +228,7 @@
     </select>
     <select id="findAllh" resultType="com.microdev.model.TaskWorker" parameterType="com.microdev.param.TaskWorkerQuery" >
         select
-        t.id as pid, t.create_time, t.deleted, t.modify_time,CAST(t.un_confirmed_pay as DECIMAL(18,2)) as unConfirmedPay,
+        t.id as pid, t.create_time, t.deleted, t.modify_time,un_confirmed_pay as unConfirmedPay,
         t.confirmed_date, CAST(t.have_pay_money as DECIMAL(18,2)) as havePayMoney, t.minutes, t.no_promise, t.refused_reason, t.repast_times,CAST(t.should_pay_money - t.have_pay_money - t.un_confirmed_pay as DECIMAL(18,2)) as  paidPayMoney,
         t.settled, t.settled_date, t.should_pay_money, t.status, t.worker_id, t.task_hr_id, t.user_id, t.user_name,t.hourly_pay,t.hr_company_name,t.hotel_name,
         t.hotel_id,t.from_date,t.to_date,t.day_start_time,t.day_end_time,t.task_type_code,t.task_type_text,t.task_content,t.hr_company_id,t.hotel_task_id

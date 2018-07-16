@@ -52,7 +52,7 @@
         select u.id as pid,u.age as age,u.create_time as createTime,u.modify_time as modifyTime,u.activated as activated,u.avatar
         as avatar,w.qr_code as qrCode,u.birthday as birthday,u.email as email,u.mobile as mobile,u.nickname as nickname,CASE u.`sex` WHEN 'MALE' THEN 'MALE' WHEN
         'FEMALE' THEN 'FEMALE' ELSE 'UNKNOW' END AS  sex,u.user_type as userType,u.user_code as userCode,w.idcard_back as
-        idcardBack,w.idcard_front as idcardFront,w.idcard_number as idcardNumber,w.health_card as healthCard,w.status as status,w.id as workerId,w.status,
+        idcardBack,w.idcard_front as idcardFront,w.idcard_number as idcardNumber,w.health_card as healthCard,w.status as status,w.id as workerId,
         IFNULL(w.handheld_identity,'') as handheldIdentity,IFNULL(w.stature,0) as stature,IFNULL(w.weight,0) as weight,IFNULL(w.education,0) as education
         from worker w left join user u on u.worker_id = w.id
         <where>
