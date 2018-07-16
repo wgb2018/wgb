@@ -14,4 +14,12 @@ public class BindPcResponse {
     private int age;
     private String sex;
     private String mobile;
+    private String idCardBack;
+    private String idCardFront;
+    private String idCardNumber;
+    private String healthCard;
+    private String handHeldIdentity;
+    private String stature;
+    private String weight;
+    private String education;
 }

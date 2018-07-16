@@ -8,18 +8,21 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.microdev.common.FilePush;
 import com.microdev.common.ResultDO;
 import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.PagedList;
 import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.JPushManage;
+import com.microdev.common.utils.RedisUtil;
 import com.microdev.common.utils.StringKit;
 import com.microdev.converter.TaskConverter;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
 import com.microdev.param.*;
 import com.microdev.service.*;
+import com.microdev.type.ConstantData;
 import com.microdev.type.UserType;
 import org.apache.ibatis.annotations.Param;
 import org.hibernate.validator.internal.util.logging.LoggerFactory;
@@ -85,6 +88,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     private WorkerMapper workerMapper;
     @Autowired
     JpushClient jpushClient;
+    @Autowired
+    private FilePush filePush;
+    @Autowired
+    private RedisUtil redisUtil;
+
     @Override
     public ResultDO pagingCompanys(Paginator paginator, CompanyQueryDTO queryDTO) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
@@ -717,10 +725,13 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             Map<String, Object> map = new HashMap<>();
             map.put("taskWorkerId", m.getWorkerTaskId());
             map.put("time", m.getSupplementTime());
-            WorkLog log = workLogMapper.selectWorkLogByTime(map).get(0);
-            Integer logMinutes = log.getMinutes() == null ? 0 : log.getMinutes();
-            log.setMinutes(logMinutes + minutes);
-            workLogMapper.updateById(log);
+            List<WorkLog> list = workLogMapper.selectWorkLogByTime(map);
+            if (list != null && list.size() > 0) {
+                WorkLog log = list.get(0);
+                Integer logMinutes = log.getMinutes() == null ? 0 : log.getMinutes();
+                log.setMinutes(logMinutes + minutes);
+                workLogMapper.updateById(log);
+            }
 
             TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(m.getHrTaskId());
             Double shouldPayMoney_hrtoworker = (minutes / 60.00) * taskHrCompany.getHourlyPay();
@@ -732,7 +743,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             taskWorkerMapper.addMinutes(m.getWorkerTaskId(), minutes.longValue(), shouldPayMoney_hrtoworker);
             TaskWorker taskWorker = taskWorkerMapper.selectById(m.getWorkerTaskId());
             taskHrCompanyMapper.addMinutes(taskWorker.getTaskHrId(), minutes.longValue(), shouldPayMoney_hrtoworker, shouldPayMoney_hoteltohr);
-            taskMapper.addMinutes(log.getTaskId(), minutes.longValue(), shouldPayMoney_hoteltohr);
+            taskMapper.addMinutes(taskHrCompany.getTaskId(), minutes.longValue(), shouldPayMoney_hoteltohr);
 
 
             inform.setTitle("申请加时成功");
@@ -783,6 +794,18 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         List<HotelHrCompany> list = new ArrayList<>();
         HotelHrCompany hotelHr = null;
         Company company = null;
+        //从redis中取出默认协议地址
+        String path = redisUtil.getString("defaultHrHotelProtocol");
+        if (StringUtils.isEmpty(path)) {
+            try {
+                path = filePush.pushFileToServer(ConstantData.CATALOG.name(), ConstantData.HRHOTELPROTOCOL.name());
+            } catch (Exception e) {
+                e.printStackTrace();
+                return ResultDO.buildError("服务异常");
+            }
+            redisUtil.setString("defaultHrHotelProtocol", path);
+        }
+
         if (type == 1) {
  
             //用人单位加人力
@@ -794,6 +817,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 throw new BusinessException("已绑定,请勿重复");
             }
             num = hotelHrCompanyMapper.selectIsBind(dto);
+
             if (num > 0) {
                 for (String hrId : hrSet) {
      
@@ -804,7 +828,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                         hotelHr.setBindType(type);
                         hotelHr.setHotelId(dto.getHotelId());
                         hotelHr.setHrId(hrId);
-                        hotelHr.setBindProtocol("/home/micro-worker/wgb/static/11.html");
+                        hotelHr.setBindProtocol(path);
                         list.add(hotelHr);
                     } else {
                         hotelHr.setStatus(3);
@@ -818,7 +842,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                     hotelHr.setBindType(type);
                     hotelHr.setHotelId(dto.getHotelId());
                     hotelHr.setHrId(hrId);
-                    hotelHr.setBindProtocol("/home/micro-worker/wgb/static/11.html");
+                    hotelHr.setBindProtocol(path);
                     list.add(hotelHr);
                 }
             }
@@ -845,7 +869,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                         hotelHr.setStatus(3);
                         hotelHr.setHotelId(hotelId);
                         hotelHr.setHrId(dto.getHrId());
-                        hotelHr.setBindProtocol("/home/micro-worker/wgb/static/11.html");
+                        hotelHr.setBindProtocol(path);
                         list.add(hotelHr);
                     } else {
                         hotelHr.setStatus(3);
@@ -859,7 +883,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                     hotelHr.setStatus(3);
                     hotelHr.setHotelId(hotelId);
                     hotelHr.setHrId(dto.getHrId());
-                    hotelHr.setBindProtocol("/home/micro-worker/wgb/static/11.html");
+                    hotelHr.setBindProtocol(path);
                     list.add(hotelHr);
                 }
             }
@@ -876,7 +900,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
         }
 
- 
         messageService.hotelBindHrCompany(dto.getSet(), company, "applyBindMessage", type,null);
         return ResultDO.buildSuccess("操作成功");
     }
