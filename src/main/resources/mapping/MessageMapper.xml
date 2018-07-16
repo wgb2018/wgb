@@ -994,6 +994,7 @@ WHERE m.message_type = 6 AND m.`apply_type` = 2 AND m.`hr_company_id` = #{hrId}
     </select>
 
     <select id = "selectHrHandleInfoPc" resultType="com.microdev.param.AwaitHandleInfoPc">
+        
         SELECT m.is_task,m.content,m.id AS messageId,DATE_FORMAT(m.create_time, '%Y.%m.%d %H:%i') AS createTime,IFNULL(c.address,'') AS address,c.logo,t.task_type_text,t.fromDate,t.toDate,t.dayStartTime,t.dayEndTime
         ,t.hotel_name as companyName,IFNULL(th.confirmed_workers,0) AS confirmedWorkers,IFNULL(th.need_workers,0) AS needWorkers,t.task_content AS taskContent,
         IFNULL(th.need_workers,0)-IFNULL(th.confirmed_workers,0) AS lackWorkers,m.`hotel_id` AS hotelId,t.id ,m.applicant_type as applicantType,m.apply_type as applyType,message_type AS messageType,t.hourlyPay,c.area,c.leader,c.leader_mobile as mobile
@@ -1077,6 +1078,7 @@ INNER JOIN task_hr_company tc ON tc.id = m.hr_task_id WHERE m.apply_type IN (0, 
 
 UNION (SELECT m2.is_task, m2.message_content as content, m2.id AS messageId, m2.`create_time` AS createTime, IFNULL(c2.address, '') AS address, c2.logo, NULL AS taskTypeText,
 NULL AS fromDate, NULL AS toDate, NULL AS dayStartTime,m2.applicant_type as applicantType,m2.apply_type as applyType, m2.message_type AS TYPE, 0 AS hourlyPay, NULL AS dayEndTime, NULL AS hotelName, 0 AS confirmedWorkers, 0 AS needWorkers, 0 AS lackWorkers,
+
 NULL AS hotel_id, NULL AS id, c2.`area`,m2.id AS pid,'' AS amount,c2.name as companyName,c2.leader , c2.leader_mobile as mobile FROM message m2 INNER JOIN company c2 ON (m2.hotel_id = c2.id OR m2.`hr_company_id` = c2.`id`) WHERE m2.apply_type IN (0, 1) AND m2.is_task = 1 AND m2.status = 0
 AND worker_id = #{workerId}
         <if test="type !=null">
