@@ -1451,12 +1451,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     private void hrWorkersAndType(List<AwaitHandleInfoPc> list) {
         if (list == null) return;
         for (AwaitHandleInfoPc info : list) {
-            if ("4".equals(info.getType()) || "10".equals(info.getType())) {
+            if ("4".equals(info.getMessageType()) || "10".equals(info.getMessageType())) {
                 info.setNeedWorkers(info.getHrNeedWorkers());
                 info.setConfirmedWorkers(info.getHrConfirmedWorkers());
             }
-            if ("12".equals(info.getType())) {
-                info.setType(22);
+            if ("12".equals(info.getMessageType())) {
+                info.setMessageType(22);
             }
         }
     }
