@@ -5,15 +5,14 @@ import cn.jiguang.common.resp.APIRequestException;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.microdev.common.FilePush;
 import com.microdev.common.ResultDO;
 import com.microdev.common.context.ServiceContextHolder;
 import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
+import com.microdev.common.oss.ObjectStoreService;
 import com.microdev.common.paging.Paginator;
-import com.microdev.common.utils.DateUtil;
-import com.microdev.common.utils.JPushManage;
-import com.microdev.common.utils.LocationUtils;
-import com.microdev.common.utils.StringKit;
+import com.microdev.common.utils.*;
 import com.microdev.converter.WorkLogConverter;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
@@ -25,6 +24,7 @@ import com.microdev.service.DictService;
 import com.microdev.service.InformService;
 import com.microdev.service.MessageService;
 import com.microdev.service.WorkerService;
+import com.microdev.type.ConstantData;
 import com.microdev.type.UserType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,6 +89,11 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     private BillMapper billMapper;
     @Autowired
     JpushClient jpushClient;
+    @Autowired
+    private FilePush filePush;
+    @Autowired
+    private RedisUtil redisUtil;
+
     @Override
     public GetCurrentTaskResponse getCurrentTask(String workerId) {
         User user = userMapper.queryByWorkerId(workerId);
@@ -777,6 +782,19 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         }
         List<UserCompany> userCompanyList = new ArrayList<>();
         UserCompany userCompany = null;
+        //将协议存放到redis服务器中
+        String path = redisUtil.getString("defaultWorkerHrProtocol");
+        if (StringUtils.isEmpty(path)) {
+            try {
+                path = filePush.pushFileToServer(ConstantData.CATALOG.getName(), ConstantData.WORKHRPROTOCOL.getName());
+                //path = filePush.pushFileToServer(ConstantData.CATALOG.getName(), ConstantData.TEST.getName());
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "服务异常";
+            }
+            redisUtil.setString("defaultWorkerHrProtocol", path);
+        }
+
         for (String str : set) {
             userCompany = new UserCompany();
             userCompany.setCompanyType(2);
@@ -784,11 +802,14 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             userCompany.setUserId(user.getPid());
             userCompany.setCompanyId(str);
             userCompany.setStatus(0);
+
             UserCompany temp = userCompanyMapper.findOneUserCompany (str,user.getPid ());
             if(temp == null){
+                userCompany.setBindProtocol(path);
                 userCompanyList.add(userCompany);
             }else{
                 temp.setStatus(0);
+                temp.setBindProtocol(path);
                 userCompanyMapper.updateById(temp);
                 continue;
             }

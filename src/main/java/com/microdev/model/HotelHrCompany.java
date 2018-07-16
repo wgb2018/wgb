@@ -53,7 +53,10 @@ public class HotelHrCompany extends BaseEntity {
      * 人力公司信息
      */
     private String hrId;
-
+    /**
+     * 绑定协议
+     */
+    private String bindProtocol;
 
     public Integer getStatus() {
         return status;

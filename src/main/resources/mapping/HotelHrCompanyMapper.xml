@@ -5,15 +5,15 @@
         set
         deleted = #{deleted},modify_time = #{modifyTime},bind_time = #{bindTime},
         bind_type = #{bindType},relieve_time = #{relieveTime},relieve_type = #{relieveType},
-        status = #{status}
+        status = #{status},bind_protocol = #{bindProtocol}
     </sql>
     <sql id="query_Column_List">
         id as pid,create_time ,deleted ,modify_time ,bind_time ,bind_type ,relieve_time ,relieve_type ,
-        status ,hr_id ,hotel_id
+        status ,hr_id ,hotel_id,bind_protocol
     </sql>
     <select id="save" parameterType="com.microdev.model.HotelHrCompany">
         insert into hotel_hr_company values (#{pid},#{createTime},#{deleted},#{modifyTime},#{bindTime},
-        #{bindType},#{relieveTime},#{relieveType},#{status},#{hrId},#{hotelId})
+        #{bindType},#{relieveTime},#{relieveType},#{status},#{hrId},#{hotelId}, #{bindProtocol})
     </select>
     <select id="findOneHotelHr" resultType="com.microdev.model.HotelHrCompany">
         SELECT
@@ -27,9 +27,9 @@
     </update>
 
     <insert id="saveBatch" parameterType="java.util.List">
-        insert into hotel_hr_company(id, create_time, deleted, modify_time, bind_time, bind_type, relieve_time, relieve_type, status, hr_id, hotel_id) values
+        insert into hotel_hr_company(id, create_time, deleted, modify_time, bind_time, bind_type, relieve_time, relieve_type, status, hr_id, hotel_id,bind_protocol) values
         <foreach collection="list" item="item" separator=",">
-            (#{item.pid}, #{item.createTime},#{item.deleted}, #{item.modifyTime}, #{item.bindTime}, #{item.bindType}, #{item.relieveTime}, #{item.relieveType},#{item.status}, #{item.hrId}, #{item.hotelId})
+            (#{item.pid}, #{item.createTime},#{item.deleted}, #{item.modifyTime}, #{item.bindTime}, #{item.bindType}, #{item.relieveTime}, #{item.relieveType},#{item.status}, #{item.hrId}, #{item.hotelId},#{item.bindProtocol})
         </foreach>
     </insert>
 

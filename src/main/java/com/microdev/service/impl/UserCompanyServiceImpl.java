@@ -5,17 +5,20 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.microdev.common.FilePush;
 import com.microdev.common.ResultDO;
 import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.DateUtil;
+import com.microdev.common.utils.RedisUtil;
 import com.microdev.converter.TaskConverter;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
 import com.microdev.param.*;
 import com.microdev.service.MessageService;
 import com.microdev.service.UserCompanyService;
+import com.microdev.type.ConstantData;
 import com.microdev.type.UserType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +59,11 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
     TaskMapper taskMapper;
     @Autowired
     WorkerMapper workerMapper;
+    @Autowired
+    private FilePush filePush;
+    @Autowired
+    private RedisUtil redisUtil;
+
     /**
      * 小时工绑定人力公司
      */
@@ -375,6 +383,17 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         }
         UserCompany userCompany = null;
         List<UserCompany> userCompanyList = new ArrayList<>();
+        //从redis中查询是否有协议
+        String path = redisUtil.getString("defaultWorkerHrProtocol");
+        if (StringUtils.isEmpty(path)) {
+            try {
+                path = filePush.pushFileToServer(ConstantData.CATALOG.getName(), ConstantData.WORKHRPROTOCOL.getName());
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "服务异常";
+            }
+            redisUtil.setString("defaultWorkerHrProtocol", path);
+        }
         for (String str : userList) {
             userCompany = new UserCompany();
             userCompany.setCompanyId(hrId);
@@ -382,11 +401,13 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             userCompany.setCompanyType(2);
             userCompany.setUserId(str);
             userCompany.setStatus(0);
+            userCompany.setBindProtocol(path);
             UserCompany temp = userCompanyMapper.findOneUserCompany (hrId,str);
             if(temp == null){
                 userCompanyList.add(userCompany);
             }else{
                 temp.setStatus(0);
+                temp.setBindProtocol(path);
                 userCompanyMapper.updateById(temp);
                 continue;
             }

@@ -90,11 +90,11 @@
 
         order by create_time desc-->
         SELECT c.name,c.company_type as companyType,c.logo,c.address,c.business_license as businessLicense,c.leader,c.leader_mobile as leaderMobile,c.status,c.confirmed_time as confirmedTime,c.latitude,c.longitude,c.id as pid, hh.status AS bindType,c.area,
-        hh.status as relationStatus
+        hh.status as relationStatus,hh.bind_protocol as bindProtocol
         FROM company c
         INNER JOIN
         (
-        SELECT hotel_id,STATUS FROM hotel_hr_company WHERE hr_id = #{id} AND STATUS IN (0,3,4,5)
+        SELECT hotel_id,STATUS,bind_protocol FROM hotel_hr_company WHERE hr_id = #{id} AND STATUS IN (0,3,4,5)
         ) hh ON c.id = hh.hotel_id
         <if test="name != null and name !=''">
             and c.name like concat('%', #{name},'%')
@@ -126,11 +126,11 @@
         </if>
         order by create_time desc-->
         SELECT c.name,c.company_type as companyType,c.logo,c.address,c.business_license as businessLicense,c.leader,c.leader_mobile as leaderMobile,c.status,c.confirmed_time as confirmedTime,c.latitude,c.longitude,c.id as pid, hh.status AS bindType,IFNULL(c.area,'') as area,
-        hh.status as relationStatus
+        hh.status as relationStatus,hh.bind_protocol as bindProtocol
         FROM company c
         INNER JOIN
         (
-        SELECT hr_id, STATUS FROM hotel_hr_company WHERE hotel_id = #{id} AND STATUS IN (0,3,4,5)
+        SELECT hr_id, STATUS,bind_protocol FROM hotel_hr_company WHERE hotel_id = #{id} AND STATUS IN (0,3,4,5)
         ) hh ON c.id = hh.hr_id
         <if test="name != null and name !=''">
             and c.name like concat('%', #{name},'%')

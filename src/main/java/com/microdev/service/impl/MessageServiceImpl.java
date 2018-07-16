@@ -688,26 +688,28 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         //根据消息id和类型查询待处理信息
         if ("12".equals(type)) {
 
-                Message message = messageMapper.selectById(messageId);
-                if (message != null) {
-                    if (message.getApplicantType() == 1) {
-                        response = messageMapper.selectWorkerApply(messageId);
-                        if (response != null) {
-                            response.setOriginator(response.getName());
-                        }
-                    } else if (message.getApplicantType() == 3 ) {
-                        response = messageMapper.selectHrHotelUnbind(messageId, "hotel");
-                        if (response != null) {
-                            response.setOriginator(response.getCompanyName());
-                        }
-                    } else if (message.getApplicantType() == 2 ) {
-                        response = messageMapper.selectHrHotelUnbind(messageId, "hr");
-                        if (response != null) {
-                            response.setOriginator(response.getCompanyName());
-                        }
+            Message message = messageMapper.selectById (messageId);
+            if (message != null) {
+                if (message.getApplicantType ( ) == 1) {
+                    response = messageMapper.selectWorkerApply (messageId);
+                    if (response != null) {
+                        response.setOriginator (response.getName ( ));
+                    }
+                } else if (message.getApplicantType ( ) == 3) {
+                    response = messageMapper.selectHrHotelUnbind (messageId, "hotel");
+                    if (response != null) {
+                        response.setOriginator (response.getCompanyName ( ));
+                    }
+
+                } else if (message.getApplicantType ( ) == 2) {
+                    response = messageMapper.selectHrHotelUnbind (messageId, "hr");
+                    if (response != null) {
+                        response.setOriginator (response.getCompanyName ( ));
                     }
                 }
-            } else if ("13".equals(type)) {
+            }
+        }
+           else if ("13".equals(type)) {
             if ("hr".equals(messagetype)) {
                 response = messageMapper.selectCompanyApply(messageId);
             } else if ("hotel".equals(messagetype)) {
@@ -1445,6 +1447,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             if ("4".equals(info.getType()) || "10".equals(info.getType())) {
                 info.setNeedWorkers(info.getHrNeedWorkers());
                 info.setConfirmedWorkers(info.getHrConfirmedWorkers());
+            }
+            if ("12".equals(info.getType())) {
+                info.setType(22);
             }
         }
     }
