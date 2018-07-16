@@ -5,4 +5,9 @@
     <insert id="insert">
         insert into notice_service values(#{nid},#{sid})
     </insert>
+    <select id="queryService" resultType="com.microdev.model.Dict">
+        select d.id as pid, d.create_time, d.deleted, d.modify_time, d.code,
+        d.extend, d.name, d.ordinal, d.remark, d.text
+        from dict d left join notice_service n on d.id = n.service_id where n.notice_id = #{id}
+    </select>
 </mapper>

@@ -24,4 +24,5 @@ public class BindPcResponse {
     private String education;
     private String content;
     private String createTime;
+    private Integer status;
 }

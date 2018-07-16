@@ -800,7 +800,7 @@ WHERE m.`apply_type` = 3  and m.`status` = 0 AND m.`hotel_id` = #{hotelId}
     <select id = "selectPcUnBindApply" resultType="com.microdev.param.BindPcResponse">
         SELECT m.id AS messageId,m.`message_type` AS messageType,c.`name` AS hrName, c.`logo` AS hrLogo,c.`address`,u.`nickname` AS username, IF(IFNULL(u.`age`,0) &lt; 0,0,u.age) AS age,u.`sex`,u.mobile,
         w.idcard_back as idCardBack,w.idcard_front as idCardFront, w.idcard_number as idCardNumber,
-        w.health_card as healthCard,w.handheld_identity as handHeldIdentity, w.stature, w.weight,
+        w.health_card as healthCard,w.handheld_identity as handHeldIdentity, w.stature, w.weight, w.status,
         w.education,m.content,date_format(m.create_time, '%Y-%m-%d %H:%i')
         FROM message m
         INNER JOIN company c
@@ -1033,20 +1033,9 @@ WHERE m.message_type = 6 AND m.`apply_type` = 2 AND m.`hr_company_id` = #{hrId}
         )
 
         UNION
-        ( SELECT m2.is_task,m2.message_content as content,m2.id AS messageId,m2.`create_time` AS createTime,NULL AS address,u.avatar AS logo,NULL AS task_type_text,NULL AS fromDate,
-        NULL AS toDate,NULL AS dayStartTime,NULL AS dayEndTime, c.name AS hotelName, 0 AS confirmedWorkers,0 AS needWorkers,NULL AS taskContent, 0 AS lackWorkers,
-        NULL AS hotelId, NULL AS id,m2.applicant_type as applicantType,m2.apply_type as applyType,message_type AS type,0 AS hourlyPay,
-        NULL AS AREA FROM message m2 INNER JOIN USER u ON u.`worker_id` = m2.`worker_id`
-        inner join company c
-        on c.id = m2.hr_company_id
-        WHERE m2.apply_type=2 AND m2.is_task = 1 AND m2.status = 0 AND m2.hr_company_id= #{hrId}
-        <if test="type !=null">
-            AND m2.message_type = #{type}
-        </if>
-        )
-        UNION
         ( SELECT m3.is_task,m3.message_content as content,m3.id AS messageId,m3.`create_time` AS createTime,NULL AS address,c3.`logo`,NULL AS task_type_text,NULL AS fromDate, NULL AS toDate,NULL AS dayStartTime,NULL AS dayEndTime,c3.name AS hotelName,
-        0 AS confirmedWorkers,0 AS needWorkers,NULL AS taskContent, 0 AS lackWorkers,NULL AS hotelId, NULL AS id, m3.applicant_type as applicantType,m3.apply_type as applyType,case message_type when 12 then 21 else message_type end as type ,0 AS hourlyPay,c3.area FROM message m3
+        0 AS confirmedWorkers,0 AS needWorkers,NULL AS taskContent, 0 AS lackWorkers,NULL AS hotelId, NULL AS id, m3.applicant_type as applicantType,m3.apply_type as applyType,
+        CASE m3.message_type when 12 then 21 else m3.message_type end as type ,0 AS hourlyPay,c3.area FROM message m3
         INNER JOIN company c3 ON c3.id = m3.`hotel_id` WHERE m3.apply_type=2 AND m3.is_task = 1 AND m3.status = 0 AND m3.applicant_type = 3 AND m3.hr_company_id= #{hrId}
         <if test="type !=null">
             AND m3.message_type = #{type}

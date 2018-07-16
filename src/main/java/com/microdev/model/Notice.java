@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @TableName("notice")
 public class Notice extends BaseEntity {
-    private Integer needworkers;
+    private Integer needWorkers;
 
     private OffsetDateTime fromDate;
 
@@ -22,5 +22,6 @@ public class Notice extends BaseEntity {
 
     @TableField(exist = false)
     private List<Dict> service;
-
+    @TableField(exist = false)
+    private Company hotel;
 }
