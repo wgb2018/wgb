@@ -47,11 +47,11 @@ public class Worker extends BaseEntity {
     /**
      * 身高
      */
-    private Double stature;
+    private Integer stature;
     /**
      * 体重
      */
-    private Double weight;
+    private Integer weight;
     /**
      * 学历
      */

@@ -695,20 +695,19 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                         if (response != null) {
                             response.setOriginator(response.getName());
                         }
-                    } else if (message.getApplicantType() == 3) {
+                    } else if (message.getApplicantType() == 3 ) {
                         response = messageMapper.selectHrHotelUnbind(messageId, "hotel");
+                        if (response != null) {
+                            response.setOriginator(response.getCompanyName());
+                        }
+                    } else if (message.getApplicantType() == 2 ) {
+                        response = messageMapper.selectHrHotelUnbind(messageId, "hr");
                         if (response != null) {
                             response.setOriginator(response.getCompanyName());
                         }
                     }
                 }
-            } else if ("hotel".equals(messagetype)) {
-                response = messageMapper.selectHrHotelUnbind(messageId, "hr");
-                if (response != null) {
-                    response.setOriginator(response.getCompanyName());
-                }
-            }
-         else if ("13".equals(type)) {
+            } else if ("13".equals(type)) {
             if ("hr".equals(messagetype)) {
                 response = messageMapper.selectCompanyApply(messageId);
             } else if ("hotel".equals(messagetype)) {

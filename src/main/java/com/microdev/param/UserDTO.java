@@ -147,9 +147,9 @@ public class UserDTO {
 
     private String handheldIdentity;
 
-    private Double stature;
+    private Integer stature;
 
-    private Double weight;
+    private Integer weight;
 
     private Integer education;
     public String getId() {

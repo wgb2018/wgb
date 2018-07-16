@@ -156,6 +156,27 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             hrTask.setWorkerSettlementNum (hrTaskDis.getSettlementNum ());
         } else {
             hrTask = taskHrCompanyMapper.queryByTaskId(hrTaskDis.getHrTaskId());
+            if(hrTask.getHourlyPay () == 0){
+                if(hrTaskDis.getHourlyPay () == 0){
+                    throw new ParamsException ("人力公司每小时工钱不能为空");
+                }else{
+                    hrTask.setHourlyPay (hrTaskDis.getHourlyPay ());
+                }
+            }
+            if(hrTask.getWorkerSettlementPeriod () == null){
+                if(hrTaskDis.getSettlementPeriod () == null){
+                    throw new ParamsException ("结算周期不能为空");
+                }else{
+                    hrTask.setWorkerSettlementPeriod (hrTaskDis.getSettlementPeriod ());
+                }
+            }
+            if(hrTask.getWorkerSettlementNum () == null || hrTask.getWorkerSettlementNum () == 0){
+                if(hrTaskDis.getSettlementNum () == null || hrTaskDis.getSettlementNum () == 0){
+                    throw new ParamsException ("结算时间不能为空");
+                }else{
+                    hrTask.setWorkerSettlementNum (hrTaskDis.getSettlementNum ());
+                }
+            }
         }
        /* if (message == null) {
             throw new ParamsException("查询不到消息");

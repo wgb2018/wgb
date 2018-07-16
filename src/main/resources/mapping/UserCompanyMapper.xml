@@ -82,7 +82,7 @@
     <select id ="selectUserByHrId" resultType="java.util.Map">
         SELECT u.`age`,u.mobile,u.nickname as username,u.`sex`,m.id AS messageId FROM USER u INNER JOIN
       (SELECT id,worker_id,create_time FROM message WHERE STATUS = 0 AND hr_company_id = #{hrCompanyId}       AND  apply_type = 2 AND applicant_type = 1) m
-      ON u.id = m.worker_id ORDER BY m.create_time DESC
+      ON u.worker_id = m.worker_id ORDER BY m.create_time DESC
     </select>
 
     <select id="selectHrBindCount" resultType="java.lang.Integer">
