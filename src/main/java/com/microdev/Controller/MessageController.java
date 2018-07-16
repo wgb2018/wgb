@@ -244,4 +244,13 @@ public class MessageController {
     public ResultDO hotelHandleHrBind(@PathVariable String messageId,@PathVariable String status) {
         return messageService.hotelHrHandleBind(messageId, status);
     }
+
+    /**
+     * pc端用人单位或人力处理解绑申请
+     * @return
+     */
+    @PostMapping("/message/companyUnbind/pc")
+    public ResultDO companyUnbindPc(@RequestBody Map<String, String> param) {
+        return messageService.hotelHrHandleBind(param.get("messageId"), param.get("status"));
+    }
 }

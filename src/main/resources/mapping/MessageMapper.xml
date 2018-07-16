@@ -800,9 +800,8 @@ WHERE m.`apply_type` = 3  and m.`status` = 0 AND m.`hotel_id` = #{hotelId}
     <select id = "selectPcUnBindApply" resultType="com.microdev.param.BindPcResponse">
         SELECT m.id AS messageId,m.`message_type` AS messageType,c.`name` AS hrName, c.`logo` AS hrLogo,c.`address`,u.`nickname` AS username, IF(IFNULL(u.`age`,0) &lt; 0,0,u.age) AS age,u.`sex`,u.mobile,
         w.idcard_back as idCardBack,w.idcard_front as idCardFront, w.idcard_number as idCardNumber,
-
         w.health_card as healthCard,w.handheld_identity as handHeldIdentity, w.stature, w.weight, w.status,
-        w.education,m.content,date_format(m.create_time, '%Y-%m-%d %H:%i')
+        w.education,m.content,date_format(m.create_time, '%Y-%m-%d %H:%i') AS createTime
         FROM message m
         INNER JOIN company c
         ON c.id = m.`hr_company_id`
