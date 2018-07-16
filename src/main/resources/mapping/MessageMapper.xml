@@ -981,7 +981,7 @@ WHERE m.message_type = 6 AND m.`apply_type` = 2 AND m.`hr_company_id` = #{hrId}
 
         (
         SELECT m3.is_task,m3.message_content as content,m3.id AS messageId,m3.`create_time` AS createTime,IFNULL(c3.`address`,'') AS address,c3.`logo`,NULL AS task_type_text,NULL AS fromDate, NULL AS toDate,NULL AS dayStartTime,NULL AS dayEndTime,
-        c3.hotelName AS hotel_name, 0 AS confirmedWorkers,0 AS needWorkers,
+        c3.name AS hotelName, 0 AS confirmedWorkers,0 AS needWorkers,
         0 AS lackWorkers,NULL AS hotel_id, NULL AS id, m3.applicant_type as applicantType,m3.apply_type as applyType,message_type AS type,0 AS hourlyPay,c3.`area`,0 AS hrNeedWorkers ,0 AS hrConfirmedWorkers FROM message m3
         INNER JOIN company c3
         ON c3.id = m3.`hr_company_id`
