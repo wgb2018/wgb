@@ -1,11 +1,7 @@
 package com.microdev.param;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.microdev.param.AwaitTaskResponse;
-import com.microdev.param.MessageDetailsResponse;
 import lombok.Data;
 
-import java.time.OffsetDateTime;
 
 @Data
 public class AwaitHandleInfoPc {
@@ -16,7 +12,7 @@ public class AwaitHandleInfoPc {
     private String toDate;
     private String dayStartTime;
     private String dayEndTime;
-    private String hotelName;
+    private String companyName;
     private String address;
     private String confirmedWorkers;
     private String needWorkers;
@@ -25,7 +21,7 @@ public class AwaitHandleInfoPc {
     /**
      * 消息类型1补签申请2加时申请3请假申请4调配申请5绑定申请6新任务7申请取消任务8收入确认9申请替换10拒绝接单* 11待派单12申请解绑13申请合作
      */
-    private Integer type;
+    private Integer messageType;
     private String logo;
     private String content;
     private String messageId;
@@ -33,11 +29,10 @@ public class AwaitHandleInfoPc {
     private String area;
     private String hrConfirmedWorkers;
     private String taskContent;
-    private String hotelLeader;
+    private String leader;
     private String amount;
-    private String hotelLeaderMobile;
-    @JsonFormat(pattern="yyyy.MM.dd hh:mm:ss")
-    private OffsetDateTime createTime;
+    private String mobile;
+    private String createTime;
     /**
      *消息发送者类型1小时工2人力公司3酒店4系统
      */
