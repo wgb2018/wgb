@@ -22,4 +22,6 @@ public class BindPcResponse {
     private String stature;
     private String weight;
     private String education;
+    private String content;
+    private String createTime;
 }

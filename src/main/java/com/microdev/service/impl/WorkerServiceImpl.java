@@ -786,7 +786,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         String path = redisUtil.getString("defaultWorkerHrProtocol");
         if (StringUtils.isEmpty(path)) {
             try {
-                path = filePush.pushFileToServer(ConstantData.CATALOG.name(), ConstantData.WORKHRPROTOCOL.name());
+                path = filePush.pushFileToServer(ConstantData.CATALOG.getName(), ConstantData.WORKHRPROTOCOL.getName());
+                //path = filePush.pushFileToServer(ConstantData.CATALOG.getName(), ConstantData.TEST.getName());
             } catch (Exception e) {
                 e.printStackTrace();
                 return "服务异常";
@@ -808,6 +809,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 userCompanyList.add(userCompany);
             }else{
                 temp.setStatus(0);
+                temp.setBindProtocol(path);
                 userCompanyMapper.updateById(temp);
                 continue;
             }

@@ -700,15 +700,14 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                         if (response != null) {
                             response.setOriginator(response.getCompanyName());
                         }
+                    } else if (message.getApplicantType() == 2) {
+                        response = messageMapper.selectHrHotelUnbind(messageId, "hr");
+                        if (response != null) {
+                            response.setOriginator(response.getCompanyName());
+                        }
                     }
                 }
-            } else if ("hotel".equals(messagetype)) {
-                response = messageMapper.selectHrHotelUnbind(messageId, "hr");
-                if (response != null) {
-                    response.setOriginator(response.getCompanyName());
-                }
-            }
-         else if ("13".equals(type)) {
+            } else if ("13".equals(type)) {
             if ("hr".equals(messagetype)) {
                 response = messageMapper.selectCompanyApply(messageId);
             } else if ("hotel".equals(messagetype)) {
@@ -1446,6 +1445,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             if ("4".equals(info.getType()) || "10".equals(info.getType())) {
                 info.setNeedWorkers(info.getHrNeedWorkers());
                 info.setConfirmedWorkers(info.getHrConfirmedWorkers());
+            }
+            if ("12".equals(info.getType())) {
+                info.setType(22);
             }
         }
     }

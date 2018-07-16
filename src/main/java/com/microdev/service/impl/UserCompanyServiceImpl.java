@@ -387,7 +387,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         String path = redisUtil.getString("defaultWorkerHrProtocol");
         if (StringUtils.isEmpty(path)) {
             try {
-                path = filePush.pushFileToServer(ConstantData.CATALOG.name(), ConstantData.WORKHRPROTOCOL.name());
+                path = filePush.pushFileToServer(ConstantData.CATALOG.getName(), ConstantData.WORKHRPROTOCOL.getName());
             } catch (Exception e) {
                 e.printStackTrace();
                 return "服务异常";
@@ -407,6 +407,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                 userCompanyList.add(userCompany);
             }else{
                 temp.setStatus(0);
+                temp.setBindProtocol(path);
                 userCompanyMapper.updateById(temp);
                 continue;
             }

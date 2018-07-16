@@ -798,7 +798,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         String path = redisUtil.getString("defaultHrHotelProtocol");
         if (StringUtils.isEmpty(path)) {
             try {
-                path = filePush.pushFileToServer(ConstantData.CATALOG.name(), ConstantData.HRHOTELPROTOCOL.name());
+                path = filePush.pushFileToServer(ConstantData.CATALOG.getName(), ConstantData.HRHOTELPROTOCOL.getName());
+                //path = filePush.pushFileToServer(ConstantData.CATALOG.getName(), ConstantData.TEST.getName());
             } catch (Exception e) {
                 e.printStackTrace();
                 return ResultDO.buildError("服务异常");
@@ -831,6 +832,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                         hotelHr.setBindProtocol(path);
                         list.add(hotelHr);
                     } else {
+                        hotelHr.setBindProtocol(path);
                         hotelHr.setStatus(3);
                         hotelHrCompanyMapper.update(hotelHr);
                     }
@@ -873,6 +875,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                         list.add(hotelHr);
                     } else {
                         hotelHr.setStatus(3);
+                        hotelHr.setBindProtocol(path);
                         hotelHrCompanyMapper.update(hotelHr);
                     }
                 }

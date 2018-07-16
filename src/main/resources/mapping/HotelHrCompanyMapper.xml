@@ -5,7 +5,7 @@
         set
         deleted = #{deleted},modify_time = #{modifyTime},bind_time = #{bindTime},
         bind_type = #{bindType},relieve_time = #{relieveTime},relieve_type = #{relieveType},
-        status = #{status}
+        status = #{status},bind_protocol = #{bindProtocol}
     </sql>
     <sql id="query_Column_List">
         id as pid,create_time ,deleted ,modify_time ,bind_time ,bind_type ,relieve_time ,relieve_type ,
