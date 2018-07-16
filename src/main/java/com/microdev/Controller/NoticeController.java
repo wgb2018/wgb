@@ -1,6 +1,7 @@
 package com.microdev.Controller;
 
 import com.microdev.common.ResultDO;
+import com.microdev.param.CreateNoticeRequest;
 import com.microdev.param.CreateSuggestionRequest;
 import com.microdev.service.NoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class NoticeController {
      * 酒店发布公告
      */
     @PostMapping("/release/notice")
-    public ResultDO createSuggestion(@RequestBody CreateSuggestionRequest request) {
-        return null;
+    public ResultDO createNotice(@RequestBody CreateNoticeRequest request) {
+        return noticeService.createNotice(request);
     }
 }

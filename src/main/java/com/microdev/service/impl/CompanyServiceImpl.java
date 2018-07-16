@@ -1315,8 +1315,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         if(taskMapper.getFirstById(message.getTaskId()).getFromDate().isBefore(OffsetDateTime.now())) {
             informService.sendInformInfo(3, 2, "由于用人单位未及时处理您的调配申请，此申请默认拒绝", message.getHrCompanyId(), "申请调配处理超时");
             try {
-                jpushClient.jC.sendPush(JPushManage.buildPushObject_all_alias_message(companyMapper.findCompanyById(message.getHotelId()).getLeaderMobile(), "由于用人单位未未及时处理您的调配申请，此申请默认拒绝"));            } catch (APIConnectionException e) {
-
+                jpushClient.jC.sendPush(JPushManage.buildPushObject_all_alias_message(companyMapper.findCompanyById(message.getHrCompanyId ()).getLeaderMobile(), "由于用人单位未及时处理您的调配申请，此申请默认拒绝"));
+            } catch (APIConnectionException e) {
                 e.printStackTrace ( );
             } catch (APIRequestException e) {
 
@@ -1338,19 +1338,17 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         String content = StringKit.templateReplace(inf.getContent (), map);
         informService.sendInformInfo (inf.getSendType (),2,content,message.getHrCompanyId (),inf.getTitle ());
         try {
-            
             jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (message.getHrCompanyId ()).getLeaderMobile ( ), content));
         } catch (APIConnectionException e) {
-     
             e.printStackTrace ( );
         } catch (APIRequestException e) {
-
         }
        
         TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId (message.getHrTaskId ());
-        //taskHrCompany.setNeedWorkers (taskHrCompany.getNeedWorkers()-Integer.parseInt (message.getMinutes ()));
-      
-        taskHrCompany.setStatus (5);
+        taskHrCompany.setNeedWorkers (taskHrCompany.getNeedWorkers()-Integer.parseInt (message.getMinutes ()));
+        if(taskHrCompany.getNeedWorkers () == taskHrCompany.getConfirmedWorkers ()){
+            taskHrCompany.setStatus (5);
+        }
         taskHrCompanyMapper.updateById (taskHrCompany);
         return ResultDO.buildSuccess("处理成功");
     }
