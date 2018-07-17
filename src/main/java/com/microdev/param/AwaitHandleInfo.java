@@ -36,8 +36,6 @@ public class AwaitHandleInfo {
     private String hotelLeaderMobile;
     @JsonFormat(pattern="yyyy.MM.dd hh:mm:ss")
     private OffsetDateTime createTime;
-    private AwaitTaskResponse taskResponse;
-    private MessageDetailsResponse detailsResponse;
     /**
      *消息发送者类型1小时工2人力公司3酒店4系统
      */
