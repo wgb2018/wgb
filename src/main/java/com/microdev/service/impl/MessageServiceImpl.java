@@ -1455,7 +1455,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 info.setNeedWorkers(info.getHrNeedWorkers());
                 info.setConfirmedWorkers(info.getHrConfirmedWorkers());
             }
-            if ("12".equals(info.getMessageType())) {
+            if (info.getMessageType() == 12) {
                 info.setMessageType(22);
             }
         }
