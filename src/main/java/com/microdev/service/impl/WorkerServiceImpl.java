@@ -787,7 +787,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         if (StringUtils.isEmpty(path)) {
             try {
                 path = filePush.pushFileToServer(ConstantData.CATALOG.getName(), ConstantData.WORKHRPROTOCOL.getName());
-                //path = filePush.pushFileToServer(ConstantData.CATALOG.getName(), ConstantData.TEST.getName());
+                //path = filePush.pushFileToServer(ConstantData.CATALOG.getName(), ConstantData.WORKERTEST.getName());
             } catch (Exception e) {
                 e.printStackTrace();
                 return "服务异常";

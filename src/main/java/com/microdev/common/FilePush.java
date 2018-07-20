@@ -17,9 +17,10 @@ public class FilePush {
 
     public String pushFileToServer(String catalog, String localPath) throws Exception {
         InputStream fis = new FileInputStream(new File(localPath));
+        catalog = catalog + FileSafeCode.getSha1(fis) + ".html";
+        fis = new FileInputStream(new File(localPath));
         byte[] b = new byte[fis.available()];
         fis.read(b);
-        catalog = catalog + FileSafeCode.getSha1(fis) + ".html";
         return objectStoreService.uploadObject(catalog, b);
     }
 }

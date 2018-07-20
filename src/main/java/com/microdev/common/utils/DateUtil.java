@@ -81,9 +81,8 @@ public class DateUtil {
         OffsetDateTime nowDate=OffsetDateTime.now();
         int oldYear = dateTime.getYear();
         int nowYear = nowDate.getYear();
-        dateTime = dateTime.plusYears(nowYear);
         if (dateTime.getDayOfYear() > nowDate.getDayOfYear()) {
-            return nowYear - oldYear - 1;
+            return nowYear - oldYear <= 0 ? 0 : nowYear - oldYear - 1;
         } else {
             return nowYear - oldYear;
         }
