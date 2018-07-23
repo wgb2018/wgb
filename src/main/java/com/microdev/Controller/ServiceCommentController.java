@@ -14,9 +14,14 @@ public class ServiceCommentController {
     @Autowired
     private ServiceCommentService serviceCommentService;
 
+    /**
+     * 提交评论
+     * @param commentRequest
+     * @return
+     */
     @PostMapping("/comment/submit")
     public ResultDO ServiceComment(@RequestBody CommentRequest commentRequest) {
 
-        return ResultDO.buildSuccess("");
+        return serviceCommentService.serviceCommentSubmit(commentRequest);
     }
 }

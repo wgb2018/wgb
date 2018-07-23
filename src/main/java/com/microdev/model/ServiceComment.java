@@ -16,7 +16,7 @@ public class ServiceComment extends BaseEntity{
      */
     private String billId;
     /**
-     * 标签id
+     * 评价级别
      */
-    private String evaluateId;
+    private Integer level;
 }

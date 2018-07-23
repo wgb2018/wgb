@@ -49,5 +49,5 @@ public class AwaitHandleInfoPc {
     private String stature;//身高
     private String weight;//体重
     private int education;//学历
-
+    private String billId;
 }

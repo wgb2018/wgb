@@ -12,4 +12,6 @@ public interface BillService extends IService<Bill> {
     ResultDO queryHotelPayHrCompany(Paginator paginator, HotelPayHrCompanyRequest request);
 
     ResultDO queryHrCompanyPayWorker(Paginator paginator,HrCompanyPayWorkerRequest request);
+
+    ResultDO updateCommentStatus(String id);
 }

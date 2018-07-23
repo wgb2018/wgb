@@ -11,6 +11,8 @@ import com.microdev.service.TaskHrCompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 
 /**
  * 账目明细
@@ -66,5 +68,15 @@ public class BillController {
     @PostMapping("/HrCompanyPayWorker/Bill")
     public ResultDO queryHrCompanyPayWorker(@RequestBody PagingDO<HrCompanyPayWorkerRequest> paging) {
         return BillService.queryHrCompanyPayWorker(paging.getPaginator (),paging.getSelector ());
+    }
+
+    /**
+     * 关闭评论
+     * @return
+     */
+    @PostMapping("/update/bill")
+    public ResultDO updateBillComment(@RequestBody Map<String, String> param) {
+
+        return BillService.updateCommentStatus(param.get("id"));
     }
 }
