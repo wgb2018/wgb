@@ -70,4 +70,11 @@ public class Bill extends BaseEntity{
      * 2 拒绝
      */
     private Integer status;
+
+    /**
+     * 0未评论
+     * 1关闭
+     * 2已评论
+     */
+    private Integer commentStatus = 0;
 }

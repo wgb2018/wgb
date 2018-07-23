@@ -490,7 +490,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         }
         com.microdev.common.context.User loginUser = ServiceContextHolder.getServiceContext().getUser();
         User user = userMapper.queryByUserId(loginUser.getId());
-        System.out.println ("u:"+user);
+
         try {
             userConverter.update(userDTO, user);
         } catch (Exception e) {

@@ -402,7 +402,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             return "日期格式错误，请用yyyy/MM/dd HH:mm格式";
         }
         Message m = new Message();
-        m.setContent(info.getReason());
+        m.setContent(info.getReason() + ",加班日期" + info.getTime() + ",加班时长" + info.getMinutes() + "分钟");
         m.setSupplementTime(time);
         m.setMinutes(info.getMinutes() + "");
         WorkerCancelTask tp = taskWorkerMapper.selectUserAndWorkerId(info.getTaskWorkerId());

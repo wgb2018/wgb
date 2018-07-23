@@ -387,9 +387,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         String path = redisUtil.getString("defaultWorkerHrProtocol");
         if (StringUtils.isEmpty(path)) {
             try {
-                path = filePush.pushFileToServer(ConstantData.CATALOG.getName(), ConstantData.WORKHRPROTOCOL.getName());
-                //path = filePush.pushFileToServer(ConstantData.CATALOG.getName(), ConstantData.WORKERTEST.getName());
-            } catch (Exception e) {
+                path = filePush.pushFileToServer(ConstantData.CATALOG.getName(), ConstantData.WORKHRPROTOCOL.getName());            } catch (Exception e) {
                 e.printStackTrace();
                 return "服务异常";
             }
