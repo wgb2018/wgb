@@ -747,9 +747,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
 
             inform.setTitle("申请加时成功");
-            inform.setContent(c.getName() + "同意了你的加时请求。" + m.getMessageContent());
+            inform.setContent(c.getName() + "同意了你的加时请求。" + m.getContent());
             try {
-                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (m.getWorkerId()).getMobile (), c.getName() + "同意了你的加时请求。" + m.getMessageContent()));
+                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (m.getWorkerId()).getMobile (), c.getName() + "同意了你的加时请求。" + m.getContent()));
             } catch (APIConnectionException e) {
                 e.printStackTrace ( );
             } catch (APIRequestException e) {
@@ -758,9 +758,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         } else if ("0".equals(status)) {
 
             inform.setTitle("申请加时被拒绝");
-            inform.setContent(c.getName() + "拒绝了你的加时请求。" + m.getMessageContent());
+            inform.setContent(c.getName() + "拒绝了你的加时请求。");
             try {
-                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (m.getWorkerId()).getMobile (), c.getName() + "拒绝了你的加时请求。" + m.getMessageContent()));
+                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (m.getWorkerId()).getMobile (), c.getName() + "拒绝了你的加时请求。"));
             } catch (APIConnectionException e) {
                 e.printStackTrace ( );
             } catch (APIRequestException e) {
