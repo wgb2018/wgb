@@ -1001,7 +1001,7 @@ WHERE m.message_type = 6 AND m.`apply_type` = 2 AND m.`hr_company_id` = #{hrId}
         
         SELECT m.is_task,m.content,m.id AS messageId,DATE_FORMAT(m.create_time, '%Y.%m.%d %H:%i') AS createTime,IFNULL(c.address,'') AS address,c.logo,t.task_type_text,t.fromDate,t.toDate,t.dayStartTime,t.dayEndTime
         ,t.hotel_name as companyName,IFNULL(th.confirmed_workers,0) AS confirmedWorkers,IFNULL(th.need_workers,0) AS needWorkers,t.task_content AS taskContent,
-        IFNULL(th.need_workers,0)-IFNULL(th.confirmed_workers,0) AS lackWorkers,m.`hotel_id` AS hotelId,t.id ,m.applicant_type as applicantType,m.apply_type as applyType,message_type AS messageType,t.hourlyPay,c.area,c.leader,c.leader_mobile as mobile
+        IFNULL(th.need_workers,0)-IFNULL(th.confirmed_workers,0) AS lackWorkers,m.`hotel_id` AS hotelId,t.id ,m.applicant_type as applicantType,m.apply_type as applyType,message_type AS messageType,t.hourlyPay,c.area,c.leader,c.leader_mobile as mobile,m.minutes as amount
         FROM message m
         INNER JOIN ( SELECT task_type_text,DATE_FORMAT(from_date,'%Y.%m.%d') AS fromDate,task_content,
         DATE_FORMAT(to_date, '%Y.%m.%d') AS toDate,DATE_FORMAT(day_start_time, '%H:%i') AS dayStartTime,
@@ -1023,7 +1023,7 @@ WHERE m.message_type = 6 AND m.`apply_type` = 2 AND m.`hr_company_id` = #{hrId}
         
         SELECT m.is_task,m.content,m.id AS messageId,DATE_FORMAT(m.create_time,'%Y.%m.%d %H:%i') AS createTime,IFNULL(c.address,'') AS address,c.logo,t.task_type_text,t.fromDate,t.toDate,t.dayStartTime,t.dayEndTime
         ,t.hotel_name as companyName,IFNULL(th.confirmed_workers,0) AS confirmedWorkers,IFNULL(th.need_workers,0) AS needWorkers,t.task_content AS taskContent,
-        IFNULL(th.need_workers,0)-IFNULL(th.confirmed_workers,0) AS lackWorkers,m.`hotel_id` AS hotelId,t.id ,m.applicant_type as applicantType,m.apply_type as applyType,message_type AS messageType,t.hourlyPay,c.area,c.leader,c.leader_mobile as mobile
+        IFNULL(th.need_workers,0)-IFNULL(th.confirmed_workers,0) AS lackWorkers,m.`hotel_id` AS hotelId,t.id ,m.applicant_type as applicantType,m.apply_type as applyType,message_type AS messageType,t.hourlyPay,c.area,c.leader,c.leader_mobile as mobile,m.minutes as amount
         FROM message m
         INNER JOIN ( SELECT task_type_text,DATE_FORMAT(from_date,'%Y.%m.%d') AS fromDate,task_content,
         DATE_FORMAT(to_date, '%Y.%m.%d') AS toDate,DATE_FORMAT(day_start_time, '%H:%i') AS dayStartTime,
@@ -1045,7 +1045,7 @@ WHERE m.message_type = 6 AND m.`apply_type` = 2 AND m.`hr_company_id` = #{hrId}
         
         ( SELECT m3.is_task,m3.message_content as content,m3.id AS messageId,DATE_FORMAT(m3.`create_time`, '%Y.%m.%d %H:%i') AS createTime,NULL AS address,c3.`logo`,NULL AS task_type_text,NULL AS fromDate, NULL AS toDate,NULL AS dayStartTime,NULL AS dayEndTime,c3.name AS companyName,
         0 AS confirmedWorkers,0 AS needWorkers,NULL AS taskContent, 0 AS lackWorkers,NULL AS hotelId, NULL AS id, m3.applicant_type as applicantType,m3.apply_type as applyType,case message_type when 12 then 21 else message_type end as messageType ,0 AS hourlyPay,c3.area,
-        c3.leader,c3.leader_mobile  as mobile FROM message m3        
+        c3.leader,c3.leader_mobile  as mobile,m3.minutes as amount FROM message m3
         INNER JOIN company c3 ON c3.id = m3.`hotel_id` WHERE m3.apply_type=2 AND m3.is_task = 1 AND m3.status = 0 AND m3.applicant_type = 3 AND m3.hr_company_id= #{hrId}
         <if test="type !=null">
             AND m3.message_type = #{type}
