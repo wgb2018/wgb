@@ -834,6 +834,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                     } else {
                         hotelHr.setBindProtocol(path);
                         hotelHr.setStatus(3);
+                        hotelHr.setBindType (1);
                         hotelHrCompanyMapper.update(hotelHr);
                     }
                 }
@@ -858,7 +859,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             }
             int num = hotelHrCompanyMapper.selectBindCountByHrId(dto);
             if (num > 0) {
-                throw new BusinessException("已绑定数据,请勿重复");
+                throw new BusinessException("您已提交过绑定申请,请勿重复申请");
             }
             num = hotelHrCompanyMapper.selectIsBIndByCompanyId(dto);
             if (num > 0) {
@@ -875,6 +876,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                         list.add(hotelHr);
                     } else {
                         hotelHr.setStatus(3);
+                        hotelHr.setBindType (2);
                         hotelHr.setBindProtocol(path);
                         hotelHrCompanyMapper.update(hotelHr);
                     }
@@ -894,11 +896,17 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             if(company.getStatus () == 0) throw new ParamsException("公司状态为未审核，添加失败");
         }
         if (list.size() > 0) {
-
             try{
                 hotelHrCompanyMapper.saveBatch(list);
             }catch(Exception e){
-                throw new ParamsException ("绑定申请已提交，请勿重复提交");
+                HotelHrCompany hh = hotelHrCompanyMapper.selectByHrHotelId (list.get (0).getHrId (),list.get (0).getHotelId ());
+                if(hh.getStatus () == 0){
+                    throw new ParamsException ("绑定申请已提交，请勿重复提交");
+                }else{
+                    System.out.println (hh.getStatus ());
+                    throw new ParamsException ("您已合作，请勿重复申请");
+                }
+
             }
 
         }
@@ -1468,6 +1476,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             }
             for (String hrId : hrSet) {
                 hotelHr = hotelHrCompanyMapper.selectByHrHotelId(hrId, dto.getHotelId());
+                if(taskHrCompanyMapper.queryByHotelIdAndHrId(dto.getHotelId(),hrId)>0){
+                    throw new BusinessException("贵公司与该公司存在未完成的任务，暂时不能解绑");
+                }
                 if (hotelHr == null) {
                     throw new BusinessException("数据异常，获取绑定关系失败");
                 } else {
@@ -1491,6 +1502,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
             for (String hotelId : hrSet) {
                 hotelHr = hotelHrCompanyMapper.selectByHrHotelId(dto.getHrId(), hotelId);
+                if(taskHrCompanyMapper.queryByHotelIdAndHrId(hotelId,dto.getHrId())>0){
+                    throw new BusinessException("贵公司与该公司存在未完成的任务，暂时不能解绑");
+                }
                 if (hotelHr == null) {
                     throw new BusinessException("数据异常，获取绑定关系失败");
                 } else {

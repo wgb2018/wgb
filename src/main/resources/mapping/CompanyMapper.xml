@@ -4,7 +4,7 @@
     <sql id="Company_Column_List">
         id as pid, create_time, deleted, modify_time,address,
         business_license, company_type, confirmed_time, latitude, leader, leader_mobile, address_code ,area,
-        logo, longitude, name, status, labor_dispatch_card, qr_code,active_workers,active_companys,bind_companys,bind_workers
+        logo, longitude, name, status, labor_dispatch_card, qr_code,active_workers,active_companys,bind_companys,bind_workers,poll_code
     </sql>
     <sql id="Company_Query_Param">
         <if test="name != null and name != ''">
@@ -18,6 +18,9 @@
         </if>
         <if test="status != null and status != ''">
             and status = #{status}
+        </if>
+        <if test="pollCode != null and pollCode != ''">
+            and poll_code = #{pollCode}
         </if>
     </sql>
     <delete id="deleteAreaRelation" parameterType="java.lang.String">

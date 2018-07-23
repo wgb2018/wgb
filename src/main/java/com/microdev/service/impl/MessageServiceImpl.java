@@ -171,13 +171,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 m.setApplicantType(2);
                 m.setHotelId(id);
                 m.setHrCompanyId(applyCompany.getPid());
-                try {
+                /*try {
                     jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (id).getLeaderMobile ( ), m.getMessageContent ()));
                 } catch (APIConnectionException e) {
                     e.printStackTrace ( );
                 } catch (APIRequestException e) {
                     e.printStackTrace ( );
-                }
+                }*/
             }
             list.add(m);
         }
@@ -240,6 +240,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             map.put ("message_type",m.getMessageType ());
             map.put("apply_type",2);
             map.put("is_task",1);
+            map.put ("hr_company_id", companyId);
             List<Message> messageList = messageMapper.selectByMap (map);
             if(messageList != null && messageList.size() > 0){
                 throw new ParamsException("申请已提交，请勿重复提交");
@@ -1455,7 +1456,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 info.setNeedWorkers(info.getHrNeedWorkers());
                 info.setConfirmedWorkers(info.getHrConfirmedWorkers());
             }
-            if ("12".equals(info.getMessageType())) {
+            if (info.getMessageType() == 12) {
                 info.setMessageType(22);
             }
         }

@@ -17,6 +17,9 @@
             <if test="service != null and service != ''">
                 and s.service_id = #{service}
             </if>
+            <if test="hotelId != null and hotelId != ''">
+                and c.id = #{hotelId}
+            </if>
         </where>
         order by n.create_time desc
     </select>

@@ -64,6 +64,7 @@ public interface Constant {
         add("/version/*");
         add("/*/guide");
         add("/downlaod");
+        add("/list/evaluate");
     }};
 
 

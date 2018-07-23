@@ -153,6 +153,6 @@ public class Company extends BaseEntity {
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
-
+    public String pollCode;
 
 }

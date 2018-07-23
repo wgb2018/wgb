@@ -63,7 +63,7 @@ public class User extends BaseEntity{
     private String userCode ="";
 	private Integer age;
 
-	private String qrCode;
+	private String superior;
 
 	private int msNum;
     /**

@@ -154,7 +154,7 @@
                     and t.have_pay_money &gt;= 0 and t.should_pay_money = t.have_pay_money
                 </if>
             </if>
-        </where> order by t.create_time asc
+        </where> order by t.create_time desc
     </select>
     <select id="findByHrTaskId" resultType="com.microdev.model.TaskWorker">
         select
