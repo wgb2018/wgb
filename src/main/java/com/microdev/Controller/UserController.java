@@ -125,6 +125,14 @@ public class UserController {
         return ResultDO.buildSuccess(userService.register(userDTO));
     }
     /**
+     * 子账号注册
+     */
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/register/child")
+    public ResultDO registerchild(@RequestBody accountParam userDTO) throws Exception {
+        return ResultDO.buildSuccess(userService.registerchild(userDTO));
+    }
+    /**
      * 微信小程序用户注册
      */
     @ResponseStatus(HttpStatus.CREATED)
@@ -239,6 +247,14 @@ public class UserController {
         im.setOriginal (file.getOriginalFilename ());
         return im;
     }
+    @PostMapping("/files/TE")
+    public String uploadFileC(@RequestParam("file") MultipartFile file) throws Exception {
+        String filePath = "avater".toLowerCase() + "/" + file.getOriginalFilename ().split (".")[0];
+        //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
+        String fileURI = objectStoreService.uploadObject(filePath, file.getBytes());
+        //返回地址给前端
+        return file.getOriginalFilename ().split (".")[0];
+    }
     @GetMapping("/files/UE")
     public ResultDO uploadFileB() throws Exception {
         return null;
@@ -337,7 +353,6 @@ public class UserController {
         smsFacade.checkSmsCode(mobile, SmsType.register.name(), smsCode);
         return ResultDO.buildSuccess("验证通过");
     }
-
     /**
      * 文件下载
      */

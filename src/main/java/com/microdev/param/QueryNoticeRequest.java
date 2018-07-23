@@ -12,8 +12,10 @@ public class QueryNoticeRequest {
 
     private String hotelName;
 
+    private String hotelId;
+
     private OffsetDateTime fromDate;
 
-    private OffsetDateTime Todate;
+    private OffsetDateTime toDate;
 
 }

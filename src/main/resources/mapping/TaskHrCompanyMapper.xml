@@ -97,7 +97,7 @@
                 and t.status in (4,5) and t.to_date &gt; now()
             </if>
             <if test="status == 7">
-                and t.status in(4,5) and t.to_date &lt; now()
+                and (t.status in(4,5) and t.to_date &lt; now()) or t.status = 8
             </if>
             <if test="status == 10">
                 and t.status >=4 and t.from_date &lt; now()
@@ -165,5 +165,8 @@
 
     <select id = "selectWorkHrTask" resultType="com.microdev.model.TaskHrCompany">
         select <include refid="TaskHrCompany_Query_List"/> from task_hr_company where hotel_id = #{hotelId} and status in (1, 2, 4, 5, 6)
+    </select>
+    <select id="queryByHotelIdAndHrId" resultType="java.lang.Integer">
+        select count(*) from task_hr_company where hotel_id = #{hotelId} and hr_company_id = #{hrId} and to_date &gt; now()
     </select>
 </mapper>

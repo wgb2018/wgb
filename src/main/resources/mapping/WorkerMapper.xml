@@ -3,7 +3,7 @@
 <mapper namespace="com.microdev.mapper.WorkerMapper">
     <sql id="Worker_Column_List">
         id as pid, create_time, deleted, modify_time,
-        idcard_back, idcard_front, idcard_number, health_card,qr_code,active_companys,bind_companys,status,handheld_identity,stature,weight,education,status
+        idcard_back, idcard_front, idcard_number, health_card,qr_code,active_companys,bind_companys,status,handheld_identity,stature,weight,education,status,poll_code
     </sql>
     <insert id="save" parameterType="com.microdev.model.Worker">
         insert into worker values(#{pid},#{createTime},#{deleted},#{modifyTime},#{idcardBack},#{idcardFront},
@@ -53,11 +53,14 @@
         as avatar,w.qr_code as qrCode,u.birthday as birthday,u.email as email,u.mobile as mobile,u.nickname as nickname,CASE u.`sex` WHEN 'MALE' THEN 'MALE' WHEN
         'FEMALE' THEN 'FEMALE' ELSE 'UNKNOW' END AS  sex,u.user_type as userType,u.user_code as userCode,w.idcard_back as
         idcardBack,w.idcard_front as idcardFront,w.idcard_number as idcardNumber,w.health_card as healthCard,w.status as status,w.id as workerId,
-        IFNULL(w.handheld_identity,'') as handheldIdentity,IFNULL(w.stature,0) as stature,IFNULL(w.weight,0) as weight,IFNULL(w.education,0) as education
+        IFNULL(w.handheld_identity,'') as handheldIdentity,IFNULL(w.stature,0) as stature,IFNULL(w.weight,0) as weight,IFNULL(w.education,0) as education,IFNULL(w.poll_code,'') as pollCode
         from worker w left join user u on u.worker_id = w.id
         <where>
             <if test="name !=null and name !=''">
                 u.nickname like concat('%', #{name},'%')
+            </if>
+            <if test="pollCode !=null and pollCode !=''">
+                w.poll_code like concat('%', #{pollCode},'%')
             </if>
         </where>
     </select>

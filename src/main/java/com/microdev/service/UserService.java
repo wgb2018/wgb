@@ -13,6 +13,9 @@ import java.util.Map;
 public interface UserService extends IService<User>{
        User create(User user) throws Exception;
 
+       //子帐号注册
+       ResultDO registerchild(accountParam userDTO) throws Exception;
+
        List<User> query(UserDTO user) throws Exception;
        //用户名+密码登录
        TokenDTO login(UserDTO user) throws Exception;

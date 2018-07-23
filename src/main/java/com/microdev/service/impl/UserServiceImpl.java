@@ -93,6 +93,30 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     }
 
     @Override
+    public ResultDO registerchild(accountParam userDTO) throws Exception {
+        System.out.println (userDTO);
+        if(userDTO.getAccountType ()==null || userDTO.getCompanyId () == null || userDTO.getMobile () == null || userDTO.getPassword () == null){
+            throw new ParamsException ("参数错误");
+        }
+        Company company = companyMapper.findCompanyById (userDTO.getCompanyId ());
+        if(company == null){
+            throw new ParamsException ("companyId错误");
+        }
+        User u = userMapper.findByMobile (company.getLeaderMobile ());
+        User nu = u;
+        nu.setUsername (userDTO.getMobile ());
+        nu.setMobile (userDTO.getMobile ());
+        nu.setPassword (userDTO.getPassword ());
+        nu.setSuperior (u.getPid ());
+        nu.setNickname (userDTO.getMobile ());
+        nu.setPid (null);
+        nu.setCreateTime (null);
+        nu.setModifyTime (null);
+        userMapper.insert (nu);
+        return ResultDO.buildSuccess ("注册成功");
+    }
+
+    @Override
     public List<User> query(UserDTO user) throws Exception {
         List<User> userList= null;
         try{
@@ -146,7 +170,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         if (register.getUserType() == UserType.platform) {
             throw new AuthorizationException("无权限注册该用户");
         }
-        //smsFacade.checkSmsCode(register.getMobile(), SmsType.register.name(), register.getSmsCode());
+        /*smsFacade.checkSmsCode(register.getMobile(), SmsType.register.name(), register.getSmsCode());*/
         if (userMapper.findByMobile(register.getMobile()) != null) {
             throw new ParamsException("手机号码已经存在");
         }
@@ -180,9 +204,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             worker.setStature (register.getStature ());
             worker.setWeight (register.getWeight ());
             worker.setEducation (register.getEducation ());
-            workerMapper.updateById (worker);
-            newUser.setWorkerId(worker.getPid());
             if(register.getTgCode ()!=null && !register.getTgCode ().equals ("")){
+                worker.setPollCode (register.getTgCode ());
                 Propaganda pa = propagandaMapper.selectById (register.getTgCode ());
                 if(pa == null){
                     pa = new Propaganda ();
@@ -204,6 +227,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                     propagandaMapper.updateById (pa);
                 }
             }
+            workerMapper.updateById (worker);
+            newUser.setWorkerId(worker.getPid());
         } else if(newUser.getUserType().name().equals("hotel")){
             Company company = new Company();
             company.setStatus(0);
@@ -221,8 +246,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
             fileURI = objectStoreService.uploadFile(filePath, file);
             company.setQrCode (fileURI);
-            companyMapper.updateById (company);
             if(register.getTgCode ()!=null && !register.getTgCode ().equals ("")){
+                company.setPollCode (register.getTgCode ());
                 Propaganda pa = propagandaMapper.selectById (register.getTgCode ());
                 if(pa == null){
                     pa = new Propaganda ();
@@ -244,6 +269,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                     propagandaMapper.updateById (pa);
                 }
             }
+            companyMapper.updateById (company);
         }else if(newUser.getUserType().name().equals("hr")){
             Company company = new Company();
             company.setStatus(0);
@@ -261,8 +287,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
             fileURI = objectStoreService.uploadFile(filePath, file);
             company.setQrCode (fileURI);
-            companyMapper.updateById (company);
             if(register.getTgCode ()!=null && !register.getTgCode ().equals ("")){
+                company.setPollCode (register.getTgCode ());
                 Propaganda pa = propagandaMapper.selectById (register.getTgCode ());
                 if(pa == null){
                     pa = new Propaganda ();
@@ -284,6 +310,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                     propagandaMapper.updateById (pa);
                 }
             }
+            companyMapper.updateById (company);
         }
         //存入用户
         userMapper.insert(newUser);

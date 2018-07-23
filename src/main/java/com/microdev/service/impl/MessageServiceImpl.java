@@ -171,13 +171,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 m.setApplicantType(2);
                 m.setHotelId(id);
                 m.setHrCompanyId(applyCompany.getPid());
-                try {
+                /*try {
                     jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (id).getLeaderMobile ( ), m.getMessageContent ()));
                 } catch (APIConnectionException e) {
                     e.printStackTrace ( );
                 } catch (APIRequestException e) {
                     e.printStackTrace ( );
-                }
+                }*/
             }
             list.add(m);
         }

@@ -301,7 +301,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             task.setHotel (companyMapper.findCompanyById (task.getHotelId ( )));
             List <Map <String, Object>> lis = taskWorkerMapper.selectTaskWorkCById (task.getPid ( ));
             task.setListWorkerTask (lis);
-            if (task.getStatus ( ) >= 4) {
+            if (task.getStatus () >= 4 &&  task.getStatus () != 8) {
                 if (task.getToDate ( ).isAfter (OffsetDateTime.now ( )) && task.getFromDate ( ).isBefore (OffsetDateTime.now ( ))) {
                     task.setStatus (6);
                 } else if (task.getToDate ( ).isBefore (OffsetDateTime.now ( ))) {
@@ -863,6 +863,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             workerTask.setStatus (0);
             workerTask.setDayEndTime (taskWorker.getDayEndTime ( ));
             workerTask.setDayStartTime (taskWorker.getDayStartTime ( ));
+            workerTask.setUserName (userMapper.queryByWorkerId (str).getUsername ());
             workerTask.setToDate (taskWorker.getToDate ( ));
             if(task.getFromDate ().isAfter (OffsetDateTime.now ())){
                 workerTask.setFromDate (taskWorker.getFromDate ());
@@ -878,6 +879,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             workerTask.setTaskHrId (taskHrCompany.getPid ( ));
             workerTask.setUserId (userMapper.selectByWorkerId (str).getPid ( ));
             workerTask.setHrCompanyId (taskHrCompany.getHrCompanyId ( ));
+            workerTask.setHrCompanyName (taskHrCompany.getHrCompanyName ());
             workerTask.setHotelId (taskHrCompany.getHotelId ( ));
             workerTask.setHotelTaskId (taskHrCompany.getTaskId ( ));
             workerTask.setWorkerId (str);

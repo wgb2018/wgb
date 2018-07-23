@@ -56,5 +56,9 @@ public class Worker extends BaseEntity {
      * 学历
      */
     private Integer education;
+    /**
+     * 注册码
+     */
+    private String pollCode;
 
 }

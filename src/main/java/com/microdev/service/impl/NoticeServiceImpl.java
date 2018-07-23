@@ -22,6 +22,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
 import java.util.HashMap;
 import java.util.List;
 
@@ -44,6 +45,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             throw new ParamsException ("服务类型不能为空");
         }
         Notice notice = new Notice();
+        notice.setCreateTime (OffsetDateTime.now ());
         notice.setContent (request.getContent ());
         notice.setFromDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getFromDateL ()),ZoneId.systemDefault ()));
         notice.setToDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getToDateL ()),ZoneId.systemDefault ()));
@@ -61,23 +63,26 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         //查询数据集合
         System.out.println (request);
-        try{
-            Integer year = Integer.parseInt (request.getDate ().split ("-")[0]);
-            Integer month = Integer.parseInt (request.getDate ().split ("-")[1]);
-            request.setFromDate (OffsetDateTime.of (year,month,1,0,0,0,0, ZoneOffset.UTC));
-            if(month == 12){
-                request.setTodate (OffsetDateTime.of (year+1,1,1,0,0,0,0, ZoneOffset.UTC));
-            }else{
-                request.setTodate (OffsetDateTime.of (year,month+1,1,0,0,0,0, ZoneOffset.UTC));
+        if(request.getDate ()!=null){
+            try{
+                Integer year = Integer.parseInt (request.getDate ().split ("-")[0]);
+                Integer month = Integer.parseInt (request.getDate ().split ("-")[1]);
+                request.setFromDate (OffsetDateTime.of (year,month,1,0,0,0,0, ZoneOffset.UTC));
+                if(month == 12){
+                    request.setToDate (OffsetDateTime.of (year+1,1,1,0,0,0,0, ZoneOffset.UTC));
+                }else{
+                    request.setToDate (OffsetDateTime.of (year,month+1,1,0,0,0,0, ZoneOffset.UTC));
+                }
+            }catch(Exception e){
+                e.printStackTrace ();
+                throw new ParamsException ("时间格式错误");
             }
-        }catch(Exception e){
-            e.printStackTrace ();
-            throw new ParamsException ("时间格式错误");
         }
         List<Notice> list = noticeMapper.queryList(request);
         for (Notice n:list) {
              n.setHotel (companyMapper.findCompanyById (n.getHotelId ()));
              n.setService (noticeServiceMapper.queryService(n.getPid ()));
+             n.setCreateTimeL (n.getCreateTime ().getLong (ChronoField.INSTANT_SECONDS));
         }
         PageInfo<Notice> pageInfo = new PageInfo<>(list);
         HashMap<String,Object> result = new HashMap<>();

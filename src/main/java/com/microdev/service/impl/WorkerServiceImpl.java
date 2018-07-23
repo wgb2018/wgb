@@ -221,7 +221,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     log.setToDate(punchTime);
 
                     //求时间差
-                    Duration duration = Duration.between(log.getFromDate(), log.getToDate());
+                    Duration duration = Duration.between(taskWorker.getFromDate ().isBefore (log.getFromDate())?log.getFromDate():taskWorker.getFromDate (), taskWorker.getToDate ().isBefore (log.getToDate())?taskWorker.getToDate ():log.getToDate());
                     Long seconds_span = duration.getSeconds();
                     Long minutes = (seconds_span / 60);
 

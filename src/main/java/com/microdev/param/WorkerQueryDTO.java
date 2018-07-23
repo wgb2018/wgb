@@ -6,4 +6,5 @@ import lombok.Data;
 public class WorkerQueryDTO {
     private String hrId;
     private String name;
+    private String pollCode;
 }

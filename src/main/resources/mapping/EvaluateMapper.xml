@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.microdev.mapper.EvaluateMapper">
+    <sql id="Evaluate_Column_List">
+        id as pid, create_time, deleted, modify_time, level, text, type
+    </sql>
+    <delete id="deleteAll">
+        delete from evaluate where type = #{type} and level = #{level}
+    </delete>
+    <select id="queryList" resultType="com.microdev.model.Evaluate" parameterType="com.microdev.param.EvaluateParam">
+        select <include refid="Evaluate_Column_List"/> from evaluate
+        <where>
+            <if test="id != null and id != ''">
+                id = #{id}
+            </if>
+            <if test="level != null">
+                and level = #{level}
+            </if>
+            <if test="text != null and text != ''">
+                and text concat('%', #{text},'%')
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+        </where>
+    </select>
+</mapper>

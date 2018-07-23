@@ -8,6 +8,8 @@ import lombok.Data;
 public class Evaluate extends BaseEntity{
 
     private Integer level;
+
     private String text;
+
     private Integer type;
 }

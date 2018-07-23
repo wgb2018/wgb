@@ -47,4 +47,6 @@ public class CompanyQueryDTO {
     private Integer observertype;
 
     private String serviceType;
+
+    private String pollCode;
 }
