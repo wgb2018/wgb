@@ -602,10 +602,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         } else {
             throw new ParamsException("参数传递错误");
         }
-        /*for (AwaitHandleInfoPc a:list) {
-            a.setTaskResponse(this.selectAwaitTaskDetails(a.getMessageId(),  request.getType(),request.getMessageCode ().toString ()));
-            a.setDetailsResponse (this.selectMessageDetails (a.getMessageId(),  request.getType(),request.getMessageCode ().toString ()));
-        }*/
+
         PageInfo<AwaitHandleInfoPc> pageInfo = new PageInfo<>(list);
         Map<String, Object> map = new HashMap<>();
         map.put("page", pageInfo.getPageNum());
