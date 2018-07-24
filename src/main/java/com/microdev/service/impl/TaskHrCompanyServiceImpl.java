@@ -344,6 +344,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         bill.setDeleted (false);
         bill.setPayType (2);
         bill.setStatus (0);
+        bill.setTaskId (taskWorker.getHotelTaskId ());
         billMapper.insert (bill);
         //发送支付待确认消息
         MessageTemplate mess = messageTemplateMapper.findFirstByCode ("hrPayWorkerMessage");
