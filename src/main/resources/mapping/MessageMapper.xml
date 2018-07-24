@@ -783,7 +783,7 @@ WHERE m.`status` = 0 AND m.`message_type` = 4 AND m.`apply_type` = 3 AND m.`hote
 
     <select id = "selectPcLeaveApply" resultType="com.microdev.param.ApplySupplementRequest">
         SELECT m.id AS messageId,t.`task_type_text` AS taskTypeText,m.`content`,m.`supplement_time`,m.`supplement_time_end`,c.`name` AS hotelName,c.`address`,c.logo,
-u.`avatar` AS username,u.sex,u.`mobile`,t.`from_date`,t.`to_date`,t.`day_start_time`,t.`day_end_time`,t.`task_content`,m.`message_type`,IFNULL(m.`minutes`,'') as minutes,m.create_time as createTime FROM message m
+u.`nickname` AS username,u.sex,u.`mobile`,t.`from_date`,t.`to_date`,t.`day_start_time`,t.`day_end_time`,t.`task_content`,m.`message_type`,IFNULL(m.`minutes`,'') as minutes,m.create_time as createTime FROM message m
 INNER JOIN company c
 ON c.id = m.`hotel_id`
 INNER JOIN task t

@@ -227,7 +227,7 @@
     </select>
 
     <select id="selectCooperateHotel" resultType="java.util.Map" parameterType="com.microdev.param.QueryCooperateRequest">
-        SELECT c.id as pid,c.address,c.business_license,c.company_type,c.latitude,c.leader,c.leader_mobile,c.logo,c.name,c.status,m.status as bindType FROM (
+        SELECT c.id as pid,c.address,c.business_license,c.company_type,c.latitude,c.leader,c.leader_mobile,c.logo,c.name,c.status,m.status as bindType,c.area FROM (
         select * from company
         <where>
           <if test="name != null and name != ''">
@@ -242,7 +242,7 @@
 SELECT hotel_id,status FROM hotel_hr_company  WHERE hr_id = #{hrCompanyId} AND STATUS in (0,4)
 ) m ON c.id = m.hotel_id
 union
-        (SELECT c.id as pid,c.address,c.business_license,c.company_type,c.latitude,c.leader,c.leader_mobile,c.logo,c.name,c.status,m.status as bindType FROM (
+        (SELECT c.id as pid,c.address,c.business_license,c.company_type,c.latitude,c.leader,c.leader_mobile,c.logo,c.name,c.status,m.status as bindType,c.area FROM (
         select * from company
         <where>
             <if test="name != null and name != ''">

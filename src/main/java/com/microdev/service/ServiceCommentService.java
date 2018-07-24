@@ -23,4 +23,12 @@ public interface ServiceCommentService extends IService<ServiceComment> {
      * @return
      */
     public ResultDO selectCommentInfo(Paginator paginator, ApplyParamDTO param);
+
+    /**
+     * 查看人力/用人单位信用记录
+     * @param paginator
+     * @param param
+     * @return
+     */
+    public ResultDO selectPcCommentInfo(Paginator paginator, ApplyParamDTO param);
 }

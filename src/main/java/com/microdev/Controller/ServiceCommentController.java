@@ -37,4 +37,15 @@ public class ServiceCommentController {
 
         return serviceCommentService.selectCommentInfo(pagingDO.getPaginator(), pagingDO.getSelector());
     }
+
+    /**
+     * pc端查看人力/用人单位信用记录
+     * @param pagingDO
+     * @return
+     */
+    @PostMapping("/comment/search/pc")
+    public ResultDO searchCommentPc(@RequestBody PagingDO<ApplyParamDTO> pagingDO) {
+
+        return serviceCommentService.selectPcCommentInfo(pagingDO.getPaginator(), pagingDO.getSelector());
+    }
 }

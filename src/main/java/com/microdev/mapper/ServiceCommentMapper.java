@@ -20,4 +20,6 @@ public interface ServiceCommentMapper extends BaseMapper<ServiceComment> {
     List<CommentResponse> selectHrCommentInfo(ApplyParamDTO dto);
 
     List<CommentResponse> selectWorkerCommentInfo(ApplyParamDTO dto);
+
+    List<CommentResponse> selectCommentInfoPc(ApplyParamDTO dto);
 }
