@@ -22,6 +22,9 @@
         <if test="pollCode != null and pollCode != ''">
             and poll_code = #{pollCode}
         </if>
+        <if test="(observertype == 2 or observertype == 1) and name != null and (name == null or name == '')">
+            and active_companys = 0
+        </if>
     </sql>
     <delete id="deleteAreaRelation" parameterType="java.lang.String">
         delete from user_area where id = #{id}

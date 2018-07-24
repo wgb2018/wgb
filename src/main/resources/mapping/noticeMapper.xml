@@ -20,6 +20,9 @@
             <if test="hotelId != null and hotelId != ''">
                 and c.id = #{hotelId}
             </if>
+            <if test="hrId != null and hrId != ''">
+                and c.bind_companys = 1 or c.id in (select hotel_id from hotel_hr_company where hr_id = #{hrId} and status in (0,5))
+            </if>
         </where>
         order by n.create_time desc
     </select>
