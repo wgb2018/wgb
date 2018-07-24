@@ -53,6 +53,8 @@ public class CompanyDTO {
 
     private String area;
 
+    private String grade;
+
 
 
 
