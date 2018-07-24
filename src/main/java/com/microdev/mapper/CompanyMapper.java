@@ -47,4 +47,6 @@ public interface CompanyMapper extends BaseMapper<Company> {
     List<Map<String, Object>> selectCooperateHotel(QueryCooperateRequest param);
 
     List<Map<String, Object>> hotelExamineCompany(QueryCooperateRequest param);
+
+    Integer queryGrade(@Param ("id") String id,@Param ("type") String type);
  }

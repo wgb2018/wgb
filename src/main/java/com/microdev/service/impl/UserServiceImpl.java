@@ -609,6 +609,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                 companyDTO.setLaborDispatchCard (company.getLaborDispatchCard ());
                 companyDTO.setArea (company.getArea ());
                 companyDTO.setAddressCode (company.getAddressCode ());
+                if(userType == UserType.hr){
+                    companyDTO.setGrade (companyMapper.queryGrade(company.getPid (),"hr").toString ());
+                }else if (userType == UserType.hotel){
+                    companyDTO.setGrade (companyMapper.queryGrade(company.getPid (),"hotel").toString ());
+                }
                 userDTO.setCompany(companyDTO);
                 List l1 = dictMapper.queryTypeByUserId (company.getPid ());
                 List l2 = dictService.findServiceArea(company.getPid ());

@@ -271,5 +271,16 @@ union
       ) c INNER JOIN
 (SELECT id,hr_company_id,create_time FROM message WHERE STATUS = 0 AND hotel_id = #{hotelId} AND apply_type = 3 AND applicant_type = 2 and message_code = 'applyBindMessage') m ON c.id = m.hr_company_id ORDER BY m.create_time DESC
     </select>
+    <select id="queryGrade" resultType="java.lang.Integer">
+        select CAST(avg(s.level) as DECIMAL(18,1)) as `level` from bill b inner join service_comment s on b.id = s.bill_id
+        <where>
+            <if test="type == 'hr'">
+               b.hr_company_id = #{id} and pay_type = 2
+            </if>
+            <if test="type == 'hotel'">
+              and b.hotel_id = #{id} and pay_type = 1
+            </if>
+        </where>
+    </select>
 
 </mapper>
