@@ -218,7 +218,7 @@ public class ServiceCommentServiceImpl extends ServiceImpl<ServiceCommentMapper,
         PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
         List<CommentResponse> list = serviceCommentMapper.selectCommentInfoPc(param);
         Map<String, Object> result = new HashMap<>();
-        PageInfo<CommentResponse> pageInfo = new PageInfo<>();
+        PageInfo<CommentResponse> pageInfo = new PageInfo<>(list);
         if (list == null) {
             list = new ArrayList<>();
         } else {
