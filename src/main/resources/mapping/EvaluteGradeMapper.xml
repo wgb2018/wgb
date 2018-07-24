@@ -8,4 +8,8 @@
     <insert id="saveInfo" parameterType="com.microdev.model.EvaluteGrade">
         insert into evalute_grade values (#{id}, #{createTime}, #{modifyTime}, #{deleted}, #{roleId}, #{grade})
     </insert>
+
+    <select id = "selectByRoleId" resultType="com.microdev.model.EvaluteGrade">
+        select <include refid="base_column"/> from evalute_grade where role_id = #{roleId}
+    </select>
 </mapper>

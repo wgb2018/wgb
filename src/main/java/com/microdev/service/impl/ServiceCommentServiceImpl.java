@@ -118,7 +118,7 @@ public class ServiceCommentServiceImpl extends ServiceImpl<ServiceCommentMapper,
         } else if ("hr".equals(roleType)) {
             roleId = bill.getHotelId();
         }
-        EvaluteGrade evaluteGrade = evaluteGradeMapper.selectById(roleId);
+        EvaluteGrade evaluteGrade = evaluteGradeMapper.selectByRoleId(roleId);
         if (evaluteGrade == null) {
             evaluteGrade = new EvaluteGrade();
             evaluteGrade.setGrade(commentRequest.getLevel());

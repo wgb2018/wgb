@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface EvaluteGradeMapper extends BaseMapper<EvaluteGrade> {
 
     int saveInfo(EvaluteGrade grade);
+
+    EvaluteGrade selectByRoleId(String roleId);
 }
