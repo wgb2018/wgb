@@ -215,6 +215,10 @@ public class ServiceCommentServiceImpl extends ServiceImpl<ServiceCommentMapper,
     @Override
     public ResultDO selectPcCommentInfo(Paginator paginator, ApplyParamDTO param) {
 
+        if (!StringUtils.isEmpty(param.getRoleType()) && !"hr".equals(param.getRoleType())
+                && !"hotel".equals(param.getRoleType())) {
+            throw new ParamsException("参数值错误");
+        }
         PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
         List<CommentResponse> list = serviceCommentMapper.selectCommentInfoPc(param);
         Map<String, Object> result = new HashMap<>();

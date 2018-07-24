@@ -104,7 +104,7 @@ GROUP BY createTime,twId
             INNER JOIN company c
             ON c.id = b.hr_company_id
                 <if test = "name != null and name != ''">
-                    and u.nickname like concat('%', #{name} , '%')
+                    and c.name like concat('%', #{name} , '%')
                 </if>
             ORDER BY createTime DESC
         </if>
@@ -120,7 +120,7 @@ GROUP BY createTime,twId
             INNER JOIN company c2
             ON c2.id = b.hotel_id
                 <if test = "name != null and name != ''">
-                    and c.name like concat('%', #{name} , '%')
+                    and c2.name like concat('%', #{name} , '%')
                 </if>
             ORDER BY createTime DESC
         </if>
@@ -138,7 +138,7 @@ GROUP BY createTime,twId
             INNER JOIN company c
             ON c.id = b.hr_company_id
             <if test = "name != null and name != ''">
-                and u.nickname like concat('%', #{name} , '%')
+                and c.name like concat('%', #{name} , '%')
             </if>
             UNION
 
@@ -154,7 +154,7 @@ GROUP BY createTime,twId
             INNER JOIN company c2
             ON c2.id = b.hotel_id
             <if test = "name != null and name != ''">
-                and c.name like concat('%', #{name} , '%')
+                and c2.name like concat('%', #{name} , '%')
             </if>
             )
             ORDER BY createTime DESC
