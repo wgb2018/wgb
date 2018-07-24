@@ -90,7 +90,7 @@ public class ServiceCommentServiceImpl extends ServiceImpl<ServiceCommentMapper,
         if ("worker".equals(roleType)) {
             inform.setSendType(1);
             inform.setAcceptType(2);
-            User user = userMapper.selectById(bill.getWorkerId());
+            User user = userMapper.selectByWorkerId (bill.getWorkerId());
             if (user == null) {
                 throw new ParamsException("查询不到工作者信息");
             }
