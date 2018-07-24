@@ -17,4 +17,5 @@ public class CommentResponse {
     private String commentId;
     private List<String> labelList = new ArrayList<>();
     private String status;
+    private String targetName;//被评价对象
 }

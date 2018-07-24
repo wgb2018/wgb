@@ -19,10 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashMap;
+import java.util.*;
 
 @Service
 @Transactional
@@ -190,16 +187,54 @@ public class ServiceCommentServiceImpl extends ServiceImpl<ServiceCommentMapper,
         } else {
             if (responseList != null && responseList.size() > 0) {
                 for (CommentResponse response : responseList) {
-                    List<String> list = evaluateMapper.selectLabelsInfo(response.getCommentId());
-                    if (list != null || list.size() > 0) {
-                        response.setLabelList(list);
+                    if (!StringUtils.isEmpty(response.getStatus())) {
+                        String[] arr = response.getStatus().split(",");
+                        List<String> list = response.getLabelList();
+                        for (String s : arr) {
+                            list.add(s);
+                        }
+                    }
+                }
+            }
+        }
+        if (responseList == null) {
+            responseList = new ArrayList<>();
+        }
+        result.put("page", paginator.getPage());
+        result.put("total", pageInfo.getTotal());
+        result.put("list", responseList);
+        return ResultDO.buildSuccess(result);
+    }
+
+    /**
+     * 查看人力/用人单位信用记录
+     * @param paginator
+     * @param param
+     * @return
+     */
+    @Override
+    public ResultDO selectPcCommentInfo(Paginator paginator, ApplyParamDTO param) {
+
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+        List<CommentResponse> list = serviceCommentMapper.selectCommentInfoPc(param);
+        Map<String, Object> result = new HashMap<>();
+        PageInfo<CommentResponse> pageInfo = new PageInfo<>();
+        if (list == null) {
+            list = new ArrayList<>();
+        } else {
+            for (CommentResponse response : list) {
+                if (!StringUtils.isEmpty(response.getStatus())) {
+                    String[] arr = response.getStatus().split(",");
+                    List<String> strList = response.getLabelList();
+                    for (String str : arr) {
+                        strList.add(str);
                     }
                 }
             }
         }
         result.put("page", paginator.getPage());
         result.put("total", pageInfo.getTotal());
-        result.put("list", responseList);
+        result.put("list", list);
         return ResultDO.buildSuccess(result);
     }
 }
