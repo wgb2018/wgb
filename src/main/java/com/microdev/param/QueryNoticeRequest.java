@@ -18,4 +18,6 @@ public class QueryNoticeRequest {
 
     private OffsetDateTime toDate;
 
+    private String hrId;
+
 }

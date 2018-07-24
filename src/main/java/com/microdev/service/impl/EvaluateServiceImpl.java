@@ -130,16 +130,32 @@ public class EvaluateServiceImpl extends ServiceImpl<EvaluateMapper,Evaluate> im
         map9.put ("type","hr4");
         map0.put ("list",t5);
         map0.put ("type","hr5");
-        ls.add (map1);
-        ls.add (map2);
-        ls.add (map3);
-        ls.add (map4);
-        ls.add (map5);
-        ls.add (map6);
-        ls.add (map7);
-        ls.add (map8);
-        ls.add (map9);
-        ls.add (map0);
+        if(request.getType () == 0){
+            ls.add (map1);
+            ls.add (map2);
+            ls.add (map3);
+            ls.add (map4);
+            ls.add (map5);
+        }else if(request.getType () == 1){
+            ls.add (map6);
+            ls.add (map7);
+            ls.add (map8);
+            ls.add (map9);
+            ls.add (map0);
+        }else{
+            ls.add (map1);
+            ls.add (map2);
+            ls.add (map3);
+            ls.add (map4);
+            ls.add (map5);
+            ls.add (map6);
+            ls.add (map7);
+            ls.add (map8);
+            ls.add (map9);
+            ls.add (map0);
+        }
+
+
         return ResultDO.buildSuccess (ls);
     }
 
