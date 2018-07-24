@@ -6,7 +6,7 @@
     </sql>
 
     <insert id="saveInfo" parameterType="com.microdev.model.EvaluteGrade">
-        insert into evalute_grade values (#{id}, #{createTime}, #{modifyTime}, #{deleted}, #{roleId}, #{grade})
+        insert into evalute_grade values (#{pid}, #{createTime}, #{modifyTime}, #{deleted}, #{roleId}, #{grade})
     </insert>
 
     <select id = "selectByRoleId" resultType="com.microdev.model.EvaluteGrade">

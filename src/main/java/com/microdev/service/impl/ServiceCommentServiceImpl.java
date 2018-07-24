@@ -6,7 +6,6 @@ import com.github.pagehelper.PageInfo;
 import com.microdev.common.ResultDO;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
-import com.microdev.common.utils.Maths;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
 import com.microdev.param.ApplyParamDTO;
@@ -148,13 +147,13 @@ public class ServiceCommentServiceImpl extends ServiceImpl<ServiceCommentMapper,
         Map<String, Object> result = new HashMap<>();
         List<CommentResponse> responseList = null;
         if ("hr".equals(param.getRoleType())) {
-            responseList = serviceCommentMapper.selectHrCommentInfo(param.getId());
+            responseList = serviceCommentMapper.selectHrCommentInfo(param);
 
         } else if ("worker".equals(param.getRoleType())) {
-            responseList = serviceCommentMapper.selectWorkerCommentInfo(param.getId());
+            responseList = serviceCommentMapper.selectWorkerCommentInfo(param);
 
         } else if ("hotel".equals(param.getRoleType())) {
-            responseList = serviceCommentMapper.selectHotelCommentInfo(param.getId());
+            responseList = serviceCommentMapper.selectHotelCommentInfo(param);
 
         } else {
             throw new ParamsException("角色类型错误");
