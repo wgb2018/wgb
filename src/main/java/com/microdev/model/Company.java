@@ -94,6 +94,8 @@ public class Company extends BaseEntity {
      * 劳务派遣证
      */
     private String laborDispatchCard;
+    //评分
+    private Double grade;
 
     public String getName() {
         return name;

@@ -92,6 +92,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     private FilePush filePush;
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private EvaluteGradeMapper evaluteGradeMapper;
 
     @Override
     public ResultDO pagingCompanys(Paginator paginator, CompanyQueryDTO queryDTO) {
@@ -190,6 +192,10 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             List l2 = dictMapper.queryTypeByUserId (company.getPid ());
             company.setAreaCode (l1==null?new ArrayList<>():l1);
             company.setServiceType (l2==null?new ArrayList<>():l2);
+            EvaluteGrade evaluteGrade = evaluteGradeMapper.selectByRoleId(company.getPid());
+            if (evaluteGrade != null) {
+                company.setGrade(evaluteGrade.getGrade());
+            }
         }
 
         return ResultDO.buildSuccess(company);
