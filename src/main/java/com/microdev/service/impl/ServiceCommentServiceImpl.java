@@ -1,18 +1,29 @@
 package com.microdev.service.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.microdev.common.ResultDO;
 import com.microdev.common.exception.ParamsException;
+import com.microdev.common.paging.Paginator;
+import com.microdev.common.utils.Maths;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
+import com.microdev.param.ApplyParamDTO;
 import com.microdev.param.CommentRequest;
+import com.microdev.param.CommentResponse;
 import com.microdev.service.ServiceCommentService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.HashMap;
 
 @Service
 @Transactional
@@ -30,6 +41,10 @@ public class ServiceCommentServiceImpl extends ServiceImpl<ServiceCommentMapper,
     private CompanyMapper companyMapper;
     @Autowired
     private InformMapper informMapper;
+    @Autowired
+    private EvaluateMapper evaluateMapper;
+    @Autowired
+    private EvaluteGradeMapper evaluteGradeMapper;
 
     /**
      * 提交评论
@@ -95,6 +110,97 @@ public class ServiceCommentServiceImpl extends ServiceImpl<ServiceCommentMapper,
             return ResultDO.buildSuccess("评论成功");
         }
         informMapper.insertInform(inform);
+
+        //更新评分
+        String roleId = "";
+        if ("worker".equals(roleType)) {
+            roleId = bill.getHrCompanyId();
+        } else if ("hr".equals(roleType)) {
+            roleId = bill.getHotelId();
+        }
+        EvaluteGrade evaluteGrade = evaluteGradeMapper.selectById(roleId);
+        if (evaluteGrade == null) {
+            evaluteGrade = new EvaluteGrade();
+            evaluteGrade.setGrade(commentRequest.getLevel());
+            evaluteGrade.setRoleId(roleId);
+            evaluteGradeMapper.saveInfo(evaluteGrade);
+        } else {
+            double value = new BigDecimal(commentRequest.getLevel()).add(new BigDecimal(evaluteGrade.getGrade())).setScale(1, RoundingMode.HALF_UP).doubleValue();
+            evaluteGrade.setGrade(value);
+            evaluteGradeMapper.updateById(evaluteGrade);
+        }
+
         return ResultDO.buildSuccess("评论成功");
+    }
+
+    /**
+     * 查看角色信用记录
+     * @return
+     */
+    @Override
+    public ResultDO selectCommentInfo(Paginator paginator, ApplyParamDTO param) {
+
+        if (param == null || StringUtils.isEmpty(param.getRoleType()) || StringUtils.isEmpty(param.getId())) {
+            throw new ParamsException("参数不能为空");
+        }
+
+        PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
+        Map<String, Object> result = new HashMap<>();
+        List<CommentResponse> responseList = null;
+        if ("hr".equals(param.getRoleType())) {
+            responseList = serviceCommentMapper.selectHrCommentInfo(param.getId());
+
+        } else if ("worker".equals(param.getRoleType())) {
+            responseList = serviceCommentMapper.selectWorkerCommentInfo(param.getId());
+
+        } else if ("hotel".equals(param.getRoleType())) {
+            responseList = serviceCommentMapper.selectHotelCommentInfo(param.getId());
+
+        } else {
+            throw new ParamsException("角色类型错误");
+        }
+        PageInfo<CommentResponse> pageInfo = new PageInfo<>(responseList);
+        if ("worker".equals(param.getRoleType())) {
+            if (responseList != null && responseList.size() > 0) {
+                for (CommentResponse response : responseList) {
+                    if (!StringUtils.isEmpty(response.getStatus())) {
+                        String[] arr = response.getStatus().split(",");
+                        List<String> list = response.getLabelList();
+                        for (String s : arr) {
+                            if ("1".equals(s)) {
+                                list.add("迟到");
+                            } else if ("2".equals(s)) {
+                                list.add("早退");
+                            } else if ("3".equals(s)) {
+                                list.add("旷工");
+                            } else if ("4".equals(s)) {
+                                list.add("忘打卡");
+                            } else if ("5".equals(s)) {
+                                list.add("请假");
+                            } else if ("6".equals(s)) {
+                                list.add("迟到");
+                                list.add("早退");
+                            } else if ("7".equals(s)) {
+                                list.add("迟到");
+                                list.add("忘打卡");
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            if (responseList != null && responseList.size() > 0) {
+                for (CommentResponse response : responseList) {
+                    List<String> list = evaluateMapper.selectLabelsInfo(response.getCommentId());
+                    if (list != null || list.size() > 0) {
+                        response.setLabelList(list);
+                    }
+                }
+            }
+        }
+        result.put("page", paginator.getPage());
+        result.put("total", pageInfo.getTotal());
+        result.put("list", responseList);
+        return ResultDO.buildSuccess(result);
     }
 }

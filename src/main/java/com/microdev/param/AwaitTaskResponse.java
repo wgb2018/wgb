@@ -39,4 +39,5 @@ public class AwaitTaskResponse {
     private String settlementNum;
     private String workerSettlementPeriod;
     private String workerSettlementNum;
+    private String billId;//账单id
 }

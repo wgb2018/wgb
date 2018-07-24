@@ -13,4 +13,6 @@ import java.util.List;
 public interface EvaluateMapper extends BaseMapper<Evaluate> {
     List<Evaluate> queryList(EvaluateParam request);
     void deleteAll(@Param ("type") Integer type,@Param ("level") Integer level);
+
+    List<String> selectLabelsInfo(@Param("commentId") String commentId);
 }

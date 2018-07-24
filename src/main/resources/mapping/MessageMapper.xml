@@ -594,7 +594,7 @@ INNER JOIN company c ON m.hr_company_id = c.id
         tc.settlement_period as settlementPeriod,
         tc.settlement_num as settlement_num,
         tc.worker_settlement_period as workerSettlementPeriod,
-        tc.worker_settlement_num as workerSettlementNum
+        tc.worker_settlement_num as workerSettlementNum,m.request_id as billId
         FROM
 (SELECT * FROM message WHERE id= #{messageId}) m
 INNER JOIN task_hr_company tc

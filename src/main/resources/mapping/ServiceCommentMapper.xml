@@ -8,4 +8,45 @@
     <insert id="saveInfo" parameterType="com.microdev.model.ServiceComment">
         insert into service_comment values (#{pid}, #{createTime}, #{modifyTime}, #{deleted}, #{comment}, #{billId}, #{level})
     </insert>
+
+    <select id = "selectHotelCommentInfo" resultType="com.microdev.param.CommentResponse">
+        SELECT c.name, c.logo,DATE_FORMAT(sc.`create_time`, '%Y/%m/%d') AS createTime,t.`task_type_text` AS taskTypeText,sc.`level`,sc.`comment`, sc.id AS commentId FROM
+(SELECT * FROM bill WHERE `hotel_id` = #{hotelId} AND pay_type = 1) b
+INNER JOIN service_comment sc
+ON b.id = sc.`bill_id`
+INNER JOIN task t
+ON t.id = b.`task_id`
+INNER JOIN company c
+ON c.id = b.`hr_company_id`
+order by sc.create_time desc
+    </select>
+
+    <select id = "selectHrCommentInfo" resultType="com.microdev.param.CommentResponse">
+      SELECT u.`nickname` AS name,u.`avatar` AS logo,DATE_FORMAT(b.create_time, '%Y/%m/%d') AS createTime,t.`task_type_text` AS taskTypeText,sc.`level`,sc.`comment`,sc.id AS commentId FROM
+(
+SELECT * FROM bill WHERE `hr_company_id` = #{hrId} AND pay_type = 2
+) b
+INNER JOIN service_comment sc
+ON sc.`bill_id` = b.id
+INNER JOIN USER u
+ON u.`worker_id` = b.`worker_id`
+INNER JOIN task t
+ON t.id = b.task_id
+order by sc.create_time desc
+    </select>
+
+    <select id = "selectWorkerCommentInfo" resultType="com.microdev.param.CommentResponse">
+        SELECT c.`name`,c.logo,tw.`task_type_text` AS taskTypeText,DATE_FORMAT(wl.create_time, '%Y/%m/%d') AS createTime, GROUP_CONCAT(wl.status) AS STATUS,wl.task_worker_id AS twId FROM
+(
+SELECT * FROM task_worker WHERE worker_id = #{workerId}
+) tw
+INNER JOIN company c
+ON c.id = tw.`hotel_id`
+inner JOIN
+(
+SELECT create_time,STATUS,task_worker_id FROM work_log WHERE employer_confirm_status = 1
+) wl
+ON wl.task_worker_id = tw.id
+GROUP BY createTime,twId
+    </select>
 </mapper>

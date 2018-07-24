@@ -24,4 +24,9 @@
             </if>
         </where>
     </select>
+
+    <select id = "selectLabelsInfo" resultType="java.lang.String">
+        SELECT e.text FROM evaluate_comment_relation cr INNER JOIN
+evaluate e ON e.id = cr.evaluate_id WHERE cr.service_comment_id = #{commentId}
+    </select>
 </mapper>
