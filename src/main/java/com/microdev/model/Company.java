@@ -96,7 +96,7 @@ public class Company extends BaseEntity {
     private String laborDispatchCard;
     //评分
     @TableField(exist = false)
-    private Double grade;
+    private String grade;
 
     public String getName() {
         return name;

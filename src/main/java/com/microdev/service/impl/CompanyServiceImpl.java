@@ -194,7 +194,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             company.setServiceType (l2==null?new ArrayList<>():l2);
             EvaluteGrade evaluteGrade = evaluteGradeMapper.selectByRoleId(company.getPid());
             if (evaluteGrade != null) {
-                company.setGrade(evaluteGrade.getGrade());
+                company.setGrade(evaluteGrade.getGrade() + "");
             }
         }
 
