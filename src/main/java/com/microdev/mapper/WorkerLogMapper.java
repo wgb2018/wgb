@@ -43,4 +43,6 @@ public interface WorkerLogMapper extends BaseMapper<WorkLog> {
 	int selectUnreadPunchCount(@Param ("workerId") String workerId);
 
 	List<WorkLog> selectByDate(HotelHandleWorkerRecord record);
+
+	List<Map<String, Object>> selectWorkerCommentCount(@Param("workerId") String workerId);
 }
