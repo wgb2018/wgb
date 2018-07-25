@@ -2,6 +2,10 @@ package com.microdev;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.baomidou.mybatisplus.entity.GlobalConfiguration;
+import com.microdev.common.utils.MsgWebSocketClient;
+import com.microdev.common.utils.MsgWebSocketServer;
+import com.microdev.common.utils.WebClientEnum;
+import com.microdev.common.utils.WebServerEnum;
 import com.microdev.model.MyMetaObjectHandler;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -14,6 +18,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 
 import javax.sql.DataSource;
+import java.net.URISyntaxException;
 
 @EnableScheduling
 @ServletComponentScan
@@ -29,5 +34,16 @@ public class WgbApplication {
 	@AutoConfigureOrder()
 	public static void main(String[] args) {
 		SpringApplication.run(WgbApplication.class, args);
-	}
+		/*try {
+			WebClientEnum.CLIENT.initClient(new MsgWebSocketClient ("ws://192.168.0.19:8091"));
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace ( );
+		}*/
+		try{
+			WebServerEnum.server.init(new MsgWebSocketServer (8099));
+		}catch (Exception e){
+			e.printStackTrace ();
+		}
+		}
 }

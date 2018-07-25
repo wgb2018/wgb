@@ -209,7 +209,7 @@ public class UserController {
      */
     @GetMapping("/me")
     public ResultDO me() {
-        
+
         return ResultDO.buildSuccess(userService.me());
     }
     /**
@@ -280,7 +280,6 @@ public class UserController {
 //        test.setUsername("TestNew");
 //        userMapper.update(test);
 //        test = userMapper.selectById("f1f33e09884c4b06b8fbe77465bd208d");
-
 
         // app 上传
         File file;
