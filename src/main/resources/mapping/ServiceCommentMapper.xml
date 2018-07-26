@@ -27,18 +27,18 @@
         and t.`task_type_text` like concat('%', #{taskTypeText} , '%')
     </if>
 </where>
-order by sc.create_time desc
         )k
         LEFT JOIN (
         SELECT GROUP_CONCAT(e.`text`) AS STATUS, cr.service_comment_id FROM evaluate_comment_relation cr INNER JOIN
         evaluate e ON e.id = cr.evaluate_id GROUP BY cr.service_comment_id
         ) n
         ON k.commentId = n.service_comment_id
+        order by createTime desc
     </select>
 
     <select id = "selectHrCommentInfo" resultType="com.microdev.param.CommentResponse" parameterType="com.microdev.param.ApplyParamDTO">
         select * from (
-        SELECT u.`nickname` AS name,u.`avatar` AS logo,DATE_FORMAT(b.create_time, '%Y/%m/%d') AS createTime,t.`task_type_text` AS taskTypeText,sc.`level`,sc.`comment`,sc.id AS commentId FROM
+        SELECT u.`nickname` AS name,u.`avatar` AS logo,DATE_FORMAT(sc.create_time, '%Y/%m/%d') AS createTime,t.`task_type_text` AS taskTypeText,sc.`level`,sc.`comment`,sc.id AS commentId FROM
         (
         SELECT * FROM bill WHERE `hr_company_id` = #{id} AND pay_type = 2
         ) b
@@ -56,13 +56,13 @@ order by sc.create_time desc
         and t.task_type_text like concat('%', #{taskTypeText} , '%')
     </if>
 </where>
-order by sc.create_time desc
         )k
         LEFT JOIN (
         SELECT GROUP_CONCAT(e.`text`) AS STATUS, cr.service_comment_id FROM evaluate_comment_relation cr INNER JOIN
         evaluate e ON e.id = cr.evaluate_id GROUP BY cr.service_comment_id
         ) n
         ON k.commentId = n.service_comment_id
+        order by createTime desc
     </select>
 
     <select id = "selectWorkerCommentInfo" resultType="com.microdev.param.CommentResponse" parameterType="com.microdev.param.ApplyParamDTO">
@@ -85,13 +85,13 @@ ON wl.task_worker_id = tw.id
         and tw.`task_type_text` like concat('%', #{taskTypeText} , '%')
     </if>
 </where>
-GROUP BY createTime,twId
+GROUP BY createTime desc,twId
     </select>
 
     <select id = "selectCommentInfoPc" resultType="com.microdev.param.CommentResponse" parameterType="com.microdev.param.ApplyParamDTO">
         SELECT * FROM (
         <if test="roleType == 'hr'">
-            SELECT c.name AS targetName, u.`nickname` AS NAME,u.`avatar` AS logo,DATE_FORMAT(b.create_time, '%Y/%m/%d') AS createTime,t.`task_type_text` AS taskTypeText,sc.`level`,sc.`comment`,sc.id AS commentId FROM
+            SELECT c.name AS targetName, u.`nickname` AS NAME,u.`avatar` AS logo,DATE_FORMAT(sc.create_time, '%Y/%m/%d') AS createTime,t.`task_type_text` AS taskTypeText,sc.`level`,sc.`comment`,sc.id AS commentId FROM
             (
             SELECT * FROM bill WHERE  pay_type = 2
             ) b
@@ -106,7 +106,7 @@ GROUP BY createTime,twId
                 <if test = "name != null and name != ''">
                     and c.name like concat('%', #{name} , '%')
                 </if>
-            ORDER BY createTime DESC
+
         </if>
         <if test = "roleType == 'hotel'">
             SELECT c2.name AS targetName, c.name, c.logo,DATE_FORMAT(sc.`create_time`, '%Y/%m/%d') AS createTime,t.`task_type_text` AS taskTypeText,sc.`level`,sc.`comment`, sc.id AS commentId FROM
@@ -122,7 +122,6 @@ GROUP BY createTime,twId
                 <if test = "name != null and name != ''">
                     and c2.name like concat('%', #{name} , '%')
                 </if>
-            ORDER BY createTime DESC
         </if>
         <if test = "roleType == null || roleType == ''">
             SELECT c.name AS targetName, u.`nickname` AS NAME,u.`avatar` AS logo,DATE_FORMAT(b.create_time, '%Y/%m/%d') AS createTime,t.`task_type_text` AS taskTypeText,sc.`level`,sc.`comment`,sc.id AS commentId FROM
@@ -157,7 +156,6 @@ GROUP BY createTime,twId
                 and c2.name like concat('%', #{name} , '%')
             </if>
             )
-            ORDER BY createTime DESC
         </if>
 ) k
 LEFT JOIN (
@@ -165,5 +163,6 @@ SELECT GROUP_CONCAT(e.`text`) AS STATUS, cr.service_comment_id FROM evaluate_com
 evaluate e ON e.id = cr.evaluate_id GROUP BY cr.service_comment_id
 ) n
 ON k.commentId = n.service_comment_id
+ ORDER BY createTime DESC
     </select>
 </mapper>
