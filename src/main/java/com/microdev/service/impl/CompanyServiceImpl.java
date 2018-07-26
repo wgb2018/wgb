@@ -909,7 +909,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 if(hh.getStatus () == 0){
                     throw new ParamsException ("绑定申请已提交，请勿重复提交");
                 }else{
-                    System.out.println (hh.getStatus ());
+
                     throw new ParamsException ("您已合作，请勿重复申请");
                 }
 
