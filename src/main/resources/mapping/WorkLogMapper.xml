@@ -209,4 +209,17 @@ SELECT from_date, to_date,STATUS ,employer_confirm_status,create_time,id,minutes
     <select id = "selectByDate" parameterType="com.microdev.param.HotelHandleWorkerRecord" resultType="com.microdev.model.WorkLog">
         SELECT <include refid="WorkLog_Column_List"/> FROM work_log WHERE task_worker_id = #{taskWorkerId} AND DATE_FORMAT(create_time, '%Y/%m/%d') = #{date}
     </select>
+
+    <select id = "selectWorkerCommentCount" resultType="java.util.Map">
+        SELECT COUNT(1) AS amount, wl.status FROM
+(
+SELECT status,task_worker_id FROM work_log WHERE employer_confirm_status = 1
+) wl
+INNER JOIN
+(
+SELECT * FROM task_worker WHERE worker_id = #{workerId}
+) tw
+ON tw.id = wl.`task_worker_id`
+GROUP BY wl.`status`
+    </select>
 </mapper>

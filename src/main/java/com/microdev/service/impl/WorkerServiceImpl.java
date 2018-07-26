@@ -719,13 +719,46 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         List l2 = dictMapper.queryTypeByUserId (id);
         map.put("areaCode",l1==null?new ArrayList<>():l1);
         map.put("serviceType",l2==null?new ArrayList<>():l2);
+        List<Map<String, Object>> list = workLogMapper.selectWorkerCommentCount(id);
+        if (list != null && list.size() > 0) {
+            String grade = "";
+            int a = 0;//迟到
+            int b = 0;//早退
+            int c = 0;//旷工
+            for (Map<String, Object> m : list) {
+                if ((Integer)m.get("status") == 1) {
+                    a += Integer.parseInt(m.get("amount").toString());
+                } else if ((Integer)m.get("status") == 2) {
+                    b += Integer.parseInt(m.get("amount").toString());
+                } else if ((Integer)m.get("status") == 3) {
+                    c += Integer.parseInt(m.get("amount").toString());
+                } else if ((Integer)m.get("status") == 6) {
+                    a += Integer.parseInt(m.get("amount").toString());
+                    b += Integer.parseInt(m.get("amount").toString());
+                } else if ((Integer)m.get("status") == 7) {
+                    a += Integer.parseInt(m.get("amount").toString());
+                }
+            }
+            if (a >0) {
+                grade += "迟到次数:" + a;
+            }
+            if (b > 0) {
+                grade += ";早退次数:" + b;
+            }
+            if (c > 0) {
+                grade += ";旷工次数:" + c;
+            }
+            map.put("grade", grade);
+        } else {
+            map.put("grade", "");
+        }
         return map;
     }
 
     @Override
     public ResultDO pagingWorkers(Paginator paginator, WorkerQueryDTO workerQueryDTO) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
-        System.out.println (workerQueryDTO);
+
         //查询数据集合
         List<Map<String,Object>> list = null;
         if(workerQueryDTO.getHrId () == null){

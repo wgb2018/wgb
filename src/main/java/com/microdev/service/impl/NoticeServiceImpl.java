@@ -37,7 +37,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
     private CompanyMapper companyMapper;
     @Override
     public ResultDO createNotice(CreateNoticeRequest request) {
-        System.out.println (request);
+
         if (StringUtils.isEmpty(request.getFromDateL ()) || StringUtils.isEmpty(request.getToDateL ()) || StringUtils.isEmpty(request.getHotelId ()) || StringUtils.isEmpty(request.getNeedWorkers ())) {
             throw new ParamsException ("参数不能为空");
         }
@@ -62,7 +62,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
     public ResultDO queryNotice(Paginator paginator, QueryNoticeRequest request) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         //查询数据集合
-        System.out.println (request);
+
         if(request.getDate ()!=null){
             try{
                 Integer year = Integer.parseInt (request.getDate ().split ("-")[0]);
