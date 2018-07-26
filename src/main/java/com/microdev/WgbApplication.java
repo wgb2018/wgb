@@ -2,10 +2,7 @@ package com.microdev;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.baomidou.mybatisplus.entity.GlobalConfiguration;
-import com.microdev.common.utils.MsgWebSocketClient;
-import com.microdev.common.utils.MsgWebSocketServer;
-import com.microdev.common.utils.WebClientEnum;
-import com.microdev.common.utils.WebServerEnum;
+import com.microdev.common.utils.*;
 import com.microdev.model.MyMetaObjectHandler;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -41,7 +38,8 @@ public class WgbApplication {
 			e.printStackTrace ( );
 		}*/
 		try{
-			WebServerEnum.server.init(new MsgWebSocketServer (8099));
+			MsgWebSocketServer ms = WebServerEnum.server.init(new MsgWebSocketServer (8099));
+			System.out.println (WebSocketBuilder.wsMap);
 		}catch (Exception e){
 			e.printStackTrace ();
 		}
