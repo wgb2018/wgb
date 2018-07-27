@@ -119,10 +119,13 @@ public class ServiceCommentServiceImpl extends ServiceImpl<ServiceCommentMapper,
             evaluteGrade = new EvaluteGrade();
             evaluteGrade.setGrade(commentRequest.getLevel());
             evaluteGrade.setRoleId(roleId);
+            evaluteGrade.setAmount(1);
             evaluteGradeMapper.saveInfo(evaluteGrade);
         } else {
-            double value = new BigDecimal(commentRequest.getLevel()).add(new BigDecimal(evaluteGrade.getGrade())).divide(new BigDecimal(2), 1, RoundingMode.HALF_UP).doubleValue();
+            int count = evaluteGrade.getAmount();
+            double value = new BigDecimal(evaluteGrade.getGrade()).multiply(new BigDecimal(count)).add(new BigDecimal(commentRequest.getLevel())).divide(new BigDecimal(count + 1), 1, RoundingMode.HALF_UP).doubleValue();
             evaluteGrade.setGrade(value);
+            evaluteGrade.setAmount(count + 1);
             evaluteGradeMapper.updateById(evaluteGrade);
         }
 
