@@ -103,7 +103,7 @@ public class ServiceCommentServiceImpl extends ServiceImpl<ServiceCommentMapper,
             inform.setContent(company.getName() + "已经对您的支付做了评价");
             inform.setReceiveId(bill.getHotelId());
         } else {
-            return ResultDO.buildSuccess("评论成功");
+            return ResultDO.buildSuccess("暂时不支持评论");
         }
         informMapper.insertInform(inform);
 
