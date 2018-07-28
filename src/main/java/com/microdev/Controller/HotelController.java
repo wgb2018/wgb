@@ -123,6 +123,7 @@ public class HotelController {
     /**
      * 用人单位待处理事务详情
      */
+    @Deprecated
     @PostMapping("/hotels/hotelWaitTaskDetails")
     public ResultDO hotelWaitTaskDetails(@RequestBody PendRequest request) {
         return ResultDO.buildSuccess(companyService.showWaitInfo(request));

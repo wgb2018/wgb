@@ -237,6 +237,7 @@ public class ServiceCommentServiceImpl extends ServiceImpl<ServiceCommentMapper,
                         strList.add(str);
                     }
                 }
+                response.setStatus("");
             }
         }
         result.put("page", paginator.getPage());
