@@ -71,4 +71,6 @@ public class CreateTaskRequest {
     private Integer settlementPeriod;
 
     private Integer settlementNum;
+
+    private Integer needhrCompanys;
 }

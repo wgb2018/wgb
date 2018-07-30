@@ -13,6 +13,7 @@ import com.microdev.model.Notice;
 import com.microdev.param.CreateNoticeRequest;
 import com.microdev.param.CreateTaskRequest;
 import com.microdev.param.QueryNoticeRequest;
+import com.microdev.param.TaskViewDTO;
 import com.microdev.service.NoticeService;
 import com.microdev.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,52 +50,68 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             throw new ParamsException ("服务类型不能为空");
         }*/
         Notice notice = new Notice();
-        notice.setCreateTime (OffsetDateTime.now ());
-        notice.setContent (request.getContent ());
-        notice.setFromDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getFromDateL ()),ZoneId.systemDefault ()));
-        notice.setToDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getToDateL ()),ZoneId.systemDefault ()));
-        notice.setHotelId (request.getHotelId ());
-        notice.setNeedWorkers (request.getNeedWorkers ());
-        notice.setHrNeedWorkers (request.getHrNeedWorkers ());
-        if(request.getHrCompanySet ().size () == 0){
-            notice.setType (1);
+        if(request.getType () == 1){
+            if(request.getHrNeedWorkers ()>0){
+                //发布酒店任务
+                CreateTaskRequest req = new CreateTaskRequest();
+                req.setFromDateL (request.getFromDateL ());
+                req.setToDateL (request.getToDateL ());
+                req.setDayStartTimeL (request.getDayStartTimeL ());
+                req.setDayEndTimeL (request.getDayEndTimeL ());
+                req.setHotelId (request.getHotelId ());
+                req.setTaskContent (request.getTaskContent ());
+                req.setTaskTypeCode (request.getTaskTypeCode ());
+                req.setTaskTypeText (request.getTaskTypeText ());
+                req.setSettlementPeriod (request.getSettlementPeriod ());
+                req.setSettlementNum (request.getSettlementNum ());
+                req.setNeedhrCompanys (request.getHrNeedWorkers ());
+                req.setHrCompanySet (request.getHrCompanySet ());
+                //发布酒店任务
+                ResultDO rs = taskService.createTask (req);
+                if(request.getHrCompanySet ().size ()<request.getHrNeedWorkers ()){
+                    //发布酒店派发人力任务公告
+                    notice.setCreateTime (OffsetDateTime.now ());
+                    notice.setFromDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getFromDateL ()),ZoneId.systemDefault ()));
+                    notice.setToDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getToDateL ()),ZoneId.systemDefault ()));
+                    notice.setHotelId (request.getHotelId ());
+                    notice.setNeedWorkers (request.getHrNeedWorkers ());
+                    notice.setType (1);
+                    notice.setStatus (0);
+                    notice.setContent (request.getTaskTypeText ());
+                    TaskViewDTO task = (TaskViewDTO)rs.getData ();
+                    notice.setTaskId (task.getPid ());
+                    noticeMapper.insert (notice);
+                }
+
+            }
+            if(request.getHrNeedWorkers ()>0){
+                //发布酒店招聘小时工公告
+                notice.setCreateTime (OffsetDateTime.now ());
+                notice.setFromDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getFromDateL ()),ZoneId.systemDefault ()));
+                notice.setToDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getToDateL ()),ZoneId.systemDefault ()));
+                notice.setHotelId (request.getHotelId ());
+                notice.setNeedWorkers (request.getNeedWorkers ());
+                notice.setType (2);
+                notice.setStatus (0);
+                notice.setContent (request.getTaskTypeText ());
+                noticeMapper.insert (notice);
+            }
+        }else if(request.getType () == 2){
+            //人力发布招人公告
+            notice.setCreateTime (OffsetDateTime.now ());
+            notice.setFromDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getFromDateL ()),ZoneId.systemDefault ()));
+            notice.setToDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getToDateL ()),ZoneId.systemDefault ()));
+            notice.setHrCompanyId (request.getHrCompanyId ());
+            notice.setNeedWorkers (request.getHrNeedWorkers ());
+            notice.setType (4);
             notice.setStatus (0);
-            //发布小时工公告
-        }else if(request.getWorkerSet ().size () == 0){
-            CreateTaskRequest req = new CreateTaskRequest();
-            req.setFromDate (notice.getFromDate ());
-            req.setToDate (notice.getToDate ());
-            req.setHotelId (notice.getHotelId ());
-            req.setTaskContent (request.getTaskContent ());
-            req.setTaskTypeCode (request.getTaskTypeCode ());
-            req.setTaskTypeText (request.getTaskTypeText ());
-            req.setSettlementPeriod (request.getSettlementPeriod ());
-            req.setSettlementNum (request.getSettlementNum ());
-            //发布酒店任务
-            taskService.createTask (req);
-            notice.setType (2);
-        }else{
-            CreateTaskRequest req = new CreateTaskRequest();
-            req.setFromDate (notice.getFromDate ());
-            req.setToDate (notice.getToDate ());
-            req.setHotelId (notice.getHotelId ());
-            req.setTaskContent (request.getTaskContent ());
-            req.setTaskTypeCode (request.getTaskTypeCode ());
-            req.setTaskTypeText (request.getTaskTypeText ());
-            req.setSettlementPeriod (request.getSettlementPeriod ());
-            req.setSettlementNum (request.getSettlementNum ());
-            //发布酒店任务
-            taskService.createTask (req);
-            notice.setType (3);
+            notice.setContent ("暂无内容");
+            noticeMapper.insert (notice);
         }
 
-
-
-
-        noticeMapper.insert (notice);
-        for (String sid:request.getService ()) {
+        /*for (String sid:request.getService ()) {
             noticeServiceMapper.insert (notice.getPid (),sid);
-        }
+        }*/
         return ResultDO.buildSuccess ("发布成功");
     }
 

@@ -99,7 +99,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         task.setRefusedWorkers(0);
         task.setHotelId(hotel.getPid());
         task.setHotelName(hotel.getName());
-        task.setNeedWorkers(needAllWorkers);
+        if(request.getNeedhrCompanys ()!=null){
+            task.setNeedWorkers(request.getNeedhrCompanys ());
+        }else{
+            task.setNeedWorkers(needAllWorkers);
+        }
         task.setTaskTypeText(request.getTaskTypeText());
         task.setTaskTypeCode(request.getTaskTypeCode());
         task.setTaskContent(request.getTaskContent());

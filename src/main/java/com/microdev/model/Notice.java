@@ -31,14 +31,12 @@ public class Notice extends BaseEntity {
     private Company hotel;
 
     private String hrCompanyId;
-
+    //1:酒店发布任务给人力  2:酒店招聘小时工 3:人力发布人力给小时工 4:人力招聘小时工
     private Integer type;
 
     private String taskId;
-
+    //0:活跃 1:过期
     private Integer status;
-
-    private Integer hrNeedWorkers;
 
     private Integer confirmedWorkers=0;
 }

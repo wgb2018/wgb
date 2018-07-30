@@ -20,8 +20,8 @@ public class NoticeController {
     /**
      * 酒店发布公告
      */
-    @PostMapping("/release/notice")
-    public ResultDO createNotice(@RequestBody CreateNoticeRequest request) {
+    @PostMapping("/hotel/release/notice")
+    public ResultDO createHotelNotice(@RequestBody CreateNoticeRequest request) {
         return noticeService.createNotice(request);
     }
     /**
@@ -31,4 +31,19 @@ public class NoticeController {
     public ResultDO queryNotice(@RequestBody PagingDO<QueryNoticeRequest> paging) {
         return noticeService.queryNotice(paging.getPaginator(),paging.getSelector());
     }
+    /**
+     * 人力发布招聘公告
+     */
+    @PostMapping("/hr/release/notice")
+    public ResultDO createHrNotice(@RequestBody CreateNoticeRequest request) {
+        return noticeService.createNotice(request);
+    }
+    /**
+     * 公告报名
+     */
+    @PostMapping("/accept/notice")
+    public ResultDO acceptNotice(@RequestBody CreateNoticeRequest request) {
+        return noticeService.createNotice(request);
+    }
+
 }

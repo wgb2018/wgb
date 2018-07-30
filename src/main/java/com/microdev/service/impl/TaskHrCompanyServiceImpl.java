@@ -34,7 +34,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.ParameterMetaData;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoField;
 import java.util.*;
@@ -75,6 +77,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
     MyTimeTask myTimeTask;
     @Autowired
     JpushClient jpushClient;
+    @Autowired
+    NoticeMapper noticeMapper;
 
 
     /**
@@ -137,9 +141,9 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         /*if (!StringUtils.hasLength(hrTaskDis.getMessageId())) {
             throw new ParamsException("messageId不能为空");
         }*/
-        if (hrTaskDis.getWorkerIds ( ).size ( ) == 0) {
+        /*if (hrTaskDis.getWorkerIds ( ).size ( ) == 0) {
             throw new ParamsException ("请选择派发的员工");
-        }
+        }*/
         Message message = null;
         TaskHrCompany hrTask = null;
         if (StringUtils.hasLength (hrTaskDis.getMessageId ( ))) {
@@ -242,15 +246,20 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         taskMapper.updateById (hotelTask);
         taskHrCompanyMapper.updateById (hrTask);
         messageService.hrDistributeTask (list, hrTask.getHrCompanyId ( ), hrTask.getHrCompanyName ( ), "workTaskMessage", hotelTask.getPid ( ), hrTask.getPid ( ), false);
-        //短信发送
-        /*CreateMessageDTO createMessageDTO =new CreateMessageDTO();
-        createMessageDTO.setHotelName(hotel.getName());
-        createMessageDTO.setHrCompanyName(hrCompany.getName());
-        createMessageDTO.setFromDate(hotelTask.getFromDate());
-        createMessageDTO.setToDate(hotelTask.getToDate());
-        createMessageDTO.setTaskType(hotelTask.getTaskTypeText());
-        createMessageDTO.setTaskContent(hotelTask.getTaskContent());
-        SendMessage(hrTask.getListWorkerTask(),createMessageDTO,setTaskWorkId);*/
+        //发布公告
+        if(hrTask.getNeedWorkers () - hrTask.getDistributeWorkers () > 0){
+            Notice notice = new Notice ();
+            notice.setCreateTime (OffsetDateTime.now ());
+            notice.setFromDate (hrTask.getFromDate ());
+            notice.setToDate (hrTask.getToDate ());
+            notice.setHotelId (hrTask.getHotelId ());
+            notice.setNeedWorkers (hrTask.getNeedWorkers ());
+            notice.setType (3);
+            notice.setStatus (0);
+            notice.setContent (hrTask.getTaskTypeText ());
+            notice.setTaskId (hrTask.getPid ());
+            noticeMapper.insert (notice);
+        }
 
         return ResultDO.buildSuccess ("分发成功");
     }
