@@ -15,4 +15,8 @@ public class EvaluteGrade extends BaseEntity{
      * 评价分数
      */
     private double grade;
+    /**
+     * 评价次数
+     */
+    private int amount = 0;
 }

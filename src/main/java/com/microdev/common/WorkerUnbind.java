@@ -48,7 +48,7 @@ public class WorkerUnbind {
             int num = messageMapper.selectWorkerUnbindCount();
             List<Message> list = null;
             int end = 0;
-            for (int i = 1; i <= num; ) {
+            for (int i = 0; i <= num; ) {
                 if (i + 500 > num) {
                     end = num;
                 } else {

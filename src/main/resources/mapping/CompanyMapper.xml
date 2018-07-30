@@ -211,7 +211,10 @@
     </select>
 
     <select id = "selectCooperateWorker" resultType="java.util.Map" parameterType="com.microdev.param.QueryCooperateRequest">
-      SELECT u.activated,u.avatar,u.email,u.mobile,u.nickname,u.sex,u.nickname, uc.status AS bindType FROM (select * from USER
+      SELECT u.activated,u.avatar,u.email,u.mobile,u.nickname,u.sex, uc.status AS bindType
+        , w.idcard_back as idCardBack, w.idcard_front as idCardFront, w.idcard_number as idCardNumber,
+        w.health_card as healthCard, w.active_companys as activeCompanys, w.status, w.handheld_identity
+        as handHeldIdentity, w.stature ,w.weight, w.education FROM (select * from USER
       <where>
           <if test="nickname != null">
               and nickname like concat('%', #{nickname}, '%')
@@ -224,6 +227,7 @@
     (
     SELECT user_id,STATUS FROM user_company WHERE company_id = #{id} AND STATUS IN (0,1,3)
     ) uc ON uc.user_id = u.id
+    inner join worker w on w.id = u.worker_id
     </select>
 
     <select id="selectCooperateHotel" resultType="java.util.Map" parameterType="com.microdev.param.QueryCooperateRequest">
@@ -259,7 +263,8 @@ union
     </select>
 
     <select id="hotelExamineCompany" resultType="java.util.Map" parameterType="com.microdev.param.QueryCooperateRequest">
-      SELECT c.name,c.address,c.logo,c.leader,c.leader_mobile,c.status,m.id AS messageId FROM (select * from company
+      SELECT c.name,c.address,c.logo,c.leader,c.leader_mobile,c.status,m.id AS messageId,c.area,
+      c.active_workers as activeWorkers, c.active_companys as activeCompanys  FROM (select * from company
         <where>
             <if test="name != null">
                 and name like concat('%', #{name}, '%')
@@ -269,7 +274,7 @@ union
             </if>
         </where>
       ) c INNER JOIN
-(SELECT id,hr_company_id,create_time FROM message WHERE STATUS = 0 AND hotel_id = #{hotelId} AND apply_type = 3 AND applicant_type = 2 and message_code = 'applyBindMessage') m ON c.id = m.hr_company_id ORDER BY m.create_time DESC
+(SELECT id,hr_company_id,create_time FROM message WHERE STATUS = 0 AND hotel_id = #{hotelId} AND apply_type = 3 AND applicant_type = 2 and message_type = 13) m ON c.id = m.hr_company_id ORDER BY m.create_time DESC
     </select>
     <select id="queryGrade" resultType="java.lang.Integer">
         select CAST(avg(s.level) as DECIMAL(18,1)) as `level` from bill b inner join service_comment s on b.id = s.bill_id

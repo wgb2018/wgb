@@ -2,11 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.microdev.mapper.EvaluteGradeMapper">
     <sql id="base_column">
-        id as pid, create_time, deleted, modify_time, role_id, grade
+        id as pid, create_time, deleted, modify_time, role_id, grade, amount
     </sql>
 
     <insert id="saveInfo" parameterType="com.microdev.model.EvaluteGrade">
-        insert into evalute_grade values (#{pid}, #{createTime},#{deleted},#{modifyTime}, #{roleId}, #{grade})    </insert>
+        insert into evalute_grade values (#{pid}, #{createTime},#{deleted},#{modifyTime}, #{roleId}, #{grade}, #{amount})
+</insert>
 
     <select id = "selectByRoleId" resultType="com.microdev.model.EvaluteGrade">
         select <include refid="base_column"/> from evalute_grade where role_id = #{roleId}

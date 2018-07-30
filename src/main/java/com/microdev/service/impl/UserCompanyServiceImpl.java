@@ -482,6 +482,9 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         if (message == null) {
             return ResultDO.buildError("消息id错误");
         }
+        if (message.getStatus() == 1) {
+            return ResultDO.buildError("消息已处理");
+        }
         message.setStatus(1);
         messageMapper.updateById(message);
         Inform inform = new Inform();
