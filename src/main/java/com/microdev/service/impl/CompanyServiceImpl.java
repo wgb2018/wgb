@@ -334,7 +334,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
     @Override
     public ResultDO hotelHrCompanies(Paginator paginator, CompanyQueryDTO request) {
-       
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         List<Map<String, Object>> list=  companyMapper.queryCompanysByHotelId(request);
         OffsetDateTime applyTime = null;

@@ -610,9 +610,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                 companyDTO.setArea (company.getArea ());
                 companyDTO.setAddressCode (company.getAddressCode ());
                 if(userType == UserType.hr){
-                    companyDTO.setGrade (companyMapper.queryGrade(company.getPid (),"hr").toString ());
+                    companyDTO.setGrade (companyMapper.queryGrade(company.getPid (),"hr")+"");
                 }else if (userType == UserType.hotel){
-                    companyDTO.setGrade (companyMapper.queryGrade(company.getPid (),"hotel").toString ());
+                    companyDTO.setGrade (companyMapper.queryGrade(company.getPid (),"hotel")+"");
                 }
                 userDTO.setCompany(companyDTO);
                 List l1 = dictMapper.queryTypeByUserId (company.getPid ());

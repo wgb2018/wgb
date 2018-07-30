@@ -11,8 +11,10 @@ import com.microdev.mapper.NoticeMapper;
 import com.microdev.mapper.NoticeServiceMapper;
 import com.microdev.model.Notice;
 import com.microdev.param.CreateNoticeRequest;
+import com.microdev.param.CreateTaskRequest;
 import com.microdev.param.QueryNoticeRequest;
 import com.microdev.service.NoticeService;
+import com.microdev.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,15 +37,17 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
     private NoticeServiceMapper noticeServiceMapper;
     @Autowired
     private CompanyMapper companyMapper;
+    @Autowired
+    private TaskService taskService;
     @Override
     public ResultDO createNotice(CreateNoticeRequest request) {
 
         if (StringUtils.isEmpty(request.getFromDateL ()) || StringUtils.isEmpty(request.getToDateL ()) || StringUtils.isEmpty(request.getHotelId ()) || StringUtils.isEmpty(request.getNeedWorkers ())) {
             throw new ParamsException ("参数不能为空");
         }
-        if(request.getService ().size ()==0){
+        /*if(request.getService ().size ()==0){
             throw new ParamsException ("服务类型不能为空");
-        }
+        }*/
         Notice notice = new Notice();
         notice.setCreateTime (OffsetDateTime.now ());
         notice.setContent (request.getContent ());
@@ -51,6 +55,42 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
         notice.setToDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getToDateL ()),ZoneId.systemDefault ()));
         notice.setHotelId (request.getHotelId ());
         notice.setNeedWorkers (request.getNeedWorkers ());
+        notice.setHrNeedWorkers (request.getHrNeedWorkers ());
+        if(request.getHrCompanySet ().size () == 0){
+            notice.setType (1);
+            notice.setStatus (0);
+            //发布小时工公告
+        }else if(request.getWorkerSet ().size () == 0){
+            CreateTaskRequest req = new CreateTaskRequest();
+            req.setFromDate (notice.getFromDate ());
+            req.setToDate (notice.getToDate ());
+            req.setHotelId (notice.getHotelId ());
+            req.setTaskContent (request.getTaskContent ());
+            req.setTaskTypeCode (request.getTaskTypeCode ());
+            req.setTaskTypeText (request.getTaskTypeText ());
+            req.setSettlementPeriod (request.getSettlementPeriod ());
+            req.setSettlementNum (request.getSettlementNum ());
+            //发布酒店任务
+            taskService.createTask (req);
+            notice.setType (2);
+        }else{
+            CreateTaskRequest req = new CreateTaskRequest();
+            req.setFromDate (notice.getFromDate ());
+            req.setToDate (notice.getToDate ());
+            req.setHotelId (notice.getHotelId ());
+            req.setTaskContent (request.getTaskContent ());
+            req.setTaskTypeCode (request.getTaskTypeCode ());
+            req.setTaskTypeText (request.getTaskTypeText ());
+            req.setSettlementPeriod (request.getSettlementPeriod ());
+            req.setSettlementNum (request.getSettlementNum ());
+            //发布酒店任务
+            taskService.createTask (req);
+            notice.setType (3);
+        }
+
+
+
+
         noticeMapper.insert (notice);
         for (String sid:request.getService ()) {
             noticeServiceMapper.insert (notice.getPid (),sid);

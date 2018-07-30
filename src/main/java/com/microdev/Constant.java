@@ -65,6 +65,7 @@ public interface Constant {
         add("/*/guide");
         add("/downlaod");
         add("/list/evaluate");
+        add("/hotels/hrcompanies/export");
     }};
 
 

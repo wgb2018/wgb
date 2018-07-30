@@ -29,4 +29,16 @@ public class Notice extends BaseEntity {
     private List<Dict> service;
     @TableField(exist = false)
     private Company hotel;
+
+    private String hrCompanyId;
+
+    private Integer type;
+
+    private String taskId;
+
+    private Integer status;
+
+    private Integer hrNeedWorkers;
+
+    private Integer confirmedWorkers=0;
 }

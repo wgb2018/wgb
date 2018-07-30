@@ -181,7 +181,9 @@ public class ServiceCommentServiceImpl extends ServiceImpl<ServiceCommentMapper,
                                 list.add("忘打卡");
                             }
                         }
+
                     }
+                    response.setStatus ("");
                 }
             }
         } else {
@@ -194,6 +196,7 @@ public class ServiceCommentServiceImpl extends ServiceImpl<ServiceCommentMapper,
                             list.add(s);
                         }
                     }
+                    response.setStatus ("");
                 }
             }
         }

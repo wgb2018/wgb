@@ -1,18 +1,5 @@
 package com.microdev.Controller;
 
-import cn.jiguang.common.ClientConfig;
-import cn.jiguang.common.resp.APIConnectionException;
-import cn.jiguang.common.resp.APIRequestException;
-import cn.jpush.api.JPushClient;
-import cn.jpush.api.push.PushResult;
-import cn.jpush.api.push.model.Platform;
-import cn.jpush.api.push.model.PushPayload;
-import cn.jpush.api.push.model.audience.Audience;
-import cn.jpush.api.push.model.notification.Notification;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.mapper.Wrapper;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.microdev.Constant;
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
