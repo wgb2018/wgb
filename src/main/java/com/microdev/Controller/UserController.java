@@ -6,10 +6,7 @@ import com.microdev.common.ResultDO;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.oss.ObjectStoreService;
 import com.microdev.common.paging.Paginator;
-import com.microdev.common.utils.FileUtil;
-import com.microdev.common.utils.HtmlUtil;
-import com.microdev.common.utils.Maths;
-import com.microdev.common.utils.QRCodeUtil;
+import com.microdev.common.utils.*;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
 import com.microdev.param.*;
@@ -428,4 +425,5 @@ public class UserController {
     public ResultDO checkVersion() throws Exception{
         return ResultDO.buildSuccess (versionMapper.selectVersion ());
     }
+
 }
