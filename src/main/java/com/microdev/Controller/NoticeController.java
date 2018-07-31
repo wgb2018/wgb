@@ -18,7 +18,7 @@ public class NoticeController {
     NoticeService noticeService;
 
     /**
-     * 酒店发布公告
+     * 用人单位发布公告
      */
     @PostMapping("/hotel/release/notice")
     public ResultDO createHotelNotice(@RequestBody CreateNoticeRequest request) {

@@ -2,14 +2,14 @@ package com.microdev.Controller;
 
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
-import com.microdev.param.HrPayWorkerRequest;
-import com.microdev.param.HrTaskDistributeRequest;
-import com.microdev.param.PayParam;
-import com.microdev.param.TaskHrQueryDTO;
+import com.microdev.common.utils.ExcelUtil;
+import com.microdev.param.*;
 import com.microdev.service.TaskHrCompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -89,4 +89,25 @@ public class TaskHrCompanyController {
         return ResultDO.buildSuccess(taskHrCompanyService.TaskHrrefusePC(param.get("id"),param.get("reason")));
     }
 
+    /**
+     * 人力账单（查询用人单位支付账单）
+     * @param response
+     * @param taskHrQueryDTO
+     */
+    @PostMapping("/hr/download/account")
+    public void downloadHrAccount(HttpServletResponse response, @RequestBody TaskHrQueryDTO taskHrQueryDTO) {
+        List<DownLoadAccount> list = taskHrCompanyService.queryHrAccount(taskHrQueryDTO);
+        ExcelUtil.download(response, list, ExcelUtil.hrAccount, "人力账单");
+    }
+
+    /**
+     * 用人单位账单(查询支付给某个人力的账单)
+     * @param response
+     * @param taskHrQueryDTO
+     */
+    @PostMapping("/hotel/download/account")
+    public void downloadHotelAccount(HttpServletResponse response, @RequestBody TaskHrQueryDTO taskHrQueryDTO) {
+        List<DownLoadAccount> list = taskHrCompanyService.queryHotelAccount(taskHrQueryDTO);
+        ExcelUtil.download(response, list, ExcelUtil.hotelAccount, "用人单位账单");
+    }
 }

@@ -419,7 +419,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      * @return
      */
     @Override
-    public Map<String, Integer> selectUnReadCount(String id, String applyType) {
+    public ResultDO selectUnReadCount(String id, String applyType) {
         if (StringUtils.isEmpty(id) || StringUtils.isEmpty(applyType)) {
             throw new ParamsException("参数不能为空");
         }
@@ -427,6 +427,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         applyParamDTO.setId(id);
         Map<String, Integer> param = new HashMap<>();
         Map<String, Object> map = new HashMap<>();
+        int total = 0;
         if ("worker".equals(applyType)) {
             User user = userMapper.selectByWorkerId (id);
             if(user == null){
@@ -435,20 +436,24 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             user.setMsNum (0);
             userMapper.updateById (user);
             //查询当前任务未读数量
-            param.put("curTask", taskWorkerService.selectWorkerCurTaskCount(applyParamDTO));
+            int curNum = taskWorkerService.selectWorkerCurTaskCount(applyParamDTO);
+            param.put("curTask", curNum);
 
             //查询未读待处理事物数量
-            param.put("pendingTask", messageMapper.selectUnReadWorkerCount(id));
+            int pendNum = messageMapper.selectUnReadWorkerCount(id);
+            param.put("pendingTask", pendNum);
 
             //查询未读通知数量
             map.put("status", 0);
             map.put("acceptType", 1);
             map.put("receiveId", id);
-            param.put("notice", informService.selectCountByParam(map));
+            int noticeNum = informService.selectCountByParam(map);
+            param.put("notice", noticeNum);
 
             //查询补签数量
-            param.put("supplement", workerLogMapper.selectUnreadPunchCount(applyParamDTO.getId ()));
-
+            int supplementNum = workerLogMapper.selectUnreadPunchCount(applyParamDTO.getId ());
+            param.put("supplement", supplementNum);
+            total = curNum + pendNum + noticeNum + supplementNum;
         } else if ("hr".equals(applyType)) {
             Company comapny = companyMapper.findCompanyById (id);
             User user = userMapper.findByMobile (comapny.getLeaderMobile ());
@@ -457,15 +462,17 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             }
             user.setMsNum (0);
             userMapper.updateById (user);
-            param.put("curTask", taskHrCompanyService.selectHrCurTaskCount(applyParamDTO));
-
-            param.put("pendingTask", messageMapper.selectUnreadHrCount(id));
+            int curNum = taskHrCompanyService.selectHrCurTaskCount(applyParamDTO);
+            param.put("curTask", curNum);
+            int pendNum = messageMapper.selectUnreadHrCount(id);
+            param.put("pendingTask", pendNum);
 
             map.put("status", 0);
             map.put("acceptType", 2);
             map.put("receiveId", id);
-            param.put("notice", informService.selectCountByParam(map));
-
+            int noticeNum = informService.selectCountByParam(map);
+            param.put("notice", noticeNum);
+            total = curNum + pendNum + noticeNum;
         } else if ("hotel".equals(applyType)) {
             Company comapny = companyMapper.findCompanyById (id);
             User user = userMapper.findByMobile (comapny.getLeaderMobile ());
@@ -474,20 +481,23 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             }
             user.setMsNum (0);
             userMapper.updateById (user);
-            param.put("curTask", taskService.selectCurHotelTaskCount(applyParamDTO));
-
-            param.put("pendingTask", messageMapper.selectUnreadHotelCount(id));
+            int curNum = taskService.selectCurHotelTaskCount(applyParamDTO);
+            param.put("curTask", curNum);
+            int pendNum = messageMapper.selectUnreadHotelCount(id);
+            param.put("pendingTask", pendNum);
 
             map.put("status", 0);
             map.put("acceptType", 3);
             map.put("receiveId", id);
-            param.put("notice", informService.selectCountByParam(map));
-
+            int noticeNum = informService.selectCountByParam(map);
+            param.put("notice", noticeNum);
+            total = curNum + pendNum + noticeNum;
         } else {
             throw new ParamsException("参数applyType类型错误");
         }
-
-        return param;
+        Map<String, Object> extra = new HashMap<>();
+        extra.put("total", total + "");
+        return ResultDO.buildSuccess(null, param, extra, null);
     }
 
     /**
@@ -1262,13 +1272,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             if (list != null && list.size() > 0) {
                 for (MessageResponse response : list) {
                     if ("12".equals(response.getMessageType()) && response.getApplicantType() == 3) {
-                        //酒店解绑人力是21
+                        //用人单位解绑人力是21
                         response.setMessageType("21");
                     }
                 }
             }
         } else if ("hotel".equals(roleType)) {
-            //人力解绑酒店是22
+            //人力解绑用人单位是22
             list = messageMapper.selectPcHotelApplyInfo(id);
         } else if ("worker".equals(roleType)) {
 

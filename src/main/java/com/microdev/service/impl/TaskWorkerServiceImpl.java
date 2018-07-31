@@ -13,6 +13,7 @@ import com.microdev.converter.TaskWorkerConverter;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
 import com.microdev.param.ApplyParamDTO;
+import com.microdev.param.DownLoadAccount;
 import com.microdev.param.RefusedTaskRequest;
 import com.microdev.param.TaskWorkerQuery;
 import com.microdev.service.InformService;
@@ -22,10 +23,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.text.DateFormat;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.*;
 
@@ -328,6 +331,42 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         TaskWorkerQuery query = new TaskWorkerQuery();
         query.setWorkerId(applyParamDTO.getId());
         return taskWorkerMapper.selectCurTasCount(query);
+    }
+
+    /**
+     * 查询小时工账单
+     * @param taskQueryDTO
+     * @return
+     */
+    @Override
+    public List<DownLoadAccount> queryWorkerAccount(TaskWorkerQuery taskQueryDTO) {
+
+        //查询数据集合
+        List<TaskWorker> list = null;
+        if(taskQueryDTO.getHotelName () == null || taskQueryDTO.getHotelName ().equals ("")) {
+            list = taskWorkerMapper.findAll(taskQueryDTO);
+        }else{
+            list = taskWorkerMapper.findAllh(taskQueryDTO);
+        }
+        List<DownLoadAccount> accountList = new ArrayList<>();
+        if (list != null) {
+            DateTimeFormatter df1 = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+            DateTimeFormatter df2 = DateTimeFormatter.ofPattern("HH:mm");
+            for (TaskWorker t : list) {
+                DownLoadAccount account = new DownLoadAccount();
+                account.setTaskContent(t.getTaskContent());
+                account.setTaskType(t.getTaskTypeText());
+                account.setWorkDate(t.getFromDate().format(df1) + " / " + t.getToDate().format(df1));
+                account.setStartEndTime(t.getDayStartTime().format(df2) + " / " + t.getDayEndTime().format(df2));
+                account.setHavePay(Maths.getTwoDecimal (t.getShouldPayMoney (),2));
+                account.setPaidPayMoney(Maths.getTwoDecimal (t.getPaidPayMoney (),2));
+                account.setShouldPay(Maths.getTwoDecimal (t.getShouldPayMoney (),2));
+                account.setUnConfirmedPay(Maths.getTwoDecimal (t.getUnConfirmedPay (),2));
+                account.setName(t.getHotelName());
+                accountList.add(account);
+            }
+        }
+        return accountList;
     }
 
 }

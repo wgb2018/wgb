@@ -38,6 +38,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.*;
 
@@ -1700,5 +1701,63 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             }
             return ResultDO.buildSuccess ("操作成功");
         }
+
+    /**
+     * 人力查询用人单位账单
+     * @param taskHrQueryDTO
+     * @return
+     */
+    @Override
+    public List<DownLoadAccount> queryHrAccount(TaskHrQueryDTO taskHrQueryDTO) {
+        List <TaskHrCompany> list = taskHrCompanyMapper.queryHrCompanyTasks (taskHrQueryDTO);
+        List<DownLoadAccount> accountList = new ArrayList<>();
+        if (list != null) {
+            DateTimeFormatter df1 = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+            DateTimeFormatter df2 = DateTimeFormatter.ofPattern("HH:mm");
+            for (TaskHrCompany task : list) {
+                DownLoadAccount account = new DownLoadAccount();
+                account.setName(task.getHotelName());
+                account.setTaskType(task.getTaskTypeText());
+                account.setTaskContent(task.getTaskContent());
+                account.setWorkDate(task.getFromDate().format(df1) + " / " + task.getToDate().format(df1));
+                account.setStartEndTime(task.getDayStartTime().format(df2) + " / " + task.getDayEndTime().format(df2));
+                account.setUnConfirmedPay(Maths.getTwoDecimal (task.getUnConfirmedPay () + 0.0 ,2));
+                account.setHavePay(Maths.getTwoDecimal (task.getHavePayMoney() + 0.0,2));
+                account.setShouldPay(Maths.getTwoDecimal (task.getShouldPayMoney() + 0.0,2));
+                account.setPaidPayMoney(Maths.getTwoDecimal (task.getShouldPayMoney() - task.getHavePayMoney() - task.getUnConfirmedPay(),2));
+                accountList.add(account);
+            }
+        }
+        return accountList;
     }
+
+    /**
+     * 用人单位查询人力账单
+     * @param taskHrQueryDTO
+     * @return
+     */
+    @Override
+    public List<DownLoadAccount> queryHotelAccount(TaskHrQueryDTO taskHrQueryDTO) {
+        List <TaskHrCompany> list = taskHrCompanyMapper.queryHrCompanyTasks (taskHrQueryDTO);
+        List<DownLoadAccount> accountList = new ArrayList<>();
+        if (list != null) {
+            DateTimeFormatter df1 = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+            DateTimeFormatter df2 = DateTimeFormatter.ofPattern("HH:mm");
+            for (TaskHrCompany task : list) {
+                DownLoadAccount account = new DownLoadAccount();
+                account.setName(task.getHrCompanyName());
+                account.setTaskType(task.getTaskTypeText());
+                account.setTaskContent(task.getTaskContent());
+                account.setWorkDate(task.getFromDate().format(df1) + " / " + task.getToDate().format(df1));
+                account.setStartEndTime(task.getDayStartTime().format(df2) + " / " + task.getDayEndTime().format(df2));
+                account.setUnConfirmedPay(Maths.getTwoDecimal (task.getUnConfirmedPay () + 0.0 ,2));
+                account.setHavePay(Maths.getTwoDecimal (task.getHavePayMoney() + 0.0,2));
+                account.setShouldPay(Maths.getTwoDecimal (task.getShouldPayMoney() + 0.0,2));
+                account.setPaidPayMoney(Maths.getTwoDecimal (task.getShouldPayMoney() - task.getHavePayMoney() - task.getUnConfirmedPay(),2));
+                accountList.add(account);
+            }
+        }
+        return accountList;
+    }
+}
 

@@ -580,5 +580,29 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         return    ResultDO.buildSuccess("解绑已提交");
     }
 
+    /**
+     * 查询小时工绑定的人力公司
+     * @param queryDTO
+     * @return
+     */
+    @Override
+    public List<CompanyCooperate> queryWorkerBindHr(WokerQueryHrDTO queryDTO) {
+        if (StringUtils.isEmpty(queryDTO.getWorkerId())) {
+            throw new ParamsException("参数错误");
+        }
+        List<WorkerBindCompany> list = userCompanyMapper.selectHrCompanyByUserId(queryDTO.getWorkerId());
+        List<CompanyCooperate> cooperateList = new ArrayList<>();
+        if (list != null) {
+            for (WorkerBindCompany company : list) {
+                CompanyCooperate op = new CompanyCooperate();
+                op.setAddress(company.getArea() + company.getAddress());
+                op.setLeader(company.getLeader());
+                op.setMobile(company.getLeaderMobile());
+
+            }
+        }
+        return cooperateList;
+    }
+
 
 }

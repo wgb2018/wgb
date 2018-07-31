@@ -5,9 +5,11 @@ import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.model.TaskWorker;
 import com.microdev.param.ApplyParamDTO;
+import com.microdev.param.DownLoadAccount;
 import com.microdev.param.RefusedTaskRequest;
 import com.microdev.param.TaskWorkerQuery;
 
+import java.util.List;
 import java.util.Map;
 
 public interface TaskWorkerService extends IService<TaskWorker> {
@@ -38,4 +40,12 @@ public interface TaskWorkerService extends IService<TaskWorker> {
      * @return
      */
     int selectWorkerCurTaskCount(ApplyParamDTO applyParamDTO);
+
+    /**
+     * 查询小时工账单
+     * @param taskQueryDTO
+     * @return
+     */
+    List<DownLoadAccount> queryWorkerAccount(TaskWorkerQuery taskQueryDTO);
+
 }

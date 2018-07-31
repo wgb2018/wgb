@@ -5,10 +5,8 @@ import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.model.User;
 import com.microdev.model.UserCompany;
-import com.microdev.param.HrQueryWorkerDTO;
-import com.microdev.param.MessageParamDTO;
-import com.microdev.param.QueryCooperateRequest;
-import com.microdev.param.WokerQueryHrDTO;
+import com.microdev.param.*;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,4 +69,10 @@ public interface UserCompanyService extends IService<UserCompany> {
      */
     ResultDO workerApplyUnbindHr(Map<String, String> param);
 
+    /**
+     * 查询小时工绑定的人力公司
+     * @param queryDTO
+     * @return
+     */
+    List<CompanyCooperate> queryWorkerBindHr(WokerQueryHrDTO queryDTO);
 }
