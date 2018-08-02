@@ -59,7 +59,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
         Notice notice = new Notice();
         if(request.getType () == 1){
             if(request.getHrNeedWorkers ()>0){
-                //发布酒店任务
+                //发布用人单位任务
                 CreateTaskRequest req = new CreateTaskRequest();
                 req.setFromDateL (request.getFromDateL ());
                 req.setToDateL (request.getToDateL ());
@@ -73,10 +73,10 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
                 req.setSettlementNum (request.getSettlementNum ());
                 req.setNeedhrCompanys (request.getHrNeedWorkers ());
                 req.setHrCompanySet (request.getHrCompanySet ());
-                //发布酒店任务
+                //发布用人单位任务
                 ResultDO rs = taskService.createTask (req);
                 if(request.getHrCompanySet ().size ()<request.getHrNeedWorkers ()){
-                    //发布酒店派发人力任务公告
+                    //发布用人单位派发人力任务公告
                     notice.setCreateTime (OffsetDateTime.now ());
                     notice.setFromDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getFromDateL ()),ZoneId.systemDefault ()));
                     notice.setToDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getToDateL ()),ZoneId.systemDefault ()));
@@ -92,7 +92,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
 
             }
             if(request.getHrNeedWorkers ()>0){
-                //发布酒店招聘小时工公告
+                //发布用人单位招聘小时工公告
                 notice.setCreateTime (OffsetDateTime.now ());
                 notice.setFromDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getFromDateL ()),ZoneId.systemDefault ()));
                 notice.setToDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getToDateL ()),ZoneId.systemDefault ()));

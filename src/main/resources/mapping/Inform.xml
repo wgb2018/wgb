@@ -10,8 +10,8 @@
     </insert>
 
     <select id="selectUnReadCount" parameterType="java.util.Map" resultType="java.lang.Integer">
-      SELECT count(1) FROM inform
-      <where>
+      SELECT count(1) FROM inform where deleted = false
+
           <if test="status != null">
             and status = #{status}
           </if>
@@ -24,13 +24,12 @@
           <if test="receiveId != null and receiveId != ''">
               and receive_id = #{receiveId}
           </if>
-      </where>
+
     </select>
 
     <select id="selectInfromByParam" parameterType="java.util.Map" resultType="com.microdev.param.NoticeResponse">
         SELECT id as pid,create_time as createTime,content,title,status
-        FROM inform
-        <where>
+        FROM inform where deleted = false
             <if test="sendType != null">
                 and send_type = #{sendType}
             </if>
@@ -40,7 +39,14 @@
             <if test="receiveId != null and receiveId != ''">
                 and receive_id = #{receiveId}
             </if>
-        </where>
+
         order by status asc,create_time desc
     </select>
+
+    <update id="updateBatch" parameterType="java.util.List">
+        update inform set deleted = true where id in
+        <foreach collection="list" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </update>
 </mapper>

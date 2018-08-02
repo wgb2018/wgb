@@ -38,6 +38,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.*;
 
@@ -1700,5 +1701,145 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             }
             return ResultDO.buildSuccess ("操作成功");
         }
+
+    /**
+     * 人力查询用人单位账单
+     * @param taskHrQueryDTO
+     * @return
+     */
+    @Override
+    public List<DownLoadAccount> queryHrAccount(TaskHrQueryDTO taskHrQueryDTO) {
+
+        int count = taskHrCompanyMapper.queryHrCompanyTasksCount(taskHrQueryDTO);
+        PageHelper.startPage(1, count, true);
+        List <TaskHrCompany> list = taskHrCompanyMapper.queryHrCompanyTasks (taskHrQueryDTO);
+        List<DownLoadAccount> accountList = new ArrayList<>();
+        if (list != null) {
+            DateTimeFormatter df1 = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+            DateTimeFormatter df2 = DateTimeFormatter.ofPattern("HH:mm");
+            for (TaskHrCompany task : list) {
+                DownLoadAccount account = new DownLoadAccount();
+                account.setName(task.getHotelName());
+                account.setTaskType(task.getTaskTypeText());
+                account.setTaskContent(task.getTaskContent());
+                account.setWorkDate(task.getFromDate().format(df1) + " / " + task.getToDate().format(df1));
+                account.setStartEndTime(task.getDayStartTime().format(df2) + " / " + task.getDayEndTime().format(df2));
+                account.setUnConfirmedPay(Maths.getTwoDecimal (task.getUnConfirmedPay () + 0.0 ,2));
+                account.setHavePay(Maths.getTwoDecimal (task.getHavePayMoney() + 0.0,2));
+                account.setShouldPay(Maths.getTwoDecimal (task.getShouldPayMoney() + 0.0,2));
+                account.setPaidPayMoney(Maths.getTwoDecimal (task.getShouldPayMoney() - task.getHavePayMoney() - task.getUnConfirmedPay(),2));
+                accountList.add(account);
+            }
+        }
+        return accountList;
     }
+
+    /**
+     * 用人单位查询人力账单
+     * @param taskHrQueryDTO
+     * @return
+     */
+    @Override
+    public List<DownLoadAccount> queryHotelAccount(TaskHrQueryDTO taskHrQueryDTO) {
+
+        int count = taskHrCompanyMapper.queryHrCompanyTasksCount(taskHrQueryDTO);
+        PageHelper.startPage(1, count, true);
+        List <TaskHrCompany> list = taskHrCompanyMapper.queryHrCompanyTasks (taskHrQueryDTO);
+        List<DownLoadAccount> accountList = new ArrayList<>();
+        if (list != null) {
+            DateTimeFormatter df1 = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+            DateTimeFormatter df2 = DateTimeFormatter.ofPattern("HH:mm");
+            for (TaskHrCompany task : list) {
+                DownLoadAccount account = new DownLoadAccount();
+                account.setName(task.getHrCompanyName());
+                account.setTaskType(task.getTaskTypeText());
+                account.setTaskContent(task.getTaskContent());
+                account.setWorkDate(task.getFromDate().format(df1) + " / " + task.getToDate().format(df1));
+                account.setStartEndTime(task.getDayStartTime().format(df2) + " / " + task.getDayEndTime().format(df2));
+                account.setUnConfirmedPay(Maths.getTwoDecimal (task.getUnConfirmedPay () + 0.0 ,2));
+                account.setHavePay(Maths.getTwoDecimal (task.getHavePayMoney() + 0.0,2));
+                account.setShouldPay(Maths.getTwoDecimal (task.getShouldPayMoney() + 0.0,2));
+                account.setPaidPayMoney(Maths.getTwoDecimal (task.getShouldPayMoney() - task.getHavePayMoney() - task.getUnConfirmedPay(),2));
+                accountList.add(account);
+            }
+        }
+        return accountList;
+    }
+
+    /**
+     * 查询人力任务
+     * @param taskHrQueryDTO
+     * @return
+     */
+    @Override
+    public List<HrTask> queryHrTask(TaskHrQueryDTO taskHrQueryDTO) {
+        String date = taskHrQueryDTO.getOfDate();
+        if (date != null) {
+            Integer year = Integer.parseInt(date.split("-")[0]);
+            Integer month = Integer.parseInt(date.split("-")[1]);
+            if (month == 12) {
+                taskHrQueryDTO.setFromDate (OffsetDateTime.of
+                        (year, 12, 1, 0, 0, 0, 0,
+                                ZoneOffset.UTC));
+                taskHrQueryDTO.setToDate (OffsetDateTime.of
+                        (year, 1, 1, 0, 0, 0, 0,
+                                ZoneOffset.UTC));
+            } else {
+                taskHrQueryDTO.setFromDate (OffsetDateTime.of
+                        (year, month, 1, 0, 0, 0, 0, ZoneOffset.UTC));
+                taskHrQueryDTO.setToDate (OffsetDateTime.of
+                        (year, month + 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
+            }
+        }
+        //查询数据集合
+        int count = taskHrCompanyMapper.queryHrCompanyTasksCount(taskHrQueryDTO);
+        PageHelper.startPage(1, count, true);
+        List <TaskHrCompany> list = taskHrCompanyMapper.queryHrCompanyTasks (taskHrQueryDTO);
+        List<HrTask> taskList = new ArrayList<>();
+        if (list != null) {
+            DateTimeFormatter df1 = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+            DateTimeFormatter df2 = DateTimeFormatter.ofPattern("HH:mm");
+            for (TaskHrCompany task : list) {
+                HrTask t = new HrTask();
+                t.setEmployerName(task.getHotelName());
+                t.setTaskContent(task.getTaskContent());
+                t.setType(task.getTaskTypeText());
+                t.setHotelSalary(task.getHourlyPayHotel() + "");
+                t.setSalary(task.getHourlyPay() + "");
+                t.setWorkDate(task.getFromDate().format(df1) + " / " + task.getToDate().format(df1));
+                t.setWorkTime(task.getDayStartTime().format(df2) + " / " + task.getDayEndTime().format(df2));
+                t.setTotal(task.getConfirmedWorkers() + " / " + task.getNeedWorkers());
+                int settlementNum = task.getSettlementNum();
+                int workerSettlementNum = task.getWorkerSettlementNum();
+                if (task.getSettlementPeriod() == 0) {
+                    t.setSettlement(settlementNum + "天/次");
+                } else if (task.getSettlementPeriod() == 1) {
+                    t.setSettlement(settlementNum + "月/次");
+                }
+                if (task.getWorkerSettlementPeriod() == 0) {
+                    t.setHrSettlement(workerSettlementNum + "天/次");
+                } else if (task.getWorkerSettlementPeriod() == 1) {
+                    t.setHrSettlement(workerSettlementNum + "天/次");
+                }
+                if (task.getStatus() == 1) {
+                    t.setStatus("待接受");
+                } else if (task.getStatus() == 2) {
+                    t.setStatus("接受任务");
+                } else if (task.getStatus() == 3) {
+                    t.setStatus("拒绝任务");
+                } else if (task.getStatus() == 4) {
+                    t.setStatus("已派发");
+                } else if (task.getStatus() == 5) {
+                    t.setStatus("申请调配");
+                } else if (task.getStatus() == 6) {
+                    t.setStatus("派单完成");
+                } else if (task.getStatus() == 7) {
+                    t.setStatus("任务完成");
+                }
+                taskList.add(t);
+            }
+        }
+        return taskList;
+    }
+}
 

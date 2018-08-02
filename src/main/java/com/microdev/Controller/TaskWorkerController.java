@@ -1,15 +1,19 @@
 package com.microdev.Controller;
 
 import com.microdev.common.ResultDO;
+import com.microdev.common.utils.ExcelUtil;
 import com.microdev.mapper.TaskWorkerMapper;
 import com.microdev.mapper.UserMapper;
 import com.microdev.mapper.WorkerMapper;
 import com.microdev.model.TaskWorker;
+import com.microdev.param.DownLoadAccount;
 import com.microdev.param.RefusedTaskRequest;
+import com.microdev.param.TaskWorkerQuery;
 import com.microdev.service.TaskWorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -59,4 +63,14 @@ public class TaskWorkerController {
         return ResultDO.buildSuccess(list);
     }
 
+    /**
+     * 下载小时工账单信息。
+     * @param taskQueryDTO
+     * @param response
+     */
+    @PostMapping("/worker/download/account")
+    public void downloadWorkerAccount(@RequestBody TaskWorkerQuery taskQueryDTO, HttpServletResponse response) {
+        List<DownLoadAccount> list = taskWorkerService.queryWorkerAccount(taskQueryDTO);
+        ExcelUtil.download(response, list, ExcelUtil.workerAccount, "小时工账单");
+    }
 }

@@ -296,4 +296,117 @@
         SELECT <include refid="TaskWorker_Query_List" /> FROM task_worker WHERE user_id = #{userId} AND hr_company_id = #{hrId}
         AND STATUS IN (0,1,4) AND from_date &lt;= NOW() AND to_date &gt;= NOW()
     </select>
+
+    <select id="findAllCount" parameterType="com.microdev.param.TaskWorkerQuery" resultType="java.lang.Integer">
+        select count(1) from (
+        select
+        t.id as pid
+        from task_worker t left join company c on t.hr_company_id = c.id
+        <where>
+            <if test="hrCompanyId != null and hrCompanyId !=''">
+                c.id = #{hrCompanyId}
+            </if>
+            <if test="workerId != null and workerId !=''">
+                and t.worker_id = #{workerId}
+            </if>
+            <if test="fromDate != null">
+                and t.from_date &gt;= #{fromDate}
+            </if>
+            <if test="hrCompanyName != null and hrCompanyName !=''">
+                and c.name like concat('%', #{hrCompanyName},'%')
+            </if>
+            <if test="toDate != null">
+                and t.to_date &lt;= #{toDate}
+            </if>
+            <if test="taskTypeCode != null and taskTypeCode !=''">
+                and t.task_type_code = #{taskTypeCode}
+            </if>
+            <if test="hrTaskId !=null and hrTaskId !=''">
+                and t.task_hr_id = #{hrTaskId}
+            </if>
+            <if test="taskStatus !=null and taskStatus !=''">
+                <if test="taskStatus == 6">
+                    and t.status = 1 and t.to_date &gt;= now()
+                </if>
+                <if test="taskStatus &lt; 3">
+                    and t.status = #{taskStatus}
+                </if>
+                <if test="taskStatus == 4">
+                    and t.to_date &gt;= now() and t.from_date &lt;= now() and t.status = 1
+                </if>
+                <if test="taskStatus == 5">
+                    and ((t.to_date &lt; now() and t.status = 1) or t.status = 3)
+                </if>
+                <if test="taskStatus == 7">
+                    and ((t.from_date &lt; now() and t.status = 1) or t.status = 3)
+                </if>
+            </if>
+            <if test="payStatus != null and payStatus !=''">
+                <if test="payStatus == 1">
+                    and t.have_pay_money == 0
+                </if>
+                <if test="payStatus == 2">
+                    and t.have_pay_money &gt;= 0 and t.should_pay_money != t.have_pay_money
+                </if>
+                <if test="payStatus == 3">
+                    and t.have_pay_money &gt;= 0 and t.should_pay_money = t.have_pay_money
+                </if>
+            </if>
+        </where>
+        )
+    </select>
+
+
+    <select id="findAllhCount" resultType="java.lang.Integer" parameterType="com.microdev.param.TaskWorkerQuery" >
+        select count(1) from (
+        select
+        t.id as pid
+        from task_worker t left join company c on t.hotel_id = c.id
+        <where>
+            <if test="workerId != null and workerId !=''">
+                t.worker_id = #{workerId}
+            </if>
+            <if test="fromDate != null">
+                and t.from_date &gt;= #{fromDate}
+            </if>
+            <if test="hotelName != null and hotelName !=''">
+                and c.name like concat('%', #{hotelName},'%')
+            </if>
+            <if test="toDate != null">
+                and t.to_date &lt;= #{toDate}
+            </if>
+            <if test="taskTypeCode != null and taskTypeCode !=''">
+                and t.task_type_code = #{taskTypeCode}
+            </if>
+            <if test="taskStatus !=null and taskStatus !=''">
+                <if test="taskStatus == 6">
+                    and t.status = 1 and t.to_date &gt;= now()
+                </if>
+                <if test="taskStatus &lt; 3">
+                    and  t.status = #{taskStatus}
+                </if>
+                <if test="taskStatus == 4">
+                    and t.to_date &gt;= now() and t.from_date &lt;= now() and t.status = 1
+                </if>
+                <if test="taskStatus == 5">
+                    and ((t.to_date &lt; now() and t.status = 1) or t.status = 3)
+                </if>
+                <if test="taskStatus == 7">
+                    and ((t.from_date &lt; now() and t.status = 1) or t.status = 3)
+                </if>
+            </if>
+            <if test="payStatus != null and payStatus !=''">
+                <if test="payStatus == 1">
+                    and t.have_pay_money == 0
+                </if>
+                <if test="payStatus == 2">
+                    and t.have_pay_money &gt;= 0 and t.should_pay_money != t.have_pay_money
+                </if>
+                <if test="payStatus == 3">
+                    and t.have_pay_money &gt;= 0 and t.should_pay_money = t.have_pay_money
+                </if>
+            </if>
+        </where>
+        )
+    </select>
 </mapper>

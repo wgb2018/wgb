@@ -580,5 +580,59 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         return    ResultDO.buildSuccess("解绑已提交");
     }
 
+    /**
+     * 查询小时工绑定的人力公司
+     * @param queryDTO
+     * @return
+     */
+    @Override
+    public List<CompanyCooperate> queryWorkerBindHr(WokerQueryHrDTO queryDTO) {
+        if (StringUtils.isEmpty(queryDTO.getWorkerId())) {
+            throw new ParamsException("参数错误");
+        }
+        List<WorkerBindCompany> list = userCompanyMapper.selectHrCompanyByUserId(queryDTO.getWorkerId());
+        List<CompanyCooperate> cooperateList = new ArrayList<>();
+        if (list != null) {
+            for (WorkerBindCompany company : list) {
+                CompanyCooperate op = new CompanyCooperate();
+                op.setAddress(company.getArea() + company.getAddress());
+                op.setLeader(company.getLeader());
+                op.setMobile(company.getLeaderMobile());
+                op.setLicense(company.getBusinessLicense());
+                op.setLogo(company.getLogo());
+                op.setName(company.getName());
+                if (0 == company.getStatus()) {
+                    op.setStatus("未审核");
+                } else if (1 == company.getStatus()) {
+                    op.setStatus("已审核");
+                } else if (2 == company.getStatus()) {
+                    op.setStatus("已冻结");
+                } else if (-1 == company.getStatus()) {
+                    op.setStatus("已注销");
+                }
+                cooperateList.add(op);
+            }
+        }
+        return cooperateList;
+    }
+
+    /**
+     * 人力查询关联的工作者
+     * @param queryDTO
+     * @return
+     */
+    @Override
+    public List<WorkerCooperate> queryHrBindWorker(HrQueryWorkerDTO queryDTO) {
+
+        if (StringUtils.isEmpty(queryDTO.getHrId())) {
+            throw new ParamsException("参数不能为空");
+        }
+        List<WorkerCooperate> list = userCompanyMapper.selectHrBindWorker(queryDTO);
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+        return list;
+    }
+
 
 }

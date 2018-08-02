@@ -6,6 +6,8 @@ import com.microdev.common.paging.Paginator;
 import com.microdev.model.Task;
 import com.microdev.param.*;
 
+import java.util.List;
+
 public interface TaskService extends IService<Task> {
     /**
      * 创建任务
@@ -44,4 +46,11 @@ public interface TaskService extends IService<Task> {
      * @return
      */
     int selectCurHotelTaskCount(ApplyParamDTO applyParamDTO);
+
+    /**
+     * 查询酒店任务
+     * @param taskQueryDTO
+     * @return
+     */
+    List<EmployerTask> queryHotelTask(TaskQueryDTO taskQueryDTO);
 }

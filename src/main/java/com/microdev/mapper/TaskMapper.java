@@ -43,5 +43,5 @@ public interface TaskMapper extends BaseMapper<Task> {
 
     int queryHotelCurTaskCount(TaskQueryDTO queryDTO);
 
-
+    int queryTasksCount(TaskQueryDTO dto);
 }

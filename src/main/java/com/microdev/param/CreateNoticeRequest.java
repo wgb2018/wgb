@@ -52,7 +52,7 @@ public class CreateNoticeRequest {
 
     private String taskTypeCode;
 
-    //公告类型 1：酒店发布 2:人力发布
+    //公告类型 1：用人单位发布 2:人力发布
     private Integer type;
     /**
      * 指定的人力资源公司

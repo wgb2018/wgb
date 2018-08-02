@@ -186,5 +186,19 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
         return ResultDO.buildSuccess("更新成功");
     }
 
+    /**
+     * 删除通知
+     * @param list
+     * @return
+     */
+    @Override
+    public ResultDO deleteInformInfo(List<String> list) {
+        if (list == null || list.size() == 0) {
+            return ResultDO.buildError("参数不能为空");
+        }
+        informMapper.updateBatch(list);
+        return ResultDO.buildSuccess("删除成功");
+    }
+
 
 }

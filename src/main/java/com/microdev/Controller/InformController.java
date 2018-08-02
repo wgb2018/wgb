@@ -8,6 +8,8 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class InformController {
 
@@ -34,5 +36,16 @@ public class InformController {
     public ResultDO updateinformNotice(@PathVariable String noticeId) {
 
         return informService.updateInformStatus(noticeId);
+    }
+
+    /**
+     * 删除通知
+     * @param list
+     * @return
+     */
+    @PostMapping("/inform/delete")
+    public ResultDO deleteInformInfo(@RequestBody List<String> list) {
+
+        return informService.deleteInformInfo(list);
     }
 }

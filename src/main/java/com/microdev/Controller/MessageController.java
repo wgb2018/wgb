@@ -109,7 +109,7 @@ public class MessageController {
     @GetMapping("/message/{id}/amount/{applyType}")
     public ResultDO selectMessageAmount(@PathVariable String id,@PathVariable String applyType) {
 
-        return ResultDO.buildSuccess(messageService.selectUnReadCount(id, applyType));
+        return messageService.selectUnReadCount(id, applyType);
     }
 
     /**

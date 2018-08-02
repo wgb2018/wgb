@@ -2,10 +2,13 @@ package com.microdev.common.utils;
 
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -14,10 +17,11 @@ import java.util.List;
  */
 public class ExcelUtil {
 
-    public static <T> void download(HttpServletResponse response, List<T> list, String[] strArr) {
+    public static <T> void download(HttpServletResponse response, List<T> list, String[] strArr, String title) {
         try {
-            HSSFWorkbook workbook = new HSSFWorkbook();                        // 创建工作簿对象
+            HSSFWorkbook workbook = new HSSFWorkbook();                 // 创建工作簿对象
             HSSFSheet sheet = workbook.createSheet();                  // 创建工作表
+            workbook.setSheetName(0, title);
 
             //sheet样式定义【getColumnTopStyle()/getStyle()均为自定义方法 - 在下面  - 可扩展】
             HSSFCellStyle columnTopStyle = getColumnTopStyle(workbook);//获取列头样式对象
@@ -25,21 +29,22 @@ public class ExcelUtil {
 
             // 定义所需列数
             int columnNum = strArr.length;
-            HSSFRow rowRowName = sheet.createRow(0);                // 在索引2的位置创建行(最顶端的行开始的第二行)
+            HSSFRow rowRowName = sheet.createRow(0);                // 在索引0的位置创建行
 
             // 将列头设置到sheet的单元格中
             for (int n = 0; n < columnNum; n++) {
                 HSSFCell cellRowName = rowRowName.createCell(n);         //创建列头对应个数的单元格
-                cellRowName.setCellType(HSSFCell.CELL_TYPE_STRING);      //设置列头单元格的数据类型
+                cellRowName.setCellType(CellType.STRING);      //设置列头单元格的数据类型
                 HSSFRichTextString text = new HSSFRichTextString(strArr[n]);
                 cellRowName.setCellValue(text);                          //设置列头单元格的值
                 cellRowName.setCellStyle(columnTopStyle);                //设置列头单元格样式
             }
 
             //将查询出的数据设置到sheet对应的单元格中
+            T obj;
             for (int i = 0; i < list.size(); i++) {
 
-                T obj = list.get(i);//遍历每个对象
+                obj = list.get(i);//遍历每个对象
                 HSSFRow row = sheet.createRow(i + 1);//创建所需的行数
 
                 Class clazz = obj.getClass();
@@ -47,7 +52,7 @@ public class ExcelUtil {
                 int num = fields.length;
                 HSSFCell cell = null;
                 for (int f = 0; f < num; f++) {
-                    cell = row.createCell(f, HSSFCell.CELL_TYPE_STRING);
+                    cell = row.createCell(f, CellType.STRING);
                     Field field = fields[f];
                     field.setAccessible(true);
                     Object value = field.get(obj);
@@ -114,25 +119,25 @@ public class ExcelUtil {
         //设置字体大小
         font.setFontHeightInPoints((short) 11);
         //字体加粗
-        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        font.setBold(true);
         //设置字体名字
         font.setFontName("Courier New");
         //设置样式;
         HSSFCellStyle style = workbook.createCellStyle();
         //设置底边框;
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        style.setBorderBottom(BorderStyle.THIN);
         //设置底边框颜色;
         style.setBottomBorderColor(HSSFColor.BLACK.index);
         //设置左边框;
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+        style.setBorderLeft(BorderStyle.THIN);
         //设置左边框颜色;
         style.setLeftBorderColor(HSSFColor.BLACK.index);
         //设置右边框;
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
+        style.setBorderRight(BorderStyle.THIN);
         //设置右边框颜色;
         style.setRightBorderColor(HSSFColor.BLACK.index);
         //设置顶边框;
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
+        style.setBorderTop(BorderStyle.THIN);
         //设置顶边框颜色;
         style.setTopBorderColor(HSSFColor.BLACK.index);
         //在样式用应用设置的字体;
@@ -140,9 +145,9 @@ public class ExcelUtil {
         //设置自动换行;
         style.setWrapText(false);
         //设置水平对齐的样式为居中对齐;
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+        style.setAlignment(HorizontalAlignment.CENTER);
         //设置垂直对齐的样式为居中对齐;
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
 
         return style;
 
@@ -163,19 +168,19 @@ public class ExcelUtil {
         //设置样式;
         HSSFCellStyle style = workbook.createCellStyle();
         //设置底边框;
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        style.setBorderBottom(BorderStyle.THIN);
         //设置底边框颜色;
         style.setBottomBorderColor(HSSFColor.BLACK.index);
         //设置左边框;
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+        style.setBorderLeft(BorderStyle.THIN);
         //设置左边框颜色;
         style.setLeftBorderColor(HSSFColor.BLACK.index);
         //设置右边框;
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
+        style.setBorderRight(BorderStyle.THIN);
         //设置右边框颜色;
         style.setRightBorderColor(HSSFColor.BLACK.index);
         //设置顶边框;
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
+        style.setBorderTop(BorderStyle.THIN);
         //设置顶边框颜色;
         style.setTopBorderColor(HSSFColor.BLACK.index);
         //在样式用应用设置的字体;
@@ -183,22 +188,21 @@ public class ExcelUtil {
         //设置自动换行;
         style.setWrapText(false);
         //设置水平对齐的样式为居中对齐;
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+        style.setAlignment(HorizontalAlignment.CENTER);
         //设置垂直对齐的样式为居中对齐;
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
 
         return style;
 
     }
 
-    public static String[] getStringArray(String name) {
-        if ("account".equals(account)) {
-            return account;
-        }
-        return cooperator;
-    }
-
-    private static String[] account = {"序号", "名称", "年龄"};
-    private static String[] cooperator = {"序号", "姓名"};
-    private static String[] task = {};
+    public static String[] hotelAccount = {"任务类型", "任务内容", "工作日期", "开始/结束", "用人单位名称", "应付款(元)", "已付款(元)", "待确认款(元)", "未付款(元)"};
+    public static String[] hrAccount = {"任务类型", "任务内容", "工作日期", "开始/结束", "人力公司名称", "应付款(元)", "已付款(元)", "待确认款(元)", "未付款(元)"};
+    public static String[] workerAccount = {"任务类型", "任务内容", "工作日期", "开始/结束", "用人单位名称", "应付款(元)", "已付款(元)", "待确认款(元)", "未付款(元)"};
+    public static String[] workerCooperate = {"昵称", "性别", "电话", "头像", "创建时间", "小时工状态"};
+    public static String[] cooperate = {"公司名称", "公司logo", "营业执照", "劳务派遣证","负责人", "联系电话", "地址", "公司状态"};
+    public static String[] employerTask = {"用人单位名称", "任务内容", "任务类型", "时薪(元)", "工作日期", "开始/结束", "已报名/总数", "用人单位结算", "任务状态"};
+    public static String[] hrTask = {"用人单位名称", "任务内容", "任务类型", "用人单位时薪(元)", "时薪(元)", "工作日期", "开始/结束", "已报名/总数", "用人单位结算", "人力公司结算", "任务状态"};
+    public static String[] workerTask = {"用人单位", "用人单位负责人", "用人单位电话", "人力公司名称", "任务内容",
+    "任务类型", "时薪(元)", "工作日期", "开始/结束", "拒绝原因", "任务状态"};
 }

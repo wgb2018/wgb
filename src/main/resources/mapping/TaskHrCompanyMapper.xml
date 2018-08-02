@@ -169,4 +169,76 @@
     <select id="queryByHotelIdAndHrId" resultType="java.lang.Integer">
         select count(*) from task_hr_company where hotel_id = #{hotelId} and hr_company_id = #{hrId} and to_date &gt; now()
     </select>
+
+    <select id="queryHrCompanyTasksCount" parameterType="com.microdev.param.TaskHrQueryDTO"
+            resultType="java.lang.Integer">
+        select count(1) from (
+        select
+        t.id as pid
+        from task_hr_company t left join company c on t.hotel_id = c.id
+        <where>
+            <if test="hrCompanyId != null and hrCompanyId != ''">
+                and t.hr_company_id = #{hrCompanyId}
+            </if>
+            <if test="taskId != null and taskId != ''">
+                and t.task_id = #{taskId}
+            </if>
+            <if test="taskTypeCode != null and taskTypeCode != ''">
+                and t.task_type_code = #{taskTypeCode}
+            </if>
+            <if test="hotelId != null and hotelId != ''">
+                and t.hotel_id = #{hotelId}
+            </if>
+            <if test="taskTypeText != null and taskTypeText != ''">
+                and t.task_type_text like '%${taskTypeText}%'
+            </if>
+            <if test="fromDate != null">
+                and t.to_date &gt;= #{fromDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="payUp != null">
+                and t.hourly_pay &lt;= #{payUp}
+            </if>
+            <if test="payDown != null">
+                and t.hourly_pay >= #{payDown}
+            </if>
+            <if test="toDate != null">
+                and t.from_date &lt;= #{toDate,jdbcType=TIMESTAMP}
+            </if>
+
+            <if test="hotelName != null and hotelName != ''">
+                and c.name like '%${hotelName}%'
+            </if>
+            <if test="payStatus == 1">
+                and t.have_pay_money = 0
+            </if>
+            <if test="payStatus == 2">
+                and t.have_pay_money &gt;= 0 and t.should_pay_money != t.have_pay_money
+            </if>
+            <if test="payStatus == 3">
+                and t.have_pay_money &gt;= 0 and t.should_pay_money = t.have_pay_money
+            </if>
+            <if test="status !=null and status !=0  and status !=6 and status !=7 and status !=8 and status !=9 and status !=10">
+                and t.status = #{status}
+            </if>
+            <if test="status == 0">
+                and t.status in (1,2,4,5) and t.to_date &gt; now()
+            </if>
+            <if test="status == 9">
+                and ((t.status = 5 and t.to_date &lt; now()) or t.status = 3)
+            </if>
+            <if test="status == 6">
+                and t.status = 5 and t.and to_date &gt; now() and t.from_date &lt; now()
+            </if>
+            <if test="status == 8">
+                and t.status in (4,5) and t.to_date &gt; now()
+            </if>
+            <if test="status == 7">
+                and (t.status in(4,5) and t.to_date &lt; now()) or t.status = 8
+            </if>
+            <if test="status == 10">
+                and t.status >=4 and t.from_date &lt; now()
+            </if>
+        </where>
+        )
+    </select>
 </mapper>

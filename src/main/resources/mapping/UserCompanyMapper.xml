@@ -57,7 +57,7 @@
     </update>
 
     <select id="selectHrCompanyByUserId" resultType="com.microdev.param.WorkerBindCompany">
-        SELECT c.id as pid,uc.confirmedDate,uc.modify_time as modifyTime,uc.create_time,uc.status,c.name,c.logo,c.leader,c.leader_mobile,c.area,c.address,c.status AS companyStatus,uc.bind_protocol as bindProtocol FROM company c
+        SELECT c.id as pid,uc.confirmedDate,uc.modify_time as modifyTime,uc.create_time,uc.status,c.name,c.logo,c.leader,c.leader_mobile,c.area,c.address,c.status AS companyStatus,uc.bind_protocol as bindProtocol, c.business_license as businessLicense, c.labor_dispatch_card as laborDispatchCard FROM company c
         INNER JOIN
         (
     SELECT company_id,STATUS,create_time,relieve_time as confirmedDate,modify_time,bind_protocol FROM user_company  WHERE user_id = (SELECT id FROM USER WHERE worker_id = #{workerId})      AND STATUS IN  (1,3)) uc ON c.id = uc.company_id
@@ -110,6 +110,16 @@ SELECT id FROM USER WHERE worker_id = #{workerId}
     <select id="selectAllWorker" resultType="com.microdev.model.UserCompany">
         select c.* from user_company c left join user u on c.user_id = u.id
         where c.status in (1,3) and c.company_id = #{hrId}
+        <if test="userName !=null and userName !=''"  >
+            and nickname like concat('%', #{userName},'%')
+        </if>
+    </select>
+
+    <select id = "selectHrBindWorker" resultType="com.microdev.param.WorkerCooperate" parameterType="com.microdev.param.HrQueryWorkerDTO">
+        SELECT CASE uc.`status` WHEN 0 THEN '未审核' WHEN 1 THEN '已绑定' WHEN 2 THEN '拒绝绑定' WHEN 3 THEN '解绑中' WHEN 4 THEN '已解绑' END AS STATUS,
+u.`nickname` AS NAME, CASE u.sex WHEN 'UNKNOW' THEN '未知' WHEN 'MALE' THEN '男' WHEN 'FEMALE' THEN '女' END AS sex, u.mobile, u.`avatar` AS logo,
+DATE_FORMAT(u.`create_time`, '%Y-%m-%d %H:%i:%s') AS createTime FROM user_company uc INNER JOIN USER u
+ON u.id = uc.`user_id` WHERE uc.`company_id` = #{hrId} AND uc.status IN (1,3)
         <if test="userName !=null and userName !=''"  >
             and nickname like concat('%', #{userName},'%')
         </if>

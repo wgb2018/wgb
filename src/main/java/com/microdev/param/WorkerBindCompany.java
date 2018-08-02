@@ -23,4 +23,6 @@ public class WorkerBindCompany {
     private String hour;
     private String pid;
     private String bindProtocol;
+    private String businessLicense;
+    private String laborDispatchCard;
 }

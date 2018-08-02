@@ -6,6 +6,7 @@ import com.microdev.common.paging.Paginator;
 import com.microdev.model.TaskHrCompany;
 import com.microdev.param.*;
 
+import java.util.List;
 import java.util.Map;
 
 public interface TaskHrCompanyService extends IService<TaskHrCompany> {
@@ -146,4 +147,25 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
      * @return
      */
     ResultDO hrHandleHotelReplace(String messageId, String status, String workerId);
+
+    /**
+     * 人力查询用人单位账单
+     * @param taskHrQueryDTO
+     * @return
+     */
+    List<DownLoadAccount> queryHrAccount(TaskHrQueryDTO taskHrQueryDTO);
+
+    /**
+     * 用人单位查询人力账单
+     * @param taskHrQueryDTO
+     * @return
+     */
+    List<DownLoadAccount> queryHotelAccount(TaskHrQueryDTO taskHrQueryDTO);
+
+    /**
+     * 查询人力任务
+     * @param taskHrQueryDTO
+     * @return
+     */
+    List<HrTask> queryHrTask(TaskHrQueryDTO taskHrQueryDTO);
 }

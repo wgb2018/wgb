@@ -63,4 +63,8 @@ public interface TaskWorkerMapper extends BaseMapper<TaskWorker> {
     List<TaskWorker> selectByHrTaskList(@Param("list") List<String> list);
 
     List<TaskWorker> selectByUserHr(@Param("userId") String userId,@Param("hrId") String hrId);
+
+    int findAllCount(TaskWorkerQuery query);
+
+    int findAllhCount(TaskWorkerQuery query);
 }

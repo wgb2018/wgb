@@ -95,7 +95,7 @@ public interface MessageService extends IService<Message> {
      * @param applyType
      * @return
      */
-    Map<String, Integer> selectUnReadCount(String id, String applyType);
+    ResultDO selectUnReadCount(String id, String applyType);
 
     /**
      * 小时工绑定人力公司或人力公司绑定小时工
