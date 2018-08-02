@@ -2,6 +2,7 @@ package com.microdev.Controller;
 
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
+import com.microdev.common.utils.ExcelUtil;
 import com.microdev.mapper.WorkerMapper;
 import com.microdev.model.Worker;
 import com.microdev.param.*;
@@ -13,6 +14,7 @@ import com.microdev.service.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
@@ -177,4 +179,15 @@ public class WorkerController {
         return ResultDO.buildSuccess ("更新成功");
     }
 
+    /**
+     * 下载工作者任务
+     * @param response
+     * @param taskQueryDTO
+     */
+    @PostMapping("/worker/task/download")
+    public void downloadWorkerTask(HttpServletResponse response, @RequestBody TaskWorkerQuery taskQueryDTO) {
+
+        List<WorkerTask> list = taskWorkerService.queryWorkerTask(taskQueryDTO);
+        ExcelUtil.download(response, list, ExcelUtil.workerTask, "工作者任务");
+    }
 }

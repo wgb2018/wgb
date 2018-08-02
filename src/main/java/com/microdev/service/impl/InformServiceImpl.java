@@ -117,7 +117,7 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
             response.setTime(response.getCreateTime().getLong(ChronoField.INSTANT_SECONDS) * 1000);
         }
         result.put("page", pageInfo.getPageNum());
-        result.put("total", pageInfo.getPageSize());
+        result.put("total", pageInfo.getTotal());
         result.put("list", list);
         return result;
     }

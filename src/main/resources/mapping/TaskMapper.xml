@@ -234,6 +234,6 @@
                 and to_date &lt;= now()
             </if>
         </where>
-        )
+        ) m
     </select>
 </mapper>

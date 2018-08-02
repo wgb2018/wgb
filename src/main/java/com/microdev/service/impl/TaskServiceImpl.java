@@ -458,7 +458,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
                 t.setWorkTime(task.getDayStartTime().format(df2) + " / " + task.getDayEndTime().format(df2));
                 t.setTotal(task.getConfirmedWorkers() + " / " + task.getNeedWorkers());
                 int status = task.getStatus();
-                if (status == 1) {
+                if (status == 0) {
+                    t.setStatus("未完成");
+                } else if (status == 1) {
                     t.setStatus("未接单");
                 } else if (status == 2) {
                     t.setStatus("已接单");

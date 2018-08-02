@@ -67,4 +67,6 @@ public interface TaskWorkerMapper extends BaseMapper<TaskWorker> {
     int findAllCount(TaskWorkerQuery query);
 
     int findAllhCount(TaskWorkerQuery query);
+
+    List<Map<String, Object>> findWorkerTask(TaskWorkerQuery query);
 }
