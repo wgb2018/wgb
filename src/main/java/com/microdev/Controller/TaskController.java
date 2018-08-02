@@ -80,6 +80,16 @@ public class TaskController {
     }
 
     /**
+     * 用人单位同意人力报名申请并派发
+     * @param createTaskRequest
+     * @return
+     */
+    @PostMapping("/agree/apply/hotelSend")
+    public ResultDO agreeApplySendTask(@RequestBody CreateTaskRequest createTaskRequest) {
+        return taskService.agreeApplySendTask(createTaskRequest);
+    }
+
+    /**
      * 下载用人单位任务
      * @param response
      * @param taskQueryDTO

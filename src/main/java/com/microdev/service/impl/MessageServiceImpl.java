@@ -252,7 +252,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             }
             list.add(m);
             try {
-
                 jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (companyId).getLeaderMobile (), m.getMessageContent ()));
             } catch (APIConnectionException e) {
                 e.printStackTrace ( );
@@ -809,6 +808,18 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 throw new ParamsException("用户类型错误");
             }
         } else if ("14".equals(type)) {
+            Message ms = messageMapper.selectById (messageId);
+            if(ms != null){
+                Notice notice = noticeMapper.selectById (ms.getRequestId ());
+                if(notice.getType () == 1){
+                    response = messageMapper.selectNoticeApply(messageId);
+                }else if (notice.getType () == 2){
+                    response = messageMapper.selectNoticeApply(messageId);
+                }else if (notice.getType () == 3){
+                    response = messageMapper.selectNoticeApply(messageId);
+                }
+            }
+        } else if ("15".equals(type)) {
             response = messageMapper.selectNoticeApply(messageId);
         }
         if (response != null) {
@@ -1497,11 +1508,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         return ResultDO.buildSuccess ("发送成功");
     }
 
-    /*@Override
+    @Override
     public ResultDO workerApplyRegistration(AcceptNoticeRequest request) {
         Notice notice = noticeMapper.selectById (request.getNoticeId ());
         Message m = new Message();
-        m.setMessageType (14);
+        m.setMessageType (15);
         m.setApplyType (3);
         m.setApplicantType (1);
         m.setWorkerId (request.getWorkerId ());
@@ -1510,7 +1521,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         m.setRequestId (request.getNoticeId ());
         m.setHrCompanyId (request.getHrCompanyId ());
         m.setMessageCode ("workerApplyRegistration");
-        m.setMessageTitle ("报名申请");
+        m.setMessageTitle ("申请绑定");
         try {
             jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (request.getHrCompanyId ()).getLeaderMobile ( ), "您收到"+userMapper.queryByWorkerId (request.getWorkerId ()).getNickname ()+"发送的报名申请"));
         } catch (APIConnectionException e) {
@@ -1519,7 +1530,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             e.printStackTrace ( );
         }
         return ResultDO.buildSuccess ("发送成功");
-    }*/
+    }
 
     private String transMessageType(String messageType) {
         if (StringUtils.isEmpty(messageType)) return messageType;

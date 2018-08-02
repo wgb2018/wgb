@@ -82,6 +82,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
                     notice.setToDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getToDateL ()),ZoneId.systemDefault ()));
                     notice.setHotelId (request.getHotelId ());
                     notice.setNeedWorkers (request.getHrNeedWorkers ());
+                    notice.setConfirmedWorkers (request.getHrCompanySet ().size ());
                     notice.setType (1);
                     notice.setStatus (0);
                     notice.setContent (request.getTaskTypeText ());
@@ -175,7 +176,8 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             set.add (request.getHrCompanyId ());
             User u = userMapper.queryByWorkerId (request.getWorkerId ());
             messageService.bindHrCompany(request.getWorkerId (),set,u.getNickname (),"applyBindMessage","");
-            return ResultDO.buildSuccess ("发送成功");
+            //return ResultDO.buildSuccess ("发送成功");
+            return messageService.workerApplyRegistration(request);
         }
     }
 }

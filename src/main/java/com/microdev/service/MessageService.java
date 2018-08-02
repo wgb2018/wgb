@@ -287,5 +287,5 @@ public interface MessageService extends IService<Message> {
      * @param
      * @return
      */
-   /* ResultDO workerApplyRegistration(AcceptNoticeRequest request);*/
+    ResultDO workerApplyRegistration(AcceptNoticeRequest request);
 }

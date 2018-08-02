@@ -59,6 +59,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
     private MessageTemplateMapper messageTemplateMapper;
     @Autowired
     JpushClient jpushClient;
+    @Autowired
+    private NoticeMapper noticeMapper;
     /**
      * 创建用人单位任务
      */
@@ -477,6 +479,54 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         return taskList;
     }
 
+    @Override
+    public ResultDO agreeApplySendTask(CreateTaskRequest request) {
+        System.out.println (request);
+        if (StringUtils.isEmpty(request.getMessageId()) || StringUtils.isEmpty(request.getTaskId ())) {
+            throw new ParamsException("参数不能为空");
+        }
+        if(request.getHrCompanySet ().size () == 0){
+            throw new ParamsException("请指定需要派发的人力公司");
+        }
+        Message message = messageService.selectById (request.getMessageId ());
+        Notice notice = noticeMapper.selectById (message.getRequestId ());
+        Task task = taskMapper.selectById (request.getTaskId ());
+        if(message == null){
+            throw new ParamsException("messageId不正确");
+        }
+        if(notice == null){
+            throw new ParamsException("message不正确");
+        }
+        if(task == null){
+            throw new ParamsException("taskId不正确");
+        }
+        if(message.getStatus () == 1){
+            throw new ParamsException("任务报名人数已满");
+        }
+        if(notice.getStatus () == 1){
+            throw new ParamsException("任务报名人数已满");
+        }
+        message.setStatus (1);
+        messageService.updateById (message);
+        notice.setConfirmedWorkers (notice.getConfirmedWorkers ()+request.getHrCompanySet ().size ());
+        if(notice.getConfirmedWorkers () == notice.getNeedWorkers ()){
+            notice.setStatus (1);
+            Map<String,Object> map = new HashMap <> ();
+            map.put ("requestId",notice.getPid ());
+            List<Message> list = messageService.selectByMap (map);
+            for (Message ms:list) {
+                ms.setStatus (1);
+            }
+            messageService.updateBatchById (list);
+        }
+        noticeMapper.updateById (notice);
+        Set<TaskHrCompany> set = AddHrTask(task,request);
+
+
+        return ResultDO.buildSuccess ("发送成功");
+
+    }
+
     //循环添加人力资源任务
     private  Set<TaskHrCompany> AddHrTask(Task task,CreateTaskRequest createTaskRequest ){
         Set setHrTask= new HashSet<TaskHrCompany>();
@@ -484,7 +534,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
             if (!StringUtils.hasLength(String.valueOf(hrCompanyDTO.getNeedWorkers())) ||hrCompanyDTO.getNeedWorkers()==0) {
                 throw new ParamsException("任务需要的人数不能为空");
             }
-            Company hotel=companyMapper.findCompanyById(createTaskRequest.getHotelId());
+            Company hotel=companyMapper.findCompanyById(task.getHotelId());
             Company hrCompany=companyMapper.findCompanyById(hrCompanyDTO.getHrCompanyId());
             if(hrCompany==null){
                 throw new ParamsException("编号："+hrCompanyDTO.getHrCompanyId()+"人力资源公司不存在");

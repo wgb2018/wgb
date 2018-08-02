@@ -53,4 +53,10 @@ public interface TaskService extends IService<Task> {
      * @return
      */
     List<EmployerTask> queryHotelTask(TaskQueryDTO taskQueryDTO);
+    /**
+     * 用人单位同意人力报名申请并派发
+     * @param createTaskRequest
+     * @return
+     */
+    ResultDO agreeApplySendTask(CreateTaskRequest createTaskRequest);
 }
