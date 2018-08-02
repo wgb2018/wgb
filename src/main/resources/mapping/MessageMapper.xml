@@ -1110,4 +1110,7 @@ INNER JOIN company c ON <if test = "type == 'hr'"> m.hr_company_id = c.id</if>
           m.hotel_id = c.id
         </if>
     </select>
+    <select id="selectNoticeApply" resultType="com.microdev.param.MessageDetailsResponse">
+
+    </select>
 </mapper>

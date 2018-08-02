@@ -2,10 +2,7 @@ package com.microdev.Controller;
 
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
-import com.microdev.param.CreateNoticeRequest;
-import com.microdev.param.CreateSuggestionRequest;
-import com.microdev.param.QueryNoticeRequest;
-import com.microdev.param.SuggestionQuery;
+import com.microdev.param.*;
 import com.microdev.service.NoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +19,7 @@ public class NoticeController {
      */
     @PostMapping("/hotel/release/notice")
     public ResultDO createHotelNotice(@RequestBody CreateNoticeRequest request) {
+        request.setType (1);
         return noticeService.createNotice(request);
     }
     /**
@@ -36,14 +34,15 @@ public class NoticeController {
      */
     @PostMapping("/hr/release/notice")
     public ResultDO createHrNotice(@RequestBody CreateNoticeRequest request) {
+        request.setType (2);
         return noticeService.createNotice(request);
     }
     /**
      * 公告报名
      */
     @PostMapping("/accept/notice")
-    public ResultDO acceptNotice(@RequestBody CreateNoticeRequest request) {
-        return noticeService.createNotice(request);
+    public ResultDO acceptNotice(@RequestBody AcceptNoticeRequest request) {
+        return noticeService.acceptNotice(request);
     }
 
 }

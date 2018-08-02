@@ -77,7 +77,6 @@ public class MessageController {
      */
     @PostMapping("/message/details/applyInfo")
     public ResultDO selectMessageDetails(@RequestBody MessageDetailsDTO dto) {
-
         return ResultDO.buildSuccess(messageService.selectMessageDetails(dto.getMessageId(), dto.getMessagetype(), dto.getType()));
     }
 
