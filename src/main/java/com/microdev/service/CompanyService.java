@@ -8,6 +8,7 @@ import com.microdev.model.Company;
 import com.microdev.model.User;
 import com.microdev.param.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -170,4 +171,18 @@ public interface CompanyService extends IService<Company> {
      * 用人单位申请解绑人力公司
      */
     ResultDO hotelRelieveHrCompanySet(HotelHrIdBindDTO dto);
+
+    /**
+     * 查询人力绑定的用人单位
+     * @param request
+     * @return
+     */
+    List<CompanyCooperate> queryHrBindHotel(CompanyQueryDTO request);
+
+    /**
+     * 查询用人单位绑定的人力
+     * @param request
+     * @return
+     */
+    List<CompanyCooperate> queryHotelBindHr(CompanyQueryDTO request);
 }

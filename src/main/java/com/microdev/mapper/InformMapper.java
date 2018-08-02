@@ -16,4 +16,6 @@ public interface InformMapper extends BaseMapper<Inform> {
     int selectUnReadCount(Map<String, Object> param);
 
     List<NoticeResponse> selectInfromByParam(Map<String, Object> param);
+
+    int updateBatch(List<String> list);
 }

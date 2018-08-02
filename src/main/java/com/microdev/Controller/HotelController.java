@@ -3,6 +3,7 @@ package com.microdev.Controller;
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
+import com.microdev.common.utils.ExcelUtil;
 import com.microdev.model.Company;
 import com.microdev.param.*;
 import com.microdev.service.CompanyService;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -209,4 +212,15 @@ public class HotelController {
         return companyService.hotelHandleWorkerRecord(record);
     }
 
+    /**
+     * 下载用人单位绑定的人力
+     * @param response
+     * @param request
+     */
+    @PostMapping("/hotel/hr/download")
+    public void hotelBindHrDownload(HttpServletResponse response,@RequestBody CompanyQueryDTO request) {
+
+        List<CompanyCooperate> list = companyService.queryHotelBindHr(request);
+        ExcelUtil.download(response, list, ExcelUtil.cooperate, "合作的人力公司");
+    }
 }

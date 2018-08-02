@@ -75,4 +75,11 @@ public interface UserCompanyService extends IService<UserCompany> {
      * @return
      */
     List<CompanyCooperate> queryWorkerBindHr(WokerQueryHrDTO queryDTO);
+
+    /**
+     * 人力查询关联的工作者
+     * @param queryDTO
+     * @return
+     */
+    List<WorkerCooperate> queryHrBindWorker(HrQueryWorkerDTO queryDTO);
 }

@@ -132,7 +132,7 @@
         </if>
         order by create_time desc-->
         SELECT c.name,c.company_type as companyType,c.logo,c.address,c.business_license as businessLicense,c.leader,c.leader_mobile as leaderMobile,c.status,c.confirmed_time as confirmedTime,c.latitude,c.longitude,c.id as pid, hh.status AS bindType,IFNULL(c.area,'') as area,
-        hh.status as relationStatus,hh.bind_protocol as bindProtocol
+        hh.status as relationStatus,hh.bind_protocol as bindProtocol, c.labor_dispatch_card as laborDispatchCard
         FROM company c
         INNER JOIN
         (

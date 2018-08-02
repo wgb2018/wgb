@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.model.TaskWorker;
-import com.microdev.param.ApplyParamDTO;
-import com.microdev.param.DownLoadAccount;
-import com.microdev.param.RefusedTaskRequest;
-import com.microdev.param.TaskWorkerQuery;
+import com.microdev.param.*;
 
 import java.util.List;
 import java.util.Map;
@@ -48,4 +45,10 @@ public interface TaskWorkerService extends IService<TaskWorker> {
      */
     List<DownLoadAccount> queryWorkerAccount(TaskWorkerQuery taskQueryDTO);
 
+    /**
+     * 查询小时工任务
+     * @param taskQueryDTO
+     * @return
+     */
+    List<WorkerTask> queryWorkerTask(TaskWorkerQuery taskQueryDTO);
 }

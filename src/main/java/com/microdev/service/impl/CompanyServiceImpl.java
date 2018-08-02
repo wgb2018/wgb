@@ -1527,4 +1527,71 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         return ResultDO.buildSuccess("操作成功");
     }
 
+    /**
+     * 查询人力绑定的用人单位
+     * @param request
+     * @return
+     */
+    @Override
+    public List<CompanyCooperate> queryHrBindHotel(CompanyQueryDTO request) {
+
+        List<Map<String, Object>> list = companyMapper.queryHotelsByHrId(request);
+        List<CompanyCooperate> cooperateList = new ArrayList<>();
+        if (list != null) {
+            for (Map<String, Object> map : list) {
+                CompanyCooperate cooperate = new CompanyCooperate();
+                cooperate.setName(map.get("name").toString());
+                cooperate.setLogo(map.get("logo") == null ? "" : map.get("logo").toString());
+                cooperate.setAddress((String)map.get("area") + (String)map.get("address"));
+                cooperate.setLicense((String)map.get("businessLicense"));
+                cooperate.setMobile((String)map.get("leaderMobile"));
+                cooperate.setLeader((String)map.get("leader"));
+                int status = (Integer)map.get("status");
+                if (status == 0) {
+                    cooperate.setStatus("未审核");
+                } else if (status == 1) {
+                    cooperate.setStatus("已审核");
+                } else if (status == 2) {
+                    cooperate.setStatus("已冻结");
+                }
+                cooperateList.add(cooperate);
+            }
+        }
+        return cooperateList;
+    }
+
+    /**
+     * 查询用人单位绑定的人力
+     * @param request
+     * @return
+     */
+    @Override
+    public List<CompanyCooperate> queryHotelBindHr(CompanyQueryDTO request) {
+
+        List<Map<String, Object>> list =  companyMapper.queryCompanysByHotelId(request);
+        List<CompanyCooperate> cooperateList = new ArrayList<>();
+        if (list != null) {
+            for (Map<String, Object> map : list) {
+                CompanyCooperate cooperate = new CompanyCooperate();
+                cooperate.setLeader((String)map.get("leader"));
+                cooperate.setMobile((String)map.get("leaderMobile"));
+                cooperate.setLicense((String)map.get("businessLicense"));
+                cooperate.setLogo(map.get("logo").toString());
+                cooperate.setName(map.get("name").toString());
+                cooperate.setAddress((String)map.get("area") + (String)map.get("address"));
+                int status = (Integer)map.get("status");
+                if (status == 0) {
+                    cooperate.setStatus("未审核");
+                } else if (status == 1) {
+                    cooperate.setStatus("已审核");
+                } else if (status == 2) {
+                    cooperate.setStatus("已冻结");
+                }
+                cooperateList.add(cooperate);
+            }
+
+        }
+        return cooperateList;
+    }
+
 }

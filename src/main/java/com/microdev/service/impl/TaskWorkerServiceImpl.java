@@ -12,10 +12,7 @@ import com.microdev.common.utils.StringKit;
 import com.microdev.converter.TaskWorkerConverter;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
-import com.microdev.param.ApplyParamDTO;
-import com.microdev.param.DownLoadAccount;
-import com.microdev.param.RefusedTaskRequest;
-import com.microdev.param.TaskWorkerQuery;
+import com.microdev.param.*;
 import com.microdev.service.InformService;
 import com.microdev.service.TaskWorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -342,10 +339,15 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
     public List<DownLoadAccount> queryWorkerAccount(TaskWorkerQuery taskQueryDTO) {
 
         //查询数据集合
+
         List<TaskWorker> list = null;
         if(taskQueryDTO.getHotelName () == null || taskQueryDTO.getHotelName ().equals ("")) {
+            int count = taskWorkerMapper.findAllCount(taskQueryDTO);
+            PageHelper.startPage(1, count, true);
             list = taskWorkerMapper.findAll(taskQueryDTO);
         }else{
+            int count = taskWorkerMapper.findAllhCount(taskQueryDTO);
+            PageHelper.startPage(1, count, true);
             list = taskWorkerMapper.findAllh(taskQueryDTO);
         }
         List<DownLoadAccount> accountList = new ArrayList<>();
@@ -368,5 +370,26 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         }
         return accountList;
     }
+
+    /**
+     * 查询小时工任务
+     * @param taskQueryDTO
+     * @return
+     */
+    @Override
+    public List<WorkerTask> queryWorkerTask(TaskWorkerQuery taskQueryDTO) {
+
+        int count = taskWorkerMapper.findAllCount(taskQueryDTO);
+        PageHelper.startPage(1, count, true);
+        List<TaskWorker> list = taskWorkerMapper.findAll(taskQueryDTO);
+        List<WorkerTask> taskList = new ArrayList<>();
+        if (list != null) {
+            for (TaskWorker task : list) {
+
+            }
+        }
+        return taskList;
+    }
+
 
 }

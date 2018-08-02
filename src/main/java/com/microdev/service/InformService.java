@@ -7,6 +7,7 @@ import com.microdev.model.Inform;
 import com.microdev.param.InformRequestDTO;
 import com.microdev.param.InformType;
 
+import java.util.List;
 import java.util.Map;
 
 public interface InformService extends IService<Inform> {
@@ -47,4 +48,11 @@ public interface InformService extends IService<Inform> {
      * @return
      */
     ResultDO updateInformStatus(String noticeId);
+
+    /**
+     * 删除通知
+     * @param list
+     * @return
+     */
+    ResultDO deleteInformInfo(List<String> list);
 }

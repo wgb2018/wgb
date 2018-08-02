@@ -105,6 +105,9 @@ public class Task extends BaseEntity {
 
     private Double unConfirmedPay=0.0;
 
+    /**
+     * 0代表天，1代表月
+     */
     private Integer settlementPeriod;
 
     private Integer settlementNum;

@@ -43,5 +43,7 @@ public interface TaskHrCompanyMapper extends BaseMapper<TaskHrCompany> {
     List<TaskHrCompany> selectWorkHrTask(@Param("hotelId") String hotelId);
 
     int queryByHotelIdAndHrId(@Param ("hotelId") String hotelId,@Param ("hrId") String hrId);
+
+    int queryHrCompanyTasksCount(TaskHrQueryDTO dto);
 }
 

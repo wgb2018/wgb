@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.*;
 
@@ -407,6 +408,73 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         queryDTO.setStatus(0);
 
         return taskMapper.queryHotelCurTaskCount(queryDTO);
+    }
+
+    /**
+     *查询酒店任务
+     * @param taskQueryDTO
+     * @return
+     */
+    @Override
+    public List<EmployerTask> queryHotelTask(TaskQueryDTO taskQueryDTO) {
+        String date = taskQueryDTO.getOfDate();
+        if(date!=null) {
+            Integer year = Integer.parseInt(date.split("-")[0]);
+            Integer month = Integer.parseInt(date.split("-")[1]);
+            if (month == 12) {
+                taskQueryDTO.setStartTime(OffsetDateTime.of
+                        (year, 12, 1, 0, 0, 0, 0,
+                                ZoneOffset.UTC));
+                taskQueryDTO.setEndTime(OffsetDateTime.of
+                        (year, 1, 1, 0, 0, 0, 0,
+                                ZoneOffset.UTC));
+            } else {
+                taskQueryDTO.setStartTime(OffsetDateTime.of
+                        (year, month, 1, 0, 0, 0, 0, ZoneOffset.UTC));
+                taskQueryDTO.setEndTime(OffsetDateTime.of
+                        (year, month + 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
+            }
+        }
+        //查询数据集合
+        int count = taskMapper.queryTasksCount(taskQueryDTO);
+        PageHelper.startPage(1, count, true);
+        List<Task> list = taskMapper.queryTasks(taskQueryDTO);
+        List<EmployerTask> taskList = new ArrayList<>();
+        if (list != null) {
+            DateTimeFormatter df1 = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+            DateTimeFormatter df2 = DateTimeFormatter.ofPattern("HH:mm");
+            for (Task task : list) {
+                EmployerTask t = new EmployerTask();
+                t.setEmployerName(task.getHotelName());
+                t.setSalary(task.getHourlyPayHotel() + "");
+                if (task.getSettlementPeriod() == 0) {
+                    t.setSettlement(task.getSettlementNum() + "天/次");
+                } else if (task.getSettlementPeriod() == 1) {
+                    t.setSettlement(task.getSettlementNum() + "月/次");
+                }
+                t.setTaskContent(task.getTaskContent());
+                t.setType(task.getTaskTypeText());
+                t.setWorkDate(task.getFromDate().format(df1) + " / " + task.getToDate().format(df1));
+                t.setWorkTime(task.getDayStartTime().format(df2) + " / " + task.getDayEndTime().format(df2));
+                t.setTotal(task.getConfirmedWorkers() + " / " + task.getNeedWorkers());
+                int status = task.getStatus();
+                if (status == 1) {
+                    t.setStatus("未接单");
+                } else if (status == 2) {
+                    t.setStatus("已接单");
+                } else if (status == 3) {
+                    t.setStatus("派单中");
+                } else if (status == 4) {
+                    t.setStatus("派单完成");
+                } else if (status == 5) {
+                    t.setStatus("进行中");
+                } else if (status == 6) {
+                    t.setStatus("已完成");
+                }
+                taskList.add(t);
+            }
+        }
+        return taskList;
     }
 
     //循环添加人力资源任务

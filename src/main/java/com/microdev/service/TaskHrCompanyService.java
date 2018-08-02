@@ -161,4 +161,11 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
      * @return
      */
     List<DownLoadAccount> queryHotelAccount(TaskHrQueryDTO taskHrQueryDTO);
+
+    /**
+     * 查询人力任务
+     * @param taskHrQueryDTO
+     * @return
+     */
+    List<HrTask> queryHrTask(TaskHrQueryDTO taskHrQueryDTO);
 }

@@ -3,7 +3,9 @@ package com.microdev.Controller;
 
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
+import com.microdev.common.utils.ExcelUtil;
 import com.microdev.param.CreateTaskRequest;
+import com.microdev.param.EmployerTask;
 import com.microdev.param.PayParam;
 import com.microdev.param.TaskQueryDTO;
 import com.microdev.service.TaskService;
@@ -12,6 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 用人单位任务相关的Api
@@ -72,5 +77,17 @@ public class TaskController {
     @PostMapping("/tasks/again/hotelSend")
     public ResultDO hotelAgainSendTask(@RequestBody CreateTaskRequest createTaskRequest) {
         return taskService.hotelAgreeAndSendTask(createTaskRequest);
+    }
+
+    /**
+     * 下载用人单位任务
+     * @param response
+     * @param taskQueryDTO
+     */
+    @PostMapping("/task/hotel/download")
+    public void downloadHotelTask(HttpServletResponse response,@RequestBody TaskQueryDTO taskQueryDTO) {
+
+        List<EmployerTask> list = taskService.queryHotelTask(taskQueryDTO);
+        ExcelUtil.download(response, list, ExcelUtil.employerTask, "用人单位任务");
     }
 }

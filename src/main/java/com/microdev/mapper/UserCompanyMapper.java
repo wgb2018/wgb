@@ -6,6 +6,7 @@ import com.microdev.model.User;
 import com.microdev.model.UserCompany;
 import com.microdev.param.HrQueryWorkerDTO;
 import com.microdev.param.WorkerBindCompany;
+import com.microdev.param.WorkerCooperate;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -48,4 +49,6 @@ public interface UserCompanyMapper extends BaseMapper<UserCompany> {
     UserCompany selectByWorkerIdHrId(@Param("companyId") String companyId,@Param("workerId") String workerId);
 
     int selectBindCountByWorkerId(@Param("workerId") String workerId);
+
+    List<WorkerCooperate> selectHrBindWorker(HrQueryWorkerDTO dto);
 }

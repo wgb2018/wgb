@@ -110,4 +110,16 @@ public class TaskHrCompanyController {
         List<DownLoadAccount> list = taskHrCompanyService.queryHotelAccount(taskHrQueryDTO);
         ExcelUtil.download(response, list, ExcelUtil.hotelAccount, "用人单位账单");
     }
+
+    /**
+     * 下载人力任务
+     * @param response
+     * @param taskHrQueryDTO
+     */
+    @PostMapping("/hr/task/download")
+    public void downloadHrTask(HttpServletResponse response, @RequestBody TaskHrQueryDTO taskHrQueryDTO) {
+
+        List<HrTask> list = taskHrCompanyService.queryHrTask(taskHrQueryDTO);
+        ExcelUtil.download(response, list, ExcelUtil.hrTask, "人力任务");
+    }
 }
