@@ -53,7 +53,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     @Autowired
     private TaskHrCompanyMapper taskHrCompanyMapper;
     @Autowired
-    private InformMapper informMapper;    /**
+    private InformMapper informMapper;
+    @Autowired
+    private NoticeMapper noticeMapper;
+    @Autowired
+    private TaskMapper taskMapper;
+    /**
      * 创建消息模板
      */
     @Override
@@ -793,6 +798,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             } else {
                 throw new ParamsException("用户类型错误");
             }
+        } else if ("14".equals(type)) {
+            response = messageMapper.selectNoticeApply(messageId);
         }
         if (response != null) {
             if (response.getAge() < 0) response.setAge(0);
@@ -1398,6 +1405,111 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
 
             informMapper.insertInform(inform);        return ResultDO.buildSuccess("处理成功");
     }
+
+    @Override
+    public ResultDO hrApplyRegistration(AcceptNoticeRequest request) {
+        Message m = new Message();
+        m.setMinutes (request.getEnrollWorkers ().toString ());
+        Task task = taskMapper.selectById (noticeMapper.selectById (request.getNoticeId ()).getTaskId ());
+        m.setTaskId (task.getPid ());
+        m.setMessageType (14);
+        m.setApplyType (3);
+        m.setApplicantType (2);
+        m.setHrCompanyId (request.getHrCompanyId ());
+        m.setIsTask (1);
+        m.setStatus (0);
+        m.setRequestId (request.getNoticeId ());
+        m.setHotelId (task.getHotelId ());
+        m.setMessageCode ("hrApplyRegistrationMessage");
+        m.setMessageTitle ("报名申请");
+        try {
+            jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (task.getHotelId ()).getLeaderMobile ( ), "您收到"+companyMapper.findCompanyById (request.getHrCompanyId ()).getName ()+"发送的报名申请：报名人数为"+request.getEnrollWorkers ()+"人"));
+        } catch (APIConnectionException e) {
+            e.printStackTrace ( );
+        } catch (APIRequestException e) {
+            e.printStackTrace ( );
+        }
+        return ResultDO.buildSuccess ("发送成功");
+    }
+
+    @Override
+    public ResultDO workerApplyHotel(AcceptNoticeRequest request) {
+        Message m = new Message();
+        //m.setMinutes (request.getEnrollWorkers ().toString ());
+        //Task task = taskMapper.selectById (noticeMapper.selectById (request.getNoticeId ()).getTaskId ());
+        //m.setTaskId (task.getPid ());
+        Notice notice = noticeMapper.selectById (request.getNoticeId ());
+        m.setMessageType (14);
+        m.setApplyType (3);
+        m.setApplicantType (1);
+        m.setWorkerId (request.getWorkerId ());
+        m.setIsTask (1);
+        m.setStatus (0);
+        m.setRequestId (request.getNoticeId ());
+        m.setHotelId (notice.getHotelId ());
+        m.setMessageCode ("workerApplyHotel");
+        m.setMessageTitle ("报名申请");
+        try {
+            jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (notice.getHotelId ()).getLeaderMobile ( ), "您收到"+userMapper.queryByWorkerId (request.getWorkerId ()).getNickname ()+"发送的报名申请"));
+        } catch (APIConnectionException e) {
+            e.printStackTrace ( );
+        } catch (APIRequestException e) {
+            e.printStackTrace ( );
+        }
+        return ResultDO.buildSuccess ("发送成功");
+    }
+
+    @Override
+    public ResultDO workerApplyHr(AcceptNoticeRequest request) {
+        Notice notice = noticeMapper.selectById (request.getNoticeId ());
+        Message m = new Message();
+        m.setMinutes ("1");
+        TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId (notice.getTaskId ());
+        m.setTaskId (taskHrCompany.getTaskId ());
+        m.setMessageType (14);
+        m.setHrTaskId (taskHrCompany.getPid ());
+        m.setApplyType (3);
+        m.setApplicantType (1);
+        m.setWorkerId (request.getWorkerId ());
+        m.setIsTask (1);
+        m.setStatus (0);
+        m.setRequestId (request.getNoticeId ());
+        m.setHotelId (notice.getHotelId ());
+        m.setMessageCode ("workerApplyHr");
+        m.setMessageTitle ("报名申请");
+        try {
+            jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (taskHrCompany.getHrCompanyId ()).getLeaderMobile ( ), "您收到"+userMapper.queryByWorkerId (request.getWorkerId ()).getNickname ()+"发送的报名申请：报名人数为1人"));
+        } catch (APIConnectionException e) {
+            e.printStackTrace ( );
+        } catch (APIRequestException e) {
+            e.printStackTrace ( );
+        }
+        return ResultDO.buildSuccess ("发送成功");
+    }
+
+    /*@Override
+    public ResultDO workerApplyRegistration(AcceptNoticeRequest request) {
+        Notice notice = noticeMapper.selectById (request.getNoticeId ());
+        Message m = new Message();
+        m.setMessageType (14);
+        m.setApplyType (3);
+        m.setApplicantType (1);
+        m.setWorkerId (request.getWorkerId ());
+        m.setIsTask (1);
+        m.setStatus (0);
+        m.setRequestId (request.getNoticeId ());
+        m.setHrCompanyId (request.getHrCompanyId ());
+        m.setMessageCode ("workerApplyRegistration");
+        m.setMessageTitle ("报名申请");
+        try {
+            jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (request.getHrCompanyId ()).getLeaderMobile ( ), "您收到"+userMapper.queryByWorkerId (request.getWorkerId ()).getNickname ()+"发送的报名申请"));
+        } catch (APIConnectionException e) {
+            e.printStackTrace ( );
+        } catch (APIRequestException e) {
+            e.printStackTrace ( );
+        }
+        return ResultDO.buildSuccess ("发送成功");
+    }*/
 
     private String transMessageType(String messageType) {
         if (StringUtils.isEmpty(messageType)) return messageType;

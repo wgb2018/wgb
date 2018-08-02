@@ -125,4 +125,6 @@ public interface MessageMapper extends BaseMapper<Message> {
     MessageDetailsResponse selectHrHotelUnbind(@Param("messageId") String messageId,@Param("type") String type);
 
     List<AwaitHandleInfoPc> selectWorkerAwaitHandleInfoPc(@Param("workerId") String workerId);
+
+    MessageDetailsResponse selectNoticeApply(String messageId);
 }

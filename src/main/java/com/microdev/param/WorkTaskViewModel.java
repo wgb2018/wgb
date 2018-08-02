@@ -3,6 +3,7 @@ package com.microdev.param;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 
 /**
  * @author yinbaoxin
@@ -17,6 +18,10 @@ public class WorkTaskViewModel {
 
     private String hotelName;
     private String hotelAddress;
+    private String hotelLeader;
+    private String hotelMobile;
+    private String hrLeader;
+    private String hrMobile;
     /**
      * 任务类型名称
      */
@@ -33,6 +38,10 @@ public class WorkTaskViewModel {
      * 截止时间
      */
     private OffsetDateTime toDate;
+
+    private OffsetTime dayStartTime;
+
+    private OffsetTime dayEndTime;
     /**
      * 每小时薪资
      */

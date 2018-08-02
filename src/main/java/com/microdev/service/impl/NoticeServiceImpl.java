@@ -6,14 +6,13 @@ import com.github.pagehelper.PageInfo;
 import com.microdev.common.ResultDO;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
-import com.microdev.mapper.CompanyMapper;
-import com.microdev.mapper.NoticeMapper;
-import com.microdev.mapper.NoticeServiceMapper;
+import com.microdev.mapper.*;
+import com.microdev.model.Message;
 import com.microdev.model.Notice;
-import com.microdev.param.CreateNoticeRequest;
-import com.microdev.param.CreateTaskRequest;
-import com.microdev.param.QueryNoticeRequest;
-import com.microdev.param.TaskViewDTO;
+import com.microdev.model.Task;
+import com.microdev.model.User;
+import com.microdev.param.*;
+import com.microdev.service.MessageService;
 import com.microdev.service.NoticeService;
 import com.microdev.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,9 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoField;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Transactional
 @Service
@@ -40,6 +41,12 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
     private CompanyMapper companyMapper;
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private TaskMapper taskMapper;
+    @Autowired
+    private MessageService messageService;
+    @Autowired
+    private UserMapper userMapper;
     @Override
     public ResultDO createNotice(CreateNoticeRequest request) {
 
@@ -149,5 +156,26 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
         result.put("result",pageInfo.getList());
         result.put("page",paginator.getPage());
         return ResultDO.buildSuccess (result);
+    }
+
+    @Override
+    public ResultDO acceptNotice(AcceptNoticeRequest request) {
+        Notice notice = noticeMapper.selectById (request.getNoticeId ());
+        if(notice == null){
+            throw new ParamsException ("参数错误");
+        }
+        if(notice.getType () == 1){
+            return messageService.hrApplyRegistration(request);
+        }else if(notice.getType () == 2){
+            return messageService.workerApplyHotel(request);
+        }else if(notice.getType () == 3){
+            return messageService.workerApplyHr(request);
+        }else{
+            Set<String> set = new HashSet<> ();
+            set.add (request.getHrCompanyId ());
+            User u = userMapper.queryByWorkerId (request.getWorkerId ());
+            messageService.bindHrCompany(request.getWorkerId (),set,u.getNickname (),"applyBindMessage","");
+            return ResultDO.buildSuccess ("发送成功");
+        }
     }
 }

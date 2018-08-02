@@ -2,10 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.microdev.mapper.NoticeMapper">
     <sql id="Notice_Column_List">
-        id as pid, create_time, deleted, modify_time, need_workers, from_date, to_date, content, hotel_id
+        id as pid, create_time, deleted, modify_time, need_workers, from_date, to_date, content, hotel_id, hr_company_id, type,
+        task_id, status ,confirmed_workers
     </sql>
     <select id="queryList" resultType="com.microdev.model.Notice" parameterType="com.microdev.param.QueryNoticeRequest">
         select distinct n.id as pid,n.create_time as createTime, n.deleted, n.modify_time as modifyTime, n.need_workers as needworkers, n.from_date as fromDate, n.to_date as toDate, n.content, n.hotel_id as hotelId
+        n.hr_company_id as hrCompanyId,n.type as type, n.task_id as taskId, n.status as status,n.confirmed_workers as confirmedWorkers
         from notice n left join notice_service s on n.id = s.notice_id left join company c on n.hotel_id = c.id
         <where>
             <if test="date != null">

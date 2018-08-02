@@ -1,5 +1,6 @@
 package com.microdev.converter;
 
+import com.microdev.model.Company;
 import com.microdev.model.TaskWorker;
 import com.microdev.param.WorkTaskViewModel;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,8 @@ public class TaskWorkerConverter {
         viewModel.setFromDate(taskWorker.getFromDate());
         viewModel.setToDate(taskWorker.getToDate());
         viewModel.setStatus(taskWorker.getStatus());
+        viewModel.setDayStartTime (viewModel.getFromDate ().toOffsetTime ());
+        viewModel.setDayEndTime (viewModel.getToDate ().toOffsetTime ());
         viewModel.setRefusedReason(taskWorker.getRefusedReason());
         viewModel.setHavePayMoney(taskWorker.getHavePayMoney());
         viewModel.setShouldPayMoney(taskWorker.getShouldPayMoney());
@@ -48,6 +51,11 @@ public class TaskWorkerConverter {
         viewModel.setUnConfirmedPay (taskWorker.getUnConfirmedPay ());
         viewModel.setSettlementPeriod (taskWorker.getSettlementPeriod ());
         viewModel.setSettlementNum (taskWorker.getSettlementNum ());
+        viewModel.setHotelLeader (taskWorker.getHotel ().getLeader ());
+        viewModel.setHotelMobile (taskWorker.getHotel ().getLeaderMobile ());
+        viewModel.setHrLeader (taskWorker.getHrCompany ().getLeader ());
+        viewModel.setHrMobile (taskWorker.getHrCompany ().getLeaderMobile ());
+
         return viewModel;
     }
 }

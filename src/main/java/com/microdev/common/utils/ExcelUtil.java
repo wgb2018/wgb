@@ -155,9 +155,9 @@ public class ExcelUtil {
         // 设置字体
         HSSFFont font = workbook.createFont();
         //设置字体大小
-        //font.setFontHeightInPoints((short)10);
+        font.setFontHeightInPoints((short)10);
         //字体加粗
-        //font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
         //设置字体名字
         font.setFontName("Courier New");
         //设置样式;

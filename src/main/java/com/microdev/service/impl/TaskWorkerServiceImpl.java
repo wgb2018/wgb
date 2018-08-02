@@ -75,7 +75,11 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
     @Override
     public ResultDO findWorkTaskById(String workerTaskId) {
         TaskWorker taskWorker=  taskWorkerMapper.findFirstById(workerTaskId);
+        taskWorker.setHrCompany (companyMapper.findCompanyById (taskWorker.getHrCompanyId ()));
+        taskWorker.setHotel (companyMapper.findCompanyById (taskWorker.getHotelId ()));
         taskWorker.setUnConfirmedPay(messageMapper.selectUnConfirmePay (1,taskWorker.getTaskHrId (),taskWorker.getPid ()));
+        taskWorker.setHrCompanyName (taskWorker.getHrCompany ().getName ());
+        taskWorker.setHotelName (taskWorker.getHotel ().getName ());
         return ResultDO.buildSuccess(taskWorkerConverter.toViewModel(taskWorker));
     }
     /**
@@ -251,7 +255,10 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
      */
     @Override
     public ResultDO pagesTaskWorkers(Paginator paginator, TaskWorkerQuery taskQueryDTO) {
-
+        User u = userMapper.selectById(taskQueryDTO.getWorkerId ());
+        if(u != null){
+            taskQueryDTO.setWorkerId (u.getWorkerId ());
+        }
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         String date = taskQueryDTO.getOfDate();
         if (date != null) {
