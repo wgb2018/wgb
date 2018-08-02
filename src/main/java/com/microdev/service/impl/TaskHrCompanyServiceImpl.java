@@ -1830,11 +1830,13 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
                 } else if (task.getStatus() == 4) {
                     t.setStatus("已派发");
                 } else if (task.getStatus() == 5) {
-                    t.setStatus("申请调配");
-                } else if (task.getStatus() == 6) {
                     t.setStatus("派单完成");
+                } else if (task.getStatus() == 6) {
+                    t.setStatus("进行中");
                 } else if (task.getStatus() == 7) {
-                    t.setStatus("任务完成");
+                    t.setStatus("已完成");
+                } else if (task.getStatus() == 8) {
+                    t.setStatus("拒绝接单");
                 }
                 taskList.add(t);
             }

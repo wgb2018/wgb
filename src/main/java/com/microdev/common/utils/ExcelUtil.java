@@ -38,6 +38,7 @@ public class ExcelUtil {
                 HSSFRichTextString text = new HSSFRichTextString(strArr[n]);
                 cellRowName.setCellValue(text);                          //设置列头单元格的值
                 cellRowName.setCellStyle(columnTopStyle);                //设置列头单元格样式
+                sheet.setColumnWidth(n, strArr[n].getBytes().length * 2 * 256); //设置自动列宽
             }
 
             //将查询出的数据设置到sheet对应的单元格中
@@ -203,6 +204,5 @@ public class ExcelUtil {
     public static String[] cooperate = {"公司名称", "公司logo", "营业执照", "劳务派遣证","负责人", "联系电话", "地址", "公司状态"};
     public static String[] employerTask = {"用人单位名称", "任务内容", "任务类型", "时薪(元)", "工作日期", "开始/结束", "已报名/总数", "用人单位结算", "任务状态"};
     public static String[] hrTask = {"用人单位名称", "任务内容", "任务类型", "用人单位时薪(元)", "时薪(元)", "工作日期", "开始/结束", "已报名/总数", "用人单位结算", "人力公司结算", "任务状态"};
-    public static String[] workerTask = {"用人单位", "用人单位负责人", "用人单位电话", "人力公司名称", "任务内容",
-    "任务类型", "时薪(元)", "工作日期", "开始/结束", "拒绝原因", "任务状态"};
+    public static String[] workerTask = {"用人单位", "用人单位负责人", "用人单位电话", "人力公司名称", "任务内容", "任务类型", "时薪(元)", "工作日期", "开始/结束", "拒绝原因", "任务状态"};
 }

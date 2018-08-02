@@ -353,7 +353,7 @@
                 </if>
             </if>
         </where>
-        )
+        ) m
     </select>
 
 
@@ -407,6 +407,66 @@
                 </if>
             </if>
         </where>
-        )
+        ) m
+    </select>
+
+    <select id="findWorkerTask" parameterType="com.microdev.param.TaskWorkerQuery" resultType="java.util.Map">
+        select
+        t.refused_reason as refuseReason, t.status,IFNULL(t.hourly_pay, 0) as hourlyPay,t.hr_company_name as hrName,t.hotel_name as hotelName,
+        date_format(t.from_date, '%Y.%m.%d') as fromDate,date_format(t.to_date, '%Y.%m.%d') as toDate, date_format(t.day_start_time, '%H:%i') as dayStartTime, date_format(t.day_end_time, '%H:%i') as dayEndTime,t.task_type_text as taskTypeText,t.task_content as taskContent, c2.leader_mobile as leaderMobile, c2.leader
+        from task_worker t left join company c on t.hr_company_id = c.id
+        left join company c2 on t.hotel_id = c2.id
+        <where>
+            <if test="hrCompanyId != null and hrCompanyId !=''">
+                c.id = #{hrCompanyId}
+            </if>
+            <if test="workerId != null and workerId !=''">
+                and t.worker_id = #{workerId}
+            </if>
+            <if test="fromDate != null">
+                and t.from_date &gt;= #{fromDate}
+            </if>
+            <if test="hrCompanyName != null and hrCompanyName !=''">
+                and c.name like concat('%', #{hrCompanyName},'%')
+            </if>
+            <if test="toDate != null">
+                and t.to_date &lt;= #{toDate}
+            </if>
+            <if test="taskTypeCode != null and taskTypeCode !=''">
+                and t.task_type_code = #{taskTypeCode}
+            </if>
+            <if test="hrTaskId !=null and hrTaskId !=''">
+                and t.task_hr_id = #{hrTaskId}
+            </if>
+            <if test="taskStatus !=null and taskStatus !=''">
+                <if test="taskStatus == 6">
+                    and t.status = 1 and t.to_date &gt;= now()
+                </if>
+                <if test="taskStatus &lt; 3">
+                    and  t.status = #{taskStatus}
+                </if>
+                <if test="taskStatus == 4">
+                    and t.to_date &gt;= now() and t.from_date &lt;= now() and t.status = 1
+                </if>
+                <if test="taskStatus == 5">
+                    and ((t.to_date &lt; now() and t.status = 1) or t.status = 3)
+                </if>
+                <if test="taskStatus == 7">
+                    and ((t.from_date &lt; now() and t.status = 1) or t.status = 3)
+                </if>
+            </if>
+            <if test="payStatus != null and payStatus !=''">
+                <if test="payStatus == 1">
+                    and t.have_pay_money == 0
+                </if>
+                <if test="payStatus == 2">
+                    and t.have_pay_money &gt;= 0 and t.should_pay_money != t.have_pay_money
+                </if>
+                <if test="payStatus == 3">
+                    and t.have_pay_money &gt;= 0 and t.should_pay_money = t.have_pay_money
+                </if>
+            </if>
+        </where>
+        order by t.create_time desc
     </select>
 </mapper>

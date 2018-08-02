@@ -388,15 +388,40 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
 
         int count = taskWorkerMapper.findAllCount(taskQueryDTO);
         PageHelper.startPage(1, count, true);
-        List<TaskWorker> list = taskWorkerMapper.findAll(taskQueryDTO);
+        List<Map<String, Object>> list = taskWorkerMapper.findWorkerTask(taskQueryDTO);
         List<WorkerTask> taskList = new ArrayList<>();
         if (list != null) {
-            for (TaskWorker task : list) {
-
+            for (Map<String, Object> task : list) {
+                WorkerTask t = new WorkerTask();
+                t.setName((String)task.get("hotelName"));
+                t.setLeader((String)task.get("leader"));
+                t.setLeaderMobile((String)task.get("leaderMobile"));
+                t.setHrName((String)task.get("hrName"));
+                t.setRefuseReason((String)task.get("refuseReason"));
+                t.setSalary(task.get("hourlyPay") + "");
+                t.setTaskContent(task.get("taskContent") + "");
+                t.setType(task.get("taskTypeText") + "");
+                t.setWorkDate(task.get("fromDate") + " / " + task.get("toDate"));
+                t.setWorkTime(task.get("dayStartTime") + " / " + task.get("dayEndTime"));
+                int status = (Integer)task.get("status");
+                if (status == 0) {
+                    t.setStatus("等待确认");
+                } else if (status == 1) {
+                    t.setStatus("接受任务");
+                } else if (status == 2) {
+                    t.setStatus("拒绝任务");
+                } else if (status == 3) {
+                    t.setStatus("终止任务");
+                } else if (status == 4) {
+                    t.setStatus("进行中");
+                } else if (status == 5) {
+                    t.setStatus("已完成");
+                } else if (status == 11) {
+                    t.setStatus("违约");
+                }
+                taskList.add(t);
             }
         }
         return taskList;
     }
-
-
 }

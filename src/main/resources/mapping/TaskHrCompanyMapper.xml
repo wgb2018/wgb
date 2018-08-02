@@ -239,6 +239,6 @@
                 and t.status >=4 and t.from_date &lt; now()
             </if>
         </where>
-        )
+        ) m
     </select>
 </mapper>
