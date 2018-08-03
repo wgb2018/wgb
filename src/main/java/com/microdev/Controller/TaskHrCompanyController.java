@@ -108,7 +108,7 @@ public class TaskHrCompanyController {
     @PostMapping("/hotel/download/account")
     public void downloadHotelAccount(HttpServletResponse response, @RequestBody TaskHrQueryDTO taskHrQueryDTO) {
         List<DownLoadAccount> list = taskHrCompanyService.queryHotelAccount(taskHrQueryDTO);
-        ExcelUtil.download(response, list, ExcelUtil.hotelAccount, "用人单位账单");
+        ExcelUtil.download(response, list, ExcelUtil.hrAccount, "用人单位账单");
     }
 
     /**

@@ -163,9 +163,9 @@ public class ExcelUtil {
         //设置字体大小
         font.setFontHeightInPoints((short)10);
         //字体加粗
-        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        //font.setBold(true);
         //设置字体名字
-        font.setFontName("Courier New");
+        font.setFontName("仿宋_GB2312");
         //设置样式;
         HSSFCellStyle style = workbook.createCellStyle();
         //设置底边框;
@@ -197,9 +197,9 @@ public class ExcelUtil {
 
     }
 
-    public static String[] hotelAccount = {"任务类型", "任务内容", "工作日期", "开始/结束", "用人单位名称", "应付款(元)", "已付款(元)", "待确认款(元)", "未付款(元)"};
-    public static String[] hrAccount = {"任务类型", "任务内容", "工作日期", "开始/结束", "人力公司名称", "应付款(元)", "已付款(元)", "待确认款(元)", "未付款(元)"};
-    public static String[] workerAccount = {"任务类型", "任务内容", "工作日期", "开始/结束", "用人单位名称", "应付款(元)", "已付款(元)", "待确认款(元)", "未付款(元)"};
+    public static String[] hotelAccount = {"用人单位名称", "任务类型", "任务内容", "工作日期", "开始/结束",  "应付款(元)", "已付款(元)", "待确认款(元)", "未付款(元)"};
+    public static String[] hrAccount = {"人力公司名称", "任务类型", "任务内容", "工作日期", "开始/结束",  "应付款(元)", "已付款(元)", "待确认款(元)", "未付款(元)"};
+    public static String[] workerAccount = {"用人单位名称", "任务类型", "任务内容", "工作日期", "开始/结束",  "应付款(元)", "已付款(元)", "待确认款(元)", "未付款(元)"};
     public static String[] workerCooperate = {"昵称", "性别", "电话", "头像", "创建时间", "小时工状态"};
     public static String[] cooperate = {"公司名称", "公司logo", "营业执照", "劳务派遣证","负责人", "联系电话", "地址", "公司状态"};
     public static String[] employerTask = {"用人单位名称", "任务内容", "任务类型", "时薪(元)", "工作日期", "开始/结束", "已报名/总数", "用人单位结算", "任务状态"};
