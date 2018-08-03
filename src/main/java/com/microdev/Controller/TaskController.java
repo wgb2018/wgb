@@ -94,8 +94,8 @@ public class TaskController {
      * @param response
      * @param taskQueryDTO
      */
-    @PostMapping("/task/hotel/download")
-    public void downloadHotelTask(HttpServletResponse response,@RequestBody TaskQueryDTO taskQueryDTO) {
+    @GetMapping("/task/hotel/download")
+    public void downloadHotelTask(HttpServletResponse response, TaskQueryDTO taskQueryDTO) {
 
         List<EmployerTask> list = taskService.queryHotelTask(taskQueryDTO);
         ExcelUtil.download(response, list, ExcelUtil.employerTask, "用人单位任务");

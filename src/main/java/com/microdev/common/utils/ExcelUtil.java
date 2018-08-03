@@ -99,7 +99,8 @@ public class ExcelUtil {
                 try {
                     String fileName = String.valueOf(System.currentTimeMillis()).substring(4, 13) + ".xls";
                     String headStr = "attachment; filename=\"" + fileName + "\"";
-                    response.setContentType("APPLICATION/OCTET-STREAM");
+                    response.setContentType("application/msexcel");
+                    response.setCharacterEncoding("UTF-8");
                     response.setHeader("Content-Disposition", headStr);
                     OutputStream out = response.getOutputStream();
                     workbook.write(out);

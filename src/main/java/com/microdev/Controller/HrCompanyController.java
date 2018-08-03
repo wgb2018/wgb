@@ -317,8 +317,8 @@ public class HrCompanyController {
      * 下载人力绑定的用人单位
      * @param request
      */
-    @PostMapping("/hr/hotel/download")
-    public void downloadHrBindHotel(@RequestBody CompanyQueryDTO request, HttpServletResponse response) {
+    @GetMapping("/hr/hotel/download")
+    public void downloadHrBindHotel( CompanyQueryDTO request, HttpServletResponse response) {
 
         List<CompanyCooperate> list = companyService.queryHrBindHotel(request);
         ExcelUtil.download(response, list, ExcelUtil.cooperate, "合作的用人单位");

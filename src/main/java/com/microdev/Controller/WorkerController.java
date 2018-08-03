@@ -184,8 +184,8 @@ public class WorkerController {
      * @param response
      * @param taskQueryDTO
      */
-    @PostMapping("/worker/task/download")
-    public void downloadWorkerTask(HttpServletResponse response, @RequestBody TaskWorkerQuery taskQueryDTO) {
+    @GetMapping("/worker/task/download")
+    public void downloadWorkerTask(HttpServletResponse response, TaskWorkerQuery taskQueryDTO) {
 
         List<WorkerTask> list = taskWorkerService.queryWorkerTask(taskQueryDTO);
         ExcelUtil.download(response, list, ExcelUtil.workerTask, "工作者任务");

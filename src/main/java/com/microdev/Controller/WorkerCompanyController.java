@@ -109,8 +109,8 @@ public class WorkerCompanyController {
      * @param response
      * @param queryDTO
      */
-    @PostMapping("/hr/worker/download")
-    public void downloadHrWorker(HttpServletResponse response,@RequestBody HrQueryWorkerDTO queryDTO) {
+    @GetMapping("/hr/worker/download")
+    public void downloadHrWorker(HttpServletResponse response, HrQueryWorkerDTO queryDTO) {
 
         List<WorkerCooperate> list = userCompanyService.queryHrBindWorker(queryDTO);
         ExcelUtil.download(response, list, ExcelUtil.workerCooperate, "合作的小时工");
@@ -121,8 +121,8 @@ public class WorkerCompanyController {
      * @param response
      * @param queryDTO
      */
-    @PostMapping("/worker/hr/download")
-    public void workerBindHrDownload(HttpServletResponse response,@RequestBody WokerQueryHrDTO queryDTO) {
+    @GetMapping("/worker/hr/download")
+    public void workerBindHrDownload(HttpServletResponse response, WokerQueryHrDTO queryDTO) {
 
         List<CompanyCooperate> list = userCompanyService.queryWorkerBindHr(queryDTO);
         ExcelUtil.download(response, list, ExcelUtil.cooperate, "合作的人力公司");

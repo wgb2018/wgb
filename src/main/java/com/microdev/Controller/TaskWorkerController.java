@@ -68,8 +68,8 @@ public class TaskWorkerController {
      * @param taskQueryDTO
      * @param response
      */
-    @PostMapping("/worker/download/account")
-    public void downloadWorkerAccount(@RequestBody TaskWorkerQuery taskQueryDTO, HttpServletResponse response) {
+    @GetMapping("/worker/download/account")
+    public void downloadWorkerAccount(TaskWorkerQuery taskQueryDTO, HttpServletResponse response) {
         List<DownLoadAccount> list = taskWorkerService.queryWorkerAccount(taskQueryDTO);
         ExcelUtil.download(response, list, ExcelUtil.workerAccount, "小时工账单");
     }

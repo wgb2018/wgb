@@ -94,8 +94,8 @@ public class TaskHrCompanyController {
      * @param response
      * @param taskHrQueryDTO
      */
-    @PostMapping("/hr/download/account")
-    public void downloadHrAccount(HttpServletResponse response, @RequestBody TaskHrQueryDTO taskHrQueryDTO) {
+    @GetMapping("/hr/download/account")
+    public void downloadHrAccount(HttpServletResponse response, TaskHrQueryDTO taskHrQueryDTO) {
         List<DownLoadAccount> list = taskHrCompanyService.queryHrAccount(taskHrQueryDTO);
         ExcelUtil.download(response, list, ExcelUtil.hotelAccount, "人力账单");
     }
@@ -105,8 +105,8 @@ public class TaskHrCompanyController {
      * @param response
      * @param taskHrQueryDTO
      */
-    @PostMapping("/hotel/download/account")
-    public void downloadHotelAccount(HttpServletResponse response, @RequestBody TaskHrQueryDTO taskHrQueryDTO) {
+    @GetMapping("/hotel/download/account")
+    public void downloadHotelAccount(HttpServletResponse response, TaskHrQueryDTO taskHrQueryDTO) {
         List<DownLoadAccount> list = taskHrCompanyService.queryHotelAccount(taskHrQueryDTO);
         ExcelUtil.download(response, list, ExcelUtil.hrAccount, "用人单位账单");
     }
@@ -116,8 +116,8 @@ public class TaskHrCompanyController {
      * @param response
      * @param taskHrQueryDTO
      */
-    @PostMapping("/hr/task/download")
-    public void downloadHrTask(HttpServletResponse response, @RequestBody TaskHrQueryDTO taskHrQueryDTO) {
+    @GetMapping("/hr/task/download")
+    public void downloadHrTask(HttpServletResponse response, TaskHrQueryDTO taskHrQueryDTO) {
 
         List<HrTask> list = taskHrCompanyService.queryHrTask(taskHrQueryDTO);
         ExcelUtil.download(response, list, ExcelUtil.hrTask, "人力任务");
