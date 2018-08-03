@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface NoticeMapper extends BaseMapper<Notice> {
     List<Notice> queryList(QueryNoticeRequest request);
+
+    List<Notice> queryRecommend(Integer type);
 }

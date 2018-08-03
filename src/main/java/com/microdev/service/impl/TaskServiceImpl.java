@@ -523,8 +523,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         }
         noticeMapper.updateById (notice);
         Set<TaskHrCompany> set = AddHrTask(task,request);
-
-
         return ResultDO.buildSuccess ("发送成功");
 
     }

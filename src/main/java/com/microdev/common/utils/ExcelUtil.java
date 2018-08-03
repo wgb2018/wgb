@@ -97,10 +97,11 @@ public class ExcelUtil {
 
             if (workbook != null) {
                 try {
-                    String fileName = String.valueOf(System.currentTimeMillis()).substring(4, 13) + ".xls";
+                    String fileName = String.valueOf(System.currentTimeMillis()).substring(4, 13);
                     String headStr = "attachment; filename=\"" + fileName + "\"";
-                    response.setContentType("APPLICATION/OCTET-STREAM");
-                    response.setHeader("Content-Disposition", headStr);
+                    response.setContentType ("application/vnd.ms-excel;charset=utf-8");
+                    //response.setHeader("Content-Disposition", headStr);
+                    response.setHeader ("Content-Disposition", "attachment;filename=" + new String ((fileName + ".xlsx").getBytes ( ), "iso-8859-1"));
                     OutputStream out = response.getOutputStream();
                     workbook.write(out);
                 } catch (IOException e) {

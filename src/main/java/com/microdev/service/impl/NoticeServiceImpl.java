@@ -25,10 +25,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoField;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Transactional
 @Service
@@ -179,5 +176,14 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             //return ResultDO.buildSuccess ("发送成功");
             return messageService.workerApplyRegistration(request);
         }
+    }
+
+    @Override
+    public ResultDO recommendtNotice(QueryNoticeRequest request) {
+        List<List<Notice>> ls = new ArrayList <> ();
+        for(int i = 1; i < 5; i++){
+            ls.add (noticeMapper.queryRecommend(i));
+        }
+        return ResultDO.buildSuccess (ls);
     }
 }

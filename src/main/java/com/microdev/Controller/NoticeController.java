@@ -44,5 +44,12 @@ public class NoticeController {
     public ResultDO acceptNotice(@RequestBody AcceptNoticeRequest request) {
         return noticeService.acceptNotice(request);
     }
+    /**
+     * 公告推荐
+     */
+    @PostMapping("/recommend/notice")
+    public ResultDO recommendNotice(@RequestBody QueryNoticeRequest request) {
+        return noticeService.recommendtNotice(request);
+    }
 
 }
