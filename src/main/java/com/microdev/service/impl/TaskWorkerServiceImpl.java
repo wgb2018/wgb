@@ -346,7 +346,10 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
     public List<DownLoadAccount> queryWorkerAccount(TaskWorkerQuery taskQueryDTO) {
 
         //查询数据集合
-
+        User u = userMapper.selectById(taskQueryDTO.getWorkerId ());
+        if(u != null){
+            taskQueryDTO.setWorkerId (u.getWorkerId ());
+        }
         List<TaskWorker> list = null;
         if(taskQueryDTO.getHotelName () == null || taskQueryDTO.getHotelName ().equals ("")) {
             int count = taskWorkerMapper.findAllCount(taskQueryDTO);
@@ -386,6 +389,10 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
     @Override
     public List<WorkerTask> queryWorkerTask(TaskWorkerQuery taskQueryDTO) {
 
+        User u = userMapper.selectById(taskQueryDTO.getWorkerId ());
+        if(u != null){
+            taskQueryDTO.setWorkerId (u.getWorkerId ());
+        }
         int count = taskWorkerMapper.findAllCount(taskQueryDTO);
         PageHelper.startPage(1, count, true);
         List<Map<String, Object>> list = taskWorkerMapper.findWorkerTask(taskQueryDTO);

@@ -3,6 +3,7 @@ package com.microdev.Controller;
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
 import com.microdev.common.utils.ExcelUtil;
+import com.microdev.mapper.UserMapper;
 import com.microdev.mapper.WorkerMapper;
 import com.microdev.model.Worker;
 import com.microdev.param.*;
@@ -30,7 +31,8 @@ public class WorkerController {
     private TaskWorkerService taskWorkerService;
     @Autowired
     private WorkerMapper workerMapper;
-
+    @Autowired
+    UserMapper userMapper;
     /**
      * 获取小时工当前任务信息
      */
@@ -184,10 +186,10 @@ public class WorkerController {
      * @param response
      * @param taskQueryDTO
      */
-    @PostMapping("/worker/task/download")
-    public void downloadWorkerTask(HttpServletResponse response, @RequestBody TaskWorkerQuery taskQueryDTO) {
+    @GetMapping("/worker/task/download")
+    public void downloadWorkerTask(HttpServletResponse response,@ModelAttribute TaskWorkerQuery taskQueryDTO) {
 
         List<WorkerTask> list = taskWorkerService.queryWorkerTask(taskQueryDTO);
-        ExcelUtil.download(response, list, ExcelUtil.workerTask, "工作者任务");
+        ExcelUtil.download(response, list, ExcelUtil.workerTask, "工作者任务", userMapper.selectById(taskQueryDTO.getWorkerId()).getNickname() + "任务");
     }
 }

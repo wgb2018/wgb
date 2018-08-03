@@ -8,6 +8,7 @@ import com.microdev.param.CreateTaskRequest;
 import com.microdev.param.EmployerTask;
 import com.microdev.param.PayParam;
 import com.microdev.param.TaskQueryDTO;
+import com.microdev.service.CompanyService;
 import com.microdev.service.TaskService;
 import com.microdev.service.TaskWorkerService;
 import org.slf4j.Logger;
@@ -28,6 +29,8 @@ public class TaskController {
     TaskService taskService;
     @Autowired
     TaskWorkerService taskWorkerService;
+    @Autowired
+    CompanyService companyService;
 
     /**
      * 发布用人单位任务
@@ -94,10 +97,10 @@ public class TaskController {
      * @param response
      * @param taskQueryDTO
      */
-    @PostMapping("/task/hotel/download")
-    public void downloadHotelTask(HttpServletResponse response,@RequestBody TaskQueryDTO taskQueryDTO) {
+    @GetMapping("/task/hotel/download")
+    public void downloadHotelTask(HttpServletResponse response,@ModelAttribute TaskQueryDTO taskQueryDTO) {
 
         List<EmployerTask> list = taskService.queryHotelTask(taskQueryDTO);
-        ExcelUtil.download(response, list, ExcelUtil.employerTask, "用人单位任务");
+        ExcelUtil.download(response, list, ExcelUtil.employerTask, "用人单位任务", companyService.selectById(taskQueryDTO.getHotelId()).getName() + "的任务");
     }
 }

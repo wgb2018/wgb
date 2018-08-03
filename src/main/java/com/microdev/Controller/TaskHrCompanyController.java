@@ -4,6 +4,7 @@ import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
 import com.microdev.common.utils.ExcelUtil;
 import com.microdev.param.*;
+import com.microdev.service.CompanyService;
 import com.microdev.service.TaskHrCompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,8 @@ import java.util.Map;
 public class TaskHrCompanyController {
     @Autowired
     TaskHrCompanyService taskHrCompanyService;
+    @Autowired
+    CompanyService companyService;
     /**
      * 人力资源公司查询单个任务
      */
@@ -94,10 +97,10 @@ public class TaskHrCompanyController {
      * @param response
      * @param taskHrQueryDTO
      */
-    @PostMapping("/hr/download/account")
-    public void downloadHrAccount(HttpServletResponse response, @RequestBody TaskHrQueryDTO taskHrQueryDTO) {
+    @GetMapping("/hr/download/account")
+    public void downloadHrAccount(HttpServletResponse response,@ModelAttribute TaskHrQueryDTO taskHrQueryDTO) {
         List<DownLoadAccount> list = taskHrCompanyService.queryHrAccount(taskHrQueryDTO);
-        ExcelUtil.download(response, list, ExcelUtil.hrAccount, "人力账单");
+        ExcelUtil.download(response, list, ExcelUtil.hotelAccount, "人力账单", companyService.selectById(taskHrQueryDTO.getHrCompanyId()).getName() + "收款账单");
     }
 
     /**
@@ -105,10 +108,10 @@ public class TaskHrCompanyController {
      * @param response
      * @param taskHrQueryDTO
      */
-    @PostMapping("/hotel/download/account")
-    public void downloadHotelAccount(HttpServletResponse response, @RequestBody TaskHrQueryDTO taskHrQueryDTO) {
+    @GetMapping("/hotel/download/account")
+    public void downloadHotelAccount(HttpServletResponse response,@ModelAttribute TaskHrQueryDTO taskHrQueryDTO) {
         List<DownLoadAccount> list = taskHrCompanyService.queryHotelAccount(taskHrQueryDTO);
-        ExcelUtil.download(response, list, ExcelUtil.hotelAccount, "用人单位账单");
+        ExcelUtil.download(response, list, ExcelUtil.hrAccount, "用人单位账单", companyService.selectById(taskHrQueryDTO.getHotelId()).getName() + "支付账单");
     }
 
     /**
@@ -116,10 +119,10 @@ public class TaskHrCompanyController {
      * @param response
      * @param taskHrQueryDTO
      */
-    @PostMapping("/hr/task/download")
-    public void downloadHrTask(HttpServletResponse response, @RequestBody TaskHrQueryDTO taskHrQueryDTO) {
+    @GetMapping("/hr/task/download")
+    public void downloadHrTask(HttpServletResponse response,@ModelAttribute TaskHrQueryDTO taskHrQueryDTO) {
 
         List<HrTask> list = taskHrCompanyService.queryHrTask(taskHrQueryDTO);
-        ExcelUtil.download(response, list, ExcelUtil.hrTask, "人力任务");
+        ExcelUtil.download(response, list, ExcelUtil.hrTask, "人力任务", companyService.selectById(taskHrQueryDTO.getHrCompanyId()) + "任务");
     }
 }

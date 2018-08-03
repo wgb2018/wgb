@@ -1703,7 +1703,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         }
 
     /**
-     * 人力查询用人单位账单
+     * 人力查询用人单位支付账单
      * @param taskHrQueryDTO
      * @return
      */
@@ -1735,7 +1735,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
     }
 
     /**
-     * 用人单位查询人力账单
+     * 用人单位查询支付人力账单
      * @param taskHrQueryDTO
      * @return
      */
