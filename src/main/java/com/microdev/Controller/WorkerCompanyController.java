@@ -4,7 +4,9 @@ import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.ExcelUtil;
+import com.microdev.mapper.UserMapper;
 import com.microdev.param.*;
+import com.microdev.service.CompanyService;
 import com.microdev.service.UserCompanyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +26,11 @@ public class WorkerCompanyController {
 
     @Autowired
     UserCompanyService userCompanyService;
+    @Autowired
+    CompanyService companyService;
+    @Autowired
+    UserMapper userMapper;
+
     /**
      * 小时工反馈人力公司绑定申请
      */
@@ -110,10 +117,10 @@ public class WorkerCompanyController {
      * @param queryDTO
      */
     @GetMapping("/hr/worker/download")
-    public void downloadHrWorker(HttpServletResponse response, HrQueryWorkerDTO queryDTO) {
+    public void downloadHrWorker(HttpServletResponse response,@ModelAttribute HrQueryWorkerDTO queryDTO) {
 
         List<WorkerCooperate> list = userCompanyService.queryHrBindWorker(queryDTO);
-        ExcelUtil.download(response, list, ExcelUtil.workerCooperate, "合作的小时工");
+        ExcelUtil.download(response, list, ExcelUtil.workerCooperate, "合作的小时工", companyService.selectById(queryDTO.getHrId()).getName() + "的工作者");
     }
 
     /**
@@ -122,9 +129,9 @@ public class WorkerCompanyController {
      * @param queryDTO
      */
     @GetMapping("/worker/hr/download")
-    public void workerBindHrDownload(HttpServletResponse response, WokerQueryHrDTO queryDTO) {
+    public void workerBindHrDownload(HttpServletResponse response,@ModelAttribute WokerQueryHrDTO queryDTO) {
 
         List<CompanyCooperate> list = userCompanyService.queryWorkerBindHr(queryDTO);
-        ExcelUtil.download(response, list, ExcelUtil.cooperate, "合作的人力公司");
+        ExcelUtil.download(response, list, ExcelUtil.cooperate, "合作的人力公司", userMapper.selectByWorkerId(queryDTO.getWorkerId()).getNickname() + "加入的人力公司");
     }
 }

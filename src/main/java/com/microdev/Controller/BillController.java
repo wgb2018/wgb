@@ -2,15 +2,15 @@ package com.microdev.Controller;
 
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
-import com.microdev.param.BillRequest;
-import com.microdev.param.HotelPayHrCompanyRequest;
-import com.microdev.param.HrCompanyPayWorkerRequest;
-import com.microdev.param.HrQueryWorkerDTO;
+import com.microdev.common.utils.ExcelUtil;
+import com.microdev.param.*;
 import com.microdev.service.BillService;
 import com.microdev.service.TaskHrCompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Map;
 
 
@@ -78,5 +78,28 @@ public class BillController {
     public ResultDO updateBillComment(@RequestBody Map<String, String> param) {
 
         return BillService.updateCommentStatus(param.get("id"));
+    }
+
+    /**
+     * 下载小时工的收益记录
+     * @param request
+     * @param response
+     */
+    @GetMapping("/worker/bill/download")
+    public void downloadWorkerBillPay(@ModelAttribute HrCompanyPayWorkerRequest request, HttpServletResponse response) {
+        Map<String, Object> param = BillService.queryWorkerMoneyRecord(request);
+        ExcelUtil.download(response, (List<PayRecord>)param.get("list"), ExcelUtil.payRecord, "支付记录", param.get("name").toString());
+    }
+
+    /**
+     * 下载人力收益记录
+     * @param request
+     * @param response
+     */
+    @GetMapping("/hr/bill/download")
+    public void downloadHrBillPay(@ModelAttribute HotelPayHrCompanyRequest request, HttpServletResponse response) {
+
+        Map<String, Object> param = BillService.queryHrMoneyRecord(request);
+        ExcelUtil.download(response, (List<PayRecord>)param.get("list"), ExcelUtil.payRecord, "支付记录", param.get("name").toString());
     }
 }

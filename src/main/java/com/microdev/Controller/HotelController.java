@@ -218,9 +218,9 @@ public class HotelController {
      * @param request
      */
     @GetMapping("/hotel/hr/download")
-    public void hotelBindHrDownload(HttpServletResponse response, CompanyQueryDTO request) {
+    public void hotelBindHrDownload(HttpServletResponse response,@ModelAttribute CompanyQueryDTO request) {
 
         List<CompanyCooperate> list = companyService.queryHotelBindHr(request);
-        ExcelUtil.download(response, list, ExcelUtil.cooperate, "合作的人力公司");
+        ExcelUtil.download(response, list, ExcelUtil.cooperate, "合作的人力公司", companyService.selectById(request.getId()).getName() + "合作的人力");
     }
 }

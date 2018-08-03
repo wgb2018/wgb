@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.microdev.model.Bill;
 import com.microdev.param.HotelPayHrCompanyRequest;
 import com.microdev.param.HrCompanyPayWorkerRequest;
+import com.microdev.param.PayRecord;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,4 +14,12 @@ public interface BillMapper extends BaseMapper<Bill> {
     List<Bill> selectHotelPayBill(HotelPayHrCompanyRequest request);
 
     List<Bill> selectHrCompanyPayBill(HrCompanyPayWorkerRequest request);
+
+    int selectHrCompanyPayBillCount(HrCompanyPayWorkerRequest request);
+
+    List<PayRecord> selectHrCompanyPayBillRecord(HrCompanyPayWorkerRequest request);
+
+    int selectHotelPayBillCount(HotelPayHrCompanyRequest request);
+
+    List<PayRecord> selectHotelPayBillRecord(HotelPayHrCompanyRequest request);
 }

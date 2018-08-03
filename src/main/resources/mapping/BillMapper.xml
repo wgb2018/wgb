@@ -23,5 +23,36 @@
         order by create_time desc
     </select>
 
+    <select id="selectHrCompanyPayBillCount" resultType="java.lang.Integer" parameterType="com.microdev.param.HrCompanyPayWorkerRequest">
+        select id
+        FROM bill b inner join company c on b.hr_company_id = c.id left join user u on b.worker_id = u.worker_id
+        WHERE
+        b.task_hr_id = #{hrCompanyTaskId} and b.worker_id = #{workerId}
+    </select>
 
+    <select id="selectHrCompanyPayBillRecord" resultType="com.microdev.param.PayRecord" parameterType="com.microdev.param.HrCompanyPayWorkerRequest">
+        select
+        c.name as payer,u.nickname as cashier, date_format(b.create_time, '%Y-%m-%d %H:%i:%s') as time, IFNULL(b.pay_money, 0) as salay, case b.status when 0 then '未确认' when 1 then '同意' when 2 then '拒绝' end as status
+        FROM bill b inner join company c on b.hr_company_id = c.id left join user u on b.worker_id = u.worker_id
+        WHERE
+        b.task_hr_id = #{hrCompanyTaskId} and b.worker_id = #{workerId}
+        order by create_time desc
+    </select>
+
+    <select id="selectHotelPayBillCount" resultType="java.lang.Integer" parameterType="com.microdev.param.HotelPayHrCompanyRequest">
+        select id
+        FROM bill b inner join company c on b.hr_company_id = c.id left join company c2 on b.hotel_id = c2.id
+        WHERE
+        b.task_id = #{hotelTaskID} and b.task_hr_id = #{hrTaskId}
+        order by b.create_time desc
+    </select>
+
+    <select id="selectHotelPayBillRecord" resultType="com.microdev.param.PayRecord" parameterType="com.microdev.param.HotelPayHrCompanyRequest">
+        select
+        c.name as cashier,c2.name as payer,date_format(b.create_time, '%Y-%m-%d %H:%i:%s') as time, IFNULL(b.pay_money, 0) as salay, case b.status when 0 then '未确认' when 1 then '同意' when 2 then '拒绝' end as status
+        FROM bill b inner join company c on b.hr_company_id = c.id left join company c2 on b.hotel_id = c2.id
+        WHERE
+        b.task_id = #{hotelTaskID} and b.task_hr_id = #{hrTaskId}
+        order by b.create_time desc
+    </select>
 </mapper>

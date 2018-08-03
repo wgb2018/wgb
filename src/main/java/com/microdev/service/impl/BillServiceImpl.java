@@ -7,16 +7,21 @@ import com.microdev.common.ResultDO;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
 import com.microdev.mapper.BillMapper;
+import com.microdev.mapper.TaskHrCompanyMapper;
+import com.microdev.mapper.UserMapper;
 import com.microdev.model.Bill;
 import com.microdev.model.TaskHrCompany;
+import com.microdev.model.User;
 import com.microdev.param.HotelPayHrCompanyRequest;
 import com.microdev.param.HrCompanyPayWorkerRequest;
+import com.microdev.param.PayRecord;
 import com.microdev.service.BillService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +31,10 @@ import java.util.Map;
 public class BillServiceImpl extends ServiceImpl<BillMapper,Bill> implements BillService{
     @Autowired
     BillMapper billMapper;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private TaskHrCompanyMapper taskHrCompanyMapper;
     /**
      * 用人单位按人力公司查询支付记录
      */
@@ -76,5 +85,53 @@ public class BillServiceImpl extends ServiceImpl<BillMapper,Bill> implements Bil
         bill.setStatus(1);
         billMapper.updateById(bill);
         return ResultDO.buildSuccess("操作成功");
+    }
+
+    /**
+     * 查询小时工的收益记录
+     * @return
+     */
+    @Override
+    public Map<String, Object> queryWorkerMoneyRecord(HrCompanyPayWorkerRequest request) {
+        Map<String, Object> result = new HashMap<>();
+        if (StringUtils.isEmpty(request.getWorkerId())  || StringUtils.isEmpty(request.getHrCompanyTaskId())) {
+            result.put("list", new ArrayList<PayRecord>());
+            return result;
+        }
+        User u = userMapper.selectByWorkerId(request.getWorkerId());
+        int count = billMapper.selectHrCompanyPayBillCount(request);
+        PageHelper.startPage(1, count, true);
+        List<PayRecord> list = billMapper.selectHrCompanyPayBillRecord(request);
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+
+        result.put("name", u.getNickname());
+        result.put("list", list);
+        return result;
+    }
+
+    /**
+     * 查看人力收益记录
+     * @param request
+     * @return
+     */
+    @Override
+    public Map<String, Object> queryHrMoneyRecord(HotelPayHrCompanyRequest request) {
+        Map<String, Object> result = new HashMap<>();
+        if (StringUtils.isEmpty(request.getHotelTaskID()) || StringUtils.isEmpty(request.getHrTaskId())) {
+            result.put("list", new ArrayList<PayRecord>());
+            return result;
+        }
+        TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(request.getHrTaskId());
+        int count = billMapper.selectHotelPayBillCount(request);
+        PageHelper.startPage(1, count, true);
+        List<PayRecord> list = billMapper.selectHotelPayBillRecord(request);
+        if (list == null) {
+            list = new ArrayList<PayRecord>();
+        }
+        result.put("list", list);
+        result.put("name", taskHrCompany.getHrCompanyName());
+        return result;
     }
 }

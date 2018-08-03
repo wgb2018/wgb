@@ -1,5 +1,6 @@
 package com.microdev.common.utils;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -17,7 +18,11 @@ import java.util.List;
  */
 public class ExcelUtil {
 
-    public static <T> void download(HttpServletResponse response, List<T> list, String[] strArr, String title) {
+    public static <T> void download(HttpServletResponse response, List<T> list, String[] strArr, String title, String name) {
+        if (StringUtils.isEmpty(name)) {
+            name = String.valueOf(System.currentTimeMillis()).substring(4, 13);
+        }
+        OutputStream out = null;
         try {
             HSSFWorkbook workbook = new HSSFWorkbook();                 // 创建工作簿对象
             HSSFSheet sheet = workbook.createSheet();                  // 创建工作表
@@ -57,7 +62,6 @@ public class ExcelUtil {
                     Field field = fields[f];
                     field.setAccessible(true);
                     Object value = field.get(obj);
-                    System.out.println("value=" + value);
                     if (value != null) {
                         cell.setCellValue(value.toString());
                     } else {
@@ -97,15 +101,22 @@ public class ExcelUtil {
 
             if (workbook != null) {
                 try {
-                    String fileName = String.valueOf(System.currentTimeMillis()).substring(4, 13) + ".xls";
-                    String headStr = "attachment; filename=\"" + fileName + "\"";
+                    //String fileName = String.valueOf(System.currentTimeMillis()).substring(4, 13) + ".xls";
+                    String fileName = new String(name.getBytes("UTF-8"), "iso-8859-1") + ".xls";
                     response.setContentType("application/msexcel");
+                    //response.setContentType("application/force-download");
+                    //response.setContentType("application/octet- stream");
                     response.setCharacterEncoding("UTF-8");
-                    response.setHeader("Content-Disposition", headStr);
-                    OutputStream out = response.getOutputStream();
+                    response.setHeader("Content-Disposition",  "attachment;filename=" + fileName);
+                    out = response.getOutputStream();
                     workbook.write(out);
+                    out.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
+                } finally {
+                    if (out != null) {
+                        out.close();
+                    }
                 }
             }
 
@@ -206,4 +217,6 @@ public class ExcelUtil {
     public static String[] employerTask = {"用人单位名称", "任务内容", "任务类型", "时薪(元)", "工作日期", "开始/结束", "已报名/总数", "用人单位结算", "任务状态"};
     public static String[] hrTask = {"用人单位名称", "任务内容", "任务类型", "用人单位时薪(元)", "时薪(元)", "工作日期", "开始/结束", "已报名/总数", "用人单位结算", "人力公司结算", "任务状态"};
     public static String[] workerTask = {"用人单位", "用人单位负责人", "用人单位电话", "人力公司名称", "任务内容", "任务类型", "时薪(元)", "工作日期", "开始/结束", "拒绝原因", "任务状态"};
+
+    public static String[] payRecord = {"结款方", "收款方", "支付金额", "支付时间", "支付状态"};
 }
