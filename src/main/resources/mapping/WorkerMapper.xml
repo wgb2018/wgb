@@ -6,8 +6,7 @@
         idcard_back, idcard_front, idcard_number, health_card,qr_code,active_companys,bind_companys,status,handheld_identity,stature,weight,education,status,poll_code
     </sql>
     <insert id="save" parameterType="com.microdev.model.Worker">
-        insert into worker values(#{pid},#{createTime},#{deleted},#{modifyTime},#{idcardBack},#{idcardFront},
-        #{idcardNumber},#{healthCard})
+        insert into worker values(#{pid},#{createTime},#{deleted},#{modifyTime},#{idcardBack},#{idcardFront}, #{idcardNumber},#{healthCard}, #{qrCode}, #{activeCompanys}, #{bindCompanys}, #{status}, #{handheldIdentity}, #{stature}, #{weight}, #{education}, #{pollCode})
     </insert>
     <update id="updateStatus">
         update worker set status = #{status} where id = #{id}
