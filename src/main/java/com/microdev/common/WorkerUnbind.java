@@ -46,6 +46,7 @@ public class WorkerUnbind {
         if (dict != null) {
             Integer maxNum = Integer.parseInt(dict.getText());
             int num = messageMapper.selectWorkerUnbindCount();
+            if (num == 0) return;
             List<Message> list = null;
             int end = 0;
             for (int i = 0; i <= num; ) {
