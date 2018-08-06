@@ -223,4 +223,14 @@ public class HotelController {
         List<CompanyCooperate> list = companyService.queryHotelBindHr(request);
         ExcelUtil.download(response, list, ExcelUtil.cooperate, "合作的人力公司", companyService.selectById(request.getId()).getName() + "合作的人力");
     }
+
+    /**
+     * 下载所有用人单位
+     * @param response
+     */
+    @GetMapping("/hotel/info/download")
+    public void downloadHotelInfo(HttpServletResponse response) {
+        List<EmployerInfo> list = companyService.queryHotelInfo();
+        ExcelUtil.download(response, list, ExcelUtil.hotelInfo, "用人单位", "用人单位");
+    }
 }

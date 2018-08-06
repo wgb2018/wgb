@@ -323,4 +323,15 @@ public class HrCompanyController {
         List<CompanyCooperate> list = companyService.queryHrBindHotel(request);
         ExcelUtil.download(response, list, ExcelUtil.cooperate, "合作的用人单位", companyService.selectById(request.getId()).getName() + "合作的用人单位");
     }
+
+    /**
+     * 下载人力信息
+     * @param response
+     */
+    @GetMapping("/hr/info/download")
+    public void downloadHrInfo(HttpServletResponse response) {
+
+        List<HrInfo> list = companyService.queryInfo();
+        ExcelUtil.download(response, list, ExcelUtil.cooperate, "人力信息", "人力信息");
+    }
 }

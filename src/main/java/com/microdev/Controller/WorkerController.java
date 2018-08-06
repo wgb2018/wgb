@@ -192,4 +192,15 @@ public class WorkerController {
         List<WorkerTask> list = taskWorkerService.queryWorkerTask(taskQueryDTO);
         ExcelUtil.download(response, list, ExcelUtil.workerTask, "工作者任务", userMapper.selectById(taskQueryDTO.getWorkerId()).getNickname() + "任务");
     }
+
+    /**
+     * 下载所有工作者信息
+     * @param response
+     */
+    @GetMapping("/worker/info/download")
+    public void downloadWorkerInfo(HttpServletResponse response) {
+
+        List<WorkerCooperate> list = workerService.queryWorkerInfo();
+        ExcelUtil.download(response, list, ExcelUtil.workerCooperate, "小时工信息", "小时工信息");
+    }
 }

@@ -107,4 +107,9 @@ public interface WorkerService extends IService<Worker> {
      */
     ResultDO workerHandleHrPay(String messageId, String status);
 
+    /**
+     * 查询所有工作者信息
+     * @return
+     */
+    List<WorkerCooperate> queryWorkerInfo();
 }

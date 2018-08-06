@@ -24,7 +24,7 @@
     </select>
 
     <select id="selectHrCompanyPayBillCount" resultType="java.lang.Integer" parameterType="com.microdev.param.HrCompanyPayWorkerRequest">
-        select id
+        select b.id
         FROM bill b inner join company c on b.hr_company_id = c.id left join user u on b.worker_id = u.worker_id
         WHERE
         b.task_hr_id = #{hrCompanyTaskId} and b.worker_id = #{workerId}
@@ -40,7 +40,7 @@
     </select>
 
     <select id="selectHotelPayBillCount" resultType="java.lang.Integer" parameterType="com.microdev.param.HotelPayHrCompanyRequest">
-        select id
+        select b.id
         FROM bill b inner join company c on b.hr_company_id = c.id left join company c2 on b.hotel_id = c2.id
         WHERE
         b.task_id = #{hotelTaskID} and b.task_hr_id = #{hrTaskId}

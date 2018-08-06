@@ -65,4 +65,15 @@
         </where>
     </select>
 
+    <select  id = "selectAllCount" resultType="java.lang.Integer">
+        select count(1) from worker
+    </select>
+
+    <select id = "selectWorkerInfo" resultType="com.microdev.param.WorkerCooperate">
+      SELECT u.`nickname` AS NAME, CASE u.sex WHEN 'UNKNOW' THEN '未知' WHEN 'MALE' THEN '男' WHEN 'FEMALE' THEN '女' END AS sex, u.mobile,
+u.avatar AS logo,DATE_FORMAT(w.create_time, '%Y-%m%d %H:%i:%s') AS createTime, CASE w.status WHEN 0 THEN '未审核' WHEN 1 THEN '已审核' WHEN 2 THEN '已冻结' END AS STATUS
+FROM worker w
+INNER JOIN USER u
+ON u.`worker_id` = w.`id`
+    </select>
 </mapper>

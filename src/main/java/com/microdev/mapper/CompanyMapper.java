@@ -3,6 +3,8 @@ package com.microdev.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.microdev.model.Company;
 import com.microdev.param.CompanyQueryDTO;
+import com.microdev.param.EmployerInfo;
+import com.microdev.param.HrInfo;
 import com.microdev.param.QueryCooperateRequest;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -49,4 +51,10 @@ public interface CompanyMapper extends BaseMapper<Company> {
     List<Map<String, Object>> hotelExamineCompany(QueryCooperateRequest param);
 
     Integer queryGrade(@Param ("id") String id,@Param ("type") String type);
+
+    int selectCompanyCount(@Param("companyType") int companyType);
+
+    List<EmployerInfo> selectHotelInfo(@Param("companyType") int companyType);
+
+    List<HrInfo> selectHrInfo(@Param("companyType") int companyType);
  }

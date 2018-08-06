@@ -947,6 +947,21 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     }
 
     /**
+     * 查询所有工作者信息
+     * @return
+     */
+    @Override
+    public List<WorkerCooperate> queryWorkerInfo() {
+        int count = workerMapper.selectAllCount();
+        PageHelper.startPage(1, count , true);
+        List<WorkerCooperate> list = workerMapper.selectWorkerInfo();
+        if (list == null) {
+            list = new ArrayList<WorkerCooperate>();
+        }
+        return list;
+    }
+
+    /**
      * 查询小时工工作记录
      *
      * @param taskWorkerId
