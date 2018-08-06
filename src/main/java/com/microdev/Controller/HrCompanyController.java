@@ -332,6 +332,6 @@ public class HrCompanyController {
     public void downloadHrInfo(HttpServletResponse response) {
 
         List<HrInfo> list = companyService.queryInfo();
-        ExcelUtil.download(response, list, ExcelUtil.cooperate, "人力信息", "人力信息");
+        ExcelUtil.download(response, list, ExcelUtil.hrInfo, "人力信息", "人力信息");
     }
 }

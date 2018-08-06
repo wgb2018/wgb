@@ -951,12 +951,12 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
      * @return
      */
     @Override
-    public List<WorkerCooperate> queryWorkerInfo() {
+    public List<WorkerInfo> queryWorkerInfo() {
         int count = workerMapper.selectAllCount();
         PageHelper.startPage(1, count , true);
-        List<WorkerCooperate> list = workerMapper.selectWorkerInfo();
+        List<WorkerInfo> list = workerMapper.selectWorkerInfo();
         if (list == null) {
-            list = new ArrayList<WorkerCooperate>();
+            list = new ArrayList<WorkerInfo>();
         }
         return list;
     }

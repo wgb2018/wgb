@@ -220,4 +220,6 @@ public class ExcelUtil {
 
     public static String[] payRecord = {"结款方", "收款方", "支付金额", "支付时间", "支付状态"};
     public static String[] hotelInfo = {"来源", "公司名称", "公司logo", "营业执照", "负责人", "联系电话", "地址", "公司状态"};
+    public static String[] hrInfo = {"来源", "公司名称", "公司logo", "营业执照", "劳务派遣证","负责人", "联系电话", "地址", "公司状态"};
+    public static String[] workerInfo = {"来源", "昵称", "性别", "电话", "头像", "创建时间", "小时工状态"};
 }

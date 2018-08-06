@@ -111,5 +111,5 @@ public interface WorkerService extends IService<Worker> {
      * 查询所有工作者信息
      * @return
      */
-    List<WorkerCooperate> queryWorkerInfo();
+    List<WorkerInfo> queryWorkerInfo();
 }

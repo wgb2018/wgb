@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class HrInfo {
 
+    private String origin;
     private String name;
     private String logo;
     private String businessLicense;

@@ -200,7 +200,7 @@ public class WorkerController {
     @GetMapping("/worker/info/download")
     public void downloadWorkerInfo(HttpServletResponse response) {
 
-        List<WorkerCooperate> list = workerService.queryWorkerInfo();
-        ExcelUtil.download(response, list, ExcelUtil.workerCooperate, "小时工信息", "小时工信息");
+        List<WorkerInfo> list = workerService.queryWorkerInfo();
+        ExcelUtil.download(response, list, ExcelUtil.workerInfo, "小时工信息", "小时工信息");
     }
 }
