@@ -16,5 +16,7 @@ public interface NoticeService extends IService<Notice> {
 
     ResultDO acceptNotice(AcceptNoticeRequest request);
 
+    ResultDO recommendtNotice(QueryNoticeRequest request);
+
 
 }

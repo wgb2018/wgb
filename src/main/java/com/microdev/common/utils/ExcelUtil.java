@@ -18,6 +18,7 @@ import java.util.List;
  */
 public class ExcelUtil {
 
+
     public static <T> void download(HttpServletResponse response, List<T> list, String[] strArr, String title, String name) {
         if (StringUtils.isEmpty(name)) {
             name = String.valueOf(System.currentTimeMillis()).substring(4, 13);
@@ -101,15 +102,12 @@ public class ExcelUtil {
 
             if (workbook != null) {
                 try {
-                    //String fileName = String.valueOf(System.currentTimeMillis()).substring(4, 13) + ".xls";
+
                     String fileName = new String(name.getBytes("UTF-8"), "iso-8859-1") + ".xls";
-                    response.setContentType("application/msexcel");
-                    //response.setContentType("application/force-download");
-                    //response.setContentType("application/octet- stream");
+                    response.setContentType("application/msexcel");              
                     response.setCharacterEncoding("UTF-8");
                     response.setHeader("Content-Disposition",  "attachment;filename=" + fileName);
-                    out = response.getOutputStream();
-                    workbook.write(out);
+                    out = response.getOutputStream();                    workbook.write(out);
                     out.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -175,8 +173,10 @@ public class ExcelUtil {
         //设置字体大小
         font.setFontHeightInPoints((short)10);
         //字体加粗
+
         //font.setBold(true);
         //设置字体名字
+
         font.setFontName("仿宋_GB2312");
         //设置样式;
         HSSFCellStyle style = workbook.createCellStyle();
@@ -208,6 +208,7 @@ public class ExcelUtil {
         return style;
 
     }
+
 
     public static String[] hotelAccount = {"用人单位名称", "任务类型", "任务内容", "工作日期", "开始/结束",  "应付款(元)", "已付款(元)", "待确认款(元)", "未付款(元)"};
     public static String[] hrAccount = {"人力公司名称", "任务类型", "任务内容", "工作日期", "开始/结束",  "应付款(元)", "已付款(元)", "待确认款(元)", "未付款(元)"};

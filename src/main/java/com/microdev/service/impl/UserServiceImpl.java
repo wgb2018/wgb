@@ -521,7 +521,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                 if(userDTO.getCompany ().getLogo ()!=null && userDTO.getCompany ().getLogo ()!="")company.setLogo (userDTO.getCompany ().getLogo ());
                 if(userDTO.getCompany ().getLaborDispatchCard ()!=null && userDTO.getCompany ().getLaborDispatchCard ()!="")company.setLaborDispatchCard (userDTO.getCompany ().getLaborDispatchCard ());
                 if(userDTO.getCompany ().getArea ()!=null && userDTO.getCompany ().getArea ()!=""){
-
                     company.setAddress (userDTO.getCompany ().getAddress ());
                     company.setArea (userDTO.getCompany ().getArea ());
                     company.setAddressCode (userDTO.getCompany ().getAddressCode ());

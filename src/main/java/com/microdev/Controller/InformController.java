@@ -2,6 +2,7 @@ package com.microdev.Controller;
 
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
+import com.microdev.param.InformParam;
 import com.microdev.param.InformRequestDTO;
 import com.microdev.service.InformService;
 import org.apache.ibatis.annotations.Param;
@@ -40,12 +41,11 @@ public class InformController {
 
     /**
      * 删除通知
-     * @param list
+     * @param inf
      * @return
      */
     @PostMapping("/inform/delete")
-    public ResultDO deleteInformInfo(@RequestBody List<String> list) {
-
-        return informService.deleteInformInfo(list);
+    public ResultDO deleteInformInfo(@RequestBody InformParam inf) {
+        return informService.deleteInformInfo(inf.getList ());
     }
 }

@@ -28,4 +28,7 @@
         </where>
         order by n.create_time desc
     </select>
+    <select id="queryRecommend" resultType="com.microdev.model.Notice">
+        select <include refid="Notice_Column_List" /> from notice where type = #{type} order by rand() limit 3
+    </select>
 </mapper>
