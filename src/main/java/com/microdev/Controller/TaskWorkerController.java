@@ -73,7 +73,7 @@ public class TaskWorkerController {
     public void downloadWorkerAccount(@ModelAttribute TaskWorkerQuery taskQueryDTO, HttpServletResponse response) {
         List<DownLoadAccount> list = taskWorkerService.queryWorkerAccount(taskQueryDTO);
         String name = "";
-        User u = userMapper.selectById(taskQueryDTO.getTaskWorkerId());
+        User u = userMapper.selectByWorkerId(taskQueryDTO.getWorkerId());
         if (u != null) {
             name = u.getNickname();
         }

@@ -127,7 +127,7 @@ public class WorkerCompanyController {
         if (c != null) {
             name = c.getName();
         }
-        ExcelUtil.download(response, list, ExcelUtil.workerCooperate, "合作的小时工", name + "的工作者");
+        ExcelUtil.download(response, list, ExcelUtil.workerCooperate, "合作的小时工", name + "拥有的工作者");
     }
 
     /**

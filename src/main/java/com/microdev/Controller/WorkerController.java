@@ -192,7 +192,7 @@ public class WorkerController {
 
         List<WorkerTask> list = taskWorkerService.queryWorkerTask(taskQueryDTO);
         String name = "";
-        User u = userMapper.selectById(taskQueryDTO.getWorkerId());
+        User u = userMapper.selectByWorkerId(taskQueryDTO.getWorkerId());
         if (u != null) {
             name = u.getNickname();
         }

@@ -242,6 +242,6 @@
     </select>
 
     <select id = "selectStartTaskCount" resultType="java.lang.Integer">
-        SELECT COUNT(1) FROM task WHERE from_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 HOUR) AND NOW() AND need_workers > confirmed_workers
+        SELECT COUNT(1) FROM task WHERE from_date BETWEEN DATE_SUB(NOW(), INTERVAL 10 MINUTE) AND NOW() AND need_workers > confirmed_workers
     </select>
 </mapper>
