@@ -6,6 +6,7 @@ import com.microdev.mapper.TaskWorkerMapper;
 import com.microdev.mapper.UserMapper;
 import com.microdev.mapper.WorkerMapper;
 import com.microdev.model.TaskWorker;
+import com.microdev.model.User;
 import com.microdev.param.DownLoadAccount;
 import com.microdev.param.RefusedTaskRequest;
 import com.microdev.param.TaskWorkerQuery;
@@ -71,6 +72,11 @@ public class TaskWorkerController {
     @GetMapping("/worker/download/account")
     public void downloadWorkerAccount(@ModelAttribute TaskWorkerQuery taskQueryDTO, HttpServletResponse response) {
         List<DownLoadAccount> list = taskWorkerService.queryWorkerAccount(taskQueryDTO);
-        ExcelUtil.download(response, list, ExcelUtil.workerAccount, "小时工账单", userMapper.selectById(taskQueryDTO.getTaskWorkerId()).getNickname() + "收款账单");
+        String name = "";
+        User u = userMapper.selectById(taskQueryDTO.getTaskWorkerId());
+        if (u != null) {
+            name = u.getNickname();
+        }
+        ExcelUtil.download(response, list, ExcelUtil.workerAccount, "小时工账单", name + "收款账单");
     }
 }

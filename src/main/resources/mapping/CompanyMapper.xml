@@ -294,15 +294,14 @@ union
 
     <select id = "selectHotelInfo" resultType="com.microdev.param.EmployerInfo">
         select name,logo,business_license as businessLicense, leader, leader_mobile as mobile,
-        CONCAT(AREA,address) AS address, case status when 0 then '未审核' when 1 then '已核准'
+        CONCAT(IFNULL(AREA, ''),IFNULL(address, '')) AS address, case status when 0 then '未审核' when 1 then '已核准'
         when 2 then '已冻结' when -1 then '已注销' end as status, poll_code as origin
         from company where company_type = #{companyType} order by create_time desc
     </select>
 
     <select id = "selectHrInfo" resultType="com.microdev.param.HrInfo">
         select name,logo,business_license as businessLicense,labor_dispatch_card as laborDispatchCard, leader, leader_mobile as mobile,
-        CONCAT(AREA,address) AS address, case status when 0 then '未审核' when 1 then '已核准'
-        when 2 then '已冻结' when -1 then '已注销' end as status, poll_code as origin
+        CONCAT(IFNULL(AREA, ''),IFNULL(address, '')) AS address, case status when 0 then '未审核' when 1 then '已核准' when 2 then '已冻结' when -1 then '已注销' end as status, poll_code as origin
         from company where company_type = #{companyType} order by create_time desc
     </select>
 </mapper>

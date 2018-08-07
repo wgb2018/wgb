@@ -5,6 +5,7 @@ import com.microdev.common.ResultDO;
 import com.microdev.common.utils.ExcelUtil;
 import com.microdev.mapper.UserMapper;
 import com.microdev.mapper.WorkerMapper;
+import com.microdev.model.User;
 import com.microdev.model.Worker;
 import com.microdev.param.*;
 import com.microdev.param.api.request.PunchRequest;
@@ -190,7 +191,12 @@ public class WorkerController {
     public void downloadWorkerTask(HttpServletResponse response,@ModelAttribute TaskWorkerQuery taskQueryDTO) {
 
         List<WorkerTask> list = taskWorkerService.queryWorkerTask(taskQueryDTO);
-        ExcelUtil.download(response, list, ExcelUtil.workerTask, "工作者任务", userMapper.selectById(taskQueryDTO.getWorkerId()).getNickname() + "任务");
+        String name = "";
+        User u = userMapper.selectById(taskQueryDTO.getWorkerId());
+        if (u != null) {
+            name = u.getNickname();
+        }
+        ExcelUtil.download(response, list, ExcelUtil.workerTask, "工作者任务", name + "任务");
     }
 
     /**

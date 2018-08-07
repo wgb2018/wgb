@@ -5,6 +5,8 @@ import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.ExcelUtil;
 import com.microdev.mapper.UserMapper;
+import com.microdev.model.Company;
+import com.microdev.model.User;
 import com.microdev.param.*;
 import com.microdev.service.CompanyService;
 import com.microdev.service.UserCompanyService;
@@ -120,7 +122,12 @@ public class WorkerCompanyController {
     public void downloadHrWorker(HttpServletResponse response,@ModelAttribute HrQueryWorkerDTO queryDTO) {
 
         List<WorkerCooperate> list = userCompanyService.queryHrBindWorker(queryDTO);
-        ExcelUtil.download(response, list, ExcelUtil.workerCooperate, "合作的小时工", companyService.selectById(queryDTO.getHrId()).getName() + "的工作者");
+        String name = "";
+        Company c = companyService.selectById(queryDTO.getHrId());
+        if (c != null) {
+            name = c.getName();
+        }
+        ExcelUtil.download(response, list, ExcelUtil.workerCooperate, "合作的小时工", name + "的工作者");
     }
 
     /**
@@ -132,6 +139,11 @@ public class WorkerCompanyController {
     public void workerBindHrDownload(HttpServletResponse response,@ModelAttribute WokerQueryHrDTO queryDTO) {
 
         List<CompanyCooperate> list = userCompanyService.queryWorkerBindHr(queryDTO);
-        ExcelUtil.download(response, list, ExcelUtil.cooperate, "合作的人力公司", userMapper.selectByWorkerId(queryDTO.getWorkerId()).getNickname() + "加入的人力公司");
+        String name = "";
+        User u = userMapper.selectByWorkerId(queryDTO.getWorkerId());
+        if (u != null) {
+            name = u.getNickname();
+        }
+        ExcelUtil.download(response, list, ExcelUtil.cooperate, "合作的人力公司", name + "加入的人力公司");
     }
 }

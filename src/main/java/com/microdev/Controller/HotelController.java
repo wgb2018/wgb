@@ -221,7 +221,12 @@ public class HotelController {
     public void hotelBindHrDownload(HttpServletResponse response,@ModelAttribute CompanyQueryDTO request) {
 
         List<CompanyCooperate> list = companyService.queryHotelBindHr(request);
-        ExcelUtil.download(response, list, ExcelUtil.cooperate, "合作的人力公司", companyService.selectById(request.getId()).getName() + "合作的人力");
+        String name = "";
+        Company c = companyService.selectById(request.getId());
+        if (c != null) {
+            name = c.getName();
+        }
+        ExcelUtil.download(response, list, ExcelUtil.cooperate, "合作的人力公司", name + "合作的人力");
     }
 
     /**
