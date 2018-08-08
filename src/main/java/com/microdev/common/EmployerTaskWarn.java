@@ -36,7 +36,7 @@ public class EmployerTaskWarn {
             try {
                 for (Map<String, Object> m : list) {
                     c = companyMapper.selectById(m.get("hotelId").toString());
-                    String content = m.get("taskTypeText") + "还有" + m.get("num") + "人未报名";
+                    String content = m.get("taskTypeText") + "还差" + m.get("num") + "人未报名";
                     jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (c.getLeaderMobile (), content));
 
                 }
