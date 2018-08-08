@@ -238,7 +238,7 @@
     </select>
 
     <select id = "selectStartTask" resultType= "java.util.Map">
-      SELECT hotel_id AS hotelId,(need_workers - confirmed_workers) AS num, task_type_text as taskTypeText  FROM task WHERE from_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 HOUR) AND NOW() AND need_workers > confirmed_workers
+      SELECT hotel_id AS hotelId,(need_workers - confirmed_workers) AS num, task_type_text as taskTypeText  FROM task WHERE from_date BETWEEN DATE_SUB(NOW(), INTERVAL 10 MINUTE) AND NOW() AND need_workers > confirmed_workers
     </select>
 
     <select id = "selectStartTaskCount" resultType="java.lang.Integer">
