@@ -8,10 +8,14 @@ import com.microdev.mapper.CompanyMapper;
 import com.microdev.mapper.TaskMapper;
 import com.microdev.model.Company;
 import com.microdev.model.JpushClient;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +29,8 @@ public class EmployerTaskWarn {
     @Autowired
     JpushClient jpushClient;
 
+    private static final Logger logger = LoggerFactory.getLogger(EmployerTaskWarn.class);
+
     @Scheduled(cron = "0 0/10 * * * ?")
     public void taskWarn() {
         int count = taskMapper.selectStartTaskCount();
@@ -32,13 +38,17 @@ public class EmployerTaskWarn {
         PageHelper.startPage(1, count, true);
         List<Map<String, Object>> list = taskMapper.selectStartTask();
         if (list != null && list.size() > 0) {
-            Company c = null;
             try {
+                DecimalFormat decimal = new DecimalFormat("0");
                 for (Map<String, Object> m : list) {
-                    c = companyMapper.selectById(m.get("hotelId").toString());
-                    String content = m.get("taskTypeText") + "还差" + m.get("num") + "人未报名";
-                    jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (c.getLeaderMobile (), content));
-
+                    String content = m.get("taskTypeText") + "还差" + decimal.format(m.get("num")) + "人未报名";
+                    logger.info(content);
+                    String mobile = (String)m.get("leaderMobile");
+                    if (StringUtils.isEmpty(mobile)) {
+                        logger.error("hotelId=" + m.get("hotelId") + ";用人单位名称：" + m.get("name") + ";负责人的手机号没有设置");
+                    } else {
+                        jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (mobile, content));
+                    }
                 }
             } catch (APIConnectionException e) {
                 e.printStackTrace();

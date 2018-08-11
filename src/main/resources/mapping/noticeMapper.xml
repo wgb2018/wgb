@@ -6,7 +6,7 @@
         task_id, status ,confirmed_workers
     </sql>
     <select id="queryList" resultType="com.microdev.model.Notice" parameterType="com.microdev.param.QueryNoticeRequest">
-        select distinct n.id as pid,n.create_time as createTime, n.deleted, n.modify_time as modifyTime, n.need_workers as needworkers, n.from_date as fromDate, n.to_date as toDate, n.content, n.hotel_id as hotelId
+        select distinct n.id as pid,n.create_time as createTime, n.deleted, n.modify_time as modifyTime, n.need_workers as needworkers, n.from_date as fromDate, n.to_date as toDate, n.content, n.hotel_id as hotelId,
         n.hr_company_id as hrCompanyId,n.type as type, n.task_id as taskId, n.status as status,n.confirmed_workers as confirmedWorkers
         from notice n left join notice_service s on n.id = s.notice_id left join company c on n.hotel_id = c.id
         <where>
