@@ -2,6 +2,7 @@ package com.microdev.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.microdev.model.Company;
+import com.microdev.param.AreaParam;
 import com.microdev.param.CompanyQueryDTO;
 import com.microdev.param.QueryCooperateRequest;
 import org.apache.ibatis.annotations.Param;
@@ -34,7 +35,11 @@ public interface CompanyMapper extends BaseMapper<Company> {
 
     void insertAreaRelation(@Param("id") String id, @Param("code") String code,@Param("level") Integer level,@Param("name") String name);
 
+    void insertAreaRelationBatch(List<AreaParam> list);
+
     void insertCompanyArea(@Param("id") String id, @Param("areaId") String area_id,@Param("idType") Integer idType);
+
+    void insertCompanyAreaBatch(List<AreaParam> list);
 
     void deleteAreaRelation(String id);
 

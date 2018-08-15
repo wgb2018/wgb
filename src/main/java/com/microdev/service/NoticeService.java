@@ -6,6 +6,7 @@ import com.microdev.common.paging.Paginator;
 import com.microdev.model.Notice;
 import com.microdev.param.AcceptNoticeRequest;
 import com.microdev.param.CreateNoticeRequest;
+import com.microdev.param.NoticeHandleParam;
 import com.microdev.param.QueryNoticeRequest;
 
 public interface NoticeService extends IService<Notice> {
@@ -14,9 +15,17 @@ public interface NoticeService extends IService<Notice> {
 
     ResultDO queryNotice(Paginator paginator, QueryNoticeRequest Request);
 
+    ResultDO myselfNotice(Paginator paginator, QueryNoticeRequest Request);
+
     ResultDO acceptNotice(AcceptNoticeRequest request);
 
     ResultDO recommendtNotice(QueryNoticeRequest request);
+
+    ResultDO detailsNotice(QueryNoticeRequest request);
+
+    ResultDO detailsAccept(QueryNoticeRequest request);
+
+    ResultDO noticeHandle(NoticeHandleParam request);
 
 
 }

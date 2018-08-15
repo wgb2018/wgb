@@ -101,7 +101,6 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         }
         if(!taskWorker.getFromDate ().isEqual (taskWorker.getToDate ())){
             if (taskWorker.getFromDate().isBefore(OffsetDateTime.now())) {
-
                 taskWorker.setStatus (2);
                 taskWorker.setRefusedReason ("任务已过期，无法接受");
                 taskWorkerMapper.updateById (taskWorker);
@@ -113,9 +112,9 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         if(taskWorker.getFromDate ().isEqual (taskWorker.getToDate ()))  {
             OffsetDateTime of = OffsetDateTime.now();
             if(of.toOffsetTime ().isBefore (taskWorker.getDayStartTime ())){
-                taskWorker.setFromDate (OffsetDateTime.ofInstant (Instant.ofEpochSecond (of.toEpochSecond () - of.toOffsetTime ().getSecond ()+taskHr.getDayStartTime ().getSecond ()),ZoneId.systemDefault ()));
+                taskWorker.setFromDate (OffsetDateTime.ofInstant (Instant.ofEpochSecond (of.toEpochSecond () - of.toOffsetTime ().getLong (ChronoField.SECOND_OF_DAY)+taskHr.getDayStartTime ().getLong (ChronoField.SECOND_OF_DAY)),ZoneId.systemDefault ()));
             }else{
-                taskWorker.setFromDate (OffsetDateTime.ofInstant (Instant.ofEpochSecond (of.toEpochSecond () - of.toOffsetTime ().getSecond ()+taskHr.getDayStartTime ().getSecond ()),ZoneId.systemDefault ()).plusDays (1));
+                taskWorker.setFromDate (OffsetDateTime.ofInstant (Instant.ofEpochSecond (of.toEpochSecond () - of.toOffsetTime ().getLong (ChronoField.SECOND_OF_DAY)+taskHr.getDayStartTime ().getLong (ChronoField.SECOND_OF_DAY)),ZoneId.systemDefault ()).plusDays (1));
             }
             if(taskWorker.getToDate ().isBefore (taskWorker.getFromDate ())){
                 taskWorker.setStatus (2);

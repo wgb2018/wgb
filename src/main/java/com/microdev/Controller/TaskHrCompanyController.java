@@ -125,4 +125,14 @@ public class TaskHrCompanyController {
         List<HrTask> list = taskHrCompanyService.queryHrTask(taskHrQueryDTO);
         ExcelUtil.download(response, list, ExcelUtil.hrTask, "人力任务", companyService.selectById(taskHrQueryDTO.getHrCompanyId()) + "任务");
     }
+
+    /**
+     * 人力同意小时工报名申请并派发
+     * @param request
+     * @return
+     */
+    @PostMapping("/agree/apply/hrSend")
+    public ResultDO agreeApplySendTask(@RequestBody HrTaskDistributeRequest request) {
+        return taskHrCompanyService.agreeApplySendTask(request);
+    }
 }

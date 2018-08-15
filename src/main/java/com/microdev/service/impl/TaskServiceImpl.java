@@ -5,12 +5,14 @@ import cn.jiguang.common.resp.APIRequestException;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.microdev.common.FilePush;
 import com.microdev.common.ResultDO;
 import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
 import com.microdev.common.utils.DateUtil;
 import com.microdev.common.utils.JPushManage;
+import com.microdev.common.utils.RedisUtil;
 import com.microdev.common.utils.StringKit;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
@@ -19,6 +21,8 @@ import com.microdev.converter.TaskConverter;
 import com.microdev.service.InformService;
 import com.microdev.service.MessageService;
 import com.microdev.service.TaskService;
+import com.microdev.type.ConstantData;
+import com.microdev.type.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +30,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
@@ -61,6 +66,16 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
     JpushClient jpushClient;
     @Autowired
     private NoticeMapper noticeMapper;
+    @Autowired
+    private HotelHrCompanyMapper hotelHrCompanyMapper;
+    @Autowired
+    private UserCompanyMapper userCompanyMapper;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private RedisUtil redisUtil;
+    @Autowired
+    private FilePush filePush;
     /**
      * 创建用人单位任务
      */
@@ -489,36 +504,87 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         return taskList;
     }
 
+    /**
+     * 用人单位同意人力报名申请并派发
+     * @param request
+     * @return
+     */
     @Override
     public ResultDO agreeApplySendTask(CreateTaskRequest request) {
         System.out.println (request);
-        if (StringUtils.isEmpty(request.getMessageId()) || StringUtils.isEmpty(request.getTaskId ())) {
+        if (StringUtils.isEmpty(request.getMessageId())) {
             throw new ParamsException("参数不能为空");
         }
         if(request.getHrCompanySet ().size () == 0){
             throw new ParamsException("请指定需要派发的人力公司");
         }
         Message message = messageService.selectById (request.getMessageId ());
-        Notice notice = noticeMapper.selectById (message.getRequestId ());
-        Task task = taskMapper.selectById (request.getTaskId ());
         if(message == null){
             throw new ParamsException("messageId不正确");
         }
+        Notice notice = noticeMapper.selectById (message.getRequestId ());
+        Task task = taskMapper.selectById (message.getTaskId ());
         if(notice == null){
             throw new ParamsException("message不正确");
         }
         if(task == null){
             throw new ParamsException("taskId不正确");
         }
-        if(message.getStatus () == 1){
-            throw new ParamsException("任务报名人数已满");
-        }
-        if(notice.getStatus () == 1){
-            throw new ParamsException("任务报名人数已满");
-        }
         message.setStatus (1);
         messageService.updateById (message);
-        notice.setConfirmedWorkers (notice.getConfirmedWorkers ()+request.getHrCompanySet ().size ());
+        if(notice.getStatus () == 1){
+            return ResultDO.buildError ("任务报名已结束");
+        }
+        if(notice.getNeedWorkers () == notice.getConfirmedWorkers ()){
+            return ResultDO.buildError ("任务报名人数已满");
+        }
+        for (TaskHrCompanyDTO req:request.getHrCompanySet ()) {
+            HotelHrCompany hotelHrCompany = hotelHrCompanyMapper.selectByHrHotelId (req.getHrCompanyId (),notice.getHotelId ());
+            if(hotelHrCompany == null){
+                hotelHrCompany = new HotelHrCompany ();
+                hotelHrCompany.setStatus (0);
+                hotelHrCompany.setBindType (1);
+                //从redis中取出默认协议地址
+                String path = redisUtil.getString("defaultHrHotelProtocol");
+                if (StringUtils.isEmpty(path)) {
+                    try {
+                        path = filePush.pushFileToServer(ConstantData.CATALOG.getName(), ConstantData.HRHOTELPROTOCOL.getName());
+                        //path = filePush.pushFileToServer(ConstantData.CATALOG.getName(), ConstantData.TEST.getName());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return ResultDO.buildError("服务异常");
+                    }
+                    redisUtil.setString("defaultHrHotelProtocol", path);
+                }
+                hotelHrCompany.setBindProtocol (path);
+                hotelHrCompany.setHotelId (notice.getHotelId ());
+                hotelHrCompany.setHrId (req.getHrCompanyId ());
+                hotelHrCompany.setBindTime (OffsetDateTime.now ());
+                hotelHrCompanyMapper.insert (hotelHrCompany);
+            }else if(hotelHrCompany.getStatus () == 1){//合作过 关系变成合作
+                hotelHrCompany.setStatus (0);
+            }else if(hotelHrCompany.getStatus () == 3){//待审核 关系变成合作
+                hotelHrCompany.setStatus (0);
+                Map<String,Object> map = new HashMap <> ();
+                map.put("messageType",13);
+                map.put("hrCompanyId",req.getHrCompanyId ());
+                map.put("hotelId",notice.getHotelId ());
+                List<Message> mes1 = messageService.selectByMap (map);
+                if(mes1.size ()!=0){
+                    for (Message ms:mes1) {
+                        ms.setStatus (1);
+                    }
+                }
+                messageService.updateBatchById (mes1);
+            }else if(hotelHrCompany.getStatus () == 4){
+                hotelHrCompany.setStatus (0);
+            }
+            notice.setConfirmedWorkers (notice.getConfirmedWorkers ()+req.getNeedWorkers ());
+            if(notice.getConfirmedWorkers () > notice.getNeedWorkers ()){
+                return ResultDO.buildError ("报名人数超过剩余所需人数");
+            }
+            hotelHrCompanyMapper.updateById (hotelHrCompany);
+        }
         if(notice.getConfirmedWorkers () == notice.getNeedWorkers ()){
             notice.setStatus (1);
             Map<String,Object> map = new HashMap <> ();
@@ -530,9 +596,66 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
             messageService.updateBatchById (list);
         }
         noticeMapper.updateById (notice);
+        request.setNoticeTask (true);
         Set<TaskHrCompany> set = AddHrTask(task,request);
         return ResultDO.buildSuccess ("发送成功");
+    }
 
+    /**
+     * 用人单位同意人力报名申请并派发
+     * @param request
+     * @return
+     */
+    @Override
+    public ResultDO agreeApplyWorker(CreateTaskRequest request) {
+        System.out.println (request);
+        if(StringUtils.isEmpty(request.getMessageId ())){
+            throw new ParamsException ("参数不正确");
+        }
+        Message message = messageService.selectById (request.getMessageId ());
+        if(message == null){
+            throw new ParamsException("messageId不正确");
+        }
+        Notice notice = noticeMapper.selectById (message.getRequestId ());
+        message.setStatus (1);
+        messageService.updateById (message);
+        if(notice.getNeedWorkers () == notice.getConfirmedWorkers ()){
+            return ResultDO.buildError ("招聘人数已达到上限");
+        }
+        if(notice.getStatus () == 1){
+            return ResultDO.buildError ("招聘已结束");
+        }
+        UserCompany userCompany = userCompanyMapper.selectByWorkerIdHrId (message.getHotelId (),message.getWorkerId ());
+        if(userCompany == null){
+            userCompany = new UserCompany ();
+            userCompany.setCompanyId (message.getHotelId ());
+            userCompany.setUserId (userMapper.selectByWorkerId (message.getWorkerId ()).getPid ());
+            userCompany.setStatus (1);
+            userCompany.setBindProtocol ("");
+            userCompany.setCompanyType (1);
+            userCompany.setUserType (UserType.worker);
+            userCompanyMapper.insert (userCompany);
+        }else{
+            if(userCompany.getStatus () == 2 || userCompany.getStatus () == 4){
+                userCompany.setStatus (1);
+            }else{
+                throw new ParamsException("用人单位与小时工关系存在异常");
+            }
+            userCompanyMapper.updateById(userCompany);
+        }
+        notice.setConfirmedWorkers (notice.getConfirmedWorkers () + 1);
+        if(notice.getConfirmedWorkers () == notice.getNeedWorkers ()){
+            notice.setStatus (1);
+            noticeMapper.updateById (notice);
+            Map<String,Object> map = new HashMap <> ();
+            map.put ("requestId",notice.getPid ());
+            List<Message> list = messageService.selectByMap (map);
+            for (Message ms:list) {
+                ms.setStatus (1);
+            }
+            messageService.updateBatchById (list);
+        }
+        return ResultDO.buildSuccess ("添加成功");
     }
 
     //循环添加人力资源任务
@@ -557,7 +680,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
             taskHrCompany.setHotelId(hotel.getPid());
             taskHrCompany.setHotelName(hotel.getName());
             taskHrCompany.setTaskId(task.getPid());
-            taskHrCompany.setStatus(1);
+            if(createTaskRequest.isNoticeTask ()){
+                taskHrCompany.setStatus(2);
+            }else{
+                taskHrCompany.setStatus(1);
+            }
             taskHrCompany.setRefusedWorkers(0);
             taskHrCompany.setConfirmedWorkers(0);
             taskHrCompany.setNeedWorkers(hrCompanyDTO.getNeedWorkers());

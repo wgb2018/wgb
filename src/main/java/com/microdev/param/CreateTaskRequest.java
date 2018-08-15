@@ -73,4 +73,6 @@ public class CreateTaskRequest {
     private Integer settlementNum;
 
     private Integer needhrCompanys;
+
+    private boolean isNoticeTask = false;
 }

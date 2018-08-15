@@ -7,14 +7,12 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.microdev.common.FilePush;
 import com.microdev.common.ResultDO;
 import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
-import com.microdev.common.utils.DateUtil;
-import com.microdev.common.utils.JPushManage;
-import com.microdev.common.utils.Maths;
-import com.microdev.common.utils.StringKit;
+import com.microdev.common.utils.*;
 import com.microdev.converter.TaskHrCompanyConverter;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
@@ -23,6 +21,8 @@ import com.microdev.service.HotelPayHrDetailsService;
 import com.microdev.service.InformService;
 import com.microdev.service.MessageService;
 import com.microdev.service.TaskHrCompanyService;
+import com.microdev.type.ConstantData;
+import com.microdev.type.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,6 +80,14 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
     JpushClient jpushClient;
     @Autowired
     NoticeMapper noticeMapper;
+    @Autowired
+    TaskHrCompanyService taskHrCompanyService;
+    @Autowired
+    UserCompanyMapper userCompanyMapper;
+    @Autowired
+    RedisUtil redisUtil;
+    @Autowired
+    FilePush filePush;
 
 
     /**
@@ -254,6 +262,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             notice.setFromDate (hrTask.getFromDate ());
             notice.setToDate (hrTask.getToDate ());
             notice.setHotelId (hrTask.getHotelId ());
+            notice.setHrCompanyId (hrTask.getHrCompanyId ());
             notice.setNeedWorkers (hrTask.getNeedWorkers ());
             notice.setType (3);
             notice.setStatus (0);
@@ -1842,6 +1851,75 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             }
         }
         return taskList;
+    }
+
+    /**
+     * 人力同意小时工报名申请并派发
+     * @param request
+     * @return
+     */
+    @Override
+    public ResultDO agreeApplySendTask(HrTaskDistributeRequest request) {
+        System.out.println (request);
+        if(StringUtils.isEmpty (request.getMessageId ())){
+            throw new ParamsException ("messageId为空");
+        }
+        Message message = messageMapper.selectById (request.getMessageId ());
+        if(message == null){
+            throw new ParamsException ("messageId有误");
+        }
+        message.setStatus (1);
+        messageMapper.updateById (message);
+        Notice notice = noticeMapper.selectById (message.getRequestId ());
+        if(notice == null){
+            return ResultDO.buildError ("");
+        }
+        if(notice.getStatus () == 1){
+            return ResultDO.buildError ("");
+        }
+        //添加合作伙伴
+        UserCompany userCompany = userCompanyMapper.selectByWorkerIdHrId (notice.getHrCompanyId (),message.getWorkerId ());
+        if(userCompany == null){
+            List<UserCompany> userCompanyList = new ArrayList<>();
+            //从redis中查询是否有协议
+            String path = redisUtil.getString("defaultWorkerHrProtocol");
+            if (StringUtils.isEmpty(path)) {
+                try {
+                    path = filePush.pushFileToServer(ConstantData.CATALOG.getName(), ConstantData.WORKHRPROTOCOL.getName());            } catch (Exception e) {
+                    e.printStackTrace();
+                    return ResultDO.buildError ("服务异常");
+                }
+                redisUtil.setString("defaultWorkerHrProtocol", path);
+            }
+            userCompany.setCompanyId(notice.getHrCompanyId ());
+            userCompany.setUserType(UserType.worker);
+            userCompany.setCompanyType(2);
+            userCompany.setUserId(userMapper.selectByWorkerId (message.getWorkerId ()).getPid ());
+            userCompany.setStatus(0);
+            userCompany.setBindProtocol(path);
+        }else if(userCompany.getStatus () == 0){
+            userCompany.setStatus (1);
+        }else if(userCompany.getStatus () == 2){
+            userCompany.setStatus (1);
+        }else if(userCompany.getStatus () == 4){
+            userCompany.setStatus (1);
+        }
+        notice.setConfirmedWorkers (notice.getConfirmedWorkers () + 1);
+        if(notice.getConfirmedWorkers () > notice.getNeedWorkers ()){
+            return ResultDO.buildError ("");
+        }
+        if(notice.getNeedWorkers () == notice.getConfirmedWorkers ()){
+            notice.setStatus (1);
+        }
+        noticeMapper.updateById (notice);
+        //派发任务
+        request.setMessageId (null);
+        request.setHrTaskId (notice.getTaskId ());
+        Set<String> set = new HashSet <> ();
+        set.add (message.getWorkerId ());
+        request.setWorkerIds (set);
+        taskHrCompanyService.TaskHrDistribute(request);
+        return null;
     }
 }
 

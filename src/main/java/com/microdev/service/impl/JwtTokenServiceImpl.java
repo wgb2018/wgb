@@ -109,10 +109,11 @@ public class JwtTokenServiceImpl implements TokenService {
         map.put("platform", body.get("platform"));
         ValueOperations<String, String> operations = redisTemplate.opsForValue();
         String value = operations.get (user.getMobile());
-        if(value != null && !value.equals (uniqueId) && !value.equals ("")){
+        if(value != null && !value.equals (uniqueId)){
             if(user.getUserType() == UserType.worker){
                 try {
                     jpushClient.jC.sendPush (JPushManage.buildPushObject_all_message (user.getMobile(),uniqueId));
+                    System.out.println ("发送推送1");
                 } catch (APIConnectionException e) {
                     e.printStackTrace ( );
                 } catch (APIRequestException e) {

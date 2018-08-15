@@ -67,6 +67,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper,Dict> implements Dic
         newDict.setRemark(dictDTO.getRemark());
         newDict.setText(dictDTO.getText());
         newDict.setCode(dictDTO.getCode());
+        newDict.setExtend (dictDTO.getExtend ());
         dictMapper.updateById(newDict);
         dicts.put(dictDTO.getName() + "$" + dictDTO.getCode(), dictDTO);
 //        Collection<DictDTO> list = dictMap.values();

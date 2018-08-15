@@ -30,6 +30,13 @@ public class NoticeController {
         return noticeService.queryNotice(paging.getPaginator(),paging.getSelector());
     }
     /**
+     * 公告管理
+     */
+    @PostMapping("/myself/notice")
+    public ResultDO myselfNotice(@RequestBody PagingDO<QueryNoticeRequest> paging) {
+        return noticeService.myselfNotice(paging.getPaginator(),paging.getSelector());
+    }
+    /**
      * 人力发布招聘公告
      */
     @PostMapping("/hr/release/notice")
@@ -51,5 +58,27 @@ public class NoticeController {
     public ResultDO recommendNotice(@RequestBody QueryNoticeRequest request) {
         return noticeService.recommendtNotice(request);
     }
+    /**
+     * 公告详情
+     */
+    @PostMapping("/details/notice")
+    public ResultDO detailsNotice(@RequestBody QueryNoticeRequest request) {
+        return noticeService.detailsNotice(request);
+    }
+    /**
+     * 报名情况
+     */
+    @PostMapping("/details/accept/all")
+    public ResultDO detailsAcceptAll(@RequestBody QueryNoticeRequest request) {
+        return noticeService.detailsAccept(request);
+    }
+    /**
+     * 公告处理
+     */
+    @PostMapping("/notice/handle")
+    public ResultDO noticeHandle(@RequestBody NoticeHandleParam request) {
+        return noticeService.noticeHandle(request);
+    }
+
 
 }

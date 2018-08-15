@@ -127,4 +127,6 @@ public interface MessageMapper extends BaseMapper<Message> {
     List<AwaitHandleInfoPc> selectWorkerAwaitHandleInfoPc(@Param("workerId") String workerId);
 
     MessageDetailsResponse selectNoticeApply(String messageId);
+
+    void updateAllBind(@Param("workerId") String workerId,@Param("hrId") String hrId);
 }

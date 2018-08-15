@@ -311,7 +311,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             }
             list.add(m);
         }
-        messageMapper.saveBatch(list);
+        if(list.size ()>0) messageMapper.saveBatch(list);
+
     }
 
     /**
@@ -694,10 +695,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             throw new ParamsException("参数不能为空");
         }
         MessageDetailsResponse response = null;
+        Message message = messageMapper.selectById (messageId);
         //根据消息id和类型查询待处理信息
         if ("12".equals(type)) {
-
-            Message message = messageMapper.selectById (messageId);
             if (message != null) {
                 if (message.getApplicantType ( ) == 1) {
                     response = messageMapper.selectWorkerApply (messageId);

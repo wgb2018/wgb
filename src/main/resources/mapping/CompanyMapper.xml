@@ -184,6 +184,12 @@
     <insert id="insertAreaRelation">
         insert into user_area values(#{id},#{code},#{level},#{name})
     </insert>
+    <insert id="insertAreaRelationBatch" parameterType="java.util.List">
+        insert into user_area (id, area_id, area_level, area_name) values
+        <foreach collection="list" separator="," item="item">
+            (#{item.id},#{item.code},#{item.level},#{item.name})
+        </foreach>
+    </insert>
     <!-- 修改人力公司 -->
     <update id="update" parameterType="com.microdev.model.Company">
         update company set deleted = #{deleted},modify_time = #{modify_time},address = #{address},business_license = #{business_license},
@@ -203,6 +209,12 @@
     </select>
     <insert id="insertCompanyArea">
         insert into area_relation values(#{id},#{areaId},#{idType})
+    </insert>
+    <insert id="insertCompanyAreaBatch" parameterType="java.util.List">
+        insert into area_relation (id, area_id, id_type) values
+        <foreach collection="list" separator="," item="item">
+            (#{item.id},#{item.areaId},#{item.idType})
+        </foreach>
     </insert>
 
     <select id="selectExamineCompanies" resultType="java.util.Map">

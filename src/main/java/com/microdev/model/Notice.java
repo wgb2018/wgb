@@ -12,7 +12,7 @@ import java.util.List;
 @TableName("notice")
 public class Notice extends BaseEntity {
     private Integer needWorkers;
-
+    @TableField(exist = false)
     private Long createTimeL;
 
     @JsonFormat(pattern="yyyy.MM.dd")
@@ -24,14 +24,29 @@ public class Notice extends BaseEntity {
     private String content;
 
     private String hotelId;
-
     @TableField(exist = false)
     private List<Dict> service;
     @TableField(exist = false)
-    private Company hotel;
+    private String name;
+    @TableField(exist = false)
+    private String logo;
+    @TableField(exist = false)
+    private String address;
+    private String hourPay;
+    @TableField(exist = false)
+    private Company company;
+    @TableField(exist = false)
+    private String  enrollWorkers;
+
+    private String settlementPeriod;
+
+    private String settlementNum;
+    private String taskTypeText;
+    private String taskTypeIcon;
+
 
     private String hrCompanyId;
-    //1:用人单位发布任务给人力  2:用人单位招聘小时工 3:人力发布任务给小时工 4:人力招聘小时工
+    //1:用人单位发布任务给人力  2:用人单位招聘小t时工 3:人力发布任务给小时工 4:人力招聘小时工
     private Integer type;
 
     private String taskId;
@@ -39,4 +54,28 @@ public class Notice extends BaseEntity {
     private Integer status;
 
     private Integer confirmedWorkers=0;
+
+    private String stature;
+
+    private Integer statureUp;
+
+    private Integer statureDown;
+
+    private String weight;
+
+    private Integer weightUp;
+
+    private Integer weightDown;
+
+    private String education;
+
+    private String sex;
+
+    private String hourPayRange;
+
+    private Integer hourlyPayUp;
+
+    private Integer hourlyPayDown;
+
+    private String healthcard;
 }

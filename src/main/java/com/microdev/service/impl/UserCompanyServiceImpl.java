@@ -541,7 +541,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             inform.setContent(company.getName() + "拒绝了你的绑定申请，等以后有机会希望可以再合作。");
         }
         informMapper.insertInform(inform);
-        return ResultDO.buildSuccess("绑定成功");
+        return ResultDO.buildSuccess("处理成功");
     }
 
     /**

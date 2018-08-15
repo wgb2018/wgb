@@ -50,6 +50,9 @@
     <update id="updateStatus" parameterType="java.lang.String">
         update message set status = 1 where id = #{id}
     </update>
+    <update id="updateAllBind">
+        update message set status = 1 where worker_id = #{workerId} and hr_company_id = #{hrId} and status = 0
+    </update>
 
     <select id="findAll" parameterType="com.microdev.param.MessageQuery" resultType="com.microdev.model.Message">
         select

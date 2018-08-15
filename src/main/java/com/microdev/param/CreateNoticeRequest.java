@@ -62,9 +62,15 @@ public class CreateNoticeRequest {
     private Set<String> workerSet = new HashSet<String> ();
 
     //人力招聘小时工参数
-    private String stature;//身高
-    private String weight;//体重
+    private Integer statureUp;//身高
+    private Integer statureDown;//身高
+    private Integer weightUp;//体重
+    private Integer weightDown;//体重
     private int education;//学历
     private UserSex sex;
+    private Integer hourPayRangeUp;
+    private Integer hourPayRangeDown;
+    //0:需要健康证 1：不需要
+    private Integer healthcard;
 
 }

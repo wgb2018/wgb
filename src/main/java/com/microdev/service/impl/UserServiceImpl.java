@@ -135,19 +135,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         if(user == null){
             throw new ParamsException("用户不存在");
         }
-        ValueOperations<String, String> operations = redisTemplate.opsForValue();
-        String value = operations.get (login.getMobile ());
-        if(value != null && !value.equals (login.getUniqueId ()) && !value.equals ("")){
-            if(user.getUserType () == UserType.worker){
-                try {
-                    jpushClient.jC.sendPush (JPushManage.buildPushObject_all_message (login.getMobile (),login.getUniqueId ()));
-                } catch (APIConnectionException e) {
-                    e.printStackTrace ( );
-                } catch (APIRequestException e) {
-                    e.printStackTrace ( );
-                }
-            }
-        }
+
         UserDTO userDTO = new UserDTO();
         if(login.getPlatform () == PlatformType.PC){
             if(user.getUserType () == UserType.worker){
@@ -158,11 +146,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         userDTO.setNickname(user.getNickname());
         userDTO.setRoleList(new ArrayList<>(user.getRoles()));
         userDTO.setUserType(user.getUserType());
+        if (!PasswordHash.validatePassword(login.getPassword(), user.getPassword())){
+            throw new ParamsException("用户名或密码错误");
+        }
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        String value = operations.get (login.getMobile ());
+        if(value != null && !value.equals (login.getUniqueId ())){
+            if(user.getUserType () == UserType.worker){
+                try {
+                    jpushClient.jC.sendPush (JPushManage.buildPushObject_all_message (login.getMobile (),login.getUniqueId ()));
+                    System.out.println ("发送推送2");
+                } catch (APIConnectionException e) {
+                    e.printStackTrace ( );
+                } catch (APIRequestException e) {
+                    e.printStackTrace ( );
+                }
+            }
+        }
         if (user != null && PasswordHash.validatePassword(login.getPassword(), user.getPassword())) {
             operations.set(user.getMobile (), login.getUniqueId ());
             return tokenService.accessToken(userDTO, login.getPlatform().name());
         }
-        throw new ParamsException("用户名或密码错误");
+        return null;
+
     }
 
     @Override

@@ -222,7 +222,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     log.setToDate(punchTime);
 
                     //求时间差
-                    Duration duration = Duration.between(taskWorker.getFromDate().isBefore(log.getFromDate()) ? log.getFromDate() : taskWorker.getFromDate(), taskWorker.getToDate().isBefore(log.getToDate()) ? taskWorker.getToDate() : log.getToDate());
+                    Duration duration = Duration.between(taskWorker.getDayStartTime ().plusMinutes (5).isBefore (log.getFromDate().toOffsetTime ())?log.getFromDate().toOffsetTime ():taskWorker.getDayStartTime (), taskWorker.getDayEndTime ().minusMinutes (5).isBefore (log.getToDate().toOffsetTime ())?taskWorker.getDayEndTime ():log.getToDate().toOffsetTime ());
                     Long seconds_span = duration.getSeconds();
                     Long minutes = (seconds_span / 60);
 
@@ -616,7 +616,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
      * 修改服务类型及服务地区
      */
     public void mpdifyAreaAndService(AreaAndServiceRequest request) {
-
+        List<AreaParam> li = new ArrayList <AreaParam> ();
+        List<AreaParam> ll = new ArrayList <AreaParam> ();
+        AreaParam ar = new AreaParam ();
         if (request.getAreaCodeList() == null) {
             //删除旧数据
             if (request.getAreaCode() != null) {
@@ -627,34 +629,72 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 for (UserArea ua : areaList) {
                     if (ua.getAreaLevel() == 1) {
                         List<Map<String, String>> list = dictMapper.findCity(ua.getAreaId());
-                        companyMapper.insertAreaRelation(request.getId(), ua.getAreaId(), ua.getAreaLevel(), dictMapper.findProvinceNameById(ua.getAreaId()));
+                        ar.setId (request.getId());
+                        ar.setCode (ua.getAreaId());
+                        ar.setLevel (ua.getAreaLevel());
+                        ar.setName (dictMapper.findProvinceNameById(ua.getAreaId()));
+                        ll.add (ar);
+                        //companyMapper.insertAreaRelation(request.getId(), ua.getAreaId(), ua.getAreaLevel(), dictMapper.findProvinceNameById(ua.getAreaId()));
                         if (list == null) {
-                            companyMapper.insertCompanyArea(request.getId(), ua.getAreaId(), request.getIdType());
+                            ar.setId (request.getId());
+                            ar.setAreaId (ua.getAreaId());
+                            ar.setIdType (request.getIdType());
+                            li.add (ar);
+                            //companyMapper.insertCompanyArea(request.getId(), ua.getAreaId(), request.getIdType());
                         }
                         for (Map<String, String> key : list) {
                             List<Map<String, String>> list2 = dictMapper.findArea(key.get("areaId"));
 
                             if (list2 == null) {
-                                companyMapper.insertCompanyArea(request.getId(), key.get("areaId"), request.getIdType());
+                                ar.setId (request.getId());
+                                ar.setAreaId (key.get("areaId"));
+                                ar.setIdType (request.getIdType());
+                                li.add (ar);
+                                //companyMapper.insertCompanyArea(request.getId(), key.get("areaId"), request.getIdType());
                             }
                             for (Map<String, String> key2 : list2) {
-                                companyMapper.insertCompanyArea(request.getId(), key2.get("areaId"), request.getIdType());
+                                ar.setId (request.getId());
+                                ar.setAreaId (key2.get("areaId"));
+                                ar.setIdType (request.getIdType());
+                                li.add (ar);
+                                //companyMapper.insertCompanyArea(request.getId(), key2.get("areaId"), request.getIdType());
                             }
                         }
                     } else if (ua.getAreaLevel() == 2) {
-
-                        companyMapper.insertAreaRelation(request.getId(), ua.getAreaId(), ua.getAreaLevel(), dictMapper.findCityNameById(ua.getAreaId()));
+                        ar.setId (request.getId());
+                        ar.setCode (ua.getAreaId());
+                        ar.setLevel (ua.getAreaLevel());
+                        ar.setName (dictMapper.findProvinceNameById(ua.getAreaId()));
+                        ll.add (ar);
+                        //companyMapper.insertAreaRelation(request.getId(), ua.getAreaId(), ua.getAreaLevel(), dictMapper.findCityNameById(ua.getAreaId()));
                         List<Map<String, String>> list2 = dictMapper.findArea(ua.getAreaId());
 
                         if (list2 == null) {
-                            companyMapper.insertCompanyArea(request.getId(), ua.getAreaId(), request.getIdType());
+                            ar.setId (request.getId());
+                            ar.setAreaId (ua.getAreaId());
+                            ar.setIdType (request.getIdType());
+                            li.add (ar);
+                            //companyMapper.insertCompanyArea(request.getId(), ua.getAreaId(), request.getIdType());
                         }
                         for (Map<String, String> key2 : list2) {
-                            companyMapper.insertCompanyArea(request.getId(), key2.get("areaId"), request.getIdType());
+                            ar.setId (request.getId());
+                            ar.setAreaId (key2.get("areaId"));
+                            ar.setIdType (request.getIdType());
+                            li.add (ar);
+                            //companyMapper.insertCompanyArea(request.getId(), key2.get("areaId"), request.getIdType());
                         }
                     } else {
-                        companyMapper.insertAreaRelation(request.getId(), ua.getAreaId(), ua.getAreaLevel(), dictMapper.findAreaNameById(ua.getAreaId()));
-                        companyMapper.insertCompanyArea(request.getId(), ua.getAreaId(), request.getIdType());
+                        ar.setId (request.getId());
+                        ar.setCode (ua.getAreaId());
+                        ar.setLevel (ua.getAreaLevel());
+                        ar.setName (dictMapper.findProvinceNameById(ua.getAreaId()));
+                        ll.add (ar);
+                        //companyMapper.insertAreaRelation(request.getId(), ua.getAreaId(), ua.getAreaLevel(), dictMapper.findAreaNameById(ua.getAreaId()));
+                        ar.setId (request.getId());
+                        ar.setAreaId (ua.getAreaId());
+                        ar.setIdType (request.getIdType());
+                        li.add (ar);
+                        //companyMapper.insertCompanyArea(request.getId(), ua.getAreaId(), request.getIdType());
                     }
                 }
             }
@@ -667,46 +707,97 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             for (int i = 0; i < lis.size(); i++) {
                 if (dictMapper.isProvince(lis.get(i)) != null) {//第一级
                     List<Map<String, String>> list = dictMapper.findCity(lis.get(i));
-                    companyMapper.insertAreaRelation(request.getId(), lis.get(i), 1, dictMapper.findProvinceNameById(lis.get(i)));
+                    ar.setId (request.getId());
+                    ar.setCode (lis.get(i));
+                    ar.setLevel (1);
+                    ar.setName (dictMapper.findProvinceNameById(lis.get(i)));
+                    ll.add (ar);
+                    //companyMapper.insertAreaRelation(request.getId(), lis.get(i), 1, dictMapper.findProvinceNameById(lis.get(i)));
                     if (list == null) {
-                        companyMapper.insertCompanyArea(request.getId(), lis.get(i), request.getIdType());
+                        ar.setId (request.getId());
+                        ar.setAreaId (lis.get(i));
+                        ar.setIdType (request.getIdType());
+                        li.add (ar);
+                        //companyMapper.insertCompanyArea(request.getId(), lis.get(i), request.getIdType());
                     }
                     for (Map<String, String> key : list) {
                         List<Map<String, String>> list2 = dictMapper.findArea(key.get("areaId"));
-
                         if (list2 == null) {
-                            companyMapper.insertCompanyArea(request.getId(), key.get("areaId"), request.getIdType());
+                            ar.setId (request.getId());
+                            ar.setAreaId (key.get("areaId"));
+                            ar.setIdType (request.getIdType());
+                            li.add (ar);
+                            //companyMapper.insertCompanyArea(request.getId(), key.get("areaId"), request.getIdType());
                         }
                         for (Map<String, String> key2 : list2) {
-                            companyMapper.insertCompanyArea(request.getId(), key2.get("areaId"), request.getIdType());
+                            ar.setId (request.getId());
+                            ar.setAreaId (key.get("areaId"));
+                            ar.setIdType (request.getIdType());
+                            li.add (ar);
+                            //companyMapper.insertCompanyArea(request.getId(), key2.get("areaId"), request.getIdType());
                         }
                     }
                 } else if (dictMapper.isCity(lis.get(i)) != null) {//第二级
-                    companyMapper.insertAreaRelation(request.getId(), lis.get(i), 2, dictMapper.findCityNameById(lis.get(i)));
+                    ar.setId (request.getId());
+                    ar.setCode (lis.get(i));
+                    ar.setLevel (2);
+                    ar.setName (dictMapper.findProvinceNameById(lis.get(i)));
+                    ll.add (ar);
+                    //companyMapper.insertAreaRelation(request.getId(), lis.get(i), 2, dictMapper.findCityNameById(lis.get(i)));
                     List<Map<String, String>> list2 = dictMapper.findArea(lis.get(i));
-
                     if (list2 == null) {
-                        companyMapper.insertCompanyArea(request.getId(), lis.get(i), request.getIdType());
+                        ar.setId (request.getId());
+                        ar.setAreaId (lis.get(i));
+                        ar.setIdType (request.getIdType());
+                        li.add (ar);
+                        //companyMapper.insertCompanyArea(request.getId(), lis.get(i), request.getIdType());
                     }
                     for (Map<String, String> key2 : list2) {
-                        companyMapper.insertCompanyArea(request.getId(), key2.get("areaId"), request.getIdType());
+                        ar.setId (request.getId());
+                        ar.setAreaId (key2.get("areaId"));
+                        ar.setIdType (request.getIdType());
+                        li.add (ar);
+                        //companyMapper.insertCompanyArea(request.getId(), key2.get("areaId"), request.getIdType());
                     }
                 } else {//第三级
-                    companyMapper.insertAreaRelation(request.getId(), lis.get(i), 3, dictMapper.findAreaNameById(lis.get(i)));
-                    companyMapper.insertCompanyArea(request.getId(), lis.get(i), request.getIdType());
+                    ar.setId (request.getId());
+                    ar.setCode (lis.get(i));
+                    ar.setLevel (3);
+                    ar.setName (dictMapper.findProvinceNameById(lis.get(i)));
+                    ll.add (ar);
+                    //companyMapper.insertAreaRelation(request.getId(), lis.get(i), 3, dictMapper.findAreaNameById(lis.get(i)));
+                    ar.setId (request.getId());
+                    ar.setAreaId (lis.get(i));
+                    ar.setIdType (request.getIdType());
+                    li.add (ar);
+                    //companyMapper.insertCompanyArea(request.getId(), lis.get(i), request.getIdType());
                 }
 
             }
         }
-
+        if(li.size ()>0){
+            companyMapper.insertCompanyAreaBatch (li);
+        }
+        if(ll.size ()>0){
+            companyMapper.insertAreaRelationBatch (ll);
+        }
+        li.clear ();
         if (request.getServiceType() != null) {
             taskTypeRelationMapper.deleteTaskTypeRelation(request.getId());
             //添加服务类型
             List<String> serviceType = request.getServiceType();
             for (int i = 0; i < serviceType.size(); i++) {
-                taskTypeRelationMapper.insertTaskTypeRelation(request.getId(), serviceType.get(i), request.getIdType());
+                ar.setId (request.getId());
+                ar.setTaskTypeId (serviceType.get(i));
+                ar.setIdType (request.getIdType());
+                li.add (ar);
+                //taskTypeRelationMapper.insertTaskTypeRelation(request.getId(), serviceType.get(i), request.getIdType());
             }
         }
+        if(li.size ()>0){
+            taskTypeRelationMapper.insertTaskTypeRelationBatch (li);
+        }
+
     }
 
     @Override
@@ -716,7 +807,6 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         if (map.get("birthday") != null) {
             str = map.get("birthday").toString().substring(0, 10);
         }
-
         map.put("birthday", str);
         List l1 = dictService.findServiceArea(id);
         List l2 = dictMapper.queryTypeByUserId(id);

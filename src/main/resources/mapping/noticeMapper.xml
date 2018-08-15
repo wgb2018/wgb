@@ -3,11 +3,99 @@
 <mapper namespace="com.microdev.mapper.NoticeMapper">
     <sql id="Notice_Column_List">
         id as pid, create_time, deleted, modify_time, need_workers, from_date, to_date, content, hotel_id, hr_company_id, type,
-        task_id, status ,confirmed_workers
+        task_id, status ,confirmed_workers,hour_pay,stature,stature_up,stature_down,weight,weight_up,weight_down,education,sex,
+        hour_pay_range,hourly_pay_up,hourly_pay_down,healthcard,settlement_period,settlement_num,task_type_text,task_type_icon
     </sql>
     <select id="queryList" resultType="com.microdev.model.Notice" parameterType="com.microdev.param.QueryNoticeRequest">
-        select distinct n.id as pid,n.create_time as createTime, n.deleted, n.modify_time as modifyTime, n.need_workers as needworkers, n.from_date as fromDate, n.to_date as toDate, n.content, n.hotel_id as hotelId
-        n.hr_company_id as hrCompanyId,n.type as type, n.task_id as taskId, n.status as status,n.confirmed_workers as confirmedWorkers
+        select distinct n.id as pid,n.create_time as createTime, n.deleted, n.modify_time as modifyTime, n.need_workers as needworkers, n.from_date as fromDate, n.to_date as toDate, n.content, n.hotel_id as hotelId,n.task_type_text as taskTypeText,n.task_type_icon as taskTypeIcon,
+        n.hr_company_id as hrCompanyId,n.type as type, n.task_id as taskId, n.status as status,n.confirmed_workers as confirmedWorkers,n.hour_pay as hourPay,n.stature as stature,n.stature_up as statureUp,n.stature_down as statureDown,n.weight as weight,n.weight_up as weightUp,n.weight_down as weightDown,n.education as education,n.sex as sex,
+        n.hour_pay_range as hourPayRange,n.hourly_pay_up as hourlyPayUp,n.hourly_pay_down as hourlyPayDown,n.healthcard as healthcard,n.settlement_period as settlementPeriod,n.settlement_num as settlementNum
+        from notice n left join notice_service s on n.id = s.notice_id left join company c on n.hotel_id = c.id left join company c2 on n.hr_company_id = c2.id
+        <where>
+            <if test="date != null">
+                !(n.from_date &gt;= #{toDate} || n.to_date &lt;= #{fromDate})
+            </if>
+            <if test="hotelName != null and hotelName !=''">
+                and c.name like concat('%', #{hotelName},'%')
+            </if>
+            <if test="hrCompanyName != null and hrCompanyName !=''">
+                and c2.name like concat('%', #{hrCompanyName},'%')
+            </if>
+            <if test="service != null and service != ''">
+                and s.service_id = #{service}
+            </if>
+            <if test="hotelId != null and hotelId != ''">
+                and c.id = #{hotelId}
+            </if>
+            <if test="hrId != null and hrId != ''">
+                and n.hr_company_id = #{hrId}
+            </if>
+            <if test="type != null and type != '' and type != 0">
+                and n.type = #{type} and n.status = 0
+            </if>
+            <if test="type == 0">
+                <if test="hotelId != null and hotelId != ''">
+                    and n.type in (1,2)
+                </if>
+                <if test="hrId != null and hrId != ''">
+                    and n.type in (3,4)
+                </if>
+            </if>
+
+        </where>
+        order by n.create_time desc
+    </select>
+    <select id="queryRecommend" resultType="com.microdev.model.Notice">
+        select <include refid="Notice_Column_List" /> from notice where type = #{type} order by rand() limit 3
+    </select>
+    <select id="queryDetailsHr" resultType="com.microdev.param.NoticeDetails" parameterType="com.microdev.param.QueryNoticeRequest">
+        select t.task_type_text as taskTypeText,UNIX_TIMESTAMP(t.create_time) as createTime,n.need_workers as needWorkers,n.settlement_period as settlementPeriod,n.confirmed_workers as confirmedWorkers,
+        n.settlement_num as settlementNum,t.task_content as taskContent,c.address as hotelAddress,c.leader as hotelLeader,c.leader_mobile as hotelLeaderMobile,c.name as hotelName,c.logo as hotelLogo,
+        c.id as hotelId,t.hourly_pay as hourlyPay,t.from_date as fromDate,t.to_date as toDate,t.day_start_time as dayStartTime,t.day_end_time as dayEndTime,c.address_code as hotelAddressCode,c.area as hotelArea
+        <if test="hrId != null">
+            ,(select CASE WHEN count(id) = 0 THEN 0 ELSE 1 end from enroll where request_id = #{noticeId} and hr_company_id = #{hrId} and status in (0,1)) as available
+        </if>
+        <if test="workerId != null">
+            ,(select CASE WHEN count(id) = 0 THEN 0 ELSE 1 end from enroll where request_id = #{noticeId} and worker_id = #{workerId} and status in (0,1)) as available
+        </if>
+        <if test="myself">
+            ,(select sum(value) from enroll where request_id = #{noticeId}) as enrollWorkers
+        </if>
+        from notice n left join task t on n.task_id = t.id left join company c on n.hotel_id = c.id
+        where n.id = #{noticeId}
+    </select>
+    <select id="queryDetailsWorker" resultType="com.microdev.param.NoticeDetails" parameterType="com.microdev.param.QueryNoticeRequest">
+        select t.task_type_text as taskTypeText,UNIX_TIMESTAMP(t.create_time) as createTime,n.need_workers as needWorkers,t.worker_settlement_period as settlementPeriod,n.confirmed_workers as confirmedWorkers,
+        t.worker_settlement_num as settlementNum,t.task_content as taskContent,
+        c1.address as hrAddress,c1.leader as hrLeader,c1.leader_mobile as hrLeaderMobile,c1.name as hrCompanyName,c1.logo as hrLogo,c1.address_code as hrAddressCode,c1.id as hrcompanyId,c1.area as hrArea,
+        c2.address as hotelAddress,c2.leader as hotelLeader,c2.leader_mobile as hotelLeaderMobile,c2.name as hotelName,c2.logo as hotelLogo,c2.address_code as hotelAddressCode,c2.id as hotelId,c2.area as hotelArea,
+        t.hourly_pay as hourlyPay,t.from_date as fromDate,t.to_date as toDate,t.day_start_time as dayStartTime,t.day_end_time as dayEndTime
+        <if test="workerId != null">
+            ,(select CASE WHEN count(id) = 0 THEN 0 ELSE 1 end from enroll where request_id = #{noticeId} and worker_id = #{workerId} and status in (0,1)) as available
+        </if>
+        <if test="myself">
+            ,(select sum(value) from enroll where request_id = #{noticeId}) as enrollWorkers
+        </if>
+        from notice n left join task_hr_company t on n.task_id = t.id left join company c1 on n.hr_company_id = c1.id left join company c2 on n.hotel_id = c2.id
+        where n.id = #{noticeId}
+    </select>
+    <select id="selectDetailsApply" resultType="com.microdev.param.NoticeDetails" parameterType="com.microdev.param.QueryNoticeRequest">
+        select n.hour_pay_range as hourlyPay,n.need_workers as needWorkers,n.confirmed_workers as confirmedWorkers,n.from_date as fromDate,n.to_date as toDate,UNIX_TIMESTAMP(n.create_time) as createTime,
+        CASE n.sex WHEN 'UNKNOW' THEN '不限' WHEN 'MALE' THEN '男' WHEN 'FEMALE' THEN '女' END AS sex,n.education as education,n.stature as stature,n.weight as weight,n.healthcard as healthcard,n.content as taskContent,
+        c.address as hrAddress,c.leader as hrLeader,c.leader_mobile as hrLeaderMobile,c.name as hrCompanyName,c.logo as hrLogo,c.id as hrcompanyId,c.area as hrArea
+        <if test="workerId != null">
+            ,(select CASE WHEN count(id) = 0 THEN 0 ELSE 1 end from enroll where request_id = #{noticeId} and worker_id = #{workerId} and status in (0,1)) as available
+        </if>
+        <if test="myself">
+            ,(select sum(value) from enroll where request_id = #{noticeId}) as enrollWorkers
+        </if>
+        from notice n left join company c on n.hr_company_id = c.id
+        where n.id = #{noticeId}
+    </select>
+    <select id="queryMyList" resultType="com.microdev.model.Notice" parameterType="com.microdev.param.QueryNoticeRequest">
+        select distinct n.id as pid,n.create_time as createTime, n.deleted, n.modify_time as modifyTime, n.need_workers as needworkers, n.from_date as fromDate, n.to_date as toDate, n.content, n.hotel_id as hotelId,n.task_type_text as taskTypeText,n.task_type_icon as taskTypeIcon,
+        n.hr_company_id as hrCompanyId,n.type as type, n.task_id as taskId, n.status as status,n.confirmed_workers as confirmedWorkers,n.hour_pay as hourPay,n.stature as stature,n.stature_up as statureUp,n.stature_down as statureDown,n.weight as weight,n.weight_up as weightUp,n.weight_down as weightDown,n.education as education,n.sex as sex,
+        n.hour_pay_range as hourPayRange,n.hourly_pay_up as hourlyPayUp,n.hourly_pay_down as hourlyPayDown,n.healthcard as healthcard,n.settlement_period as settlementPeriod,n.settlement_num as settlementNum
         from notice n left join notice_service s on n.id = s.notice_id left join company c on n.hotel_id = c.id
         <where>
             <if test="date != null">
@@ -23,12 +111,12 @@
                 and c.id = #{hotelId}
             </if>
             <if test="hrId != null and hrId != ''">
-                and c.bind_companys = 1 or c.id in (select hotel_id from hotel_hr_company where hr_id = #{hrId} and status in (0,5))
+                and n.hr_company_id = #{hrId}
+            </if>
+            <if test="type != null and type != ''">
+                and n.type = #{type}
             </if>
         </where>
         order by n.create_time desc
-    </select>
-    <select id="queryRecommend" resultType="com.microdev.model.Notice">
-        select <include refid="Notice_Column_List" /> from notice where type = #{type} order by rand() limit 3
     </select>
 </mapper>

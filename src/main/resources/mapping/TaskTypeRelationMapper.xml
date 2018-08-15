@@ -7,6 +7,12 @@
     <insert id = "insertTaskTypeRelation">
         insert into task_type_relation values(#{id},#{taskTypeId},#{idType})
     </insert>
+    <insert id="insertTaskTypeRelationBatch" parameterType="java.util.List">
+        insert into task_type_relation (id, task_type_id, id_type) values
+        <foreach collection="list" separator="," item="item">
+            (#{item.id},#{item.taskTypeId},#{item.idType})
+        </foreach>
+    </insert>
     <delete id="deleteTaskTypeRelation">
         delete from task_type_relation where id = #{id}
     </delete>

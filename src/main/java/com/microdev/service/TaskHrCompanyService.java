@@ -168,4 +168,11 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
      * @return
      */
     List<HrTask> queryHrTask(TaskHrQueryDTO taskHrQueryDTO);
+
+    /**
+     * 人力同意小时工报名申请并派发
+     * @param request
+     * @return
+     */
+    ResultDO agreeApplySendTask(HrTaskDistributeRequest request);
 }

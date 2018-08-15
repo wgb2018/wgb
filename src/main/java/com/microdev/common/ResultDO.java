@@ -19,6 +19,10 @@ public class ResultDO {
      */
     private Integer code;
     /**
+     * 错误码
+     */
+    private Integer value;
+    /**
      * 返回信息
      */
     private String message;
@@ -71,23 +75,37 @@ public class ResultDO {
      * 构建成功的返回
      */
     public static ResultDO buildSuccess(String message) {
-        return buildSuccess(message, null, null,null);
+        return buildSuccess(message, null, null,null,null);
     }
 
     public static ResultDO buildSuccess(Object data) {
-        return buildSuccess(null, data, null,null);
+        return buildSuccess(null, data, null,null,null);
+    }
+
+    public static ResultDO buildSuccess(Integer value, Object data) {
+        return buildSuccess(null, data, null,null,value);
     }
 
     public static ResultDO buildSuccess(String message, Object data) {
-        return buildSuccess(message, data, null,null);
+        return buildSuccess(message, data, null,null,null);
     }
 
+    public static ResultDO buildSuccess(String message, Object data, Map<String, Object> extra,Integer code,Integer value) {
+        ResultDO resultDO = new ResultDO (true);
+        resultDO.message = message;
+        resultDO.data = data;
+        resultDO.extra = extra;
+        resultDO.code = code;
+        resultDO.value = value;
+        return resultDO;
+    }
     public static ResultDO buildSuccess(String message, Object data, Map<String, Object> extra,Integer code) {
         ResultDO resultDO = new ResultDO (true);
         resultDO.message = message;
         resultDO.data = data;
         resultDO.extra = extra;
         resultDO.code = code;
+        resultDO.value = null;
         return resultDO;
     }
 

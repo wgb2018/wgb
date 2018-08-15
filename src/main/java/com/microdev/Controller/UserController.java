@@ -182,7 +182,6 @@ public class UserController {
      * 刷新token
      * 客户端 token 到期时，在不打扰用户的情况下重新获取 token
      */
-   
     @GetMapping("/oauth/{uniqueId}/refresh-token/{refreshToken}")
     public ResultDO refreshTokenPost(@PathVariable String uniqueId , @PathVariable String refreshToken) throws Exception{
         return ResultDO.buildSuccess(tokenService.refreshToken(refreshToken,uniqueId));
@@ -266,7 +265,7 @@ public class UserController {
 //        test = userMapper.selectById("f1f33e09884c4b06b8fbe77465bd208d");
 
         // app 上传
-        File file;
+        /*File file;
         String fileURI = null;
         String filePath;
         //file = QRCodeUtil.createQRCode ("3a267b284a1641ed9fb143fb3ff2d6c5WGBhotel");
@@ -279,7 +278,7 @@ public class UserController {
         //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
         fileURI = objectStoreService.uploadFile(filePath, file);
 
-        System.out.println ("fileURI:"+fileURI);
+        System.out.println ("fileURI:"+fileURI);*/
 
 
 
@@ -331,6 +330,10 @@ public class UserController {
         /*String str = "wgba001";
         System.out.println (str.substring (0,4));
 */
+        OffsetDateTime of = OffsetDateTime.now ();
+        System.out.println (of);
+        OffsetDateTime of1 = OffsetDateTime.ofInstant (Instant.ofEpochSecond (of.toEpochSecond () - of.toOffsetTime ().getLong (ChronoField.SECOND_OF_DAY)),ZoneId.systemDefault ());
+        System.out.println (of1);
         return ResultDO.buildSuccess("");
     }
 	@GetMapping("/{mobile}/verifyMobile/{smsCode}")

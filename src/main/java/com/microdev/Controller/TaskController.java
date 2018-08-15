@@ -53,7 +53,6 @@ public class TaskController {
      */
     @PostMapping("/tasks/search")
     public ResultDO getPageData( @RequestBody PagingDO<TaskQueryDTO> paging) {
-
         return taskService.getPageTasks(paging.getPaginator(),paging.getSelector());
     }
     /**
@@ -93,13 +92,22 @@ public class TaskController {
     }
 
     /**
+     * 用人单位同意小时工报名申请
+     * @param createTaskRequest
+     * @return
+     */
+    @PostMapping("/agree/apply/worker")
+    public ResultDO agreeApplyWorker(@RequestBody CreateTaskRequest createTaskRequest) {
+        return taskService.agreeApplyWorker(createTaskRequest);
+    }
+
+    /**
      * 下载用人单位任务
      * @param response
      * @param taskQueryDTO
      */
     @GetMapping("/task/hotel/download")
     public void downloadHotelTask(HttpServletResponse response,@ModelAttribute TaskQueryDTO taskQueryDTO) {
-
         List<EmployerTask> list = taskService.queryHotelTask(taskQueryDTO);
         ExcelUtil.download(response, list, ExcelUtil.employerTask, "用人单位任务", companyService.selectById(taskQueryDTO.getHotelId()).getName() + "的任务");
     }

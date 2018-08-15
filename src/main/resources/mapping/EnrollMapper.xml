@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.microdev.mapper.EnrollMapper">
+    <sql id="Enroll_Column_List">
+        id as pid, create_time, deleted, modify_time, enroll_type, enroll_code, enroll_content, enroll_link, enroll_title, msg_link, status,
+        worker_id, worker_task_id ,hotel_id,hr_company_id,applicant_type,apply_type,content,value,request_id,is_task,task_id,hr_task_id,assign
+    </sql>
+    <select id="selectEnrollNum" resultType="java.lang.Integer">
+        select sum(value) from enroll where request_id = #{id}
+    </select>
+    <select id="selectEnrollWorker" resultType="com.microdev.param.EnrollerResponse">
+        select e.id as pid,UNIX_TIMESTAMP(e.create_time) as applyTimeL,e.create_time as applyTime,e.worker_id as workerId,u.nickname as workerName,u.avatar as avatar,u.sex as sex,u.age as age,u.mobile as mobile
+        from enroll e left join user u where e.worker_id = u.worker_id
+        <where>
+            e.request_id = #{noticeId}
+            <if test="type != null">
+                and e.status = #{type}
+            </if>
+        </where>
+        order by e.create_time desc
+    </select>
+    <select id="selectEnrollHr" resultType="com.microdev.param.EnrollerResponse">
+        select e.id as pid,UNIX_TIMESTAMP(e.create_time) as applyTimeL,e.create_time as applyTime,c.id as hrId,c.name as hrName,c.logo as logo,c.mobile as mobile,e.value as applyWorkers,IFNULL(e.assign,'0') as assignWorkers
+        from enroll e left join company c where e.hr_company_id = c.id
+        <where>
+            e.request_id = #{noticeId}
+            <if test="type != null">
+                and e.status = #{type}
+            </if>
+        </where>
+        order by e.create_time desc
+    </select>
+    <select id="refuseByNoticeId">
+        update enroll set status = 2 where request_id = #{id} and status = 0;
+    </select>
+</mapper>

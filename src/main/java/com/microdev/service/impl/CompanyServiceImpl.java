@@ -1085,7 +1085,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         Company hotel = null;
         Company hr = null;
         if ("1".equals(status)) {
-
             inform.setTitle("绑定成功");
             if (message.getApplicantType() == 2) {
                 inform.setSendType(3);
@@ -1180,7 +1179,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
         } else if ("0".equals(status)) {
             inform.setTitle("绑定拒绝");
-
             if (message.getApplicantType() == 2) {
                 inform.setSendType(3);
                 inform.setAcceptType(2);
