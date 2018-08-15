@@ -185,4 +185,16 @@ public interface CompanyService extends IService<Company> {
      * @return
      */
     List<CompanyCooperate> queryHotelBindHr(CompanyQueryDTO request);
+
+    /**
+     * 查询所有用人单位信息
+     * @return
+     */
+    List<EmployerInfo> queryHotelInfo();
+
+    /**
+     * 查询所有人力信息
+     * @return
+     */
+    List<HrInfo> queryInfo();
 }

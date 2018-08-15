@@ -24,8 +24,8 @@
     </select>
 
     <select id="selectHrCompanyPayBillCount" resultType="java.lang.Integer" parameterType="com.microdev.param.HrCompanyPayWorkerRequest">
-        select id
-        FROM bill b inner join company c on b.hr_company_id = c.id left join user u on b.worker_id = u.worker_id
+        select count(1)
+        FROM bill b inner join company c on b.hr_company_id = c.id
         WHERE
         b.task_hr_id = #{hrCompanyTaskId} and b.worker_id = #{workerId}
     </select>
@@ -36,12 +36,12 @@
         FROM bill b inner join company c on b.hr_company_id = c.id left join user u on b.worker_id = u.worker_id
         WHERE
         b.task_hr_id = #{hrCompanyTaskId} and b.worker_id = #{workerId}
-        order by create_time desc
+        order by b.create_time desc
     </select>
 
     <select id="selectHotelPayBillCount" resultType="java.lang.Integer" parameterType="com.microdev.param.HotelPayHrCompanyRequest">
-        select id
-        FROM bill b inner join company c on b.hr_company_id = c.id left join company c2 on b.hotel_id = c2.id
+        select count(1)
+        FROM bill b inner join company c on b.hr_company_id = c.id
         WHERE
         b.task_id = #{hotelTaskID} and b.task_hr_id = #{hrTaskId}
         order by b.create_time desc

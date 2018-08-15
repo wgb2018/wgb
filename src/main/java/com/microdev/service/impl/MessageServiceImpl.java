@@ -303,7 +303,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             m.setMessageContent(c);
             m.setHrTaskId(dto.getPid());
             try {
-                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (dto.getHrCompanyId()).getLeaderMobile ( ), m.getMessageContent ()));
+                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (dto.getHrCompanyId()).getLeaderMobile (), m.getMessageContent ()));
             } catch (APIConnectionException e) {
                 e.printStackTrace ( );
             } catch (APIRequestException e) {

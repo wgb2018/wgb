@@ -18,7 +18,6 @@ import java.util.List;
  */
 public class ExcelUtil {
 
-
     public static <T> void download(HttpServletResponse response, List<T> list, String[] strArr, String title, String name) {
         if (StringUtils.isEmpty(name)) {
             name = String.valueOf(System.currentTimeMillis()).substring(4, 13);
@@ -107,7 +106,8 @@ public class ExcelUtil {
                     response.setContentType("application/msexcel");              
                     response.setCharacterEncoding("UTF-8");
                     response.setHeader("Content-Disposition",  "attachment;filename=" + fileName);
-                    out = response.getOutputStream();                    workbook.write(out);
+                    out = response.getOutputStream();
+                    workbook.write(out);
                     out.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -209,7 +209,6 @@ public class ExcelUtil {
 
     }
 
-
     public static String[] hotelAccount = {"用人单位名称", "任务类型", "任务内容", "工作日期", "开始/结束",  "应付款(元)", "已付款(元)", "待确认款(元)", "未付款(元)"};
     public static String[] hrAccount = {"人力公司名称", "任务类型", "任务内容", "工作日期", "开始/结束",  "应付款(元)", "已付款(元)", "待确认款(元)", "未付款(元)"};
     public static String[] workerAccount = {"用人单位名称", "任务类型", "任务内容", "工作日期", "开始/结束",  "应付款(元)", "已付款(元)", "待确认款(元)", "未付款(元)"};
@@ -220,4 +219,7 @@ public class ExcelUtil {
     public static String[] workerTask = {"用人单位", "用人单位负责人", "用人单位电话", "人力公司名称", "任务内容", "任务类型", "时薪(元)", "工作日期", "开始/结束", "拒绝原因", "任务状态"};
 
     public static String[] payRecord = {"结款方", "收款方", "支付金额", "支付时间", "支付状态"};
+    public static String[] hotelInfo = {"来源", "公司名称", "公司logo", "营业执照", "负责人", "联系电话", "地址", "公司状态"};
+    public static String[] hrInfo = {"来源", "公司名称", "公司logo", "营业执照", "劳务派遣证","负责人", "联系电话", "地址", "公司状态"};
+    public static String[] workerInfo = {"来源", "昵称", "性别", "电话", "头像", "创建时间", "小时工状态"};
 }

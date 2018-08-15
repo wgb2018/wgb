@@ -88,7 +88,7 @@ public class BillController {
     @GetMapping("/worker/bill/download")
     public void downloadWorkerBillPay(@ModelAttribute HrCompanyPayWorkerRequest request, HttpServletResponse response) {
         Map<String, Object> param = BillService.queryWorkerMoneyRecord(request);
-        ExcelUtil.download(response, (List<PayRecord>)param.get("list"), ExcelUtil.payRecord, "支付记录", param.get("name").toString());
+        ExcelUtil.download(response, (List<PayRecord>)param.get("list"), ExcelUtil.payRecord, "支付记录", param.get("name").toString() + "收款记录");
     }
 
     /**
@@ -100,6 +100,6 @@ public class BillController {
     public void downloadHrBillPay(@ModelAttribute HotelPayHrCompanyRequest request, HttpServletResponse response) {
 
         Map<String, Object> param = BillService.queryHrMoneyRecord(request);
-        ExcelUtil.download(response, (List<PayRecord>)param.get("list"), ExcelUtil.payRecord, "支付记录", param.get("name").toString());
+        ExcelUtil.download(response, (List<PayRecord>)param.get("list"), ExcelUtil.payRecord, "支付记录", param.get("name").toString() + "收款记录");
     }
 }

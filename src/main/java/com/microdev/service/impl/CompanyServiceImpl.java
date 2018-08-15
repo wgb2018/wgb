@@ -1592,4 +1592,41 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         return cooperateList;
     }
 
+    /**
+     * 查询所有用人单位信息
+     * @return
+     */
+    @Override
+    public List<EmployerInfo> queryHotelInfo() {
+
+        int count = companyMapper.selectCompanyCount(1);
+        if (count == 0) {
+            return new ArrayList<EmployerInfo>();
+        }
+        PageHelper.startPage(1, count, true);
+        List<EmployerInfo> list = companyMapper.selectHotelInfo(1);
+        if (list == null) {
+            list = new ArrayList<EmployerInfo>();
+        }
+        return list;
+    }
+
+    /**
+     * 查询所有人力信息
+     * @return
+     */
+    @Override
+    public List<HrInfo> queryInfo() {
+        int count = companyMapper.selectCompanyCount(2);
+        if (count == 0) {
+            return new ArrayList<HrInfo>();
+        }
+        PageHelper.startPage(1, count, true);
+        List<HrInfo> list = companyMapper.selectHrInfo(2);
+        if (list == null) {
+            list = new ArrayList<HrInfo>();
+        }
+        return list;
+    }
+
 }

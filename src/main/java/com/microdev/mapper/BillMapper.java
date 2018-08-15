@@ -15,11 +15,11 @@ public interface BillMapper extends BaseMapper<Bill> {
 
     List<Bill> selectHrCompanyPayBill(HrCompanyPayWorkerRequest request);
 
-    int selectHrCompanyPayBillCount(HrCompanyPayWorkerRequest request);
+    Integer selectHrCompanyPayBillCount(HrCompanyPayWorkerRequest request);
 
     List<PayRecord> selectHrCompanyPayBillRecord(HrCompanyPayWorkerRequest request);
 
-    int selectHotelPayBillCount(HotelPayHrCompanyRequest request);
+    Integer selectHotelPayBillCount(HotelPayHrCompanyRequest request);
 
     List<PayRecord> selectHotelPayBillRecord(HotelPayHrCompanyRequest request);
 }

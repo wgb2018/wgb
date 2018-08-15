@@ -236,4 +236,23 @@
         </where>
         ) m
     </select>
+
+    <select id = "selectStartTask" resultType= "java.util.Map">
+      SELECT
+  (t.need_workers - t.confirmed_workers) AS num,
+  t.task_type_text AS taskTypeText,IFNULL(c.`leader_mobile`,'') AS leaderMobile,c.id AS hotelId,c.name
+FROM
+  (
+  SELECT need_workers,confirmed_workers, task_type_text, hotel_id  FROM task
+WHERE from_date BETWEEN DATE_SUB(NOW(), INTERVAL 11 MINUTE)
+  AND NOW()
+  AND need_workers > confirmed_workers
+  ) t
+  INNER JOIN company c
+  ON c.id = t.hotel_id
+    </select>
+
+    <select id = "selectStartTaskCount" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM task WHERE from_date BETWEEN DATE_SUB(NOW(), INTERVAL 11 MINUTE) AND NOW() AND need_workers > confirmed_workers
+    </select>
 </mapper>

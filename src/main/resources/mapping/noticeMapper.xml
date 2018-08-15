@@ -28,6 +28,7 @@
                 and c.id = #{hotelId}
             </if>
             <if test="hrId != null and hrId != ''">
+
                 and n.hr_company_id = #{hrId}
             </if>
             <if test="type != null and type != '' and type != 0">
@@ -81,7 +82,7 @@
     </select>
     <select id="selectDetailsApply" resultType="com.microdev.param.NoticeDetails" parameterType="com.microdev.param.QueryNoticeRequest">
         select n.hour_pay_range as hourlyPay,n.need_workers as needWorkers,n.confirmed_workers as confirmedWorkers,n.from_date as fromDate,n.to_date as toDate,UNIX_TIMESTAMP(n.create_time) as createTime,
-        CASE n.sex WHEN 'UNKNOW' THEN '‰∏çÈôê' WHEN 'MALE' THEN 'Áî∑' WHEN 'FEMALE' THEN 'Â•≥' END AS sex,n.education as education,n.stature as stature,n.weight as weight,n.healthcard as healthcard,n.content as taskContent,
+        CASE n.sex WHEN 'UNKNOW' THEN '≤ªœﬁ' WHEN 'MALE' THEN 'ƒ–' WHEN 'FEMALE' THEN '≈Æ' END AS sex,n.education as education,n.stature as stature,n.weight as weight,n.healthcard as healthcard,n.content as taskContent,
         c.address as hrAddress,c.leader as hrLeader,c.leader_mobile as hrLeaderMobile,c.name as hrCompanyName,c.logo as hrLogo,c.id as hrcompanyId,c.area as hrArea
         <if test="workerId != null">
             ,(select CASE WHEN count(id) = 0 THEN 0 ELSE 1 end from enroll where request_id = #{noticeId} and worker_id = #{workerId} and status in (0,1)) as available

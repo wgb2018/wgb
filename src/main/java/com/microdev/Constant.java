@@ -66,6 +66,21 @@ public interface Constant {
         add("/downlaod");
         add("/list/evaluate");
         add("/hotels/hrcompanies/export");
+        add("/hr/download/account");
+        add("/hotel/download/account");
+        add("/worker/download/account");
+        add("/hr/worker/download");
+        add("/worker/hr/download");
+        add("/hr/hotel/download");
+        add("/hotel/hr/download");
+        add("/task/hotel/download");
+        add("/hr/task/download");
+        add("/worker/task/download");
+        add("/worker/bill/download");
+        add("/hr/bill/download");
+        add("/worker/info/download");
+        add("/hr/info/download");
+        add("/hotel/info/download");
     }};
 
 

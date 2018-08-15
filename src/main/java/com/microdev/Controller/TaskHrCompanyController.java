@@ -3,6 +3,7 @@ package com.microdev.Controller;
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
 import com.microdev.common.utils.ExcelUtil;
+import com.microdev.model.Company;
 import com.microdev.param.*;
 import com.microdev.service.CompanyService;
 import com.microdev.service.TaskHrCompanyService;
@@ -100,7 +101,12 @@ public class TaskHrCompanyController {
     @GetMapping("/hr/download/account")
     public void downloadHrAccount(HttpServletResponse response,@ModelAttribute TaskHrQueryDTO taskHrQueryDTO) {
         List<DownLoadAccount> list = taskHrCompanyService.queryHrAccount(taskHrQueryDTO);
-        ExcelUtil.download(response, list, ExcelUtil.hotelAccount, "人力账单", companyService.selectById(taskHrQueryDTO.getHrCompanyId()).getName() + "收款账单");
+        String name = "";
+        Company c = companyService.selectById(taskHrQueryDTO.getHrCompanyId());
+        if (c != null) {
+            name = c.getName();
+        }
+        ExcelUtil.download(response, list, ExcelUtil.hotelAccount, "人力账单", name + "收款账单");
     }
 
     /**
@@ -111,7 +117,12 @@ public class TaskHrCompanyController {
     @GetMapping("/hotel/download/account")
     public void downloadHotelAccount(HttpServletResponse response,@ModelAttribute TaskHrQueryDTO taskHrQueryDTO) {
         List<DownLoadAccount> list = taskHrCompanyService.queryHotelAccount(taskHrQueryDTO);
-        ExcelUtil.download(response, list, ExcelUtil.hrAccount, "用人单位账单", companyService.selectById(taskHrQueryDTO.getHotelId()).getName() + "支付账单");
+        String name = "";
+        Company c = companyService.selectById(taskHrQueryDTO.getHotelId());
+        if (c != null) {
+            name = c.getName();
+        }
+        ExcelUtil.download(response, list, ExcelUtil.hrAccount, "用人单位账单", name + "支付账单");
     }
 
     /**
@@ -123,7 +134,12 @@ public class TaskHrCompanyController {
     public void downloadHrTask(HttpServletResponse response,@ModelAttribute TaskHrQueryDTO taskHrQueryDTO) {
 
         List<HrTask> list = taskHrCompanyService.queryHrTask(taskHrQueryDTO);
-        ExcelUtil.download(response, list, ExcelUtil.hrTask, "人力任务", companyService.selectById(taskHrQueryDTO.getHrCompanyId()) + "任务");
+        String name = "";
+        Company c = companyService.selectById(taskHrQueryDTO.getHrCompanyId());
+        if (c != null) {
+            name = c.getName();
+        }
+        ExcelUtil.download(response, list, ExcelUtil.hrTask, "人力任务", name + "任务");
     }
 
     /**

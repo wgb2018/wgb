@@ -4,6 +4,7 @@ package com.microdev.Controller;
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
 import com.microdev.common.utils.ExcelUtil;
+import com.microdev.model.Company;
 import com.microdev.param.CreateTaskRequest;
 import com.microdev.param.EmployerTask;
 import com.microdev.param.PayParam;
@@ -109,6 +110,11 @@ public class TaskController {
     @GetMapping("/task/hotel/download")
     public void downloadHotelTask(HttpServletResponse response,@ModelAttribute TaskQueryDTO taskQueryDTO) {
         List<EmployerTask> list = taskService.queryHotelTask(taskQueryDTO);
-        ExcelUtil.download(response, list, ExcelUtil.employerTask, "用人单位任务", companyService.selectById(taskQueryDTO.getHotelId()).getName() + "的任务");
+        String name = "";
+        Company c = companyService.selectById(taskQueryDTO.getHotelId());
+        if (c != null) {
+            name = c.getName();
+        }
+        ExcelUtil.download(response, list, ExcelUtil.employerTask, "用人单位任务", name + "的任务");
     }
 }
