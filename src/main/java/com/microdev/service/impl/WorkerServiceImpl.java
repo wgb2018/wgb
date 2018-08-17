@@ -1475,7 +1475,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                         try {
                             Date end1 = timeFormat.parse(currentEndTime[0]);
                             OffsetTime te = OffsetTime.ofInstant(Instant.ofEpochMilli(end1.getTime()), ZoneId.systemDefault());
-                            if (nowDate.getLong(ChronoField.MINUTE_OF_DAY) - dayEnd.getLong(ChronoField.MINUTE_OF_DAY) >= 30) {
+                            if (nowDate.getLong(ChronoField.MINUTE_OF_DAY) - dayEnd.getLong(ChronoField.MINUTE_OF_DAY) <= 30) {
                                 //下班前30分钟内不检查
                             } else {
                                 if (dayEnd.getLong(ChronoField.MINUTE_OF_DAY) - te.getLong(ChronoField.MINUTE_OF_DAY) > 5) {
