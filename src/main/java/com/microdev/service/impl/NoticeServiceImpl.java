@@ -7,6 +7,7 @@ import com.microdev.common.FilePush;
 import com.microdev.common.ResultDO;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
+import com.microdev.common.utils.Maths;
 import com.microdev.common.utils.RedisUtil;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
@@ -298,9 +299,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             n.setName (company.getName ( ));
             n.setAddress (company.getAddress ( ));
             n.setLogo (company.getLogo ( ));
-            n.setService (noticeServiceMapper.queryService (n.getPid ( )));
             n.setCreateTimeL (n.getCreateTime ( ).getLong (ChronoField.INSTANT_SECONDS));
-            n.setEnrollWorkers (enrollMapper.selectEnrollNum (n.getPid ( )).toString ( ));
             n.setEnrollWorkers (enrollMapper.selectEnrollNum (n.getPid ( )).toString ( ));
         }
         PageInfo <Notice> pageInfo = new PageInfo <> (list);
@@ -408,7 +407,10 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
     }
 
     @Override
-    public ResultDO detailsAccept(QueryNoticeRequest request) {
+    public ResultDO detailsAccept(Paginator paginator, QueryNoticeRequest request) {
+        PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
+        PageInfo<EnrollerResponse> pageInfo;
+        HashMap<String,Object> result = new HashMap<>();
         System.out.println (request);
         if (StringUtils.isEmpty (request.getNoticeId ( ))) {
             throw new ParamsException ("noticeId为空");
@@ -423,10 +425,25 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
         if(notice == null){
             throw new ParamsException ("noticeId错误");
         }
+
         if(request.getType ().equals ("1")){
-            return ResultDO.buildSuccess (notice.getNeedWorkers () - notice.getConfirmedWorkers (),enrollMapper.selectEnrollWorker(request.getNoticeId (),request.getStatus ()));
+            List<EnrollerResponse> list = enrollMapper.selectEnrollWorker(request.getNoticeId (),request.getStatus ());
+            pageInfo = new PageInfo<>(list);
+            //设置获取到的总记录数total：
+            result.put("total",pageInfo.getTotal());
+            //设置数据集合rows：
+            result.put("result",pageInfo.getList());
+            result.put("page",paginator.getPage());
+            return ResultDO.buildSuccess (notice.getNeedWorkers () - notice.getConfirmedWorkers (),result,enrollMapper.selectEnrollCount (request.getNoticeId ()));
         }else if(request.getType ().equals ("2")){
-            return ResultDO.buildSuccess (notice.getNeedWorkers () - notice.getConfirmedWorkers (),enrollMapper.selectEnrollHr (request.getNoticeId (),request.getStatus ()));
+            List<EnrollerResponse> list = enrollMapper.selectEnrollHr (request.getNoticeId (),request.getStatus ());
+            pageInfo = new PageInfo<>(list);
+            //设置获取到的总记录数total：
+            result.put("total",pageInfo.getTotal());
+            //设置数据集合rows：
+            result.put("result",pageInfo.getList());
+            result.put("page",paginator.getPage());
+            return ResultDO.buildSuccess (notice.getNeedWorkers () - notice.getConfirmedWorkers (),result,enrollMapper.selectEnrollCount (request.getNoticeId ()));
         }
             return null;
     }
@@ -577,6 +594,32 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
         }
         return ResultDO.buildSuccess ("处理成功");
     }
+
+    @Override
+    public ResultDO enrollHandle(Paginator paginator, QueryNoticeRequest request) {
+        PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
+        PageInfo<EnrollDetails> pageInfo;
+        if(request.getType ().equals ("1")){
+            List<EnrollDetails> list = enrollMapper.selectEnrollDetails(request);
+            pageInfo = new PageInfo<>(list);
+            for (EnrollDetails e:list) {
+                if(e.getType () == 4){
+                    e.setService (noticeServiceMapper.queryService (e.getNoticeId ()));
+                }
+            }
+        }else{
+            List<EnrollDetails> list = enrollMapper.selecthrEnrollDetails(request);
+            pageInfo = new PageInfo<>(list);
+        }
+        HashMap<String,Object> result = new HashMap<>();
+        //设置获取到的总记录数total：
+        result.put("total",pageInfo.getTotal());
+        //设置数据集合rows：
+        result.put("result",pageInfo.getList());
+        result.put("page",paginator.getPage());
+        return ResultDO.buildSuccess(result);
+    }
+
     //循环添加人力资源任务
     private  Set<TaskHrCompany> AddHrTask(Task task,CreateTaskRequest createTaskRequest ){
         Set setHrTask= new HashSet<TaskHrCompany>();

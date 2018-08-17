@@ -6,11 +6,11 @@
         worker_id, worker_task_id ,hotel_id,hr_company_id,applicant_type,apply_type,content,value,request_id,is_task,task_id,hr_task_id,assign
     </sql>
     <select id="selectEnrollNum" resultType="java.lang.Integer">
-        select sum(value) from enroll where request_id = #{id}
+        select IFNULL(sum(value),0) from enroll where request_id = #{id}
     </select>
     <select id="selectEnrollWorker" resultType="com.microdev.param.EnrollerResponse">
         select e.id as pid,UNIX_TIMESTAMP(e.create_time) as applyTimeL,e.create_time as applyTime,e.worker_id as workerId,u.nickname as workerName,u.avatar as avatar,u.sex as sex,u.age as age,u.mobile as mobile
-        from enroll e left join user u where e.worker_id = u.worker_id
+        from enroll e left join user u on e.worker_id = u.worker_id
         <where>
             e.request_id = #{noticeId}
             <if test="type != null">
@@ -20,8 +20,8 @@
         order by e.create_time desc
     </select>
     <select id="selectEnrollHr" resultType="com.microdev.param.EnrollerResponse">
-        select e.id as pid,UNIX_TIMESTAMP(e.create_time) as applyTimeL,e.create_time as applyTime,c.id as hrId,c.name as hrName,c.logo as logo,c.mobile as mobile,e.value as applyWorkers,IFNULL(e.assign,'0') as assignWorkers
-        from enroll e left join company c where e.hr_company_id = c.id
+        select e.id as pid,UNIX_TIMESTAMP(e.create_time) as applyTimeL,e.create_time as applyTime,c.id as hrId,c.name as hrName,c.logo as logo,c.leader_mobile as mobile,e.value as applyWorkers,IFNULL(e.assign,'0') as assignWorkers
+        from enroll e left join company c on e.hr_company_id = c.id
         <where>
             e.request_id = #{noticeId}
             <if test="type != null">
@@ -32,5 +32,54 @@
     </select>
     <select id="refuseByNoticeId">
         update enroll set status = 2 where request_id = #{id} and status = 0;
+    </select>
+    <select id="selectCountNum" resultType="java.lang.Integer">
+        select count(id) from enroll
+        <where>
+            <if test="type == 3">
+                and apply_type = 3 and status = 0 and hotel_id = #{id}
+            </if>
+            <if test="type == 2">
+                and apply_type = 2 and status = 0 and hr_company_id = #{id}
+            </if>
+        </where>
+    </select>
+    <select id="selectEnrollDetails" resultType="com.microdev.param.EnrollDetails">
+        select a.* from(
+        select e.modify_time as handleTime,e.create_time as enrollTime,n.task_type_text as taskTypeText,n.from_date as fromDate,n.to_date as toDate,c.name as hotelName,n.need_workers as needWorkers,n.hour_pay as hourlyPay,null as hrComapnyName,n.id as noticeId,e.status as status,2 as type
+        from enroll e left join notice n on e.request_id = n.id left join company c on n.hotel_id = c.id
+        where n.type = 2 and e.worker_id = #{workerId}
+        union
+        select e.modify_time as handleTime,e.create_time as enrollTime,t.task_type_text as taskTypeText,t.from_date as fromDate,t.to_date as toDate,null as hotelName,n.need_workers as needWorkers,t.hourly_pay as hourlyPay,c.name as hrComapnyName,n.id as noticeId,e.status as status,3 as type
+        from enroll e left join notice n on e.request_id = n.id left join company c on n.hr_company_id = c.id left join task_hr_company t on n.task_id = t.id
+        where n.type = 3 and e.worker_id = #{workerId}
+        union
+        select e.modify_time as handleTime,e.create_time as enrollTime,null as taskTypeText,n.from_date as fromDate,n.to_date as toDate,null as hotelName,n.need_workers as needWorkers,n.hour_pay_range as hourlyPay,c.name as hrComapnyName,n.id as noticeId,e.status as status,4 as type
+        from enroll e left join notice n on e.request_id = n.id left join company c on n.hr_company_id = c.id
+        where n.type = 4 and e.worker_id = #{workerId}
+        )a
+        <where>
+            <if test="status != null">
+                and a.status = #{status}
+            </if>
+        </where>
+        order by a.enrollTime desc
+
+    </select>
+    <select id="selecthrEnrollDetails" resultType="com.microdev.param.EnrollDetails">
+        select e.modify_time as handleTime,e.create_time as enrollTime,t.task_type_text as taskTypeText,t.from_date as fromDate,t.to_date as toDate,n.need_workers as needWorkers,t.hourly_pay as hourlyPay,c.name as hotelName,n.id as noticeId,e.status as status,1 as type
+        from enroll e left join notice n on e.request_id = n.id left join company c on n.hotel_id = c.id left join task t on n.task_id = t.id
+        where n.type = 1 and e.hr_company_id = #{hrId}
+        <if test="status != null">
+            and e.status = #{status}
+        </if>
+        order by e.create_time desc
+    </select>
+    <select id="selectEnrollCount" resultType="java.util.Map">
+        select
+        (select count(id) from enroll where request_id = #{noticeId} and status = 0) as untreated,
+        (select count(id) from enroll where request_id = #{noticeId} and status = 1) as agreed,
+        (select count(id) from enroll where request_id = #{noticeId} and status = 2) as refused
+        from DUAL
     </select>
 </mapper>

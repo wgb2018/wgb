@@ -69,8 +69,8 @@ public class NoticeController {
      * 报名情况
      */
     @PostMapping("/details/accept/all")
-    public ResultDO detailsAcceptAll(@RequestBody QueryNoticeRequest request) {
-        return noticeService.detailsAccept(request);
+    public ResultDO detailsAcceptAll(@RequestBody PagingDO<QueryNoticeRequest> paging) {
+        return noticeService.detailsAccept(paging.getPaginator(), paging.getSelector());
     }
     /**
      * 公告处理
@@ -78,6 +78,22 @@ public class NoticeController {
     @PostMapping("/notice/handle")
     public ResultDO noticeHandle(@RequestBody NoticeHandleParam request) {
         return noticeService.noticeHandle(request);
+    }
+    /**
+     * 小时工报名管理
+     */
+    @PostMapping("/worker/enroll/handle")
+    public ResultDO workerEnrollHandle(@RequestBody PagingDO<QueryNoticeRequest> request) {
+        request.getSelector ( ).setType ("1");
+        return noticeService.enrollHandle(request.getPaginator(), request.getSelector());
+    }
+    /**
+     * 人力报名管理
+     */
+    @PostMapping("/hr/enroll/handle")
+    public ResultDO hrEnrollHandle(@RequestBody PagingDO<QueryNoticeRequest> request) {
+        request.getSelector ( ).setType ("2");
+        return noticeService.enrollHandle(request.getPaginator(), request.getSelector());
     }
 
 
