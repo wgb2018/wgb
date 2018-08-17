@@ -6,6 +6,7 @@ import java.util.List;
 
 @Data
 public class NoticeHandleParam {
+
     private List<NoticeHandle> param;
 
     //0 同意 1 拒绝
