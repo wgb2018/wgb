@@ -1385,7 +1385,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 }
                 workLog = new PunchInfo();
                 OffsetTime tc = OffsetTime.ofInstant(Instant.ofEpochMilli(t.getTime()), ZoneId.systemDefault());
-                if (dayStart.getLong(ChronoField.MINUTE_OF_DAY) - tc.getLong(ChronoField.MINUTE_OF_DAY) < 0) {
+                if (dayStart.getLong(ChronoField.MINUTE_OF_DAY) - tc.getLong(ChronoField.MINUTE_OF_DAY) < -5) {
 
                     int[] minutes = judgeTime(startDay.getYear(), startDay.getDayOfYear(), dayStart, tc, holidayList);
                     if (minutes[2] == 0) {
@@ -1440,7 +1440,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                                 if ((status.contains("2") || status.contains("6")) && confirmStatus.contains("1")) {
                                     hotelStatus.put("earlier", 1);
                                 } else {
-                                    if (te1.getLong(ChronoField.MINUTE_OF_DAY) - dayEnd.getLong(ChronoField.MINUTE_OF_DAY) < 0) {
+                                    if (te1.getLong(ChronoField.MINUTE_OF_DAY) - dayEnd.getLong(ChronoField.MINUTE_OF_DAY) < -5) {
                                         int[] minutes = judgeTime(startDay.getYear(), startDay.getDayOfYear(), te1, dayEnd, holidayList);
                                         if (minutes[2] == 0) {
                                             sysStatus.put("earlier", 1);
@@ -1478,7 +1478,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                             if (nowDate.getLong(ChronoField.MINUTE_OF_DAY) - dayEnd.getLong(ChronoField.MINUTE_OF_DAY) >= 30) {
                                 //下班前30分钟内不检查
                             } else {
-                                if (dayEnd.getLong(ChronoField.MINUTE_OF_DAY) - te.getLong(ChronoField.MINUTE_OF_DAY) > 0) {
+                                if (dayEnd.getLong(ChronoField.MINUTE_OF_DAY) - te.getLong(ChronoField.MINUTE_OF_DAY) > 5) {
 
                                     int[] n = judgeTime(startDay.getYear(), startDay.getDayOfYear(), te, dayEnd, holidayList);
                                     if (n[2] > 0) {
