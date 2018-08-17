@@ -42,7 +42,7 @@ public class EmployerTaskWarn {
                 DecimalFormat decimal = new DecimalFormat("0");
                 for (Map<String, Object> m : list) {
                     String content = m.get("taskTypeText") + "还差" + decimal.format(m.get("num")) + "人未报名";
-                    logger.info(content);
+                    logger.info(m.get("name") + ":" + content);
                     String mobile = (String)m.get("leaderMobile");
                     if (StringUtils.isEmpty(mobile)) {
                         logger.error("hotelId=" + m.get("hotelId") + ";用人单位名称：" + m.get("name") + ";负责人的手机号没有设置");
