@@ -92,13 +92,14 @@ public class EnrollServiceImpl extends ServiceImpl<EnrollMapper,Enroll> implemen
         m.setTaskId (taskHrCompany.getTaskId ());
         m.setEnrollType (3);
         m.setHrTaskId (taskHrCompany.getPid ());
-        m.setApplyType (3);
+        m.setApplyType (2);
         m.setApplicantType (1);
         m.setWorkerId (request.getWorkerId ());
         m.setIsTask (1);
         m.setStatus (0);
         m.setRequestId (request.getNoticeId ());
         m.setHotelId (notice.getHotelId ());
+        m.setHrCompanyId (taskHrCompany.getHrCompanyId ());
         m.setEnrollCode ("workerApplyHr");
         m.setEnrollTitle ("报名申请");
         enrollMapper.insert (m);
@@ -117,7 +118,7 @@ public class EnrollServiceImpl extends ServiceImpl<EnrollMapper,Enroll> implemen
         Enroll m = new Enroll();
         m.setEnrollType (4);
         m.setValue (1);
-        m.setApplyType (3);
+        m.setApplyType (2);
         m.setApplicantType (1);
         m.setWorkerId (request.getWorkerId ());
         m.setIsTask (1);

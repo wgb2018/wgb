@@ -58,6 +58,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     private NoticeMapper noticeMapper;
     @Autowired
     private TaskMapper taskMapper;
+    @Autowired
+    private EnrollMapper enrollMapper;
     /**
      * 创建消息模板
      */
@@ -477,7 +479,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             map.put("receiveId", id);
             int noticeNum = informService.selectCountByParam(map);
             param.put("notice", noticeNum);
-            total = curNum + pendNum + noticeNum;
+            int enrollNum = enrollMapper.selectCountNum (id,2);
+            param.put("enroll", enrollNum);
+            total = curNum + pendNum + noticeNum + enrollNum;
         } else if ("hotel".equals(applyType)) {
             Company comapny = companyMapper.findCompanyById (id);
             User user = userMapper.findByMobile (comapny.getLeaderMobile ());
@@ -496,7 +500,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             map.put("receiveId", id);
             int noticeNum = informService.selectCountByParam(map);
             param.put("notice", noticeNum);
-            total = curNum + pendNum + noticeNum;
+            int enrollNum = enrollMapper.selectCountNum (id,3);
+            param.put("enroll", enrollNum);
+            total = curNum + pendNum + noticeNum + enrollNum;
         } else {
             throw new ParamsException("参数applyType类型错误");
         }

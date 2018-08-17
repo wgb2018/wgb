@@ -85,6 +85,9 @@ public class ResultDO {
     public static ResultDO buildSuccess(Integer value, Object data) {
         return buildSuccess(null, data, null,null,value);
     }
+    public static ResultDO buildSuccess(Integer value, Object data, Map<String, Object> extra) {
+        return buildSuccess(null, data, extra,null,value);
+    }
 
     public static ResultDO buildSuccess(String message, Object data) {
         return buildSuccess(message, data, null,null,null);

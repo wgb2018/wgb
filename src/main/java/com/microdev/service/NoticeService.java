@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
 import com.microdev.model.Notice;
-import com.microdev.param.AcceptNoticeRequest;
-import com.microdev.param.CreateNoticeRequest;
-import com.microdev.param.NoticeHandleParam;
-import com.microdev.param.QueryNoticeRequest;
+import com.microdev.param.*;
 
 public interface NoticeService extends IService<Notice> {
 
@@ -23,9 +20,11 @@ public interface NoticeService extends IService<Notice> {
 
     ResultDO detailsNotice(QueryNoticeRequest request);
 
-    ResultDO detailsAccept(QueryNoticeRequest request);
+    ResultDO detailsAccept(Paginator paginator, QueryNoticeRequest request);
 
     ResultDO noticeHandle(NoticeHandleParam request);
+
+    ResultDO enrollHandle(Paginator paginator, QueryNoticeRequest request);
 
 
 }
