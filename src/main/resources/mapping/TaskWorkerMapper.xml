@@ -194,6 +194,13 @@
         INNER JOIN USER u ON tw.`user_id` = u.`id`
         INNER JOIN task_hr_company th ON th.id = tw.task_hr_id
     </select>
+    <select id="selectHotelAndWorkerId" parameterType="java.lang.String" resultType="com.microdev.param.WorkerCancelTask">
+        SELECT tw.`worker_id` AS workerId, u.`id` AS userId, u.`nickname` AS username, th.hotel_id AS hotelId,
+        null as hrId,null as taskHrId,th.id as taskId,tw.day_start_time,tw.day_end_time
+        FROM (SELECT * FROM task_worker WHERE id = #{id})tw
+        INNER JOIN USER u ON tw.`user_id` = u.`id`
+        INNER JOIN task th ON th.id = tw.hotel_task_id
+    </select>
     <select id="selectTaskWorkById" parameterType="java.lang.String" resultType="java.util.Map">
         SELECT u.worker_id AS workerId, u.`nickname` AS workerName, CASE u.`sex` WHEN 'MALE' THEN 'MALE' WHEN 'FEMALE' THEN 'FEMALE' ELSE 'UNKNOWN' END AS gender,
         IFNULL(u.avatar, '') AS headImage,u.mobile AS mobile, u.birthday AS birthday,tw.refused_reason as refusedReason,
@@ -203,6 +210,20 @@
         FROM (
         SELECT * FROM task_worker
         WHERE `task_hr_id` = #{taskHrId}
+        ) tw
+        INNER JOIN USER u
+        ON tw.`user_id` = u.`id`
+    </select>
+    <select id="selectTaskWorkByHotelId" parameterType="java.lang.String" resultType="java.util.Map">
+        SELECT u.worker_id AS workerId, u.`nickname` AS workerName, CASE u.`sex` WHEN 'MALE' THEN 'MALE' WHEN 'FEMALE' THEN 'FEMALE' ELSE 'UNKNOWN' END AS gender,
+        IFNULL(u.avatar, '') AS headImage,u.mobile AS mobile, u.birthday AS birthday,tw.refused_reason as refusedReason,
+        tw.refused_reason AS refusedReason,tw.status AS taskStatus,tw.repast_times AS repastTimes, tw.minutes AS minutes,
+        IFNULL(tw.have_pay_money,0.0) AS havePayMoney, IFNULL(tw.should_pay_money,0.0) AS shouldPayMoney, IFNULL(tw.should_pay_money - tw.have_pay_money,0.0) AS waitPayMoney,
+        tw.id AS taskWorkerId
+        FROM (
+        SELECT * FROM task_worker
+        WHERE `hotel_task_id` = #{hotelId}
+        and type = 1
         ) tw
         INNER JOIN USER u
         ON tw.`user_id` = u.`id`

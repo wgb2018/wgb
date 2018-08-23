@@ -1,5 +1,7 @@
 package com.microdev.service.impl;
 
+import cn.jiguang.common.resp.APIConnectionException;
+import cn.jiguang.common.resp.APIRequestException;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -7,6 +9,7 @@ import com.microdev.common.FilePush;
 import com.microdev.common.ResultDO;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
+import com.microdev.common.utils.JPushManage;
 import com.microdev.common.utils.Maths;
 import com.microdev.common.utils.RedisUtil;
 import com.microdev.mapper.*;
@@ -64,7 +67,12 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
     private MessageMapper messageMapper;
     @Autowired
     private HotelHrCompanyMapper hotelHrCompanyMapper;
-
+    @Autowired
+    private JpushClient jpushClient;
+    @Autowired
+    private TaskWorkerMapper taskWorkerMapper;
+    @Autowired
+    private InformMapper informMapper;
     @Override
     public ResultDO createNotice(CreateNoticeRequest request) {
 
@@ -78,33 +86,31 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             }
             TaskViewDTO task = null;
             //发布用人单位任务
-            if(request.getHrNeedWorkers ( ) > 0){
-                CreateTaskRequest req = new CreateTaskRequest ( );
-                req.setFromDateL (request.getFromDateL ( ));
-                req.setToDateL (request.getToDateL ( ));
-                req.setDayStartTimeL (request.getDayStartTimeL ( ));
-                req.setDayEndTimeL (request.getDayEndTimeL ( ));
-                req.setHotelId (request.getHotelId ( ));
-                req.setTaskContent (request.getTaskContent ( ));
-                req.setTaskTypeCode (request.getTaskTypeCode ( ));
-                req.setTaskTypeText (request.getTaskTypeText ( ));
-                req.setSettlementPeriod (request.getSettlementPeriod ( ));
-                req.setSettlementNum (request.getSettlementNum ( ));
-                req.setNeedhrCompanys (request.getHrNeedWorkers ( ) + request.getNeedWorkers ( ));
-                req.setHourlyPay (request.getHourlyPay ( ));
-                req.setHrCompanySet (request.getHrCompanySet ( ));
-                //发布用人单位任务
-                ResultDO rs = taskService.createTask (req);
-                task = (TaskViewDTO) rs.getData ( );
-            }
 
+            CreateTaskRequest req = new CreateTaskRequest ( );
+            req.setFromDateL (request.getFromDateL ( ));
+            req.setToDateL (request.getToDateL ( ));
+            req.setDayStartTimeL (request.getDayStartTimeL ( ));
+            req.setDayEndTimeL (request.getDayEndTimeL ( ));
+            req.setHotelId (request.getHotelId ( ));
+            req.setTaskContent (request.getTaskContent ( ));
+            req.setTaskTypeCode (request.getTaskTypeCode ( ));
+            req.setTaskTypeText (request.getTaskTypeText ( ));
+            req.setSettlementPeriod (request.getSettlementPeriod ( ));
+            req.setSettlementNum (request.getSettlementNum ( ));
+            req.setNeedhrCompanys (request.getHrNeedWorkers ( ) + request.getNeedWorkers ( ));
+            req.setHourlyPay (request.getHourlyPay ( ));
+            req.setHrCompanySet (request.getHrCompanySet ( ));
+            //发布用人单位任务
+            ResultDO rs = taskService.createTask (req);
+            task = (TaskViewDTO) rs.getData ( );
             if (request.getHrNeedWorkers ( ) > 0) {
                 if (request.getHrCompanySet ( ).size ( ) < request.getHrNeedWorkers ( )) {
                     //发布用人单位派发人力任务公告
                     notice = new Notice ( );
                     notice.setCreateTime (OffsetDateTime.now ( ));
-                    notice.setFromDate (OffsetDateTime.ofInstant (Instant.ofEpochMilli (request.getFromDateL ( )), ZoneId.systemDefault ( )));
-                    notice.setToDate (OffsetDateTime.ofInstant (Instant.ofEpochMilli (request.getToDateL ( )), ZoneId.systemDefault ( )));
+                    notice.setFromDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getFromDateL ()+OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getDayStartTimeL ()),ZoneOffset.systemDefault ()).toOffsetTime ().getLong (ChronoField.SECOND_OF_DAY )*1000),ZoneOffset.systemDefault ()));
+                    notice.setToDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getToDateL ()+OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getDayEndTimeL ()),ZoneOffset.systemDefault ()).toOffsetTime ().getLong (ChronoField.SECOND_OF_DAY )*1000),ZoneOffset.systemDefault ()));
                     notice.setHotelId (request.getHotelId ( ));
                     notice.setNeedWorkers (request.getHrNeedWorkers ( ));
                     for (TaskHrCompanyDTO t : request.getHrCompanySet ( )) {
@@ -115,7 +121,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
                     notice.setStatus (0);
                     notice.setSettlementPeriod (request.getSettlementPeriod ( ).toString ( ));
                     notice.setSettlementNum (request.getSettlementNum ( ).toString ( ));
-                    notice.setContent (request.getContent ());
+                    notice.setContent (request.getTaskContent ());
                     notice.setHourPay (request.getHourlyPay ( ).toString ( ));
                     notice.setTaskId (task.getPid ( ));
                     notice.setTaskTypeText (request.getTaskTypeText ( ));
@@ -130,14 +136,14 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
                 //发布用人单位招聘小时工公告
                 notice = new Notice ( );
                 notice.setCreateTime (OffsetDateTime.now ( ));
-                notice.setFromDate (OffsetDateTime.ofInstant (Instant.ofEpochMilli (request.getFromDateL ( )), ZoneId.systemDefault ( )));
-                notice.setToDate (OffsetDateTime.ofInstant (Instant.ofEpochMilli (request.getToDateL ( )), ZoneId.systemDefault ( )));
+                notice.setFromDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getFromDateL ()+OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getDayStartTimeL ()),ZoneOffset.systemDefault ()).toOffsetTime ().getLong (ChronoField.SECOND_OF_DAY )*1000),ZoneOffset.systemDefault ()));
+                notice.setToDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getToDateL ()+OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getDayEndTimeL ()),ZoneOffset.systemDefault ()).toOffsetTime ().getLong (ChronoField.SECOND_OF_DAY )*1000),ZoneOffset.systemDefault ()));
                 notice.setHotelId (request.getHotelId ( ));
                 notice.setNeedWorkers (request.getNeedWorkers ( ));
                 notice.setType (2);
                 notice.setStatus (0);
                 notice.setHourPay (request.getHourlyPay ( ).toString ( ));
-                notice.setContent (request.getContent ());
+                notice.setContent (request.getTaskContent ());
                 notice.setSettlementPeriod (request.getWorkerSettlementPeriod ( ).toString ( ));
                 notice.setSettlementNum (request.getWorkerSettlementNum ( ).toString ( ));
                 notice.setTaskId (task == null?"":task.getPid ());
@@ -301,6 +307,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             n.setLogo (company.getLogo ( ));
             n.setCreateTimeL (n.getCreateTime ( ).getLong (ChronoField.INSTANT_SECONDS));
             n.setEnrollWorkers (enrollMapper.selectEnrollNum (n.getPid ( )).toString ( ));
+            n.setHaveHandle (enrollMapper.selectUnHandleEnrollNum (n.getPid ( ))>0);
         }
         PageInfo <Notice> pageInfo = new PageInfo <> (list);
         HashMap <String, Object> result = new HashMap <> ( );
@@ -319,13 +326,42 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             throw new ParamsException ("参数错误");
         }
         if (notice.getType ( ) == 1) {
+            if(notice.getFromDate ().isBefore (OffsetDateTime.now ())){
+                throw new ParamsException ("任务已开始，无法报名");
+            }
+            Map<String,Object> map = new HashMap();
+            map.put ("task_id",notice.getTaskId ());
+            map.put ("hr_company_id",request.getHrCompanyId ());
+            List<TaskHrCompany> ts = taskHrCompanyMapper.selectByMap (map);
+            if(ts.size ()>0){
+                throw new ParamsException ("已存在相应任务，无法报名");
+            }
             return enrollService.hrApplyRegistration (request);
         } else if (notice.getType ( ) == 2) {
+            if(notice.getFromDate ().isBefore (OffsetDateTime.now ())){
+                throw new ParamsException ("任务已开始，无法报名");
+            }
+            if(notice.getToDate ().isBefore (OffsetDateTime.now ())){
+                throw new ParamsException ("招聘已结束，无法报名");
+            }
             return enrollService.workerApplyHotel (request);
         } else if (notice.getType ( ) == 3) {
+            if(notice.getFromDate ().isBefore (OffsetDateTime.now ())){
+                throw new ParamsException ("任务已开始，无法报名");
+            }
+            Map<String,Object> map = new HashMap();
+            map.put ("task_hr_id",notice.getTaskId ());
+            map.put ("worker_id",request.getWorkerId ());
+            List<TaskWorker> ts = taskWorkerMapper.selectByMap (map);
+            if(ts.size ()>0){
+                throw new ParamsException ("已存在相应任务，无法报名");
+            }
             return enrollService.workerApplyHr (request);
         } else {
             request.setHrCompanyId (notice.getHrCompanyId ());
+            if(notice.getToDate ().isBefore (OffsetDateTime.now ())){
+                throw new ParamsException ("招聘已结束，无法报名");
+            }
             return enrollService.workerApplyRegistration (request);
         }
     }
@@ -459,7 +495,14 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
         Set <String> set = new HashSet <> ( );
         String companyId = null;
         Set <TaskHrCompanyDTO> sct = new HashSet <> ( );
+        int i = 0;
         TaskHrCompanyDTO tD = new TaskHrCompanyDTO();
+        Inform inform = new Inform();
+        String content;
+        Task task = null;
+        if(notice.getTaskId ()!=null){
+            task  = taskMapper.selectById (notice.getTaskId ());
+        }
         for (NoticeHandle param : request.getParam ( )) {
             enroll = enrollMapper.selectById (param.getEnrollId ( ));
             if (enroll == null) {
@@ -474,11 +517,168 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             if (notice.getStatus ( ) == 1) {
                 return ResultDO.buildError ("");
             }
+            if(i == 0){
+                if(notice.getType () == 1 || notice.getType () == 3 || notice.getType () == 2){
+                    if(notice.getFromDate ().isBefore (OffsetDateTime.now ())){
+                        i++;
+                    }
+                }else if(notice.getType () == 4){
+                    if(notice.getToDate ().isBefore (OffsetDateTime.now ())){
+                        i++;
+                    }
+                }
+            }
+            if(i > 0){
+                enroll.setStatus (2);
+                enroll.setAssign (0);
+                enrollMapper.updateById (enroll);
+                if(notice.getType ( ) == 1 ){
+                    //发送拒绝通知
+                    try {
+                        String mobile = companyMapper.findCompanyById (enroll.getHrCompanyId ()).getLeaderMobile ( );
+                        jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (mobile, "报名已截止"));
+                    } catch (APIConnectionException e) {
+                        e.printStackTrace ( );
+                    } catch (APIRequestException e) {
+                        e.printStackTrace ( );
+                    }
+                    inform.setContent("报名已截止");
+                    inform.setTitle("报名失败");
+                    inform.setSendType(3);
+                    inform.setAcceptType(2);
+                    inform.setReceiveId(enroll.getHrCompanyId ());
+                }else if(notice.getType ( ) == 2){
+                    try {
+                        jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (enroll.getWorkerId ()).getMobile (), "报名已截止"));
+                    } catch (APIConnectionException e) {
+                        e.printStackTrace ( );
+                    } catch (APIRequestException e) {
+                        e.printStackTrace ( );
+                    }
+                    inform.setContent("报名已截止");
+                    inform.setTitle("报名失败");
+                    inform.setSendType(3);
+                    inform.setAcceptType(1);
+                    inform.setReceiveId(enroll.getWorkerId ());
+                }else{
+                    try {
+                        jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (enroll.getWorkerId ()).getMobile (), "报名已截止"));
+                    } catch (APIConnectionException e) {
+                        e.printStackTrace ( );
+                    } catch (APIRequestException e) {
+                        e.printStackTrace ( );
+                    }
+                    inform.setContent("报名已截止");
+                    inform.setTitle("报名失败");
+                    inform.setSendType(2);
+                    inform.setAcceptType(1);
+                    inform.setReceiveId(enroll.getWorkerId ());
+                }
+                informMapper.insertInform(inform);
+                continue;
+            }
+            if(request.getStatus () == 1){
+                enroll.setStatus (2);
+                enroll.setAssign (0);
+                enrollMapper.updateById (enroll);
+                if(notice.getType ( ) == 1 ){
+                    //发送拒绝通知
+                    content = companyMapper.findCompanyById (notice.getHotelId ()).getName ()+"拒绝了你的报名申请：报名人数为"+param.getAllotWorkers ()+"人";
+                    try {
+                        jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (enroll.getHrCompanyId ()).getLeaderMobile ( ), content));
+                    } catch (APIConnectionException e) {
+                        e.printStackTrace ( );
+                    } catch (APIRequestException e) {
+                        e.printStackTrace ( );
+                    }
+                    inform.setContent(content);
+                    inform.setTitle("报名被拒绝");
+                    inform.setSendType(3);
+                    inform.setAcceptType(2);
+                    inform.setReceiveId(notice.getHrCompanyId ());
+                }else if(notice.getType ( ) == 2){
+                    content = companyMapper.findCompanyById (notice.getHotelId ()).getName ()+"拒绝了你的报名申请";
+                    try {
+                        jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (enroll.getWorkerId ()).getMobile (), content));
+                    } catch (APIConnectionException e) {
+                        e.printStackTrace ( );
+                    } catch (APIRequestException e) {
+                        e.printStackTrace ( );
+                    }
+                    inform.setContent(content);
+                    inform.setTitle("报名被拒绝");
+                    inform.setSendType(3);
+                    inform.setAcceptType(1);
+                    inform.setReceiveId(enroll.getWorkerId ());
+                }else{
+                    content = companyMapper.findCompanyById (notice.getHrCompanyId ()).getName ()+"拒绝了你的报名申请";
+                    try {
+                        jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (enroll.getWorkerId ()).getMobile (), content));
+                    } catch (APIConnectionException e) {
+                        e.printStackTrace ( );
+                    } catch (APIRequestException e) {
+                        e.printStackTrace ( );
+                    }
+                    inform.setContent(content);
+                    inform.setTitle("报名被拒绝");
+                    inform.setSendType(2);
+                    inform.setAcceptType(1);
+                    inform.setReceiveId(enroll.getWorkerId ());
+                }
+                informMapper.insertInform(inform);
+                continue;
+
+            }
             enroll.setStatus (1);
             enroll.setAssign (param.getAllotWorkers ( ));
             enrollMapper.updateById (enroll);
+            //发送同意通知
+            if(notice.getType ( ) == 1 ){
+                //发送拒绝通知
+                content = companyMapper.findCompanyById (notice.getHotelId ()).getName ()+"同意了你的报名申请：报名人数为"+param.getAllotWorkers ()+"人";
+                try {
+                    jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (enroll.getHrCompanyId ()).getLeaderMobile ( ), content));
+                } catch (APIConnectionException e) {
+                    e.printStackTrace ( );
+                } catch (APIRequestException e) {
+                    e.printStackTrace ( );
+                }
+                inform.setContent(content);
+                inform.setTitle("报名成功");
+                inform.setSendType(3);
+                inform.setAcceptType(2);
+                inform.setReceiveId(enroll.getHrCompanyId ());
+            }else if(notice.getType ( ) == 2){
+                content = companyMapper.findCompanyById (notice.getHotelId ()).getName ()+"同意了你的报名申请";
+                try {
+                    jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (enroll.getWorkerId ()).getMobile (), content));
+                } catch (APIConnectionException e) {
+                    e.printStackTrace ( );
+                } catch (APIRequestException e) {
+                    e.printStackTrace ( );
+                }
+                inform.setContent(content);
+                inform.setTitle("报名成功");
+                inform.setSendType(3);
+                inform.setAcceptType(1);
+                inform.setReceiveId(enroll.getWorkerId ());
+            }else{
+                content = companyMapper.findCompanyById (notice.getHrCompanyId ()).getName ()+"同意了你的报名申请";
+                try {
+                    jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (enroll.getWorkerId ()).getMobile (), content));
+                } catch (APIConnectionException e) {
+                    e.printStackTrace ( );
+                } catch (APIRequestException e) {
+                    e.printStackTrace ( );
+                }
+                inform.setContent(content);
+                inform.setTitle("报名成功");
+                inform.setSendType(2);
+                inform.setAcceptType(1);
+                inform.setReceiveId(enroll.getWorkerId ());
+            }
             //添加合作伙伴
-            if (companyId != null) {
+            if (companyId == null) {
                 if (notice.getType ( ) == 3 || notice.getType ( ) == 4) {
                     companyId = notice.getHrCompanyId ( );
                 } else if (notice.getType ( ) == 1 || notice.getType ( ) == 2) {
@@ -488,7 +688,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             if(notice.getType () != 1){
                 UserCompany userCompany = userCompanyMapper.selectByWorkerIdHrId (companyId, enroll.getWorkerId ( ));
                 if (userCompany == null) {
-                    List <UserCompany> userCompanyList = new ArrayList <> ( );
+                    userCompany = new UserCompany ();
                     //从redis中查询是否有协议
                     String path = redisUtil.getString ("defaultWorkerHrProtocol");
                     if (StringUtils.isEmpty (path)) {
@@ -575,7 +775,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
                 enrollMapper.refuseByNoticeId (notice.getPid ( ));
             }
             noticeMapper.updateById (notice);
-            if (notice.getType ( ) == 3) {
+            if (notice.getType ( ) == 3 || notice.getType ( ) == 2) {
                 //派发任务
                 req.setMessageId (null);
                 req.setHrTaskId (notice.getTaskId ( ));
@@ -583,14 +783,51 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             }
         }
         req.setWorkerIds (set);
-        if (set.size ( ) > 0) {
+        if (set.size ( ) > 0 && notice.getType ( ) == 3) {
             taskHrCompanyService.TaskHrDistribute (req);
+        }else if(set.size ( ) > 0 && notice.getType ( ) == 2){
+            List <TaskWorker> list = new ArrayList <> ( );
+            for (String id : set) {
+                System.out.println (id);
+                TaskWorker taskWorker = new TaskWorker ( );
+                userMapper.queryByWorkerId (id);
+                User user = userMapper.queryByWorkerId (id);
+                taskWorker.setUserId (user.getPid ( ));
+                taskWorker.setWorkerId (user.getWorkerId ( ));
+                taskWorker.setUserName (user.getUsername ( ));
+                taskWorker.setStatus (0);
+                taskWorker.setFromDate (task.getFromDate ( ));
+                taskWorker.setToDate (task.getToDate ( ));
+                taskWorker.setHourlyPay (task.getHourlyPay ( ));
+                taskWorker.setTaskTypeCode (task.getTaskTypeCode ( ));
+                taskWorker.setTaskContent (task.getTaskContent ( ));
+                taskWorker.setTaskTypeText (task.getTaskTypeText ( ));
+                taskWorker.setHotelName (task.getHotelName ( ));
+                taskWorker.setHotelId (task.getHotelId ( ));
+                taskWorker.setDayStartTime (task.getDayStartTime ( ));
+                taskWorker.setDayEndTime (task.getDayEndTime ( ));
+                taskWorker.setHotelTaskId (task.getPid ( ));
+                taskWorker.setSettlementPeriod (task.getSettlementPeriod ());
+                taskWorker.setSettlementNum (task.getSettlementNum ());
+                taskWorker.setType (1);
+                taskWorkerMapper.insert (taskWorker);
+                list.add (taskWorker);
+            }
+            messageService.hotelDistributeWorkerTask (list, task, false).getPid ( );
         }
         CreateTaskRequest createTaskRequest = new CreateTaskRequest();
         createTaskRequest.setNoticeTask (true);
         createTaskRequest.setHrCompanySet (sct);
         if(sct.size ()>0){
-            AddHrTask(taskMapper.selectById (notice.getTaskId ()),createTaskRequest);
+            if(task!=null){
+                AddHrTask(task,createTaskRequest);
+            }else{
+                throw new ParamsException ("公告数据异常");
+            }
+
+        }
+        if(i>0){
+            return ResultDO.buildSuccess ("报名已截止");
         }
         return ResultDO.buildSuccess ("处理成功");
     }
@@ -665,8 +902,17 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             taskHrCompany.setWorkerSettlementPeriod (0);
             taskHrCompany.setWorkerSettlementNum (0);
             taskHrCompanyMapper.insert(taskHrCompany);
-
-
+            //生成一个待派发的消息
+            Map <String, Object> param = new HashMap <> ( );
+            param.put ("hrCompanyId", taskHrCompany.getHrCompanyId ( ));
+            param.put ("hotelId", taskHrCompany.getHotelId ( ));
+            param.put ("applicantType", 2);
+            param.put ("applyType", 2);
+            param.put ("hrTaskId", taskHrCompany.getPid ( ));
+            param.put ("taskId", taskHrCompany.getTaskId ( ));
+            param.put ("messageType", 11);
+            param.put ("messageCode", "awaitSendMessage");
+            messageService.sendMessageInfo (param);
             setHrTask.add(taskHrCompany);
         }
         return setHrTask;

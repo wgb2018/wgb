@@ -42,12 +42,12 @@
                     and n.type in (3,4)
                 </if>
             </if>
-
+                and n.to_date &gt;= now()
         </where>
         order by n.create_time desc
     </select>
     <select id="queryRecommend" resultType="com.microdev.model.Notice">
-        select <include refid="Notice_Column_List" /> from notice where type = #{type} order by rand() limit 3
+        select <include refid="Notice_Column_List" /> from notice where type = #{type} and to_date &gt;= now() order by rand() limit 3
     </select>
     <select id="queryDetailsHr" resultType="com.microdev.param.NoticeDetails" parameterType="com.microdev.param.QueryNoticeRequest">
         select t.task_type_text as taskTypeText,UNIX_TIMESTAMP(t.create_time) as createTime,n.need_workers as needWorkers,n.settlement_period as settlementPeriod,n.confirmed_workers as confirmedWorkers,
@@ -60,7 +60,7 @@
             ,(select CASE WHEN count(id) = 0 THEN 0 ELSE 1 end from enroll where request_id = #{noticeId} and worker_id = #{workerId} and status in (0,1)) as available
         </if>
         <if test="myself">
-            ,(select sum(value) from enroll where request_id = #{noticeId}) as enrollWorkers
+            ,IFNULL((select sum(value) from enroll where request_id = #{noticeId}),'0') as enrollWorkers
         </if>
         from notice n left join task t on n.task_id = t.id left join company c on n.hotel_id = c.id
         where n.id = #{noticeId}
@@ -75,7 +75,7 @@
             ,(select CASE WHEN count(id) = 0 THEN 0 ELSE 1 end from enroll where request_id = #{noticeId} and worker_id = #{workerId} and status in (0,1)) as available
         </if>
         <if test="myself">
-            ,(select sum(value) from enroll where request_id = #{noticeId}) as enrollWorkers
+            ,IFNULL((select sum(value) from enroll where request_id = #{noticeId}),'0') as enrollWorkers
         </if>
         from notice n left join task_hr_company t on n.task_id = t.id left join company c1 on n.hr_company_id = c1.id left join company c2 on n.hotel_id = c2.id
         where n.id = #{noticeId}
@@ -88,7 +88,7 @@
             ,(select CASE WHEN count(id) = 0 THEN 0 ELSE 1 end from enroll where request_id = #{noticeId} and worker_id = #{workerId} and status in (0,1)) as available
         </if>
         <if test="myself">
-            ,(select sum(value) from enroll where request_id = #{noticeId}) as enrollWorkers
+            ,IFNULL((select sum(value) from enroll where request_id = #{noticeId}),'0') as enrollWorkers
         </if>
         from notice n left join company c on n.hr_company_id = c.id
         where n.id = #{noticeId}

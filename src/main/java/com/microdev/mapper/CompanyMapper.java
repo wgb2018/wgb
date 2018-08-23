@@ -2,11 +2,7 @@ package com.microdev.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.microdev.model.Company;
-import com.microdev.param.AreaParam;
-import com.microdev.param.CompanyQueryDTO;
-import com.microdev.param.EmployerInfo;
-import com.microdev.param.HrInfo;
-import com.microdev.param.QueryCooperateRequest;
+import com.microdev.param.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -18,6 +14,8 @@ public interface CompanyMapper extends BaseMapper<Company> {
     List<Company> queryCompanys(CompanyQueryDTO queryDTO);
 
     List<Map<String, Object>> queryHotelsByHrId(CompanyQueryDTO queryDTO);
+
+    List<Map<String, Object>> queryWorkers(WorkerParamDTO queryDTO);
 
     List<Company>  queryNotHotelsByHrId(String HrId);
 

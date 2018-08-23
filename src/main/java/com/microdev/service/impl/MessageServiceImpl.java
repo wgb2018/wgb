@@ -931,6 +931,48 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         return message;
     }
 
+    @Override
+    public Message hotelDistributeWorkerTask(List <TaskWorker> list, Task task, boolean isStop) {
+        if (list == null || list.size() == 0 || task == null) {
+            throw new ParamsException("消息发送的参数错误");
+        }
+
+        MessageTemplate template = messageTemplateMapper.findFirstByCode("workTaskMessage");
+        if (template == null) {
+            throw new ParamsException("找不到消息模板");
+        }
+        Map<String, String> param = new HashMap<>();
+        param.put("hrCompanyName", task.getHotelName ());
+        String str = StringKit.templateReplace(template.getContent(), param);
+        Message message = null;
+        for (TaskWorker worker : list) {
+            message = new Message();
+            message.setStatus(0);
+            message.setMessageCode(template.getCode());
+            message.setMessageTitle(task.getTaskTypeText());
+            message.setContent(str);
+            message.setMessageType (6);
+            message.setMessageContent(str);
+            message.setApplyType(1);
+            message.setApplicantType(3);
+            message.setHotelId(task.getHotelId());
+            message.setIsTask(0);
+            message.setWorkerId(worker.getWorkerId());
+            message.setWorkerTaskId(worker.getPid());
+            message.setTaskId (task.getPid ());
+            message.setStop (isStop);
+            messageMapper.insert(message);
+            try {
+                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (message.getWorkerId ( )).getMobile ( ), message.getMessageContent ()));
+            } catch (APIConnectionException e) {
+                e.printStackTrace ( );
+            } catch (APIRequestException e) {
+
+            }
+        }
+        return message;
+    }
+
     /**
      * 发送消息
      * @param param

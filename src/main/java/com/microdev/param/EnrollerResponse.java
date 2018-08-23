@@ -1,7 +1,9 @@
 package com.microdev.param;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 
 @Data
@@ -30,7 +32,8 @@ public class EnrollerResponse {
 
     private String mobile;
 
-    private OffsetTime applyTime;
+    @JsonFormat(pattern="yyyy.MM.dd HH:mm:ss")
+    private OffsetDateTime applyTime;
 
     private Long applyTimeL;
 }

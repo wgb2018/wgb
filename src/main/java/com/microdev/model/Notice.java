@@ -38,6 +38,9 @@ public class Notice extends BaseEntity {
     @TableField(exist = false)
     private String  enrollWorkers;
 
+    @TableField(exist = false)
+    private boolean haveHandle = false;
+
     private String settlementPeriod;
 
     private String settlementNum;

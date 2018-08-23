@@ -33,10 +33,10 @@ public class EnrollDetails {
 
     private List<Dict> service;
 
-    @JsonFormat(pattern="yyyy.MM.dd hh:mm")
+    @JsonFormat(pattern="yyyy.MM.dd HH:mm")
     private OffsetDateTime enrollTime;
 
-    @JsonFormat(pattern="yyyy.MM.dd hh:mm")
+    @JsonFormat(pattern="yyyy.MM.dd HH:mm")
     private OffsetDateTime handleTime;
 
 }

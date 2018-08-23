@@ -64,6 +64,13 @@ public class TaskController {
         return taskService.hotelPayHr(PayHrParam);
     }
     /**
+     * 用人单位按任务给小时工结账(发送消息)
+     */
+    @PostMapping("/hotel/pay/Worker")
+    public ResultDO payWorker(@RequestBody PayParam PayHrParam) {
+        return taskService.hotelPayWoreker(PayHrParam);
+    }
+    /**
      * 用人单位设置人力公司下哪个任务下哪个小时工违约
      */
     @PutMapping("/admin/tasks/{workerTaskId}/no-promise/")

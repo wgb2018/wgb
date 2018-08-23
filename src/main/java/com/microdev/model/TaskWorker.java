@@ -122,6 +122,10 @@ public class TaskWorker extends BaseEntity {
 
     private String taskContent;
     /**
+     * 任务类型 0：人力发给小时工任务
+     */
+    private Integer type = 0;
+    /**
      *  用人单位名称
      */
     private String hotelName;
@@ -165,5 +169,6 @@ public class TaskWorker extends BaseEntity {
     public void setMinutes(Integer minutes) {
         this.minutes = minutes;
     }
+
 
 }

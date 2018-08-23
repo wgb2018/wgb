@@ -7,6 +7,8 @@ public class HrQueryWorkerDTO {
 
     private String hrId;
 
+    private String hotelId;
+
     private String userName;
 
     private String taskId;

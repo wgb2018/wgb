@@ -26,6 +26,8 @@ public interface TaskService extends IService<Task> {
      */
     ResultDO hotelPayHr(PayParam PayHrParam);
 
+    ResultDO hotelPayWoreker(PayParam payParam);
+
     /**
      * 用人单位再次派发任务
      * @param request
@@ -65,4 +67,5 @@ public interface TaskService extends IService<Task> {
      * @return
      */
     ResultDO agreeApplyWorker(CreateTaskRequest createTaskRequest);
+
 }
