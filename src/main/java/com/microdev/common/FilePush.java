@@ -23,4 +23,20 @@ public class FilePush {
         fis.read(b);
         return objectStoreService.uploadObject(catalog, b);
     }
+
+    /**
+     * 将通讯记录的数据存放到服务器
+     * @param catalog
+     * @param localPath
+     * @param suffix
+     * @return
+     */
+    public String pushIMMessageToServer(String catalog, String localPath, String suffix) throws Exception {
+        InputStream fis = new FileInputStream(new File(localPath));
+        catalog = catalog + FileSafeCode.getSha1(fis) + suffix;
+        fis = new FileInputStream(new File(localPath));
+        byte[] b = new byte[fis.available()];
+        fis.read(b);
+        return objectStoreService.uploadObject(catalog, b);
+    }
 }

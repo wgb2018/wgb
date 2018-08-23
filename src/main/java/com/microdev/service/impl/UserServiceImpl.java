@@ -22,6 +22,8 @@ import com.microdev.type.PlatformType;
 import com.microdev.type.SocialType;
 import com.microdev.type.UserSex;
 import com.microdev.type.UserType;
+import io.swagger.client.model.NewPassword;
+import io.swagger.client.model.RegisterUsers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -56,17 +58,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     @Autowired
     private CompanyMapper companyMapper;
     @Autowired
-    private TaskService taskService;
-    @Autowired
-    private TaskWorkerService taskWorkerService;
-    @Autowired
-    private TaskHrCompanyService taskHrCompanyService;
-    @Autowired
-    private MessageService messageService;
-    @Autowired
     private DictMapper dictMapper;
-    @Autowired
-    private WorkerLogMapper workerLogMapper;
     @Autowired
     private ObjectStoreService objectStoreService;
     @Autowired
@@ -81,6 +73,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     private JpushClient jpushClient;
     @Autowired
     private PropagandaMapper propagandaMapper;
+    @Autowired
+    private IMUserService iMUserService;
+
     @Override
     public User create(User user) throws Exception{
         try{
@@ -113,6 +108,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         nu.setCreateTime (null);
         nu.setModifyTime (null);
         userMapper.insert (nu);
+
+        //注册IM用户
+        io.swagger.client.model.User user = new io.swagger.client.model.User().username(nu.getPid()).password(nu.getPid());
+        RegisterUsers users = new RegisterUsers();
+        users.add(user);
+        iMUserService.createNewIMUserSingle(users);
         return ResultDO.buildSuccess ("注册成功");
     }
 
@@ -146,6 +147,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         userDTO.setNickname(user.getNickname());
         userDTO.setRoleList(new ArrayList<>(user.getRoles()));
         userDTO.setUserType(user.getUserType());
+
         if (!PasswordHash.validatePassword(login.getPassword(), user.getPassword())){
             throw new ParamsException("用户名或密码错误");
         }
@@ -163,6 +165,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                 }
             }
         }
+
         if (user != null && PasswordHash.validatePassword(login.getPassword(), user.getPassword())) {
             operations.set(user.getMobile (), login.getUniqueId ());
             return tokenService.accessToken(userDTO, login.getPlatform().name());
@@ -332,7 +335,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         userDTO.setRoleList(roleList);
         ValueOperations<String, String> operations = redisTemplate.opsForValue();
         operations.set(register.getMobile (), register.getUniqueId ());
-        return tokenService.accessToken(userDTO, register.getPlatform().name());
+        TokenDTO token = tokenService.accessToken(userDTO, register.getPlatform().name());
+
+        //注册IM用户
+        io.swagger.client.model.User user = new io.swagger.client.model.User().username(newUser.getPid()).password(newUser.getPid());
+        RegisterUsers users = new RegisterUsers();
+        users.add(user);
+        iMUserService.createNewIMUserSingle(users);
+        return token;
     }
     /**
      * 注销登录
@@ -344,6 +354,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         tokenService.deleteAccessToken(token);
         ValueOperations<String, String> operations = redisTemplate.opsForValue();
         operations.set(mobile, "");
+
+        //强制IM用户下线
+        iMUserService.disconnectIMUser(mobile);
         return ResultDO.buildSuccess ("用户退出成功");
     }
     /**
@@ -594,6 +607,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         userDTO.setMobile(mobile);
         userDTO.setUserType(userType);
         userDTO.setRoleList((ArrayList<Role>) user.get("roles"));
+
         //如果当前的是用人单位或者人力公司，那么就查询出他们的公司审核状态
 
         if (userType == UserType.hr || userType == UserType.hotel) {
@@ -639,6 +653,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             userDTO.setServiceType (l1==null?new ArrayList<>():l1);
             userDTO.setAreaCode (l2==null?new ArrayList<>():l2);
             userDTO.setQrCode (worker.getQrCode ());
+        }
+
+        //判断用户是否注册IM用户
+        Object obj = iMUserService.getIMUserByUserName(user1.getPid());
+        if (obj == null) {
+            io.swagger.client.model.User u = new io.swagger.client.model.User().username(user1.getPid()).password(user1.getPid());
+            RegisterUsers users = new RegisterUsers();
+            users.add(u);
+            iMUserService.createNewIMUserSingle(users);
         }
 
         return userDTO;
