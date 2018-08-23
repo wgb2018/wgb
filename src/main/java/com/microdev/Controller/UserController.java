@@ -13,6 +13,7 @@ import com.microdev.param.*;
 import com.microdev.service.SmsFacade;
 import com.microdev.service.TokenService;
 import com.microdev.service.UserService;
+import com.microdev.type.UserType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,8 @@ public class UserController {
     WorkerMapper workerMapper;
 	@Autowired
     TaskHrCompanyMapper taskHrCompanyMapper;
+	@Autowired
+    CompanyMapper companyMapper;
 	/**
      * 创建用户
      */
@@ -77,6 +80,36 @@ public class UserController {
     @PostMapping("/login")
     public ResultDO login(@RequestBody UserDTO user) throws Exception {
         return ResultDO.buildSuccess(userService.login(user));
+    }
+    /**
+     * 查询用户
+     */
+    @PostMapping("/query/user/{id}")
+    public ResultDO queryUser(@PathVariable String id) throws Exception {
+        User u = userMapper.selectById (id);
+        UserResponse user = new UserResponse ();
+        if(u.getUserType ().equals (UserType.worker)){
+            user.setLogo (u.getAvatar ());
+            user.setMobile (u.getMobile ());
+            user.setName (u.getNickname ());
+            user.setRoleId (u.getWorkerId ());
+            user.setType ("worker");
+        }else if(u.getUserType ().equals (UserType.hotel)){
+            Company hotel = companyMapper.findFirstByLeaderMobile (u.getMobile ());
+            user.setLogo (hotel.getLogo ());
+            user.setMobile (u.getMobile ());
+            user.setName (hotel.getName ());
+            user.setRoleId (hotel.getPid ());
+            user.setType ("hotel");
+        }else if(u.getUserType ().equals (UserType.hr)){
+            Company hr = companyMapper.findFirstByLeaderMobile (u.getMobile ());
+            user.setLogo (hr.getLogo ());
+            user.setMobile (u.getMobile ());
+            user.setName (hr.getName ());
+            user.setRoleId (hr.getPid ());
+            user.setType ("hr");
+        }
+        return ResultDO.buildSuccess(user);
     }
     /**
      * 用户退出登录
@@ -192,7 +225,6 @@ public class UserController {
      */
     @GetMapping("/me")
     public ResultDO me() {
-
         return ResultDO.buildSuccess(userService.me());
     }
     /**
@@ -265,7 +297,7 @@ public class UserController {
 //        test = userMapper.selectById("f1f33e09884c4b06b8fbe77465bd208d");
 
         // app 上传
-        /*File file;
+        File file;
         String fileURI = null;
         String filePath;
         //file = QRCodeUtil.createQRCode ("3a267b284a1641ed9fb143fb3ff2d6c5WGBhotel");
@@ -278,7 +310,7 @@ public class UserController {
         //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
         fileURI = objectStoreService.uploadFile(filePath, file);
 
-        System.out.println ("fileURI:"+fileURI);*/
+        System.out.println ("fileURI:"+fileURI);
 
 
 
@@ -330,10 +362,10 @@ public class UserController {
         /*String str = "wgba001";
         System.out.println (str.substring (0,4));
 */
-        OffsetDateTime of = OffsetDateTime.now ();
+        /*OffsetDateTime of = OffsetDateTime.now ();
         System.out.println (of);
         OffsetDateTime of1 = OffsetDateTime.ofInstant (Instant.ofEpochSecond (of.toEpochSecond () - of.toOffsetTime ().getLong (ChronoField.SECOND_OF_DAY)),ZoneId.systemDefault ());
-        System.out.println (of1);
+        System.out.println (of1);*/
         return ResultDO.buildSuccess("");
     }
 	@GetMapping("/{mobile}/verifyMobile/{smsCode}")
@@ -366,7 +398,7 @@ public class UserController {
            
             f = new File(path+"11.html");
         } else if ("5".equals(param)) {
-            f = new File(path+"10.html");
+            f = new File(path+"13.html");
         } else if ("6".equals(param)) {
             f = new File(path+"10.html");
         } else {

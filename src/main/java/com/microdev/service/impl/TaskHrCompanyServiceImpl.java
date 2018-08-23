@@ -964,8 +964,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
 
         @Override
         public ResultDO exchangeWorker (String taskWorkerId, String workerId){
-
-            //消息发送者是用人单位，将小时工任务状态设置为3终止，如果是小时工，将状态置为2
             TaskWorker taskWorker = taskWorkerMapper.selectById (taskWorkerId);
             if (taskWorker == null) {
                 throw new BusinessException ("查询不到小时工工作任务");

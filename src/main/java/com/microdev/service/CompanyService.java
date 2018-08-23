@@ -52,6 +52,10 @@ public interface CompanyService extends IService<Company> {
      */
     ResultDO hotelHrCompanies(Paginator paginator, CompanyQueryDTO request);
     /**
+     * 获取用人单位下的小时工
+     */
+    ResultDO hotelWorkers(Paginator paginator, HrQueryWorkerDTO dto);
+    /**
      * 获取用人单位可以添加的人力公司
      */
     ResultDO hotelNotHrCompanies(String id);
@@ -67,6 +71,11 @@ public interface CompanyService extends IService<Company> {
      * 用人单位申请替换小时工
      */
     String changeWorker(Map<String, Object> map);
+    /**
+     * 用人单位主动替换小时工
+     */
+    ResultDO changeOwnWorker(ChangeWorkerParam map);
+
     /**
      * 用人单位账目明细
      */

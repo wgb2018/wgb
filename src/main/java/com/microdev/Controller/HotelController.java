@@ -37,8 +37,14 @@ public class HotelController {
      */
     @PostMapping("/hotels/hrcompanies")
     public ResultDO gethotelHrCompanies(@RequestBody PagingDO<CompanyQueryDTO> paging) {
-
         return companyService.hotelHrCompanies(paging.getPaginator(),paging.getSelector());
+    }
+    /**
+     *查找用人单位下的小时工
+     */
+    @PostMapping("/hotels/workers")
+    public ResultDO gethotelWorkers(@RequestBody PagingDO<HrQueryWorkerDTO> paging) {
+        return companyService.hotelWorkers(paging.getPaginator(),paging.getSelector());
     }
     /**
      *查找用人单位可添加的人力资源公司
@@ -108,6 +114,13 @@ public class HotelController {
     @PostMapping("/hotels/changeWorker")
     public ResultDO changeWorker(@RequestBody Map<String, Object> map) {
         return ResultDO.buildSuccess(companyService.changeWorker(map));
+    }
+    /**
+     * 用人单位主动替换小时工(任务已开始)
+     */
+    @PostMapping("/hotels/initiative/changeWorker")
+    public ResultDO changeOwnWorker(@RequestBody ChangeWorkerParam param) {
+        return ResultDO.buildSuccess(companyService.changeOwnWorker(param));
     }
     /**
      * 用人单位账目明细

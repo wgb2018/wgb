@@ -161,8 +161,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
             taskViewDTO.setStatus(6);
         }
         List<TaskHrCompanyViewDTO> taskHrList = taskViewDTO.getListTaskHr();
+        List<Map<String, Object>> list = null;
         if (taskHrList != null) {
-            List<Map<String, Object>> list = null;
             for(int i = 0;i<taskHrList.size ();i++){
                 list = taskWorkerMapper.selectTaskWorkById(taskHrList.get (i).getPid());
                 List<Map<String, Object>> confirmedList = new ArrayList<>();
@@ -185,6 +185,26 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
             }
         }
         taskViewDTO.setListTaskHr (taskHrList);
+        list = taskWorkerMapper.selectTaskWorkByHotelId (taskViewDTO.getPid ());
+        List<Map<String, Object>> confirmedList = new ArrayList<>();
+        List<Map<String, Object>> refusedList = new ArrayList<>();
+        List<Map<String, Object>> distributedList = new ArrayList<>();
+        for (Map<String, Object> m : list) {
+            m.put("age", DateUtil.CaculateAge((OffsetDateTime) m.get("birthday")));
+            distributedList.add(m);
+            if (m.get("taskStatus") == null)
+                continue;
+            if ((Integer) m.get("taskStatus") == 1 || (Integer) m.get("taskStatus") == 3) {
+                confirmedList.add(m);
+            } else if ((Integer) m.get("taskStatus") == 2) {
+                refusedList.add(m);
+            }
+        }
+        TaskWorkerViewDTO listTaskWorker = taskViewDTO.getListTaskWorker ();
+        listTaskWorker.setConfirmedList (confirmedList);
+        listTaskWorker.setDistributedList (distributedList);
+        listTaskWorker.setRefusedList (refusedList);
+        taskViewDTO.setListTaskWorker (listTaskWorker);
         return ResultDO.buildSuccess(taskViewDTO);
     }
 
@@ -291,6 +311,62 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         task.setUnConfirmedPay (task.getUnConfirmedPay ()+PayHrParam.getPayMoney ());
         taskMapper.updateAllColumnById (task);
         return ResultDO.buildSuccess("消息发送成功");
+    }
+
+    @Override
+    public ResultDO hotelPayWoreker(PayParam payParam) {
+        if (payParam == null || !StringUtils.hasLength (payParam.getTaskWorkerId ( )) || StringUtils.isEmpty (payParam.getPayMoney ( ))) {
+            throw new ParamsException ("参数错误");
+        }
+        TaskWorker taskWorker = taskWorkerMapper.findFirstById (payParam.getTaskWorkerId ( ));
+        //插入支付记录
+        Bill bill = new Bill ( );
+        bill.setTaskHrId (taskWorker.getTaskHrId ( ));
+        bill.setHotelId (taskWorker.getHotelId ( ));
+        bill.setPayMoney (payParam.getPayMoney ( ));
+        bill.setHrCompanyId (taskWorker.getHrCompanyId ( ));
+        bill.setWorkerId (taskWorker.getWorkerId ());
+        bill.setDeleted (false);
+        bill.setPayType (2);
+        bill.setStatus (0);
+        bill.setTaskId (taskWorker.getHotelTaskId ());        billMapper.insert (bill);
+        //发送支付待确认消息
+        MessageTemplate mess = messageTemplateMapper.findFirstByCode ("hrPayWorkerMessage");
+        Message m = new Message ( );
+        m.setTaskId (taskWorker.getHotelTaskId ( ));
+        m.setMessageCode ("hotelPayWorkerMessage");
+        m.setMessageType (8);
+        m.setWorkerId (taskWorker.getWorkerId ( ));
+        m.setWorkerTaskId (taskWorker.getPid ( ));
+        m.setMessageTitle ("用人单位支付小时工");
+        m.setStatus (0);
+        m.setHotelId (taskWorker.getHotelId ( ));
+        m.setApplicantType (3);
+        m.setApplyType (1);
+        m.setIsTask (0);
+        m.setMinutes (payParam.getPayMoney ( )+"");
+        m.setRequestId(bill.getPid());
+        Map <String, String> param = new HashMap <> ( );
+        param.put ("hrName", companyMapper.findCompanyById (taskWorker.getHotelId ()).getName ( ));
+        String c = StringKit.templateReplace (mess.getContent ( ), param);
+        m.setContent (c);
+        messageService.insert (m);
+        try {
+            jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (taskWorker.getWorkerId ( )).getMobile ( ), m.getMessageContent ()));
+        } catch (APIConnectionException e) {
+            e.printStackTrace ( );
+        } catch (APIRequestException e) {
+            e.printStackTrace ( );
+        }
+        taskWorker.setUnConfirmedPay (taskWorker.getUnConfirmedPay ( ) + payParam.getPayMoney ( ));
+        taskWorkerMapper.updateById (taskWorker);
+        Task task = taskMapper.selectById (taskWorker.getHotelTaskId ());
+        if (task == null) {
+              throw new ParamsException ("小时工工任务错误");
+        }
+        task.setUnConfirmedPay (task.getUnConfirmedPay ( ) + payParam.getPayMoney ( ));
+        taskMapper.updateById (task);
+        return ResultDO.buildSuccess ("消息发送成功");
     }
 
     /**

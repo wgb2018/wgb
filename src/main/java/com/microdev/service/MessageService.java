@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.microdev.common.PagingDO;
 import com.microdev.common.ResultDO;
 import com.microdev.common.paging.Paginator;
-import com.microdev.model.Company;
-import com.microdev.model.Message;
-import com.microdev.model.TaskHrCompany;
-import com.microdev.model.TaskWorker;
+import com.microdev.model.*;
 import com.microdev.param.*;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -143,6 +140,13 @@ public interface MessageService extends IService<Message> {
      * @param taskHrCompany
      */
     Message hrDistributeWorkerTask(List<TaskWorker> list, TaskHrCompany taskHrCompany,boolean isStop);
+
+    /**
+     * 酒店任务给小时工
+     * @param list
+     * @param task
+     */
+    Message hotelDistributeWorkerTask(List<TaskWorker> list, Task task, boolean isStop);
 
     /**
      * 发送消息

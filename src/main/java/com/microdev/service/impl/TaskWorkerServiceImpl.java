@@ -99,6 +99,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         if (taskWorker.getStatus() == 2 || taskWorker.getStatus() == 3) {
             return ResultDO.buildSuccess("任务已终止");
         }
+        Task hotelTask=taskMapper.getFirstById(taskWorker.getHotelTaskId ());
         if(!taskWorker.getFromDate ().isEqual (taskWorker.getToDate ())){
             if (taskWorker.getFromDate().isBefore(OffsetDateTime.now())) {
                 taskWorker.setStatus (2);
@@ -108,13 +109,12 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
             }
         }
         //TODO 人数判断
-        TaskHrCompany taskHr = taskHrCompanyMapper.queryByTaskId(taskWorker.getTaskHrId());
         if(taskWorker.getFromDate ().isEqual (taskWorker.getToDate ()))  {
             OffsetDateTime of = OffsetDateTime.now();
             if(of.toOffsetTime ().isBefore (taskWorker.getDayStartTime ())){
-                taskWorker.setFromDate (OffsetDateTime.ofInstant (Instant.ofEpochSecond (of.toEpochSecond () - of.toOffsetTime ().getLong (ChronoField.SECOND_OF_DAY)+taskHr.getDayStartTime ().getLong (ChronoField.SECOND_OF_DAY)),ZoneId.systemDefault ()));
+                taskWorker.setFromDate (OffsetDateTime.ofInstant (Instant.ofEpochSecond (of.toEpochSecond () - of.toOffsetTime ().getLong (ChronoField.SECOND_OF_DAY)+hotelTask.getDayStartTime ().getLong (ChronoField.SECOND_OF_DAY)),ZoneId.systemDefault ()));
             }else{
-                taskWorker.setFromDate (OffsetDateTime.ofInstant (Instant.ofEpochSecond (of.toEpochSecond () - of.toOffsetTime ().getLong (ChronoField.SECOND_OF_DAY)+taskHr.getDayStartTime ().getLong (ChronoField.SECOND_OF_DAY)),ZoneId.systemDefault ()).plusDays (1));
+                taskWorker.setFromDate (OffsetDateTime.ofInstant (Instant.ofEpochSecond (of.toEpochSecond () - of.toOffsetTime ().getLong (ChronoField.SECOND_OF_DAY)+hotelTask.getDayStartTime ().getLong (ChronoField.SECOND_OF_DAY)),ZoneId.systemDefault ()).plusDays (1));
             }
             if(taskWorker.getToDate ().isBefore (taskWorker.getFromDate ())){
                 taskWorker.setStatus (2);
@@ -131,14 +131,24 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
                         }
                     }
                 }
-        Integer confirmedWorkers = taskHr.getConfirmedWorkers();
-        if (confirmedWorkers == null) {
-            confirmedWorkers = 0;
-        }
+        TaskHrCompany taskHr = taskHrCompanyMapper.queryByTaskId(taskWorker.getTaskHrId());
+                if(taskHr!=null){
+                    Integer confirmedWorkers = taskHr.getConfirmedWorkers();
+                    if (confirmedWorkers == null) {
+                        confirmedWorkers = 0;
+                    }
+                    //TODO 人力公司人数加1
+                    if (confirmedWorkers + 1 <= taskHr.getNeedWorkers()) {
+                        taskHr.setConfirmedWorkers(confirmedWorkers+1);
+                    }
+                    if(taskHr.getConfirmedWorkers() == taskHr.getNeedWorkers()){
+                        taskHr.setStatus (5);
+                    }
+                    taskHrCompanyMapper.updateById(taskHr);
+                }
         taskWorker.setStatus(1);
         taskWorker.setConfirmedDate(OffsetDateTime.now());
         //TODO 用人单位人数加1
-        Task hotelTask=taskMapper.getFirstById(taskHr.getTaskId());
         Integer hotelConfirmedWorkers=hotelTask.getConfirmedWorkers();
         if(hotelConfirmedWorkers==null){
             hotelConfirmedWorkers=0;
@@ -151,18 +161,10 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         }else{
             hotelTask.setStatus (3);
         }
-        //TODO 人力公司人数加1
-        if (confirmedWorkers + 1 <= taskHr.getNeedWorkers()) {
-             taskHr.setConfirmedWorkers(confirmedWorkers+1);
-        }
-        if(taskHr.getConfirmedWorkers() == taskHr.getNeedWorkers()){
-            taskHr.setStatus (5);
-        }
+
         taskWorker.setRefusedReason("");
         taskWorkerMapper.updateById(taskWorker);
         taskMapper.updateById(hotelTask);
-        taskHrCompanyMapper.updateById(taskHr);
-
         //添加一个通知消息
         User user = userMapper.selectByWorkerId(taskWorker.getWorkerId());
         if (user == null) {
@@ -171,8 +173,13 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         Inform notice = new Inform();
         notice.setCreateTime(OffsetDateTime.now());
         notice.setModifyTime(OffsetDateTime.now());
-        notice.setReceiveId(taskHr.getHrCompanyId());
-        notice.setAcceptType(2);
+        if(taskHr!=null){
+            notice.setReceiveId(taskHr.getHrCompanyId());
+            notice.setAcceptType(2);
+        }else{
+            notice.setReceiveId(hotelTask.getHotelId ());
+            notice.setAcceptType(3);
+        }
         notice.setSendType(1);
         notice.setTitle("任务已接受");
         notice.setContent("小时工" + user.getNickname() + "接受了你派发的任务");
@@ -204,16 +211,19 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         }
         //TODO 人力公司人数判断
         TaskHrCompany taskHr= taskHrCompanyMapper.queryByTaskId(taskWorker.getTaskHrId());
-        Integer refuseWorkers=taskHr.getRefusedWorkers();
-        if(refuseWorkers==null){
-            refuseWorkers=0;
+        if(taskHr!=null){
+            Integer refuseWorkers=taskHr.getRefusedWorkers();
+            if(refuseWorkers==null){
+                refuseWorkers=0;
+            }
+            taskHr.setRefusedWorkers(refuseWorkers+1);
+            taskHrCompanyMapper.updateById(taskHr);
         }
-        taskHr.setRefusedWorkers(refuseWorkers+1);
         taskWorker.setStatus(2);
         taskWorker.setConfirmedDate(OffsetDateTime.now());
         taskWorker.setRefusedReason(refusedTaskReq.getRefusedReason());
         //TODO 用人单位人数
-        Task hotelTask=taskMapper.getFirstById(taskHr.getTaskId ());
+        Task hotelTask=taskMapper.getFirstById(taskWorker.getHotelTaskId ());
         Integer hotelRefuseWorkers=hotelTask.getRefusedWorkers();
         if(hotelRefuseWorkers==null){
             hotelRefuseWorkers=0;
@@ -221,7 +231,6 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         hotelTask.setRefusedWorkers(hotelRefuseWorkers+1);
         taskWorkerMapper.updateById(taskWorker);
         taskMapper.updateById(hotelTask);
-        taskHrCompanyMapper.updateById(taskHr);
 
         //发送消息
         Message m = new Message();
@@ -232,7 +241,13 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         m.setMessageTitle(mess.getTitle());
         m.setWorkerId (taskWorker.getWorkerId ());
         m.setWorkerTaskId (taskWorker.getPid ());
-        m.setHrCompanyId (taskHr.getHrCompanyId());
+        if(taskHr!=null){
+            m.setHrCompanyId (taskHr.getHrCompanyId());
+            m.setHrTaskId(taskHr.getPid ());
+            m.setApplyType(2);
+        }else{
+            m.setApplyType(3);
+        }
         m.setTaskId(hotelTask.getPid());
         m.setHotelId(hotelTask.getHotelId());
         Map<String, String> param = new HashMap<>();
@@ -240,8 +255,6 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         param.put("content", refusedTaskReq.getRefusedReason());
         String c = StringKit.templateReplace(mess.getContent(), param);
         m.setMessageContent(c);
-        m.setHrTaskId(taskHr.getPid ());
-        m.setApplyType(2);
         m.setApplicantType(1);
         m.setStatus(0);
         m.setIsTask(0);

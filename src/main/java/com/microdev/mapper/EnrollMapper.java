@@ -15,6 +15,8 @@ import java.util.Map;
 public interface EnrollMapper extends BaseMapper<Enroll> {
     Integer selectEnrollNum(String id);
 
+    Integer selectUnHandleEnrollNum(String id);
+
     List<EnrollerResponse> selectEnrollWorker(@Param ("noticeId") String noticeId,@Param ("type") Integer type);
 
     Map selectEnrollCount(String noticeId);

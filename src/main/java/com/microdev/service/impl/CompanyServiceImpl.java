@@ -14,6 +14,7 @@ import com.microdev.common.exception.BusinessException;
 import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.PagedList;
 import com.microdev.common.paging.Paginator;
+import com.microdev.common.utils.DateUtil;
 import com.microdev.common.utils.JPushManage;
 import com.microdev.common.utils.RedisUtil;
 import com.microdev.common.utils.StringKit;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -94,6 +96,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     private RedisUtil redisUtil;
     @Autowired
     private EvaluteGradeMapper evaluteGradeMapper;
+    @Autowired
+    private MyTimeTask myTimeTask;
 
     @Override
     public ResultDO pagingCompanys(Paginator paginator, CompanyQueryDTO queryDTO) {
@@ -371,6 +375,64 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     }
 
     @Override
+    public ResultDO hotelWorkers(Paginator paginator, HrQueryWorkerDTO queryDTO) {
+        //查询数据集合
+        List<User> list;
+        User us;
+        HashMap<String,Object> result = new HashMap<>();
+        if(queryDTO.getTaskId()==null) {
+            PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
+            List<UserCompany> list1 = userCompanyMapper.selectAllWorker(queryDTO);
+            for (UserCompany u:list1) {
+                us = userMapper.selectById(u.getUserId());
+                us.setAge(DateUtil.CaculateAge(us.getBirthday()));
+                u.setUser(us);
+            }
+
+            PageInfo<UserCompany> pageInfo = new PageInfo<UserCompany>(list1);
+            //设置获取到的总记录数total：
+            result.put("total",pageInfo.getTotal());
+            //设置数据集合rows：
+            result.put("result",pageInfo.getList());
+            result.put("page",paginator.getPage());
+        }else{
+            boolean ifTimeConflict = false;
+            list = userCompanyMapper.getSelectableWorker(queryDTO);
+            Task task = taskMapper.getFirstById (queryDTO.getTaskId ());
+            Iterator<User> it = list.iterator ();
+            while(it.hasNext ()){
+                List<TaskWorker> li = taskWorkerMapper.findByUserId (it.next ().getPid ());
+                for (TaskWorker ts:li) {
+                    if(!(task.getDayStartTime ().isAfter (ts.getDayEndTime ()) || ts.getDayStartTime ().isAfter (task.getDayEndTime ()))){
+                        if(!(task.getFromDate ().isAfter (ts.getToDate ()) || ts.getFromDate ().isAfter (task.getToDate ()))){
+                            ifTimeConflict = true;
+                            break;
+                        }
+                    }
+                }
+                if(ifTimeConflict){
+                    System.out.println ("去除时间冲突的小时工："+it);
+                    it.remove ();
+                    ifTimeConflict = false;
+                }
+            }
+            result.put("total",list.size ());
+            int size = list.size();
+            int a = (paginator.getPage ()-1)*paginator.getPageSize ();
+            int b = paginator.getPage ()*paginator.getPageSize ()<size?paginator.getPage ()*paginator.getPageSize ():size;
+            list = list.subList (a,b);
+            //list = list.subList (0,2);
+            //设置获取到的总记录数total：
+            //设置数据集合rows：
+            result.put("result",list);
+            result.put("page",paginator.getPage());
+        }
+
+            return ResultDO.buildSuccess(result);
+
+    }
+
+    @Override
     public ResultDO hotelNotHrCompanies(String id) {
         List<Company> list = companyMapper.queryNotCompanysByHotelId(id);
         return ResultDO.buildSuccess(list);
@@ -405,6 +467,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         inform.setSendType(3);
         inform.setStatus(0);
         inform.setReceiveId(oldMsg.getWorkerId());
+        Task task = taskMapper.selectById (oldMsg.getHotelId ());
         if ("1".equals(status)) {
             List<PunchMessageDTO> punchList = messageMapper.selectPunchMessage(id);
             PunchMessageDTO punch = null;
@@ -435,9 +498,19 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             }
 
             if (minutes > 0) {
-                TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(oldMsg.getHrTaskId());
-                Double shouldPayMoney_hrtoworker = (minutes / 60.00) * taskHrCompany.getHourlyPay();
-                Double shouldPayMoney_hoteltohr = (minutes / 60.00) * taskHrCompany.getHourlyPayHotel();
+                Double shouldPayMoney_hrtoworker = 0D;
+                Double shouldPayMoney_hoteltohr = 0D;
+                if(oldMsg.getHrTaskId() != null){
+                    TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(oldMsg.getHrTaskId());
+                    shouldPayMoney_hrtoworker = (minutes / 60.00) * taskHrCompany.getHourlyPay();
+                    shouldPayMoney_hoteltohr = (minutes / 60.00) * taskHrCompany.getHourlyPayHotel();
+                }else{
+                    if(task!=null){
+                        throw new ParamsException ("查询不到用人单位任务");
+                    }
+                    shouldPayMoney_hoteltohr = (minutes / 60.00) * task.getHourlyPay ();
+                }
+
 
                 //小数点后保留两位(第三位四舍五入)
                 shouldPayMoney_hrtoworker = new BigDecimal(shouldPayMoney_hrtoworker).
@@ -445,9 +518,12 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 shouldPayMoney_hoteltohr = new BigDecimal(shouldPayMoney_hoteltohr).
                         setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 
-                
-                taskWorkerMapper.addMinutes(punch.getTaskWorkerId(),minutes,shouldPayMoney_hrtoworker);
-                taskHrCompanyMapper.addMinutes(oldMsg.getHrTaskId(),minutes,shouldPayMoney_hrtoworker,shouldPayMoney_hoteltohr);
+                if(oldMsg.getHrTaskId() != null){
+                    taskWorkerMapper.addMinutes(punch.getTaskWorkerId(),minutes,shouldPayMoney_hrtoworker);
+                    taskHrCompanyMapper.addMinutes(oldMsg.getHrTaskId(),minutes,shouldPayMoney_hrtoworker,shouldPayMoney_hoteltohr);
+                }else{
+                    taskWorkerMapper.addMinutes(punch.getTaskWorkerId(),minutes,shouldPayMoney_hoteltohr);
+                }
                 taskMapper.addMinutes(punch.getTaskId(),minutes,shouldPayMoney_hoteltohr);
             }
 
@@ -478,7 +554,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         return "提交成功";
     }
     /**
-
      * 用人单位申请替换小时工
      */
     @Override
@@ -535,6 +610,86 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
         }        messageMapper.insert(m);
         return "提交成功";
+    }
+    /**
+
+     * 用人单位主动替换小时工
+     */
+    @Override
+    public ResultDO changeOwnWorker(ChangeWorkerParam request) {
+        TaskWorker taskWorker = taskWorkerMapper.selectById (request.getTaskWorkerId());
+        if (taskWorker == null) {
+            throw new BusinessException ("查询不到小时工工作任务");
+        }
+        if(taskWorker.getStatus () == 3){
+            return ResultDO.buildSuccess ("已替换成功");
+        }
+        taskWorker.setStatus (3);
+        taskWorker.setRefusedReason ("小时工有事不能工作，另换小时工接替工作");
+        taskWorkerMapper.updateAllColumnById (taskWorker);
+
+        //更新人力任务信息
+        Task task = taskMapper.getFirstById (taskWorker.getHotelTaskId ());
+        task.setConfirmedWorkers (task.getConfirmedWorkers ( ) - 1);
+        taskMapper.updateById (task);
+
+        //插入小时工任务信息
+        TaskWorker workerTask = null;
+        workerTask = new TaskWorker ( );
+        workerTask.setStatus (0);
+        workerTask.setDayEndTime (taskWorker.getDayEndTime ( ));
+        workerTask.setDayStartTime (taskWorker.getDayStartTime ( ));
+        workerTask.setToDate (taskWorker.getToDate ( ));
+        workerTask.setFromDate (taskWorker.getToDate ( ));
+        workerTask.setHotelName (taskWorker.getHotelName ( ));
+        workerTask.setHourlyPay (taskWorker.getHourlyPay ( ));
+        workerTask.setTaskContent (taskWorker.getTaskContent ( ));
+        workerTask.setTaskTypeCode (taskWorker.getTaskTypeCode ( ));
+        workerTask.setTaskTypeText (taskWorker.getTaskTypeText ( ));
+        workerTask.setWorkerId (request.getChangeWorkerId ());
+        workerTask.setHotelTaskId (taskWorker.getHotelTaskId ());
+        workerTask.setHotelId (taskWorker.getHotelId ( ));
+        workerTask.setUserId (userMapper.selectByWorkerId (request.getChangeWorkerId ()).getPid ( ));
+        workerTask.setSettlementPeriod (taskWorker.getSettlementPeriod ());
+        workerTask.setSettlementNum (taskWorker.getSettlementNum ());
+        workerTask.setType (1);
+        taskWorkerMapper.insert (workerTask);
+
+        List <TaskWorker> list = new ArrayList <TaskWorker> ( );
+        list.add (workerTask);
+        //给小时工发送消息
+        RefusedTaskRequest ref = new RefusedTaskRequest ( );
+        ref.setRefusedReason ("小时工未在规定时间内领取任务，请重新派发");
+        ref.setMessageId (messageService.hotelDistributeWorkerTask (list, task, true).getPid ( ));
+        ref.setWorkerTaskId ("");
+        myTimeTask.setRefusedReq (ref);
+        java.util.Timer timer = new Timer (true);
+        Field field;
+        try {
+            field = TimerTask.class.getDeclaredField ("state");
+            field.setAccessible (true);
+            field.set (myTimeTask, 0);
+        } catch (NoSuchFieldException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace ( );
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace ( );
+        }
+        timer.schedule (myTimeTask, 86400 * 1000);
+        User oldUser = userMapper.selectByWorkerId (taskWorker.getWorkerId ( ));
+        taskWorkerMapper.updateStatus (taskWorker.getWorkerId ( ), 3);
+        User newUser = userMapper.selectByWorkerId (list.get (0).getWorkerId ( ));
+        String content = companyMapper.findCompanyById (task.getPid ()).getName ( ) + "用人单位终止了您在" + companyMapper.findCompanyById (task.getHotelId ( )).getName ( ) + "的任务，如有疑问请咨询相关人力公司";
+        informService.sendInformInfo (2, 1, content, taskWorker.getWorkerId (), "任务被终止");
+        try {
+            jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (taskWorker.getWorkerId ()).getMobile ( ), content));
+        } catch (APIConnectionException e) {
+            e.printStackTrace ( );
+        } catch (APIRequestException e) {
+
+        }
+        return ResultDO.buildSuccess ("操作完成");
     }
 
     /**
@@ -725,7 +880,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         inform.setSendType(3);
         inform.setAcceptType(1);
         Company c = companyMapper.selectById(m.getHotelId());
-
+        Task task = taskMapper.selectById (m.getTaskId ());
         if ("1".equals(status)) {
             Integer minutes = m.getMinutes() == null ? 0 : Integer.valueOf(m.getMinutes());
 
@@ -741,18 +896,26 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             }
 
             TaskHrCompany taskHrCompany = taskHrCompanyMapper.selectById(m.getHrTaskId());
-            Double shouldPayMoney_hrtoworker = (minutes / 60.00) * taskHrCompany.getHourlyPay();
-            Double shouldPayMoney_hoteltohr = (minutes / 60.00) * taskHrCompany.getHourlyPayHotel();
+            Double shouldPayMoney_hrtoworker = 0d;
+            Double shouldPayMoney_hoteltohr = 0d;
+            if(taskHrCompany != null){
+                shouldPayMoney_hrtoworker = (minutes / 60.00) * taskHrCompany.getHourlyPay();
+                shouldPayMoney_hoteltohr = (minutes / 60.00) * taskHrCompany.getHourlyPayHotel();
+            }else{
+                shouldPayMoney_hoteltohr = (minutes / 60.00) * task.getHourlyPay ();
+            }
             shouldPayMoney_hrtoworker = new BigDecimal(shouldPayMoney_hrtoworker).
                     setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
             shouldPayMoney_hoteltohr = new BigDecimal(shouldPayMoney_hoteltohr).
                     setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-            taskWorkerMapper.addMinutes(m.getWorkerTaskId(), minutes.longValue(), shouldPayMoney_hrtoworker);
-            TaskWorker taskWorker = taskWorkerMapper.selectById(m.getWorkerTaskId());
-            taskHrCompanyMapper.addMinutes(taskWorker.getTaskHrId(), minutes.longValue(), shouldPayMoney_hrtoworker, shouldPayMoney_hoteltohr);
+            if(taskHrCompany != null){
+                taskWorkerMapper.addMinutes(m.getWorkerTaskId(), minutes.longValue(), shouldPayMoney_hrtoworker);
+                TaskWorker taskWorker = taskWorkerMapper.selectById(m.getWorkerTaskId());
+                taskHrCompanyMapper.addMinutes(taskWorker.getTaskHrId(), minutes.longValue(), shouldPayMoney_hrtoworker, shouldPayMoney_hoteltohr);
+            }else{
+                taskWorkerMapper.addMinutes(m.getWorkerTaskId(), minutes.longValue(), shouldPayMoney_hoteltohr);
+            }
             taskMapper.addMinutes(taskHrCompany.getTaskId(), minutes.longValue(), shouldPayMoney_hoteltohr);
-
-
             inform.setTitle("申请加时成功");
             inform.setContent(c.getName() + "同意了你的加时请求。" + m.getContent());
             try {

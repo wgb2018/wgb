@@ -64,6 +64,11 @@ public class TaskViewDTO {
      */
     private List<TaskHrCompanyViewDTO> listTaskHr = new ArrayList<>();
 
+    /**
+     * 包含的人力资源公司
+     */
+    private TaskWorkerViewDTO listTaskWorker = new TaskWorkerViewDTO();
+
     //结账相关的
 
     /**

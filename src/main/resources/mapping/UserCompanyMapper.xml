@@ -109,7 +109,13 @@ SELECT id FROM USER WHERE worker_id = #{workerId}
     </select>
     <select id="selectAllWorker" resultType="com.microdev.model.UserCompany">
         select c.* from user_company c left join user u on c.user_id = u.id
-        where c.status in (1,3) and c.company_id = #{hrId}
+        where c.status in (1,3)
+        <if test="hrId !=null and hrId !=''"  >
+            and c.company_id = #{hrId}
+        </if>
+        <if test="hotelId !=null and hotelId !=''"  >
+            and c.company_id = #{hotelId}
+        </if>
         <if test="userName !=null and userName !=''"  >
             and nickname like concat('%', #{userName},'%')
         </if>
@@ -119,9 +125,16 @@ SELECT id FROM USER WHERE worker_id = #{workerId}
         SELECT CASE uc.`status` WHEN 0 THEN '未审核' WHEN 1 THEN '已绑定' WHEN 2 THEN '拒绝绑定' WHEN 3 THEN '解绑中' WHEN 4 THEN '已解绑' END AS STATUS,
 u.`nickname` AS NAME, CASE u.sex WHEN 'UNKNOW' THEN '未知' WHEN 'MALE' THEN '男' WHEN 'FEMALE' THEN '女' END AS sex, u.mobile, u.`avatar` AS logo,
 DATE_FORMAT(u.`create_time`, '%Y-%m-%d %H:%i:%s') AS createTime FROM user_company uc INNER JOIN USER u
-ON u.id = uc.`user_id` WHERE uc.`company_id` = #{hrId} AND uc.status IN (1,3)
+ON u.id = uc.`user_id` WHERE  uc.status IN (1,3)
+        <if test="hrId !=null and hrId !=''"  >
+            and uc.`company_id` = #{hrId}
+        </if>
+        <if test="hotelId !=null and hotelId !=''"  >
+            and uc.`company_id` = #{hotelId}
+        </if>
         <if test="userName !=null and userName !=''"  >
             and nickname like concat('%', #{userName},'%')
         </if>
     </select>
+
 </mapper>
