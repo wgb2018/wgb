@@ -17,8 +17,12 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 @Component
@@ -28,19 +32,20 @@ public class IMDownload {
     private ChatMessageService chatMessageService;
     @Autowired
     private FilePush filePush;
-    private static final String DIRECTORY = "D:/testload/";
+    //private static final String DIRECTORY = "/home/micro-worker/wgb/im/";
+    private static final String DIRECTORY = "D:/testload/good/";
     private static final Logger logger = LoggerFactory.getLogger(IMDownload.class);
 
     //@Scheduled(cron = "0 0 2 * * ?")
     public void downloadChatMessage() {
         OffsetDateTime time = OffsetDateTime.now();
-        time = time.plusHours(-time.getHour()).plusMinutes(-time.getMinute()).plusDays(-1);
+        time = time.plusHours(-time.getHour()).plusMinutes(-time.getMinute()).plusDays(-2);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyyMMddHH");
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
-        String dateName = time.format(dateFormat);
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyyMM");
+        String dateName = time.format(dateFormat) + File.separator + time.getDayOfMonth();
         for (int i = 0; i < 24; i++) {
             time = time.plusHours(1);
-            String timeStr = time.format(format);
+            String timeStr = "(" + time.format(format) + ")";
             Object result = chatMessageService.exportChatMessages(timeStr);
             if (result == null) {
                 logger.error("Failed to get expected response by calling GET chatmessages API, maybe there is no chatmessages history at {}", timeStr);
@@ -54,7 +59,8 @@ public class IMDownload {
                     String url = obj.getString("url");
                     download(dateName, timeStr, url, null);
                     decompression(dateName, timeStr);
-                    //readMessage(dateName, timeStr);
+                    readMessage(dateName, timeStr);
+                    TimeUnit.MINUTES.sleep(1);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -95,10 +101,10 @@ public class IMDownload {
                 String filenameSuffix = array.getString("filename");
                 filenameSuffix = fileName.substring(filenameSuffix.lastIndexOf("."));
                 download(dateName, videoName, url, filenameSuffix);
-                String catalog = "immessage/";
+                /*String catalog = "immessage/";
                 String localPath = filePath + File.separator + videoName + filenameSuffix;
                 url = filePush.pushIMMessageToServer(catalog, localPath, filenameSuffix);
-                array.put("url", url);
+                array.put("url", url);*/
             }
         }
     }
@@ -134,9 +140,9 @@ public class IMDownload {
      */
     private void download(String dateName, String fileName, String url, String suffix) throws IOException {
         String filePath = DIRECTORY + dateName;
-        File f = new File(filePath);
-        if (!f.exists()) {
-            f.createNewFile();
+        Path path = Paths.get(filePath);
+        if (!Files.exists(path)) {
+            Files.createDirectories(path);
         }
         InputStream input = null;
         FileOutputStream output = null;
