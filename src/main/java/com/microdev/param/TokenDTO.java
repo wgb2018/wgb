@@ -33,7 +33,4 @@ public class TokenDTO {
      */
     private String openid;
 
-    private String mobile;
-
-    private String password;
 }

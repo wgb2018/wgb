@@ -1,6 +1,8 @@
 package com.microdev.common.im;
 
+import com.microdev.common.FilePush;
 import com.microdev.service.ChatMessageService;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ public class IMDownload {
 
     @Autowired
     private ChatMessageService chatMessageService;
+    @Autowired
+    private FilePush filePush;
     private static final String DIRECTORY = "D:/testload/";
     private static final Logger logger = LoggerFactory.getLogger(IMDownload.class);
 
@@ -48,14 +52,10 @@ public class IMDownload {
                     JSONArray array = obj.getJSONArray("data");
                     obj = (JSONObject) array.get(0);
                     String url = obj.getString("url");
-                    download(dateName, timeStr, url);
+                    download(dateName, timeStr, url, null);
                     decompression(dateName, timeStr);
-                    readMessage(dateName, timeStr);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
+                    //readMessage(dateName, timeStr);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -70,7 +70,7 @@ public class IMDownload {
      * @throws IOException
      * @throws JSONException
      */
-    private void readMessage(String dateName, String fileName) throws IOException, JSONException {
+    private void readMessage(String dateName, String fileName) throws Exception {
         String filePath = DIRECTORY + dateName;
         FileInputStream fis = new FileInputStream(new File(filePath, fileName));
         BufferedReader br = new BufferedReader(new InputStreamReader(fis));
@@ -88,7 +88,18 @@ public class IMDownload {
             String to = payload.getString("to");
             bodies = payload.getJSONArray("bodies");
             array = (JSONObject) bodies.get(0);
-
+            String type = array.getString("type");
+            if (!"txt".equals(type) && !"loc".equals(type)) {
+                String url = array.getString("url");
+                String videoName = System.currentTimeMillis() + "";
+                String filenameSuffix = array.getString("filename");
+                filenameSuffix = fileName.substring(filenameSuffix.lastIndexOf("."));
+                download(dateName, videoName, url, filenameSuffix);
+                String catalog = "immessage/";
+                String localPath = filePath + File.separator + videoName + filenameSuffix;
+                url = filePush.pushIMMessageToServer(catalog, localPath, filenameSuffix);
+                array.put("url", url);
+            }
         }
     }
 
@@ -121,7 +132,7 @@ public class IMDownload {
      * @param url       下载地址
      * @throws IOException
      */
-    private void download(String dateName, String fileName, String url) throws IOException {
+    private void download(String dateName, String fileName, String url, String suffix) throws IOException {
         String filePath = DIRECTORY + dateName;
         File f = new File(filePath);
         if (!f.exists()) {
@@ -143,7 +154,12 @@ public class IMDownload {
         if (!filePath.endsWith("/")) {
             filePath += "/";
         }
-        String name = filePath + fileName + ".gz";
+        String name = filePath + fileName;
+        if (StringUtils.isEmpty(suffix)) {
+            name += ".gz";
+        } else {
+            name += suffix;
+        }
         output = new FileOutputStream(name);
 
         BufferedOutputStream bos = new BufferedOutputStream(output);

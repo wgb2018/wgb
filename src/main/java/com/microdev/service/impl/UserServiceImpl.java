@@ -110,7 +110,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         userMapper.insert (nu);
 
         //注册IM用户
-        io.swagger.client.model.User user = new io.swagger.client.model.User().username(userDTO.getMobile ()).password(userDTO.getPassword ());
+        io.swagger.client.model.User user = new io.swagger.client.model.User().username(nu.getPid()).password(nu.getPid());
         RegisterUsers users = new RegisterUsers();
         users.add(user);
         iMUserService.createNewIMUserSingle(users);
@@ -147,7 +147,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         userDTO.setNickname(user.getNickname());
         userDTO.setRoleList(new ArrayList<>(user.getRoles()));
         userDTO.setUserType(user.getUserType());
-        userDTO.setPassword(user.getPassword());
+
         if (!PasswordHash.validatePassword(login.getPassword(), user.getPassword())){
             throw new ParamsException("用户名或密码错误");
         }
@@ -338,7 +338,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         TokenDTO token = tokenService.accessToken(userDTO, register.getPlatform().name());
 
         //注册IM用户
-        io.swagger.client.model.User user = new io.swagger.client.model.User().username(register.getMobile()).password(newUser.getPassword());
+        io.swagger.client.model.User user = new io.swagger.client.model.User().username(newUser.getPid()).password(newUser.getPid());
         RegisterUsers users = new RegisterUsers();
         users.add(user);
         iMUserService.createNewIMUserSingle(users);
@@ -380,11 +380,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         if (PasswordHash.validatePassword(request.getOldPwd(), user.getPassword())) {
             user.setPassword(PasswordHash.createHash(request.getNewPwd()));
             userMapper.updateById(user);
-
-            //修改IM用户密码
-            NewPassword psd = new NewPassword().newpassword(user.getPassword());
-            iMUserService.modifyIMUserPasswordWithAdminToken(user.getMobile(), psd);
-
             UserDTO userDTO = new UserDTO();
             userDTO.setId(user.getPid());
             userDTO.setMobile(user.getMobile());
@@ -496,10 +491,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         userMapper.selectOne(user);
         user.setPassword(PasswordHash.createHash(userDTO.getPassword()));
         userMapper.updateById(user);
-
-        //修改IM用户密码
-        NewPassword psd = new NewPassword().newpassword(user.getPassword());
-        iMUserService.modifyIMUserPasswordWithAdminToken(user.getMobile(), psd);
     }
     /**
      * 修改基础信息
@@ -616,7 +607,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         userDTO.setMobile(mobile);
         userDTO.setUserType(userType);
         userDTO.setRoleList((ArrayList<Role>) user.get("roles"));
-        userDTO.setPassword(user1.getPassword());
+
         //如果当前的是用人单位或者人力公司，那么就查询出他们的公司审核状态
 
         if (userType == UserType.hr || userType == UserType.hotel) {
@@ -665,9 +656,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         }
 
         //判断用户是否注册IM用户
-        Object obj = iMUserService.getIMUserByUserName(user1.getMobile());
+        Object obj = iMUserService.getIMUserByUserName(user1.getPid());
         if (obj == null) {
-            io.swagger.client.model.User u = new io.swagger.client.model.User().username(user1.getMobile()).password(user1.getPassword());
+            io.swagger.client.model.User u = new io.swagger.client.model.User().username(user1.getPid()).password(user1.getPid());
             RegisterUsers users = new RegisterUsers();
             users.add(u);
             iMUserService.createNewIMUserSingle(users);

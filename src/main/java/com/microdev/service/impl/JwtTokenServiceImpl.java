@@ -82,8 +82,6 @@ public class JwtTokenServiceImpl implements TokenService {
         tokenDTO.setRefresh_token(refresh_token);
         tokenDTO.setToken_type("bearer");
         tokenDTO.setExpires_in(tokenProperties.getAccessTokenLifetimeSeconds());
-        tokenDTO.setMobile(user.getMobile());
-        tokenDTO.setPassword(user.getPassword());
         return tokenDTO;
     }
 
