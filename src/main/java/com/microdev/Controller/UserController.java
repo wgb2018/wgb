@@ -84,7 +84,7 @@ public class UserController {
     /**
      * 查询用户
      */
-    @PostMapping("/query/user/{id}")
+    @GetMapping("/query/user/{id}")
     public ResultDO queryUser(@PathVariable String id) throws Exception {
         User u = userMapper.selectById (id);
         UserResponse user = new UserResponse ();

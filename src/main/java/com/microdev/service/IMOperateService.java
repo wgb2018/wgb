@@ -10,4 +10,12 @@ public interface IMOperateService {
      * @return
      */
     ResultDO checkAccountInfo(String id);
+
+    /**
+     * 修改用户昵称
+     * @param username      环信账号
+     * @param nickName      昵称
+     * @return
+     */
+    Object modifyUserNickName(String username, String nickName);
 }

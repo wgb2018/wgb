@@ -75,6 +75,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     private PropagandaMapper propagandaMapper;
     @Autowired
     private IMUserService iMUserService;
+    @Autowired
+    private IMOperateService iMOperateService;
 
     @Override
     public User create(User user) throws Exception{
@@ -355,8 +357,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         ValueOperations<String, String> operations = redisTemplate.opsForValue();
         operations.set(mobile, "");
 
-        //强制IM用户下线
-        iMUserService.disconnectIMUser(mobile);
         return ResultDO.buildSuccess ("用户退出成功");
     }
     /**
@@ -580,9 +580,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
         UserType userType = user.getObj("userType", UserType.class);
 
-
         String mobile = user.getString("mobile");
         User user1 = userMapper.queryByUserId(user.getId());
+        //昵称
+        String nickName = user1.getNickname();
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setUsername(user.getString("username"));
@@ -613,6 +614,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         if (userType == UserType.hr || userType == UserType.hotel) {
             Company company = companyMapper.findFirstByLeaderMobile(mobile);
             if (company != null) {
+                nickName = company.getName();
                 CompanyDTO companyDTO = new CompanyViewModelDTO();
                 companyDTO.setId(company.getPid());
                 companyDTO.setName(company.getName());
@@ -664,6 +666,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             iMUserService.createNewIMUserSingle(users);
         }
 
+        iMOperateService.modifyUserNickName(user1.getPid(), nickName);
         return userDTO;
     }
 

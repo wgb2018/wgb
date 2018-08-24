@@ -6,7 +6,7 @@ import com.microdev.mapper.UserMapper;
 import com.microdev.model.User;
 import com.microdev.service.IMOperateService;
 import com.microdev.service.IMUserService;
-import io.swagger.client.model.NewPassword;
+import io.swagger.client.model.Nickname;
 import io.swagger.client.model.RegisterUsers;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,5 +51,18 @@ public class IMOperateServiceImpl implements IMOperateService {
             return ResultDO.buildError("聊天通讯服务异常");
         }
         return ResultDO.buildSuccess("操作成功");
+    }
+
+    /**
+     * 修改用户昵称
+     * @param username      环信账号
+     * @param nickName      昵称
+     * @return
+     */
+    @Override
+    public Object modifyUserNickName(String username, String nickName) {
+
+        Nickname name = new Nickname().nickname(nickName);
+        return iMUserService.modifyIMUserNickNameWithAdminToken(username, name);
     }
 }
