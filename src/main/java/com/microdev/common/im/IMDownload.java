@@ -46,7 +46,16 @@ public class IMDownload {
         time = time.plusHours(-time.getHour()).plusMinutes(-time.getMinute()).plusDays(-1);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyyMMddHH");
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyyMM");
-        String dateName = time.format(dateFormat) + File.separator + time.getDayOfMonth();
+        String dateName = DIRECTORY + time.format(dateFormat) + File.separator + time.getDayOfMonth();
+        Path pathRoot = Paths.get(dateName);
+        if (!Files.exists(pathRoot)) {
+            try {
+                Files.createDirectories(pathRoot);
+            } catch (IOException e) {
+                e.printStackTrace();
+                logger.error(dateName + "文件创建失败");
+            }
+        }
         ArrayList<String> list = new ArrayList<>();
         for (int i = 0; i < 24; i++) {
 
@@ -81,12 +90,12 @@ public class IMDownload {
         }
         if (list.size() > 0) {
             for (String p : list) {
-                String pName = DIRECTORY + dateName + File.separator + p + ".gz";
+                String pName = dateName + File.separator + p + ".gz";
                 Path path = Paths.get(pName);
                 if (!Files.exists(path)) {
                     Object result = chatMessageService.exportChatMessages(p);
                     if (result == null) {
-                        logger.error("下载" + p + "消息文件失败");
+                        logger.error("Failed to get expected response by calling GET chatmessages API, maybe there is no chatmessages history at {}", p);
                     } else {
                         try {
                             String s = URLDecoder.decode((String)result, "iso-8859-1");
@@ -99,6 +108,7 @@ public class IMDownload {
                             readMessage(dateName, p);
                         } catch (Exception e) {
                             e.printStackTrace();
+                            logger.error("下载" + p + "消息文件失败");
                         }
                     }
                 }
@@ -121,8 +131,8 @@ public class IMDownload {
      * @throws JSONException
      */
     private void readMessage(String dateName, String fileName) throws Exception {
-        String filePath = DIRECTORY + dateName;
-        FileInputStream fis = new FileInputStream(new File(filePath, fileName));
+
+        FileInputStream fis = new FileInputStream(new File(dateName, fileName));
         BufferedReader br = new BufferedReader(new InputStreamReader(fis));
         String str = null;
         JSONObject array = null;
@@ -140,8 +150,8 @@ public class IMDownload {
             array = (JSONObject) bodies.get(0);
             String type = array.getString("type");
             if (!"txt".equals(type) && !"loc".equals(type)) {
+                String videoName = timestamp + "_" + from + "_" + to;
                 String url = array.getString("url");
-                String videoName = System.currentTimeMillis() + "";
                 String filenameSuffix = array.getString("filename");
                 filenameSuffix = filenameSuffix.substring(filenameSuffix.lastIndexOf("."));
                 download(dateName, videoName, url, filenameSuffix);
@@ -160,11 +170,11 @@ public class IMDownload {
      * @throws IOException
      */
     private void decompression(String dateName, String fileName) throws IOException {
-        String filePath = DIRECTORY + dateName;
+
         String name = fileName + ".gz";
-        FileInputStream fis = new FileInputStream(new File(filePath, name));
+        FileInputStream fis = new FileInputStream(new File(dateName, name));
         GZIPInputStream gs = new GZIPInputStream(fis);
-        File outDir = new File(filePath);
+        File outDir = new File(dateName);
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(outDir, fileName)));
         byte[] b = new byte[1024];
         int i = -1;
@@ -183,17 +193,13 @@ public class IMDownload {
      * @throws IOException
      */
     private void download(String dateName, String fileName, String url, String suffix) throws IOException {
-        String filePath = DIRECTORY + dateName;
-        Path path = Paths.get(filePath);
+
         BufferedInputStream bis = null;
         BufferedOutputStream bos = null;
         InputStream input = null;
         FileOutputStream output = null;
         HttpURLConnection connect = null;
         try {
-            if (!Files.exists(path)) {
-                Files.createDirectories(path);
-            }
 
             URL httpUrl = new URL(url);
             connect = (HttpURLConnection) httpUrl.openConnection();
@@ -205,10 +211,10 @@ public class IMDownload {
 
             input = connect.getInputStream();
             bis = new BufferedInputStream(input);
-            if (!filePath.endsWith("/")) {
-                filePath += "/";
+            if (!dateName.endsWith("/")) {
+                dateName += "/";
             }
-            String name = filePath + fileName;
+            String name = dateName + fileName;
             if (StringUtils.isEmpty(suffix)) {
                 name += ".gz";
             } else {
