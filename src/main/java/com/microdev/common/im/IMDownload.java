@@ -142,7 +142,7 @@ public class IMDownload {
         while ((str = br.readLine()) != null) {
             System.out.println("读取的数据:" + str);
             obj = new JSONObject(str);
-            String timestamp = obj.getString("timestamp");
+            Object timestamp = obj.getLong("timestamp");
             payload = obj.getJSONObject("payload");
             String from = payload.getString("from");
             String to = payload.getString("to");
