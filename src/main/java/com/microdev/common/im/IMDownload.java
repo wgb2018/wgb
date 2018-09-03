@@ -16,7 +16,6 @@ import org.json.JSONObject;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -56,22 +55,24 @@ public class IMDownload {
                 logger.error(dateName + "文件创建失败");
             }
         }
+        Object result = null;
         ArrayList<String> list = new ArrayList<>();
         for (int i = 0; i < 24; i++) {
 
             String timeStr = time.format(format);
-            //String timeStr = "2018082318";
-            Object result = chatMessageService.exportChatMessages(timeStr);
+			//String timeStr = "2018082318";
+            result = chatMessageService.exportChatMessages(timeStr);
             if (result == null) {
                 logger.error("Failed to get expected response by calling GET chatmessages API, maybe there is no chatmessages history at {}", timeStr);
             } else {
                 logger.info(result.toString());
                 try {
-                    String s = URLDecoder.decode((String)result, "iso-8859-1");
-                    JSONObject obj = new JSONObject(s);
+
+                    JSONObject obj = new JSONObject(result.toString());
                     JSONArray array = obj.getJSONArray("data");
                     obj = (JSONObject) array.get(0);
                     String url = obj.getString("url");
+
                     download(dateName, timeStr, url, null);
                     decompression(dateName, timeStr);
                     readMessage(dateName, timeStr);
@@ -93,16 +94,17 @@ public class IMDownload {
                 String pName = dateName + File.separator + p + ".gz";
                 Path path = Paths.get(pName);
                 if (!Files.exists(path)) {
-                    Object result = chatMessageService.exportChatMessages(p);
+                    result = chatMessageService.exportChatMessages(p);
                     if (result == null) {
                         logger.error("Failed to get expected response by calling GET chatmessages API, maybe there is no chatmessages history at {}", p);
                     } else {
                         try {
-                            String s = URLDecoder.decode((String)result, "iso-8859-1");
-                            JSONObject obj = new JSONObject(s);
+
+                            JSONObject obj = new JSONObject(result.toString());
                             JSONArray array = obj.getJSONArray("data");
                             obj = (JSONObject) array.get(0);
                             String url = obj.getString("url");
+                            logger.info("download url=" + url);
                             download(dateName, p, url, null);
                             decompression(dateName, p);
                             readMessage(dateName, p);
@@ -155,10 +157,7 @@ public class IMDownload {
                 String filenameSuffix = array.getString("filename");
                 filenameSuffix = filenameSuffix.substring(filenameSuffix.lastIndexOf("."));
                 download(dateName, videoName, url, filenameSuffix);
-                /*String catalog = "immessage/";
-                String localPath = filePath + File.separator + videoName + filenameSuffix;
-                url = filePush.pushIMMessageToServer(catalog, localPath, filenameSuffix);
-                array.put("url", url);*/
+
             }
         }
     }
@@ -207,6 +206,7 @@ public class IMDownload {
             connect.setDoInput(true);
             connect.setDoOutput(true);
             connect.setUseCaches(false);
+
             connect.connect();
 
             input = connect.getInputStream();
@@ -244,7 +244,8 @@ public class IMDownload {
                     e.printStackTrace();
                 }
             }
-            connect.disconnect();
+            if (connect != null)
+                connect.disconnect();
         }
 
     }
