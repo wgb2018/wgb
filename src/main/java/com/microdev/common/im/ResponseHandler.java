@@ -43,9 +43,15 @@ public class ResponseHandler {
                 System.out.println(e);
                 logger.error("The server may be faulty. Please try again later");
             }
-            Gson gson = new Gson();
-            Map<String, String> map = gson.fromJson(e.getResponseBody(), Map.class);
-            logger.error("error_code:{} error_msg:{} error_desc:{}", e.getCode(), e.getMessage(), map.get("error_description"));
+            try {
+                Gson gson = new Gson();
+                Map<String, String> map = gson.fromJson(e.getResponseBody(), Map.class);
+                logger.error("error_code:{} error_msg:{} error_desc:{}", e.getCode(), e.getMessage(), map.get("error_description"));
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                logger.error("环信服务调用没有响应");
+            }
+
         }
         return result;
     }

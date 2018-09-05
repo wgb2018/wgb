@@ -16,11 +16,18 @@ import org.json.JSONObject;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
+/**
+ * 即时通讯聊天记录下载
+ */
 @Component
 public class IMDownload {
 
@@ -28,40 +35,95 @@ public class IMDownload {
     private ChatMessageService chatMessageService;
     @Autowired
     private FilePush filePush;
-    private static final String DIRECTORY = "D:/testload/";
+    private static final String DIRECTORY = "/home/micro-worker/wgb/im/";
+    //private static final String DIRECTORY = "D:/testload/good/";
     private static final Logger logger = LoggerFactory.getLogger(IMDownload.class);
 
-    //@Scheduled(cron = "0 0 2 * * ?")
+    @Scheduled(cron = "0 0 2 * * ?")
     public void downloadChatMessage() {
         OffsetDateTime time = OffsetDateTime.now();
         time = time.plusHours(-time.getHour()).plusMinutes(-time.getMinute()).plusDays(-1);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyyMMddHH");
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
-        String dateName = time.format(dateFormat);
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyyMM");
+        String dateName = DIRECTORY + time.format(dateFormat) + File.separator + time.getDayOfMonth();
+        Path pathRoot = Paths.get(dateName);
+        if (!Files.exists(pathRoot)) {
+            try {
+                Files.createDirectories(pathRoot);
+            } catch (IOException e) {
+                e.printStackTrace();
+                logger.error(dateName + "文件创建失败");
+            }
+        }
+        Object result = null;
+        ArrayList<String> list = new ArrayList<>();
         for (int i = 0; i < 24; i++) {
-            time = time.plusHours(1);
+
             String timeStr = time.format(format);
-            Object result = chatMessageService.exportChatMessages(timeStr);
+			//String timeStr = "2018082318";
+            result = chatMessageService.exportChatMessages(timeStr);
             if (result == null) {
                 logger.error("Failed to get expected response by calling GET chatmessages API, maybe there is no chatmessages history at {}", timeStr);
             } else {
                 logger.info(result.toString());
                 try {
-                    String s = URLDecoder.decode((String)result, "iso-8859-1");
-                    JSONObject obj = new JSONObject(s);
+
+                    JSONObject obj = new JSONObject(result.toString());
                     JSONArray array = obj.getJSONArray("data");
                     obj = (JSONObject) array.get(0);
                     String url = obj.getString("url");
+
                     download(dateName, timeStr, url, null);
                     decompression(dateName, timeStr);
-                    //readMessage(dateName, timeStr);
+                    readMessage(dateName, timeStr);
+
                 } catch (Exception e) {
+                    e.printStackTrace();
+                    list.add(timeStr);
+                }
+            }
+            try {
+                TimeUnit.MINUTES.sleep(1);
+                time = time.plusHours(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        if (list.size() > 0) {
+            for (String p : list) {
+                String pName = dateName + File.separator + p + ".gz";
+                Path path = Paths.get(pName);
+                if (!Files.exists(path)) {
+                    result = chatMessageService.exportChatMessages(p);
+                    if (result == null) {
+                        logger.error("Failed to get expected response by calling GET chatmessages API, maybe there is no chatmessages history at {}", p);
+                    } else {
+                        try {
+
+                            JSONObject obj = new JSONObject(result.toString());
+                            JSONArray array = obj.getJSONArray("data");
+                            obj = (JSONObject) array.get(0);
+                            String url = obj.getString("url");
+                            logger.info("download url=" + url);
+                            download(dateName, p, url, null);
+                            decompression(dateName, p);
+                            readMessage(dateName, p);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            logger.error("下载" + p + "消息文件失败");
+                        }
+                    }
+                }
+                try {
+                    TimeUnit.MINUTES.sleep(1);
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }
-
     }
+
+
 
     /**
      * 读取历史聊天信息。
@@ -71,8 +133,8 @@ public class IMDownload {
      * @throws JSONException
      */
     private void readMessage(String dateName, String fileName) throws Exception {
-        String filePath = DIRECTORY + dateName;
-        FileInputStream fis = new FileInputStream(new File(filePath, fileName));
+
+        FileInputStream fis = new FileInputStream(new File(dateName, fileName));
         BufferedReader br = new BufferedReader(new InputStreamReader(fis));
         String str = null;
         JSONObject array = null;
@@ -82,7 +144,7 @@ public class IMDownload {
         while ((str = br.readLine()) != null) {
             System.out.println("读取的数据:" + str);
             obj = new JSONObject(str);
-            String timestamp = obj.getString("timestamp");
+            Object timestamp = obj.getLong("timestamp");
             payload = obj.getJSONObject("payload");
             String from = payload.getString("from");
             String to = payload.getString("to");
@@ -90,15 +152,12 @@ public class IMDownload {
             array = (JSONObject) bodies.get(0);
             String type = array.getString("type");
             if (!"txt".equals(type) && !"loc".equals(type)) {
+                String videoName = timestamp + "_" + from + "_" + to;
                 String url = array.getString("url");
-                String videoName = System.currentTimeMillis() + "";
                 String filenameSuffix = array.getString("filename");
-                filenameSuffix = fileName.substring(filenameSuffix.lastIndexOf("."));
+                filenameSuffix = filenameSuffix.substring(filenameSuffix.lastIndexOf("."));
                 download(dateName, videoName, url, filenameSuffix);
-                String catalog = "immessage/";
-                String localPath = filePath + File.separator + videoName + filenameSuffix;
-                url = filePush.pushIMMessageToServer(catalog, localPath, filenameSuffix);
-                array.put("url", url);
+
             }
         }
     }
@@ -110,11 +169,11 @@ public class IMDownload {
      * @throws IOException
      */
     private void decompression(String dateName, String fileName) throws IOException {
-        String filePath = DIRECTORY + dateName;
+
         String name = fileName + ".gz";
-        FileInputStream fis = new FileInputStream(new File(filePath, name));
+        FileInputStream fis = new FileInputStream(new File(dateName, name));
         GZIPInputStream gs = new GZIPInputStream(fis);
-        File outDir = new File(filePath);
+        File outDir = new File(dateName);
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(outDir, fileName)));
         byte[] b = new byte[1024];
         int i = -1;
@@ -133,44 +192,61 @@ public class IMDownload {
      * @throws IOException
      */
     private void download(String dateName, String fileName, String url, String suffix) throws IOException {
-        String filePath = DIRECTORY + dateName;
-        File f = new File(filePath);
-        if (!f.exists()) {
-            f.createNewFile();
-        }
+
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
         InputStream input = null;
         FileOutputStream output = null;
         HttpURLConnection connect = null;
-        URL httpUrl = new URL(url);
-        connect = (HttpURLConnection) httpUrl.openConnection();
-        connect.setRequestMethod("GET");
-        connect.setDoInput(true);
-        connect.setDoOutput(true);
-        connect.setUseCaches(false);
-        connect.connect();
+        try {
 
-        input = connect.getInputStream();
-        BufferedInputStream bis = new BufferedInputStream(input);
-        if (!filePath.endsWith("/")) {
-            filePath += "/";
-        }
-        String name = filePath + fileName;
-        if (StringUtils.isEmpty(suffix)) {
-            name += ".gz";
-        } else {
-            name += suffix;
-        }
-        output = new FileOutputStream(name);
+            URL httpUrl = new URL(url);
+            connect = (HttpURLConnection) httpUrl.openConnection();
+            connect.setRequestMethod("GET");
+            connect.setDoInput(true);
+            connect.setDoOutput(true);
+            connect.setUseCaches(false);
 
-        BufferedOutputStream bos = new BufferedOutputStream(output);
-        byte[] b = new byte[4096];
-        int i = bis.read(b);
-        while (i != -1) {
-            bos.write(b, 0, i);
-            i = bis.read(b);
+            connect.connect();
+
+            input = connect.getInputStream();
+            bis = new BufferedInputStream(input);
+            if (!dateName.endsWith("/")) {
+                dateName += "/";
+            }
+            String name = dateName + fileName;
+            if (StringUtils.isEmpty(suffix)) {
+                name += ".gz";
+            } else {
+                name += suffix;
+            }
+            output = new FileOutputStream(name);
+
+            bos = new BufferedOutputStream(output);
+            byte[] b = new byte[4096];
+            int i = bis.read(b);
+            while (i != -1) {
+                bos.write(b, 0, i);
+                i = bis.read(b);
+            }
+        } finally {
+            if (bis != null) {
+                try {
+                    bis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (bos != null) {
+                try {
+                    bos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (connect != null)
+                connect.disconnect();
         }
-        bis.close();
-        bos.close();
-        connect.disconnect();
+
     }
 }

@@ -203,8 +203,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             } else {
                 company.setGrade("3");
             }
-            company.setUserId (userMapper.findByMobile (company.getLeaderMobile ()).getPid ());
-        }
+            User u = userMapper.findByMobile(company.getLeaderMobile());
+            company.setPid(u.getPid());        }
 
         return ResultDO.buildSuccess(company);
     }
