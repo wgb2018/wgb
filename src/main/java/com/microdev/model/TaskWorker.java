@@ -32,6 +32,9 @@ public class TaskWorker extends BaseEntity {
 
     private String userName;
 
+    @TableField(exist = false)
+    private String avater;
+
     /**
      * ybx 指派该任务的人力公司信息。TaskHrCompany可以关联查询出用人单位的任务
      */

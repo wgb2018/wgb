@@ -26,5 +26,7 @@ public interface NoticeService extends IService<Notice> {
 
     ResultDO enrollHandle(Paginator paginator, QueryNoticeRequest request);
 
+    ResultDO recommendWorker(String id);
+
 
 }

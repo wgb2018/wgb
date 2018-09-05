@@ -5,9 +5,7 @@ import com.microdev.common.ResultDO;
 import com.microdev.param.*;
 import com.microdev.service.NoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class NoticeController {
@@ -94,6 +92,13 @@ public class NoticeController {
     public ResultDO hrEnrollHandle(@RequestBody PagingDO<QueryNoticeRequest> request) {
         request.getSelector ( ).setType ("2");
         return noticeService.enrollHandle(request.getPaginator(), request.getSelector());
+    }
+    /**
+     * 酒店广场推荐小时工
+     */
+    @GetMapping("/hr/recommend/worker/{id}")
+    public ResultDO hrRecommendWorker(@PathVariable String id) {
+        return noticeService.recommendWorker(id);
     }
 
 

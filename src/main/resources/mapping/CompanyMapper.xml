@@ -39,7 +39,7 @@
         from company
         <where>
             <include refid="Company_Query_Param"/>
-            <if test="observertype != null">
+            <!--<if test="observertype != null">
                 <if test="observertype == 0">
                     and id IN(select a.id from
                     (select DISTINCT id from task_type_relation where task_type_id In
@@ -79,7 +79,7 @@
                     (select hotel_id from hotel_hr_company where hr_id = #{observerId} and status IN (0,3,5))
                     )
                 </if>
-            </if>
+            </if>-->
         </where>
         order by create_time desc
     </select>

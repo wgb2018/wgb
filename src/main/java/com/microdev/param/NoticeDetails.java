@@ -10,6 +10,7 @@ import java.util.List;
 
 @Data
 public class NoticeDetails {
+    private String userId;
 
     private boolean available;
 

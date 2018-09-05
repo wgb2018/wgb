@@ -45,8 +45,12 @@ public class TaskWorkerQuery {
 
     private String hrCompanyId;
 
+    private String hotelId;
+
     private String taskWorkerId;
 
     private String hrTaskId;
+
+    private Integer type;
 
 }

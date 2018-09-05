@@ -88,7 +88,12 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         inform.setReceiveId(message.getHrCompanyId());
         inform.setAcceptType(2);
         inform.setSendType(1);
-        UserCompany userCompany= userCompanyMapper.selectByWorkerIdHrId(message.getHrCompanyId(),message.getWorkerId());
+        UserCompany userCompany;
+        if(message.getHrCompanyId() == null){
+            userCompany = userCompanyMapper.selectByWorkerIdHrId(message.getHotelId (),message.getWorkerId());
+        }else{
+            userCompany = userCompanyMapper.selectByWorkerIdHrId(message.getHrCompanyId(),message.getWorkerId());
+        }
         if ("0".equals(status)) {
             inform.setTitle("绑定被拒绝");
             inform.setContent("小时工" + user.getNickname() + "拒绝了你的绑定申请。");
@@ -112,7 +117,12 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             }
 
         } else if ("1".equals(status)) {
-            Company company= companyMapper.findCompanyById(message.getHrCompanyId());
+            Company company;
+            if(message.getHrCompanyId() != null){
+                company = companyMapper.findCompanyById(message.getHrCompanyId());
+            }else{
+                company = companyMapper.findCompanyById(message.getHotelId ());
+            }
             if(userCompany==null) {
                 userCompany = new UserCompany ( );
                 if (company == null) {
@@ -132,9 +142,9 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                     userCompany.setStatus(2);
                     userCompanyMapper.updateAllColumnById(userCompany);
                     inform.setTitle("绑定被拒绝");
-                    inform.setContent(user.getNickname ()+"已达到可绑定人力公司的个数上限");
+                    inform.setContent(user.getNickname ()+"已达到可绑定公司的个数上限");
                     informMapper.insertInform(inform);
-                    ResultDO.buildSuccess ("超出小时工绑定人力公司数目上限");
+                    ResultDO.buildSuccess ("超出小时工绑定公司数目上限");
                 }
                 worker.setActiveCompanys (worker.getActiveCompanys ()+1);
                 if(worker.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("WorkerBindHrMaxNum","7").getText ())){
@@ -150,7 +160,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                     inform.setTitle("绑定被拒绝");
                     inform.setContent("已达到可绑定小时工的个数上限");
                     informMapper.insertInform(inform);
-                    ResultDO.buildSuccess ("超出人力公司绑定小时工数目上限");
+                    ResultDO.buildSuccess ("超出公司绑定小时工数目上限");
                 }
                 company.setActiveWorkers (company.getActiveWorkers ()+1);
                 if(company.getActiveWorkers () == Integer.parseInt (dictMapper.findByNameAndCode ("HrBindWorkerMaxNum","10").getText ())){
@@ -168,10 +178,20 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                 // 新增
                 userCompany.setStatus(1);
                 userCompany.setDeleted(false);
-                userCompanyMapper.insert(userCompany);
+                try{
+                    userCompanyMapper.insert(userCompany);
+                }catch (Exception e){
+                    e.printStackTrace ();
+                    ResultDO.buildSuccess ("添加成功");
+                }
+
             }
             inform.setTitle("绑定成功");
-            inform.setContent("小时工" + user.getNickname() + "同意了你的绑定申请，成功添加为合作伙伴，添加合作人力公司即代表同意劳务合作协议。你可以向小时工派发任务。");
+            if(company.getCompanyType () == 1){
+                inform.setContent("小时工" + user.getNickname() + "同意了你的绑定申请，成功添加为合作伙伴，添加合作用人单位即代表同意劳务合作协议。你可以向小时工派发任务。");
+            }else{
+                inform.setContent("小时工" + user.getNickname() + "同意了你的绑定申请，成功添加为合作伙伴，添加合作人力公司即代表同意劳务合作协议。你可以向小时工派发任务。");
+            }
         } else {
             return ResultDO.buildSuccess("失败");
         }
@@ -207,6 +227,38 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         Set<String> set = new HashSet<>();
         set.add(hrId);
         messageService.bindHrCompany(user.getWorkerId(), set, user.getNickname(), "applyUnbindMessage", "");
+        return    ResultDO.buildSuccess("解绑已提交");
+    }
+
+    @Override
+    public ResultDO workerUnbindHotel(String workerId, String hotelId,String reason) {
+        System.out.println ("workerId:"+workerId);
+        System.out.println ("hotelId:"+hotelId);
+        System.out.println ("reason:"+reason);
+        if (StringUtils.isEmpty(workerId) || StringUtils.isEmpty(hotelId) || StringUtils.isEmpty(reason)) {
+            throw new ParamsException("参数不能为空");
+        }
+        UserCompany userCompany= userCompanyMapper.selectByWorkerIdHrId(hotelId,workerId);
+        if(userCompany==null){
+            throw new ParamsException("未找到匹配的信息");
+        }
+        if(userCompany.getStatus () == 3){
+            return  ResultDO.buildSuccess("解绑申请已提交过");
+        }
+        //TODO 已绑定是否返回重复绑定提示WorkerRelieveHrDays
+        DictDTO dict= dictMapper.findByNameAndCode("WorkerRelieveHrDays","8");
+        Integer days=Integer.parseInt(dict.getText());
+        userCompany.setStatus(3);
+        OffsetDateTime releaseTime=OffsetDateTime.now().plusDays(days);
+        userCompany.setRelieveTime(releaseTime);
+        userCompanyMapper.updateById(userCompany);
+        User user = userMapper.selectById(userCompany.getUserId());
+        if (user == null) {
+            throw new ParamsException("用户不存在");
+        }
+        Set<String> set = new HashSet<>();
+        set.add(hotelId);
+        messageService.bindHotelCompany(user.getWorkerId(), set, user.getNickname(), "applyUnbindMessage", reason);
         return    ResultDO.buildSuccess("解绑已提交");
     }
 
@@ -320,7 +372,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         //查询数据集合
 
-        List<WorkerBindCompany> list = userCompanyMapper.selectHrCompanyByUserId(queryDTO.getWorkerId());
+        List<WorkerBindCompany> list = userCompanyMapper.selectHrCompanyByUserId(queryDTO.getWorkerId(),queryDTO.getType (),queryDTO.getName ());
         OffsetDateTime nowTime = OffsetDateTime.now();
         DictDTO dict = dictMapper.findByNameAndCode("MaxUnbindDay","9");
         Integer maxNum = Integer.parseInt(dict.getText());
@@ -346,7 +398,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         int num = userCompanyMapper.selectBindCountByWorkerId(queryDTO.getWorkerId());
         extra.put("bindTotalNum",Integer.parseInt (total));
         extra.put("bindNum",num);
-        return ResultDO.buildSuccess("您已经绑定"+num+"家人力公司，还可以绑定"+(Integer.parseInt (total)-num)+"家人力公司", result, extra, null);
+        return ResultDO.buildSuccess("", result, extra, null);
     }
 
     @Override
@@ -590,7 +642,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         if (StringUtils.isEmpty(queryDTO.getWorkerId())) {
             throw new ParamsException("参数错误");
         }
-        List<WorkerBindCompany> list = userCompanyMapper.selectHrCompanyByUserId(queryDTO.getWorkerId());
+        List<WorkerBindCompany> list = userCompanyMapper.selectHrCompanyByUserId(queryDTO.getWorkerId(),queryDTO.getType (),queryDTO.getName ());
         List<CompanyCooperate> cooperateList = new ArrayList<>();
         if (list != null) {
             for (WorkerBindCompany company : list) {

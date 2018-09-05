@@ -16,6 +16,8 @@ import java.util.Map;
 @Data
 @TableName("company")
 public class Company extends BaseEntity {
+    @TableField(exist = false)
+    private String userId;
     /**
      * 公司名称
      */

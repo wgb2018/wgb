@@ -54,6 +54,21 @@ public class BillServiceImpl extends ServiceImpl<BillMapper,Bill> implements Bil
     }
 
     @Override
+    public ResultDO queryHotelPayWorker(Paginator paginator, HotelPayHrCompanyRequest request) {
+        PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
+        //查询数据集合
+        List<Bill> list = billMapper.selectHotelPayBillWorker(request);
+        PageInfo<Bill> pageInfo = new PageInfo<>(list);
+        HashMap<String,Object> result = new HashMap<>();
+        //设置获取到的总记录数total：
+        result.put("total",pageInfo.getTotal());
+        result.put("result",pageInfo.getList());
+        result.put("page",paginator.getPage());
+        //设置数据集合rows：
+        return ResultDO.buildSuccess(result);
+    }
+
+    @Override
     public ResultDO queryHrCompanyPayWorker(Paginator paginator,HrCompanyPayWorkerRequest request) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         //查询数据集合

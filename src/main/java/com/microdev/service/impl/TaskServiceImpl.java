@@ -327,7 +327,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         bill.setHrCompanyId (taskWorker.getHrCompanyId ( ));
         bill.setWorkerId (taskWorker.getWorkerId ());
         bill.setDeleted (false);
-        bill.setPayType (2);
+        bill.setPayType (3);
         bill.setStatus (0);
         bill.setTaskId (taskWorker.getHotelTaskId ());        billMapper.insert (bill);
         //发送支付待确认消息

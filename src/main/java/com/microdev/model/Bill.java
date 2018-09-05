@@ -61,6 +61,7 @@ public class Bill extends BaseEntity{
      * 支付类型
      * 1用人单位支付人力公司
      * 2人力公司支付小时工
+     * 3用人单位支付小时工
      */
     private Integer payType;
     /**

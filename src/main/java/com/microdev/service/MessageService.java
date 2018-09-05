@@ -58,6 +58,18 @@ public interface MessageService extends IService<Message> {
     void bindHrCompany(String workerId, Set<String> hrCompanyId, String userName, String pattern, String reason);
 
     /**
+     * 小时工解绑酒店
+     *
+     * @param workerId
+     * @param hotelId
+     * @param userName
+     * @param pattern
+     *            采用解绑的或绑定的模板
+     * @return
+     */
+    void bindHotelCompany(String workerId, Set<String> hotelId, String userName, String pattern, String reason);
+
+    /**
      * 用人单位向人力公司派发任务
      * @param set
      * @param hotel
@@ -263,6 +275,14 @@ public interface MessageService extends IService<Message> {
      * @return
      */
     ResultDO hotelHrHandleBind(String messageId, String status);
+
+    /**
+     * 用人单位同意小时工解绑申请
+     * @param messageId  消息id
+     * @param status     0拒绝1同意
+     * @return
+     */
+    ResultDO hotelWorkerHandleBind(String messageId, String status);
 
     /**
      * 人力申请报名酒店任务

@@ -13,6 +13,8 @@ import java.util.List;
 public interface BillMapper extends BaseMapper<Bill> {
     List<Bill> selectHotelPayBill(HotelPayHrCompanyRequest request);
 
+    List<Bill> selectHotelPayBillWorker(HotelPayHrCompanyRequest request);
+
     List<Bill> selectHrCompanyPayBill(HrCompanyPayWorkerRequest request);
 
     Integer selectHrCompanyPayBillCount(HrCompanyPayWorkerRequest request);

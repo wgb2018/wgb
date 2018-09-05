@@ -54,7 +54,15 @@ public class WorkerCompanyController {
      */
     @PostMapping("/workers-hrs/search")
     public ResultDO getWorkersHr(@RequestBody PagingDO<WokerQueryHrDTO> paging) {
-
+        paging.getSelector().setType (2);
+        return userCompanyService.getWorkerHrs(paging.getPaginator(),paging.getSelector());
+    }
+    /**
+     * 获取员工下所有用人单位
+     */
+    @PostMapping("/workers-hotels/search")
+    public ResultDO getWorkersHotel(@RequestBody PagingDO<WokerQueryHrDTO> paging) {
+        paging.getSelector().setType (1);
         return userCompanyService.getWorkerHrs(paging.getPaginator(),paging.getSelector());
     }
     /**
@@ -64,6 +72,13 @@ public class WorkerCompanyController {
     @GetMapping("/workers/{workId}/unbind/{hrId}")
     public ResultDO unbindHr(@PathVariable String workId,@PathVariable String hrId) {
         return userCompanyService.workerUnbindHr(workId,hrId);
+    }
+    /**
+     * 小时工申请解绑酒店
+     */
+    @PostMapping("/worker/apply/unbind/hotel")
+    public ResultDO unbindHotel(@RequestBody workerUnbindHotel request) {
+        return userCompanyService.workerUnbindHotel(request.getWorkerId(),request.getHotelId (),request.getReason ());
     }
 	/**
      * 获取人力公司下已绑定任务的小时工

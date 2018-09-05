@@ -65,7 +65,6 @@ public class HotelController {
      */
     @GetMapping("/hotels/{messageId}/add/{status}")
     public ResultDO addHrCompany(@PathVariable String messageId,@PathVariable String status) {
-
         return companyService.hotelAddHrCompanyById(messageId, status, 1);
     }
     /**
@@ -164,6 +163,13 @@ public class HotelController {
     @PostMapping("/hotels/apply/bindHrCompany")
     public ResultDO bindHrCompany(@RequestBody HotelHrIdBindDTO dto) {
         return companyService.hotelAddHrCompanySet(dto);
+    }
+    /**
+     * 用人单位申请绑定小时工
+     */
+    @PostMapping("/hotels/apply/bindWorker")
+    public ResultDO bindWorker(@RequestBody HotelHrIdBindDTO dto) {
+        return companyService.hotelAddWorkerSet(dto);
     }
     /**
      * 用人单位申请解绑人力资源公司

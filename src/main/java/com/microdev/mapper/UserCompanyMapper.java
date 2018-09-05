@@ -32,7 +32,7 @@ public interface UserCompanyMapper extends BaseMapper<UserCompany> {
 
     List<TaskWorker> getUnSelectableWorker(HrQueryWorkerDTO queryDTO);
 
-    List<WorkerBindCompany> selectHrCompanyByUserId(@Param("workerId") String userId);
+    List<WorkerBindCompany> selectHrCompanyByUserId(@Param("workerId") String userId,@Param("type") Integer type,@Param("name") String name);
 
     int saveBatch(List<UserCompany> list);
 

@@ -102,7 +102,7 @@
         t.id as pid, t.create_time, t.deleted, t.modify_time,CAST(t.un_confirmed_pay as DECIMAL(18,2)) as unConfirmedPay,t.settlement_period as settlementPeriod,t.settlement_num as settlementNum,
         t.confirmed_date, CAST(t.have_pay_money as DECIMAL(18,2)) as havePayMoney, t.minutes, t.no_promise, t.refused_reason, t.repast_times,CAST(t.should_pay_money - t.have_pay_money - t.un_confirmed_pay as DECIMAL(18,2)) as  paidPayMoney,
         t.settled, t.settled_date, CAST(t.should_pay_money as DECIMAL(18,2)) as shouldPayMoney, t.status, t.worker_id, t.task_hr_id, t.user_id, t.user_name,t.hourly_pay,t.hr_company_name,t.hotel_name,
-        t.hotel_id,t.from_date,t.to_date,t.day_start_time,t.day_end_time,t.task_type_code,t.task_type_text,t.task_content,t.hr_company_id,t.hotel_task_id
+        t.hotel_id,t.from_date,t.to_date,t.day_start_time,t.day_end_time,t.task_type_code,t.task_type_text,t.task_content,t.hr_company_id,t.hotel_task_id,t.type as type
         from task_worker t left join company c on t.hr_company_id = c.id
         <where>
             <if test="hrCompanyId != null and hrCompanyId !=''">
@@ -113,6 +113,9 @@
             </if>
             <if test="fromDate != null">
                 and t.from_date &gt;= #{fromDate}
+            </if>
+            <if test="type != null">
+                and t.type = #{type}
             </if>
             <if test="hrCompanyName != null and hrCompanyName !=''">
                 and c.name like concat('%', #{hrCompanyName},'%')
@@ -188,11 +191,11 @@
         WHERE tw.id = #{taskWorkerId}
     </select>
     <select id="selectUserAndWorkerId" parameterType="java.lang.String" resultType="com.microdev.param.WorkerCancelTask">
-        SELECT tw.`worker_id` AS workerId, u.`id` AS userId, u.`nickname` AS username, th.hotel_id AS hotelId,
-        th.hr_company_id as hrId,task_hr_id as taskHrId,th.task_id as taskId,tw.day_start_time,tw.day_end_time
+        SELECT tw.`worker_id` AS workerId, u.`id` AS userId, u.`nickname` AS username, tw.hotel_id AS hotelId,
+        th.hr_company_id as hrId,task_hr_id as taskHrId,tw.hotel_task_id as taskId,tw.day_start_time,tw.day_end_time
         FROM (SELECT * FROM task_worker WHERE id = #{id})tw
         INNER JOIN USER u ON tw.`user_id` = u.`id`
-        INNER JOIN task_hr_company th ON th.id = tw.task_hr_id
+        left JOIN task_hr_company th ON th.id = tw.task_hr_id
     </select>
     <select id="selectHotelAndWorkerId" parameterType="java.lang.String" resultType="com.microdev.param.WorkerCancelTask">
         SELECT tw.`worker_id` AS workerId, u.`id` AS userId, u.`nickname` AS username, th.hotel_id AS hotelId,
@@ -252,7 +255,7 @@
         t.id as pid, t.create_time, t.deleted, t.modify_time,un_confirmed_pay as unConfirmedPay,
         t.confirmed_date, CAST(t.have_pay_money as DECIMAL(18,2)) as havePayMoney, t.minutes, t.no_promise, t.refused_reason, t.repast_times,CAST(t.should_pay_money - t.have_pay_money - t.un_confirmed_pay as DECIMAL(18,2)) as  paidPayMoney,
         t.settled, t.settled_date, t.should_pay_money, t.status, t.worker_id, t.task_hr_id, t.user_id, t.user_name,t.hourly_pay,t.hr_company_name,t.hotel_name,
-        t.hotel_id,t.from_date,t.to_date,t.day_start_time,t.day_end_time,t.task_type_code,t.task_type_text,t.task_content,t.hr_company_id,t.hotel_task_id
+        t.hotel_id,t.from_date,t.to_date,t.day_start_time,t.day_end_time,t.task_type_code,t.task_type_text,t.task_content,t.hr_company_id,t.hotel_task_id,t.type as type
         from task_worker t left join company c on t.hotel_id = c.id
         <where>
             <if test="workerId != null and workerId !=''">
@@ -261,8 +264,14 @@
             <if test="fromDate != null">
                 and t.from_date &gt;= #{fromDate}
             </if>
+            <if test="type != null">
+                and t.type = #{type}
+            </if>
             <if test="hotelName != null and hotelName !=''">
                 and c.name like concat('%', #{hotelName},'%')
+            </if>
+            <if test="hotelId != null and hotelId !=''">
+                and c.id = #{hotelId}
             </if>
             <if test="toDate != null">
                 and t.to_date &lt;= #{toDate}

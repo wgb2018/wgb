@@ -245,6 +245,17 @@ public class MessageController {
     }
 
     /**
+     * 用人单位同意小时工的申请解绑
+     * @param messageId 消息id
+     * @param
+     * @return
+     */
+    @GetMapping("/message/{messageId}/workerUnbind")
+    public ResultDO hotelHandleWorkerBind(@PathVariable String messageId) {
+        return messageService.hotelWorkerHandleBind(messageId, "0");
+    }
+
+    /**
      * pc端用人单位或人力处理解绑申请
      * @return
      */

@@ -49,7 +49,7 @@ public class Notice extends BaseEntity {
 
 
     private String hrCompanyId;
-    //1:用人单位发布任务给人力  2:用人单位招聘小t时工 3:人力发布任务给小时工 4:人力招聘小时工
+    //1:用人单位发布任务给人力  2:用人单位招聘小时工 3:人力发布任务给小时工 4:人力招聘小时工
     private Integer type;
 
     private String taskId;

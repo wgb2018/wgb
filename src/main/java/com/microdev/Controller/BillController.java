@@ -28,8 +28,16 @@ public class BillController {
      *
      */
     @PostMapping("/hotel/bill")
-    public ResultDO hotelbill(@RequestBody PagingDO<BillRequest> paging) {
+    public ResultDO hotelbillByHr(@RequestBody PagingDO<BillRequest> paging) {
         return taskHrCompanyService.getHotelBill(paging.getPaginator (),paging.getSelector ());
+    }
+    /**
+     * 用人单位按小时工查询账目
+     *
+     */
+    @PostMapping("/hotel/bill/worker")
+    public ResultDO hotelbillByWorker(@RequestBody PagingDO<BillRequest> paging) {
+        return taskHrCompanyService.getHotelBillWorker(paging.getPaginator (),paging.getSelector ());
     }
     /**
      * 人力公司按用人单位查询账目
@@ -61,6 +69,13 @@ public class BillController {
     @PostMapping("/HotelPayHrCompany/Bill")
     public ResultDO queryHotelPayHrCompany(@RequestBody PagingDO<HotelPayHrCompanyRequest> paging) {
         return BillService.queryHotelPayHrCompany(paging.getPaginator (),paging.getSelector ());
+    }
+    /**
+     * 查询用人单位支付小时工记录
+     */
+    @PostMapping("/HotelPayWorker/Bill")
+    public ResultDO queryHotelPayWorker(@RequestBody PagingDO<HotelPayHrCompanyRequest> paging) {
+        return BillService.queryHotelPayWorker(paging.getPaginator (),paging.getSelector ());
     }
     /**
      * 查询人力公司支付小时工记录

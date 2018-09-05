@@ -3,13 +3,10 @@ package com.microdev.param;
 import lombok.Data;
 
 @Data
-public class HotelPayHrCompanyRequest {
-
-    private String hotelTaskID;
-
+public class workerUnbindHotel {
     private String hotelId;
 
-    private String hrTaskId;
-
     private String workerId;
+
+    private String reason;
 }

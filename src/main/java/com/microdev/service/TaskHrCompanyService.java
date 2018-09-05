@@ -35,9 +35,14 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
      */
     void TaskHrrefuse(String messageId, String reason);
     /**
-     * 用人单位查询账目
+     * 用人单位按照人力公司查询账目
      */
     ResultDO getHotelBill(Paginator paginator, BillRequest request);
+
+    /**
+     * 用人单位按照小时工查询账目
+     */
+    ResultDO getHotelBillWorker(Paginator paginator, BillRequest request);
     /**
      * 人力公司按用人单位查询账目
      */

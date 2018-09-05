@@ -61,6 +61,12 @@
         INNER JOIN
         (
     SELECT company_id,STATUS,create_time,relieve_time as confirmedDate,modify_time,bind_protocol FROM user_company  WHERE user_id = (SELECT id FROM USER WHERE worker_id = #{workerId})      AND STATUS IN  (1,3)) uc ON c.id = uc.company_id
+        <where>
+            <if test="name != null and name != ''">
+                c.name like concat('%', #{name},'%')
+            </if>
+            and c.company_type = #{type}
+        </where>
     </select>
 
     <insert id="saveBatch" parameterType="java.util.List">
@@ -109,16 +115,24 @@ SELECT id FROM USER WHERE worker_id = #{workerId}
     </select>
     <select id="selectAllWorker" resultType="com.microdev.model.UserCompany">
         select c.* from user_company c left join user u on c.user_id = u.id
-        where c.status in (1,3)
-        <if test="hrId !=null and hrId !=''"  >
-            and c.company_id = #{hrId}
-        </if>
-        <if test="hotelId !=null and hotelId !=''"  >
-            and c.company_id = #{hotelId}
-        </if>
-        <if test="userName !=null and userName !=''"  >
-            and nickname like concat('%', #{userName},'%')
-        </if>
+       <where>
+           <if test="status !=null and status !=''"  >
+               and c.status = #{status}
+           </if>
+           <if test="status ==null"  >
+               and c.status in (1,3)
+           </if>
+           <if test="hrId !=null and hrId !=''"  >
+               and c.company_id = #{hrId}
+           </if>
+           <if test="hotelId !=null and hotelId !=''"  >
+               and c.company_id = #{hotelId}
+           </if>
+           <if test="userName !=null and userName !=''"  >
+               and nickname like concat('%', #{userName},'%')
+           </if>
+       </where>
+
     </select>
 
     <select id = "selectHrBindWorker" resultType="com.microdev.param.WorkerCooperate" parameterType="com.microdev.param.HrQueryWorkerDTO">

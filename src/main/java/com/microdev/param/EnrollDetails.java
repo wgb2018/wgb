@@ -9,6 +9,8 @@ import java.util.List;
 
 @Data
 public class EnrollDetails {
+    private String userId;
+
     private String taskTypeText;
 
     @JsonFormat(pattern="yyyy.MM.dd")
@@ -17,13 +19,21 @@ public class EnrollDetails {
     @JsonFormat(pattern="yyyy.MM.dd")
     private OffsetDateTime toDate;
 
+    private String hotelId;
+
     private String hotelName;
+
+    private String hotelLogo;
 
     private String needWorkers;
 
     private String hourlyPay;
 
+    private String hrId;
+
     private String hrComapnyName;
+
+    private String hrComapnyLogo;
 
     private String noticeId;
     // 0待接受 1已同意 2已拒绝

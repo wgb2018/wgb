@@ -133,7 +133,12 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         GetCurrentTaskResponse response = new GetCurrentTaskResponse();
         if (taskWorker != null) {
             taskHrCompany = taskHrCompanyMapper.queryByTaskId(taskWorker.getTaskHrId());
-            task = taskMapper.getFirstById(taskHrCompany.getTaskId());
+            if(taskHrCompany!=null){
+                task = taskMapper.getFirstById(taskHrCompany.getTaskId());
+            }else{
+                task = taskMapper.getFirstById(taskWorker.getHotelTaskId ());
+            }
+
             //取最近的一条工作记录以获取打卡信息
             OffsetDateTime of = OffsetDateTime.now();
             OffsetDateTime end = OffsetDateTime.ofInstant(new Date(of.getYear() - 1900, of.getMonthValue() - 1, of.getDayOfMonth()).toInstant(), ZoneOffset.systemDefault()).plusDays(1);
@@ -234,9 +239,12 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     }
 
                     if (minutes > 0) {
-                        taskHrCompany =
-                                taskHrCompanyMapper.queryByTaskId(taskWorker.getTaskHrId());
-                        task = taskMapper.getFirstById(taskHrCompany.getTaskId());
+                        taskHrCompany = taskHrCompanyMapper.queryByTaskId(taskWorker.getTaskHrId());
+                        if(taskHrCompany!=null){
+                            task = taskMapper.getFirstById(taskHrCompany.getTaskId());
+                        }else{
+                            task = taskMapper.getFirstById(taskWorker.getHotelTaskId ());
+                        }
                         Double shouldPayMoney_hrtoworker = (minutes / 60.00) * taskWorker.getHourlyPay();
                         Double shouldPayMoney_hoteltohr = (minutes / 60.00) * task.getHourlyPay();
 
@@ -246,8 +254,10 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                         shouldPayMoney_hoteltohr = new BigDecimal(shouldPayMoney_hoteltohr).
                                 setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                         taskWorkerMapper.addMinutes(taskWorkerId, minutes, shouldPayMoney_hrtoworker);
-                        taskHrCompanyMapper.addMinutes(taskWorker.getTaskHrId(), minutes,
-                                shouldPayMoney_hrtoworker, shouldPayMoney_hoteltohr);
+                        if(taskWorker.getTaskHrId()!=null){
+                            taskHrCompanyMapper.addMinutes(taskWorker.getTaskHrId(), minutes,
+                                    shouldPayMoney_hrtoworker, shouldPayMoney_hoteltohr);
+                        }
                         taskMapper.addMinutes(task.getPid(), minutes, shouldPayMoney_hoteltohr);
                     }
                     log.setMinutes(minutes.intValue());
@@ -883,7 +893,9 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
     @Override
     public ResultDO pagingWorkers(Paginator paginator, WorkerQueryDTO workerQueryDTO) {
         PageHelper.startPage(paginator.getPage(), paginator.getPageSize());
-
+        if(workerQueryDTO.getHrId () == null){
+            workerQueryDTO.setHrId (workerQueryDTO.getHotelId ());
+        }
         //查询数据集合
         List<Map<String, Object>> list = null;
         if (workerQueryDTO.getHrId() == null) {
@@ -956,7 +968,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
         for (String str : set) {
             userCompany = new UserCompany();
-            userCompany.setCompanyType(2);
+            userCompany.setCompanyType(1);
             userCompany.setUserType(UserType.worker);
             userCompany.setUserId(user.getPid());
             userCompany.setCompanyId(str);

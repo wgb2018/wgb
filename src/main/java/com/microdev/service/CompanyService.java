@@ -111,6 +111,12 @@ public interface CompanyService extends IService<Company> {
      * @return
      */
     ResultDO hotelAddHrCompanySet(HotelHrIdBindDTO dto);
+    /**
+     * 用人单位添加小时工
+     * @param dto
+     * @return
+     */
+    ResultDO hotelAddWorkerSet(HotelHrIdBindDTO dto);
 
     /**
      * 人力公司同意解绑小时工

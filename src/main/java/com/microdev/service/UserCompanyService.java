@@ -17,6 +17,7 @@ public interface UserCompanyService extends IService<UserCompany> {
      */
     ResultDO workerBindHr( String messageId, String status);
     ResultDO workerUnbindHr(String workerId,String hrId);
+    ResultDO workerUnbindHotel(String workerId,String hotelId,String reason);
     /**
      * 根据人力公司获取小时工
      */

@@ -7,7 +7,7 @@ public class WokerQueryHrDTO {
 
     private String workerId;
 
-    private String hrName;
+    private String name;
 
 //     * 0   未审核
 //     * 1   通过
@@ -15,4 +15,6 @@ public class WokerQueryHrDTO {
 //     * 3   解绑中
 //     * 4   已解绑
     private Integer status;
+
+    private Integer type;
 }

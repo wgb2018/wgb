@@ -88,3 +88,10 @@ custom:
         jwtSecret: microdev
         accessTokenLifetimeSeconds: 7200000
         refreshTokenLifetimeSeconds: 2592000
+#环信配置
+
+grantType: client_credentials
+orgName: 1185160929115145
+appName: weigongbao
+clientId: YXA6BWIvIKRbEeiim_eTmVqIqA
+clientSecret: YXA6fFaa3Xk6PDqBRhTLtzm_BUWL2TQ

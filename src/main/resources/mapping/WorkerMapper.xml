@@ -47,6 +47,20 @@
         order by u.create_time desc
 
     </select>
+    <select id="queryRecommendWorkers" resultType="java.util.Map" parameterType="com.microdev.param.WorkerQueryDTO">
+        select u.id as pid,u.age as age,u.create_time as createTime,u.modify_time as modifyTime,u.activated as activated,u.avatar
+        as avatar,u.birthday as birthday,u.email as email,u.mobile as mobile,u.nickname as nickname,CASE u.`sex` WHEN 'MALE' THEN 'MALE' WHEN
+        'FEMALE' THEN 'FEMALE' ELSE 'UNKNOW' END AS  sex,u.user_type as userType,u.worker_id as workerId,u.user_code as userCode,w.idcard_back as
+        idcardBack,w.idcard_front as idcardFront,w.idcard_number as idcardNumber,w.health_card as healthCard,w.status as status,
+        IFNULL(w.handheld_identity,'') as handheldIdentity,IFNULL(w.stature,0) as stature,IFNULL(w.weight,0) as weight,IFNULL(w.education,0) as education
+        from worker w left join user u on u.worker_id = w.id where w.id not IN
+        (select worker_id from user where id in (select user_id from user_company where company_id = #{hotelId} and status IN (0,1,3))) and u.avatar != null
+        <if test="name != null and name !=''">
+            and u.nickname like '%${name}%'
+        </if>
+        order by u.create_time desc limit 20
+
+    </select>
     <select id="queryAllWorker" resultType="java.util.Map" parameterType="com.microdev.param.WorkerQueryDTO">
         select u.id as pid,u.age as age,u.create_time as createTime,u.modify_time as modifyTime,u.activated as activated,u.avatar
         as avatar,w.qr_code as qrCode,u.birthday as birthday,u.email as email,u.mobile as mobile,u.nickname as nickname,CASE u.`sex` WHEN 'MALE' THEN 'MALE' WHEN

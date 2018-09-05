@@ -565,6 +565,36 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         return ResultDO.buildSuccess (null, result, map, null);
     }
 
+    @Override
+    public ResultDO getHotelBillWorker(Paginator paginator, BillRequest request) {
+        PageHelper.startPage (paginator.getPage ( ), paginator.getPageSize ( ));
+        //查询数据集合
+        List <TaskWorker> list = taskHrCompanyMapper.queryHotelBillWorker (request);
+        for (TaskWorker taskHr : list) {
+            taskHr.setPaidPayMoney(Maths.getTwoDecimal (taskHr.getShouldPayMoney() - taskHr.getHavePayMoney() - taskHr.getUnConfirmedPay (),2));
+        }
+        PageInfo <TaskWorker> pageInfo = new PageInfo <> (list);
+        HashMap <String, Object> result = new HashMap <> ( );
+        //设置获取到的总记录数total：
+        result.put ("total", pageInfo.getTotal ( ));
+        //设置数据集合rows：
+        result.put ("result", pageInfo.getList ( ));
+        result.put ("page", paginator.getPage ( ));
+        Map <String, Object> map = new HashMap <> ( );
+        Double should_pay_money = 0.0;
+        Double have_pay_money = 0.0;
+        Double un_confirmed_pay = 0.0;
+        for (TaskWorker item : list) {
+            should_pay_money = Maths.add (should_pay_money, item.getShouldPayMoney ( ));
+            have_pay_money = Maths.add (item.getHavePayMoney ( ), have_pay_money);
+            un_confirmed_pay = Maths.add (item.getUnConfirmedPay (), un_confirmed_pay);
+        }
+        map.put ("shouldPayMoney", should_pay_money);
+        map.put ("havePayMoney", have_pay_money);
+        map.put ("paidPayMoney", Maths.getTwoDecimal (should_pay_money - have_pay_money - un_confirmed_pay,2));
+        return ResultDO.buildSuccess (null, result, map, null);
+    }
+
     /**
      * 人力公司按用人单位查询账目
      */

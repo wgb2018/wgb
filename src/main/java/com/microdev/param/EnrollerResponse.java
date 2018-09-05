@@ -8,6 +8,8 @@ import java.time.OffsetTime;
 
 @Data
 public class EnrollerResponse {
+    private String userId;
+
     private String pid;
 
     private String workerId;

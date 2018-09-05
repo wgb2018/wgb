@@ -60,6 +60,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     private TaskMapper taskMapper;
     @Autowired
     private EnrollMapper enrollMapper;
+    @Autowired
+    private UserCompanyMapper userCompanyMapper;
     /**
      * 创建消息模板
      */
@@ -255,6 +257,69 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             list.add(m);
             try {
                 jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (companyId).getLeaderMobile (), m.getMessageContent ()));
+            } catch (APIConnectionException e) {
+                e.printStackTrace ( );
+            } catch (APIRequestException e) {
+
+            }
+        }
+        messageMapper.saveBatch(list);
+    }
+
+    @Override
+    public void bindHotelCompany(String workerId, Set <String> hotelId, String userName, String pattern, String reason) {
+        if (StringUtils.isEmpty(workerId) || hotelId == null || hotelId.size() == 0
+                || StringUtils.isEmpty(userName) || StringUtils.isEmpty(pattern)) {
+            throw new ParamsException("参数不能为空");
+        }
+
+        MessageTemplate mess = messageTemplateMapper.findFirstByCode(pattern);
+        if (mess == null) {
+            throw new ParamsException("消息模板错误");
+        }
+        Iterator<String> it = hotelId.iterator();
+        Message m = null;
+        List<Message> list = new ArrayList<>();
+        Map<String, String> param = new HashMap<>();
+        param.put("userName", userName);
+        String c = StringKit.templateReplace(mess.getContent(), param);
+        while (it.hasNext()) {
+            m = new Message();
+            m.setDeleted(false);
+            m.setMessageCode(mess.getCode());
+            //m.setMessageTitle(mess.getTitle());
+            m.setStatus(0);
+            m.setApplicantType(1);
+            m.setWorkerId(workerId);
+            if ("applyBindMessage".equals(pattern)) {
+                m.setMessageType(5);
+                m.setContent(userName + "向您发出了绑定申请");
+            } else {
+                m.setMessageType(12);
+                m.setContent(reason);
+            }
+            m.setMessageContent(c);
+
+            String hotelid = it.next();
+            m.setHotelId (hotelid);
+            m.setApplyType(3);
+            m.setIsTask(1);
+            Map<String,Object> map = new HashMap <> ();
+            map.put ("message_code",mess.getCode());
+            map.put("status",0);
+            map.put ("applicant_type",1);
+            map.put ("worker_id",workerId);
+            map.put ("message_type",m.getMessageType ());
+            map.put("apply_type",2);
+            map.put("is_task",1);
+            map.put ("hotel_id", hotelid);
+            List<Message> messageList = messageMapper.selectByMap (map);
+            if(messageList != null && messageList.size() > 0){
+                throw new ParamsException("申请已提交，请勿重复提交");
+            }
+            list.add(m);
+            try {
+                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (hotelid).getLeaderMobile (), m.getMessageContent ()));
             } catch (APIConnectionException e) {
                 e.printStackTrace ( );
             } catch (APIRequestException e) {
@@ -541,11 +606,15 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             message.setMessageCode ("applyBindMessage");
             if (type == 1) {
                 message.setWorkerId(id);
-                message.setHrCompanyId(s);
                 message.setApplicantType(1);
-                message.setApplyType(2);
+                if(companyMapper.findCompanyById (s).getCompanyType () == 1){
+                    message.setApplyType(3);
+                    message.setHotelId (s);
+                }else{
+                    message.setApplyType(2);
+                    message.setHrCompanyId(s);
+                }
                 message.setMessageType(5);
-
                 try {
                     jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (companyMapper.findCompanyById (s).getLeaderMobile ( ), name + "向您发出了绑定申请"));
                 } catch (APIConnectionException e) {
@@ -555,9 +624,14 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 }
             } else {
                 message.setApplyType(1);
-                message.setApplicantType(2);
+                if(companyMapper.findCompanyById (id).getCompanyType () == 1){
+                    message.setApplicantType(3);
+                    message.setHotelId (id);
+                }else{
+                    message.setHrCompanyId(id);
+                    message.setApplicantType(2);
+                }
                 message.setWorkerId(s);
-                message.setHrCompanyId(id);
                 message.setMessageType(5);
                 try {
                     jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (s).getMobile ( ), name + "向您发出了绑定申请"));
@@ -933,7 +1007,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
 
     @Override
     public Message hotelDistributeWorkerTask(List <TaskWorker> list, Task task, boolean isStop) {
-        if (list == null || list.size() == 0 || task == null) {
+        if (task == null) {
             throw new ParamsException("消息发送的参数错误");
         }
 
@@ -1473,6 +1547,40 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         }
 
             informMapper.insertInform(inform);        return ResultDO.buildSuccess("处理成功");
+    }
+
+    @Override
+    public ResultDO hotelWorkerHandleBind(String messageId, String status) {
+        if (StringUtils.isEmpty(messageId) || StringUtils.isEmpty(status)) {
+            throw new ParamsException("参数不能为空");
+        }
+        Message message = messageMapper.selectById(messageId);
+        if (message == null) {
+            throw new ParamsException("申请查询不到");
+        }
+        if (message.getStatus() == 1) {
+            throw new ParamsException("申请已处理");
+        }
+        message.setStatus(1);
+        messageMapper.updateById(message);
+        Inform inform = new Inform ();
+        Company company = companyMapper.findCompanyById (message.getHotelId ());
+        if(company == null){
+            throw new ParamsException("查询不到酒店信息");
+        }
+        inform.setSendType(3);
+        inform.setAcceptType(1);
+        inform.setReceiveId(message.getWorkerId ());
+        inform.setReceiveId(message.getHrCompanyId());
+        inform.setContent(company.getName() + "终止了和您的合作");
+        inform.setTitle("解绑成功");
+        UserCompany userCompany = userCompanyMapper.selectByWorkerIdHrId (message.getHotelId (),message.getWorkerId ());
+        if(userCompany == null){
+            throw new ParamsException("绑定关系不存在");
+        }
+        userCompany.setStatus (4);
+        userCompanyMapper.updateById (userCompany);
+        return ResultDO.buildSuccess("处理成功");
     }
 
     @Override

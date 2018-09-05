@@ -99,6 +99,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
     @Autowired
     private MyTimeTask myTimeTask;
 
+
     @Override
     public ResultDO pagingCompanys(Paginator paginator, CompanyQueryDTO queryDTO) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
@@ -202,6 +203,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             } else {
                 company.setGrade("3");
             }
+            company.setUserId (userMapper.findByMobile (company.getLeaderMobile ()).getPid ());
         }
 
         return ResultDO.buildSuccess(company);
@@ -427,7 +429,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             result.put("result",list);
             result.put("page",paginator.getPage());
         }
-
             return ResultDO.buildSuccess(result);
 
     }
@@ -1083,6 +1084,67 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
         messageService.hotelBindHrCompany(dto.getSet(), company, "applyBindMessage", type,null);
         return ResultDO.buildSuccess("操作成功");
+    }
+
+    @Override
+    public ResultDO hotelAddWorkerSet(HotelHrIdBindDTO dto) {
+        if (dto == null) {
+            throw new ParamsException ("参数不能为空");
+        }
+
+        if (dto.getSet ( ).size ( ) == 0) {
+            throw new ParamsException ("添加的小时工不能为空");
+        }
+        Integer type = dto.getBindType ( );
+
+        Set <String> hrSet = dto.getSet ( );
+
+        List <UserCompany> list = new ArrayList <> ( );
+        UserCompany hotelWorker = null;
+        Company company = null;
+        //从redis中取出默认协议地址
+        String path = redisUtil.getString ("defaultHrHotelProtocol");
+        if (StringUtils.isEmpty (path)) {
+            try {
+                path = filePush.pushFileToServer (ConstantData.CATALOG.getName ( ), ConstantData.HRHOTELPROTOCOL.getName ( ));
+                //path = filePush.pushFileToServer(ConstantData.CATALOG.getName(), ConstantData.TEST.getName());
+            } catch (Exception e) {
+                e.printStackTrace ( );
+                return ResultDO.buildError ("服务异常");
+            }
+            redisUtil.setString ("defaultHrHotelProtocol", path);
+        }
+        //用人单位加小时工
+        if (StringUtils.isEmpty (dto.getHotelId ( ))) {
+            throw new ParamsException ("参数hotelId为空");
+        }
+        company = companyMapper.selectById (dto.getHotelId ( ));
+        if (company.getStatus ( ) == 0) throw new ParamsException ("公司状态为未审核，添加失败");
+        for (String workerId : hrSet) {
+            UserCompany userCompany = userCompanyMapper.selectByWorkerIdHrId (dto.getHotelId ( ), workerId);
+            if (userCompany != null && userCompany.getStatus ( ) != 2 && userCompany.getStatus ( ) != 4) {
+                throw new BusinessException ("已提交,请勿重复");
+            }
+        }
+        for (String workerId : hrSet) {
+            UserCompany us = userCompanyMapper.selectByWorkerIdHrId (dto.getHotelId ( ), workerId);
+            if (us == null) {
+                us = new UserCompany ( );
+                us.setUserType(UserType.worker);
+                us.setStatus (0);
+                us.setCompanyType (1);
+                us.setCompanyId (dto.getHotelId ( ));
+                us.setUserId (userMapper.selectByWorkerId (workerId).getPid ( ));
+                us.setBindProtocol (path);
+                userCompanyMapper.insert (us);
+            } else {
+                us.setStatus (0);
+                userCompanyMapper.update (us);
+            }
+
+        }
+        messageService.bindUserHrCompany(company.getName(), dto.getHotelId ( ), new ArrayList<>(dto.getSet ()), 2);
+        return ResultDO.buildSuccess ("操作成功");
     }
 
     /**

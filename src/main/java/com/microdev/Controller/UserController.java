@@ -84,7 +84,7 @@ public class UserController {
     /**
      * 查询用户
      */
-    @PostMapping("/query/user/{id}")
+    @GetMapping("/query/user/{id}")
     public ResultDO queryUser(@PathVariable String id) throws Exception {
         User u = userMapper.selectById (id);
         UserResponse user = new UserResponse ();
@@ -110,6 +110,42 @@ public class UserController {
             user.setType ("hr");
         }
         return ResultDO.buildSuccess(user);
+    }
+    /**
+     * 查询用户
+     */
+    @PostMapping("/queryList/user")
+    public ResultDO queryListUser(@RequestBody IdsParam ids) throws Exception {
+        User u;
+        List<UserResponse> list = new ArrayList <> ();
+        for (String id:ids.getIds ()) {
+            u = userMapper.selectById (id);
+            UserResponse user = new UserResponse ();
+            user.setPid (id);
+            if(u.getUserType ().equals (UserType.worker)){
+                user.setLogo (u.getAvatar ());
+                user.setMobile (u.getMobile ());
+                user.setName (u.getNickname ());
+                user.setRoleId (u.getWorkerId ());
+                user.setType ("worker");
+            }else if(u.getUserType ().equals (UserType.hotel)){
+                Company hotel = companyMapper.findFirstByLeaderMobile (u.getMobile ());
+                user.setLogo (hotel.getLogo ());
+                user.setMobile (u.getMobile ());
+                user.setName (hotel.getName ());
+                user.setRoleId (hotel.getPid ());
+                user.setType ("hotel");
+            }else if(u.getUserType ().equals (UserType.hr)){
+                Company hr = companyMapper.findFirstByLeaderMobile (u.getMobile ());
+                user.setLogo (hr.getLogo ());
+                user.setMobile (u.getMobile ());
+                user.setName (hr.getName ());
+                user.setRoleId (hr.getPid ());
+                user.setType ("hr");
+            }
+            list.add (user);
+        }
+        return ResultDO.buildSuccess(list);
     }
     /**
      * 用户退出登录
@@ -297,7 +333,7 @@ public class UserController {
 //        test = userMapper.selectById("f1f33e09884c4b06b8fbe77465bd208d");
 
         // app 上传
-        File file;
+        /*File file;
         String fileURI = null;
         String filePath;
         //file = QRCodeUtil.createQRCode ("3a267b284a1641ed9fb143fb3ff2d6c5WGBhotel");
@@ -310,7 +346,7 @@ public class UserController {
         //文件上传成功后返回的下载路径，比如: http://oss.xxx.com/avatar/3593964c85fd76f12971c82a411ef2a481c9c711.jpg
         fileURI = objectStoreService.uploadFile(filePath, file);
 
-        System.out.println ("fileURI:"+fileURI);
+        System.out.println ("fileURI:"+fileURI);*/
 
 
 
@@ -353,11 +389,11 @@ public class UserController {
             LOG.info("Error Code: " + e.getErrorCode());
             LOG.info("Error Message: " + e.getErrorMessage());*//*
         }*/
-        /*String  path = getClass().getResource("/").getFile();
+        String  path = getClass().getResource("/").getFile();
         path = URLDecoder.decode(path,  "utf-8");
         File f = null;
         
-        HtmlUtil.convert2Html (path+File.separator + "static" + File.separator +  "12.docx",path+File.separator + "static" + File.separator,"12.html");*/
+        HtmlUtil.convert2Html (path+File.separator + "static" + File.separator +  "12.docx",path+File.separator + "static" + File.separator,"12.html");
 
         /*String str = "wgba001";
         System.out.println (str.substring (0,4));

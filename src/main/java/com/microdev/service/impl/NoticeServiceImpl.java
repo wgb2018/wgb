@@ -73,6 +73,10 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
     private TaskWorkerMapper taskWorkerMapper;
     @Autowired
     private InformMapper informMapper;
+    @Autowired
+    private WorkerMapper workerMapper;
+    @Autowired
+    private DictService dictService;
     @Override
     public ResultDO createNotice(CreateNoticeRequest request) {
 
@@ -139,7 +143,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
                 notice.setFromDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getFromDateL ()+OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getDayStartTimeL ()),ZoneOffset.systemDefault ()).toOffsetTime ().getLong (ChronoField.SECOND_OF_DAY )*1000),ZoneOffset.systemDefault ()));
                 notice.setToDate (OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getToDateL ()+OffsetDateTime. ofInstant (Instant.ofEpochMilli (request.getDayEndTimeL ()),ZoneOffset.systemDefault ()).toOffsetTime ().getLong (ChronoField.SECOND_OF_DAY )*1000),ZoneOffset.systemDefault ()));
                 notice.setHotelId (request.getHotelId ( ));
-                notice.setNeedWorkers (request.getNeedWorkers ( ));
+                notice.setNeedWorkers (request.getNeedWorkers ( )  - request.getWorkerSet ().size ());
                 notice.setType (2);
                 notice.setStatus (0);
                 notice.setHourPay (request.getHourlyPay ( ).toString ( ));
@@ -150,6 +154,40 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
                 notice.setTaskTypeText (request.getTaskTypeText ( ));
                 notice.setTaskTypeIcon (dictMapper.selectById (request.getTaskTypeCode ( )).getExtend ( ));
                 noticeMapper.insert (notice);
+                //
+                List <TaskWorker> list = new ArrayList <> ( );
+                for (String id : request.getWorkerSet ()) {
+                    System.out.println (id);
+                    TaskWorker taskWorker = new TaskWorker ( );
+                    userMapper.queryByWorkerId (id);
+                    User user = userMapper.queryByWorkerId (id);
+                    taskWorker.setUserId (user.getPid ( ));
+                    taskWorker.setWorkerId (user.getWorkerId ( ));
+                    taskWorker.setUserName (user.getUsername ( ));
+                    taskWorker.setStatus (0);
+                    taskWorker.setFromDate (task.getFromDate ( ));
+                    taskWorker.setToDate (task.getToDate ( ));
+                    taskWorker.setHourlyPay (task.getHourlyPay ( ));
+                    taskWorker.setTaskTypeCode (request.getTaskTypeCode ( ));
+                    taskWorker.setTaskContent (task.getTaskContent ( ));
+                    taskWorker.setTaskTypeText (task.getTaskTypeText ( ));
+                    taskWorker.setHotelName (task.getHotelName ( ));
+                    taskWorker.setHotelId (request.getHotelId ( ));
+                    taskWorker.setDayStartTime (task.getDayStartTime ( ));
+                    taskWorker.setDayEndTime (task.getDayEndTime ( ));
+                    taskWorker.setHotelTaskId (task.getPid ( ));
+                    taskWorker.setSettlementPeriod (task.getSettlementPeriod ());
+                    taskWorker.setSettlementNum (task.getSettlementNum ());
+                    taskWorker.setType (1);
+                    taskWorkerMapper.insert (taskWorker);
+                    list.add (taskWorker);
+                }
+                Task ts = new Task();
+                ts.setHotelName (task.getHotelName ());
+                ts.setTaskTypeText (task.getTaskTypeText ());
+                ts.setHotelId (request.getHotelId ( ));
+                ts.setPid (task.getPid ());
+                messageService.hotelDistributeWorkerTask (list, ts, false);
             }
         } else if (request.getType ( ) == 2) {
             if (StringUtils.isEmpty (request.getHrCompanyId ( )) || StringUtils.isEmpty (request.getType ( )) || StringUtils.isEmpty (request.getHrNeedWorkers ( ))) {
@@ -344,6 +382,13 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             if(notice.getToDate ().isBefore (OffsetDateTime.now ())){
                 throw new ParamsException ("招聘已结束，无法报名");
             }
+            Map<String,Object> map = new HashMap();
+            map.put ("hotel_task_id",notice.getTaskId ());
+            map.put ("worker_id",request.getWorkerId ());
+            List<TaskWorker> ts = taskWorkerMapper.selectByMap (map);
+            if(ts.size ()>0){
+                throw new ParamsException ("已存在相应任务，无法报名");
+            }
             return enrollService.workerApplyHotel (request);
         } else if (notice.getType ( ) == 3) {
             if(notice.getFromDate ().isBefore (OffsetDateTime.now ())){
@@ -369,13 +414,17 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
     @Override
     public ResultDO recommendtNotice(QueryNoticeRequest request) {
         List <List <Notice>> ls = new ArrayList <> ( );
-        int[] ary = {2, 3, 4, 1};
+        int[] ary = {2, 3, 4};
         List <Notice> notice;
         Task task;
         TaskHrCompany taskHrCompany;
         Company company = new Company ( );
-        for (int i = 0; i < 4; i++) {
-            notice = noticeMapper.queryRecommend (ary[i]);
+        for (int i = 0; i < 3; i++) {
+            if(noticeMapper.queryRecommend (ary[i])!=null){
+                notice = noticeMapper.queryRecommend (ary[i]);
+            }else{
+                notice = new ArrayList <> ();
+            }
             for (Notice n : notice) {
                 if (n.getType ( ) < 3) {
                     company = companyMapper.findCompanyById (n.getHotelId ( ));
@@ -431,12 +480,16 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
                 noticeDetails.setDayStartTime (notice.getFromDate ().toOffsetTime ());
                 noticeDetails.setDayEndTime (notice.getToDate ().toOffsetTime ());
             }
+            noticeDetails.setUserId (userMapper.findByMobile (companyMapper.findCompanyById (noticeDetails.getHotelId ()).getLeaderMobile ()).getPid ());
             return ResultDO.buildSuccess (noticeDetails);
         } else if (notice.getType ( ) == 3) {
-            return ResultDO.buildSuccess (noticeMapper.queryDetailsWorker (request));
+            NoticeDetails noticeDetails = noticeMapper.queryDetailsWorker (request);
+            noticeDetails.setUserId (userMapper.findByMobile (companyMapper.findCompanyById (noticeDetails.getHrcompanyId ()).getLeaderMobile ()).getPid ());
+            return ResultDO.buildSuccess (noticeDetails);
         } else if (notice.getType ( ) == 4) {
             NoticeDetails noticeDetails = noticeMapper.selectDetailsApply (request);
             noticeDetails.setTaskServices (noticeServiceMapper.queryService (notice.getPid ( )));
+            noticeDetails.setUserId (userMapper.findByMobile (companyMapper.findCompanyById (noticeDetails.getHrcompanyId ()).getLeaderMobile ()).getPid ());
             return ResultDO.buildSuccess (noticeDetails);
         }
         return null;
@@ -500,9 +553,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
         Inform inform = new Inform();
         String content;
         Task task = null;
-        if(notice.getTaskId ()!=null){
-            task  = taskMapper.selectById (notice.getTaskId ());
-        }
+
         for (NoticeHandle param : request.getParam ( )) {
             enroll = enrollMapper.selectById (param.getEnrollId ( ));
             if (enroll == null) {
@@ -513,6 +564,9 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             }
             if (notice == null) {
                 return ResultDO.buildError ("");
+            }
+            if(notice.getTaskId ()!=null && task == null){
+                task  = taskMapper.selectById (notice.getTaskId ());
             }
             if (notice.getStatus ( ) == 1) {
                 return ResultDO.buildError ("");
@@ -704,8 +758,9 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
                     userCompany.setUserType (UserType.worker);
                     userCompany.setCompanyType (2);
                     userCompany.setUserId (userMapper.selectByWorkerId (enroll.getWorkerId ( )).getPid ( ));
-                    userCompany.setStatus (0);
+                    userCompany.setStatus (1);
                     userCompany.setBindProtocol (path);
+                    userCompanyMapper.insert (userCompany);
                 } else if (userCompany.getStatus ( ) == 0) {
                     userCompany.setStatus (1);
                     //清楚消息中的申请绑定待处理
@@ -795,7 +850,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
                 taskWorker.setUserId (user.getPid ( ));
                 taskWorker.setWorkerId (user.getWorkerId ( ));
                 taskWorker.setUserName (user.getUsername ( ));
-                taskWorker.setStatus (0);
+                taskWorker.setStatus (1);
                 taskWorker.setFromDate (task.getFromDate ( ));
                 taskWorker.setToDate (task.getToDate ( ));
                 taskWorker.setHourlyPay (task.getHourlyPay ( ));
@@ -813,7 +868,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
                 taskWorkerMapper.insert (taskWorker);
                 list.add (taskWorker);
             }
-            messageService.hotelDistributeWorkerTask (list, task, false).getPid ( );
+            //messageService.hotelDistributeWorkerTask (list, task, false).getPid ( );
         }
         CreateTaskRequest createTaskRequest = new CreateTaskRequest();
         createTaskRequest.setNoticeTask (true);
@@ -836,16 +891,28 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
     public ResultDO enrollHandle(Paginator paginator, QueryNoticeRequest request) {
         PageHelper.startPage(paginator.getPage(),paginator.getPageSize());
         PageInfo<EnrollDetails> pageInfo;
+        String userId;
         if(request.getType ().equals ("1")){
             List<EnrollDetails> list = enrollMapper.selectEnrollDetails(request);
             pageInfo = new PageInfo<>(list);
+
             for (EnrollDetails e:list) {
-                if(e.getType () == 4){
+                if(e.getType () == 2){
+                    userId = userMapper.findByMobile (companyMapper.findCompanyById (e.getHotelId ()).getLeaderMobile ()).getPid ();
+                }else if(e.getType () == 3){
+                    userId = userMapper.findByMobile (companyMapper.findCompanyById (e.getHrId ()).getLeaderMobile ()).getPid ();
+                }else{
+                    userId = userMapper.findByMobile (companyMapper.findCompanyById (e.getHrId ()).getLeaderMobile ()).getPid ();
                     e.setService (noticeServiceMapper.queryService (e.getNoticeId ()));
                 }
+                e.setUserId (userId);
             }
         }else{
             List<EnrollDetails> list = enrollMapper.selecthrEnrollDetails(request);
+            for (EnrollDetails e:list) {
+                userId = userMapper.findByMobile (companyMapper.findCompanyById (e.getHotelId ()).getLeaderMobile ()).getPid ();
+                e.setUserId (userId);
+            }
             pageInfo = new PageInfo<>(list);
         }
         HashMap<String,Object> result = new HashMap<>();
@@ -855,6 +922,26 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
         result.put("result",pageInfo.getList());
         result.put("page",paginator.getPage());
         return ResultDO.buildSuccess(result);
+    }
+
+    @Override
+    public ResultDO recommendWorker(String id) {
+        WorkerQueryDTO workerQueryDTO = new WorkerQueryDTO();
+        workerQueryDTO.setHotelId (id);
+        List<Map<String, Object>> map = workerMapper.queryRecommendWorkers (workerQueryDTO);
+        for (Map<String, Object> mp:map) {
+            String str = "";
+            if (mp.get("birthday") != null) {
+                str = mp.get("birthday").toString().substring(0, 10);
+            }
+            mp.put("birthday", str);
+            List l1 = dictService.findServiceArea(mp.get("workerId").toString ());
+            List l2 = dictMapper.queryTypeByUserId(mp.get("workerId").toString ());
+            mp.put("areaCode", l1 == null ? new ArrayList<>() : l1);
+            mp.put("serviceType", l2 == null ? new ArrayList<>() : l2);
+        }
+
+        return ResultDO.buildSuccess (map);
     }
 
     //循环添加人力资源任务

@@ -241,4 +241,14 @@
         </where>
         ) m
     </select>
+    <select id="queryHotelBillWorker" resultType="com.microdev.model.TaskWorker">
+        select  sum(CAST(t.should_pay_money as DECIMAL(18,2))) as should_pay_money,CAST(sum(t.have_pay_money) as DECIMAL(18,2)) as have_pay_money, sum(t.minutes) as minutes,sum(t.un_confirmed_pay) as unConfirmedPay,sum(t.worker_un_confirmed) as workerUnConfirmed,
+        CAST(sum(t.should_pay_money) - sum(t.have_pay_money) -sum(t.un_confirmed_pay) as DECIMAL(18,2)) as paidPayMoney,t.worker_id as workerId,u.nickname as userName,u.id as userId,u.avater as avater
+        from task_worker t left join user u on t.worker_id = u.worker_id
+        where t.hotel_id = #{id} and t.type = 1
+        <if test = "name != null and name != ''">
+            and u.nickname like concat('%', #{name},'%')
+        </if>
+        group by u.id,u.nickname
+    </select>
 </mapper>

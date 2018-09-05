@@ -129,7 +129,7 @@ public class WorkerController {
     public ResultDO getWorkerDetails(@PathVariable String taskWorkerId,@PathVariable String workerId) {
         return ResultDO.buildSuccess(workerService.selectUserTaskInfo(taskWorkerId, workerId));
     }
-	/**
+    /**
      * 修改服务类型及地区
      */
     @PostMapping("/modify/AreaAndService")
@@ -160,6 +160,15 @@ public class WorkerController {
      */
     @PostMapping("/worker/apply/bindHrs")
     public ResultDO workerApplyBindHrCompany(@RequestBody Map<String, Object> map) {
+
+        return ResultDO.buildSuccess(workerService.workerApplybind((String) map.get("workerId"), (List<String>)map.get("set")));
+    }
+    /**
+     * 小时工申请绑定用人单位
+     * @return
+     */
+    @PostMapping("/worker/apply/bindHotels")
+    public ResultDO workerApplyBindHotel(@RequestBody Map<String, Object> map) {
 
         return ResultDO.buildSuccess(workerService.workerApplybind((String) map.get("workerId"), (List<String>)map.get("set")));
     }

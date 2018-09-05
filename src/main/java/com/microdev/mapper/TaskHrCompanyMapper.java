@@ -2,6 +2,7 @@ package com.microdev.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.microdev.model.TaskHrCompany;
+import com.microdev.model.TaskWorker;
 import com.microdev.param.BillRequest;
 import com.microdev.param.HrTaskDetails;
 import com.microdev.param.TaskHrQueryDTO;
@@ -31,6 +32,8 @@ public interface TaskHrCompanyMapper extends BaseMapper<TaskHrCompany> {
     void updateStatus(@Param("id")String id, @Param("status")Integer status);
 
     List<TaskHrCompany> queryHotelBill(BillRequest request);
+
+    List<TaskWorker> queryHotelBillWorker(BillRequest request);
 
     List<TaskHrCompany> queryHrCompanyBill(BillRequest request);
 

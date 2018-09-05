@@ -18,6 +18,7 @@ public interface WorkerMapper extends BaseMapper<Worker> {
 	Map<String,Object> queryWorker(String id);
     List<Map<String,Object>> queryAllWorker(WorkerQueryDTO workerQueryDTO);
 	List<Map<String,Object>> queryWorkers(WorkerQueryDTO workerQueryDTO);
+	List<Map<String,Object>> queryRecommendWorkers(WorkerQueryDTO workerQueryDTO);
 	void updateStatus(@Param ("id") String id,@Param ("status") String status);
 
 	Integer selectAllCount();
