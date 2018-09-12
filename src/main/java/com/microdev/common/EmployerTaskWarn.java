@@ -31,7 +31,7 @@ public class EmployerTaskWarn {
 
     private static final Logger logger = LoggerFactory.getLogger(EmployerTaskWarn.class);
 
-    @Scheduled(cron = "0 0/10 * * * ?")
+    @Scheduled(cron = "0 0 * * * ?")
     public void taskWarn() {
         int count = taskMapper.selectStartTaskCount();
         if (count == 0) return;

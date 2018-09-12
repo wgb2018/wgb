@@ -12,5 +12,6 @@ public class PowerParam {
     private String name;
     private Integer code;
     private Integer level;
+    private String identifer;
     private Set<String> set = new HashSet<>();
 }

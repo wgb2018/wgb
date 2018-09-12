@@ -3,6 +3,8 @@ package com.microdev.param;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class AgentParam {
@@ -58,5 +60,6 @@ public class AgentParam {
     private OffsetDateTime fromDate;
     //（结束）有效时间
     private OffsetDateTime toDate;
-
+    //权限角色集合
+    Set<String> set = new HashSet<>();
 }

@@ -9,10 +9,7 @@ import java.time.OffsetDateTime;
 @TableName("agent")
 public class Agent extends BaseEntity{
 
-    //登陆名
-    private String name;
-    //密码
-    private String password;
+    private String userId;
     //代理商名称
     private String agentName;
     //代理商级别1总代理2省级代理3市级代理

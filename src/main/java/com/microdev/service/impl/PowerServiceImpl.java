@@ -48,6 +48,7 @@ public class PowerServiceImpl extends ServiceImpl<PowerMapper, Power> implements
         power.setCode(powerParam.getCode());
         power.setLevel(powerParam.getLevel());
         power.setName(powerParam.getName());
+        power.setIdentifer(powerParam.getIdentifer());
         powerMapper.insert(power);
         String powerId = power.getPid();
         Set<String> set = powerParam.getSet();

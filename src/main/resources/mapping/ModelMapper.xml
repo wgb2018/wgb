@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.microdev.mapper.ModelMapper">
+    <sql id = "base_column">
+        id, url, icon, level, content
+    </sql>
+
+    <select id ="selectByAgentId" resultType="com.microdev.model.Model">
+        SELECT <include refid="base_column"/> FROM model WHERE id IN (
+SELECT model_id FROM menu_model  WHERE menu_id IN (
+SELECT menu_id FROM power_menu WHERE power_id IN (
+SELECT power_id FROM agent_power WHERE agent_id = #{agentId}
+)
+)
+)
+    </select>
+
+    <select id = "selectAll" resultType="com.microdev.model.Model">
+        select <include refid="base_column"/> from model
+    </select>
+</mapper>

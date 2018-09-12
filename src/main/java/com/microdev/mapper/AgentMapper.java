@@ -12,9 +12,11 @@ import java.util.List;
 @Repository
 public interface AgentMapper extends BaseMapper<Agent> {
 
-    Agent selectByName(@Param("name") String name, @Param("password") String password);
+    Agent selectByName(@Param("identifer") String identifer, @Param("userId") String userId);
 
     List<AgentAccountResponse> selectAccountByParam(AgentQureyParam agentQureyParam);
 
     List<Agent> selectBasicByParam(AgentQureyParam agentQureyParam);
+
+    List<String> selectOnePower(@Param("agentId") String agentId);
 }

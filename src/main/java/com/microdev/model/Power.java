@@ -1,5 +1,6 @@
 package com.microdev.model;
 
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import lombok.Data;
 
@@ -16,4 +17,7 @@ public class Power extends BaseEntity{
     private String identifer;
     private OffsetDateTime fromDate;
     private OffsetDateTime toDate;
+
+    @TableField(exist = false)
+    private String menuName;
 }
