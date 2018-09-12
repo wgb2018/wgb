@@ -243,7 +243,7 @@
 FROM
   (
   SELECT need_workers,confirmed_workers, task_type_text, hotel_id  FROM task
-WHERE from_date BETWEEN DATE_SUB(NOW(), INTERVAL 11 MINUTE)
+WHERE from_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 hour)
   AND NOW()
   AND need_workers > confirmed_workers
   ) t
@@ -252,6 +252,6 @@ WHERE from_date BETWEEN DATE_SUB(NOW(), INTERVAL 11 MINUTE)
     </select>
 
     <select id = "selectStartTaskCount" resultType="java.lang.Integer">
-        SELECT COUNT(1) FROM task WHERE from_date BETWEEN DATE_SUB(NOW(), INTERVAL 11 MINUTE) AND NOW() AND need_workers > confirmed_workers
+        SELECT COUNT(1) FROM task WHERE from_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 hour) AND NOW() AND need_workers > confirmed_workers
     </select>
 </mapper>

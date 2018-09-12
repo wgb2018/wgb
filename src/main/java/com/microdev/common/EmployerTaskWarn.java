@@ -31,8 +31,7 @@ public class EmployerTaskWarn {
 
     private static final Logger logger = LoggerFactory.getLogger(EmployerTaskWarn.class);
 
-    @Scheduled(cron = "0 0/60 * * * ?")
-    public void taskWarn() {
+    @Scheduled(cron = "0 0/60 * * * ?")    public void taskWarn() {
         int count = taskMapper.selectStartTaskCount();
         if (count == 0) return;
         PageHelper.startPage(1, count, true);

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.microdev.mapper.MenuMapper">
+
+    <sql id = "base_column">
+        id as pid, create_time, deleted, modify_time, name, agent_id, from_date, to_date
+    </sql>
+
+    <select id = "selectByparam" resultType="com.microdev.model.Menu" parameterType="com.microdev.model.Menu">
+        select <include refid="base_column"/> from menu
+        <where>
+            <if test = "">
+                and name like concat('%', #{name}, '%')
+            </if>
+        </where>
+    </select>
+</mapper>

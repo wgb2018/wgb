@@ -2,6 +2,7 @@ package com.microdev.param;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.microdev.model.Dict;
+import com.microdev.model.Model;
 import com.microdev.model.Role;
 import com.microdev.model.UserArea;
 import com.microdev.type.PlatformType;
