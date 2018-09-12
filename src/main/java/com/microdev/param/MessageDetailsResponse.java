@@ -11,12 +11,14 @@ public class MessageDetailsResponse {
     private String name;
     private String companyName;
     private String mobile;
+    private String workerMobile;
     private int age;
     private String messageType;
     private String messageTextType;//申请类型名称
     private String createTime;
     private String area;
     private String logo;
+    private String avatar;
     private String content;
     private int needWorkers;
     private int confirmedWorkers;

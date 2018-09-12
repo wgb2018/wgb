@@ -52,6 +52,8 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     MessageDetailsResponse selectHotelApply(@Param("messageId") String messageId);
 
+    MessageDetailsResponse selectHotelApplyWorker(@Param("messageId") String messageId);
+
     MessageDetailsResponse selectPayConfirm(@Param("messageId") String messageId,@Param("type") String type);
 
     MessageDetailsResponse selectApplyAllocate(@Param("messageId") String messageId);
@@ -71,6 +73,8 @@ public interface MessageMapper extends BaseMapper<Message> {
     MessageDetailsResponse selectLeaveApply(@Param("messageId") String messageId);
 
     AwaitTaskResponse selectCancelApply(@Param("messageId") String messageId);
+
+    AwaitTaskResponse selectCancelApplyHotel(@Param("messageId") String messageId);
 
     MessageDetailsResponse hotelHrApplyCooperate(@Param("messageId") String messageId);
 

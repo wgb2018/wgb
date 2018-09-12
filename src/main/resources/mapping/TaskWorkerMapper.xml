@@ -6,7 +6,7 @@
     confirmed_date, have_pay_money, minutes, no_promise, refused_reason, repast_times,
     settled, settled_date, should_pay_money, status, worker_id, task_hr_id, user_id, user_name,hourly_pay,hr_company_name,hotel_name,
         hotel_id,from_date,to_date,day_start_time,day_end_time,task_type_code,task_type_text,task_content,hr_company_id,hotel_task_id,verification,un_confirmed_pay,
-        settlement_period,settlement_num
+        settlement_period,settlement_num,type
 </sql>
     <select id="findFirstById" resultType="com.microdev.model.TaskWorker" parameterType="java.lang.String">
         select
@@ -145,6 +145,9 @@
                 <if test="taskStatus == 7">
                     and ((t.from_date &lt; now() and t.status = 1) or t.status = 3)
                 </if>
+                <if test="taskStatus == 8">
+                    and (t.status != 0 and t.status != 2)
+                </if>
             </if>
             <if test="payStatus != null and payStatus !=''">
                 <if test="payStatus == 1">
@@ -176,11 +179,19 @@
 
     </select>
     <select id="queryWorkerBill" resultType="com.microdev.model.TaskHrCompany" parameterType="com.microdev.param.BillRequest">
-        select  sum(w.should_pay_money) as should_pay_money,sum(w.have_pay_money) as have_pay_money,sum(w.minutes) as minutes,
-        h.hr_company_id,h.hr_company_name from task_worker w left join task_hr_company h on w.task_hr_id = h.id
-        where w.user_id = #{id} group by h.hr_company_id,h.hr_company_name
+        select  sum(w.should_pay_money) as should_pay_money,sum(w.have_pay_money) as have_pay_money,sum(w.minutes) as minutes,sum(w.un_confirmed_pay) as unConfirmedPay,sum(w.should_pay_money) - sum(w.have_pay_money) - sum(w.un_confirmed_pay) as paidPayMoney,
+        h.hr_company_id,c.name as hrCompanyName  from task_worker w left join task_hr_company h on w.task_hr_id = h.id left join company c on h.hr_company_id = c.id
+        where w.worker_id = #{id} and w.type = 0 group by h.hr_company_id,c.name
         <if test = "name != null and name != ''">
-            and hr_company_name = #{name}
+            and c.name = #{name}
+        </if>
+    </select>
+    <select id="queryWorkerBillHotel" resultType="com.microdev.model.TaskWorker" parameterType="com.microdev.param.BillRequest">
+        select  sum(w.should_pay_money) as should_pay_money,sum(w.have_pay_money) as have_pay_money,sum(w.minutes) as minutes,sum(w.un_confirmed_pay) as unConfirmedPay,sum(w.should_pay_money) - sum(w.have_pay_money) - sum(w.un_confirmed_pay) as paidPayMoney,
+        h.hotel_id as hotelId,c.name as hotelName from task_worker w left join task h on w.hotel_task_id = h.id left join company c on h.hotel_id = c.id
+        where w.worker_id = #{id} and w.type = 1 group by h.hotel_id,c.name
+        <if test = "name != null and name != ''">
+            and c.name = #{name}
         </if>
     </select>
     <select id="selectHrId" parameterType="java.lang.String" resultType="java.util.Map">

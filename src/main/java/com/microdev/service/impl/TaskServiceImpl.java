@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
@@ -112,14 +113,15 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
             needAllWorkers=needAllWorkers+item.getNeedWorkers();
         }
         Task task=taskConverter.toNewTask(request);
-        task.setStatus(1);
         task.setConfirmedWorkers(0);
         task.setRefusedWorkers(0);
         task.setHotelId(hotel.getPid());
         task.setHotelName(hotel.getName());
-        if(request.getNeedhrCompanys ()!=null){
+        if(request.getNeedhrCompanys ()!=0){
+            task.setStatus(1);
             task.setNeedWorkers(request.getNeedhrCompanys ());
         }else{
+            task.setStatus(3);
             task.setNeedWorkers(needAllWorkers);
         }
         task.setTaskTypeText(request.getTaskTypeText());
@@ -128,6 +130,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         task.setHourlyPay(request.getHourlyPay());
         task.setSettlementPeriod (request.getSettlementPeriod ());
         task.setSettlementNum (request.getSettlementNum ());
+        task.setWorkerSettlementNum (request.getWorkerSettlementNum ());
+        task.setWorkerSettlementPeriod (request.getWorkerSettlementPeriod ());
         taskMapper.insert(task);
         Set<TaskHrCompany> set = AddHrTask(task,request);
 
@@ -141,6 +145,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
     @Override
     public ResultDO getTaskById(String id) {
         TaskViewDTO taskViewDTO = taskMapper.findTaskAndHrInfoById(id);
+        taskViewDTO.setPid (id);
         if (taskViewDTO == null) {
             return ResultDO.buildSuccess(new TaskViewDTO());
         }
@@ -169,8 +174,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
                 List<Map<String, Object>> refusedList = new ArrayList<>();
                 List<Map<String, Object>> distributedList = new ArrayList<>();
                 for (Map<String, Object> m : list) {
-                    m.put("age", DateUtil.CaculateAge((OffsetDateTime) m.get("birthday")));
-                    distributedList.add(m);
+                    if(m.get("birthday") != null){
+                        m.put("age", DateUtil.caculateAge((Timestamp) m.get("birthday")));
+                    }
+                    if((Integer) m.get("taskStatus") != 2){
+                        distributedList.add(m);
+                    }
                     if (m.get("taskStatus") == null)
                         continue;
                     if ((Integer) m.get("taskStatus") == 1 || (Integer) m.get("taskStatus") == 3) {
@@ -190,8 +199,19 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         List<Map<String, Object>> refusedList = new ArrayList<>();
         List<Map<String, Object>> distributedList = new ArrayList<>();
         for (Map<String, Object> m : list) {
-            m.put("age", DateUtil.CaculateAge((OffsetDateTime) m.get("birthday")));
-            distributedList.add(m);
+            if(taskViewDTO.getToDate ().isAfter (OffsetDateTime.now ()) && taskViewDTO.getFromDate ().isBefore (OffsetDateTime.now ()) && ((Integer) m.get("taskStatus")).intValue () == 1){
+                m.put ("taskStatus",4);
+            }
+            if(taskViewDTO.getToDate ().isBefore (OffsetDateTime.now ()) && ((Integer) m.get("taskStatus")).intValue () == 1 ){
+                m.put ("taskStatus",5);
+            }
+            if(m.get("birthday") != null){
+                System.out.println (m.get("birthday"));
+                m.put("age", DateUtil.caculateAge((Timestamp) m.get("birthday")));
+            }
+            if((Integer) m.get("taskStatus") != 2){
+                distributedList.add(m);
+            }
             if (m.get("taskStatus") == null)
                 continue;
             if ((Integer) m.get("taskStatus") == 1 || (Integer) m.get("taskStatus") == 3) {

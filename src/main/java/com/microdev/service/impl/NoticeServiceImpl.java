@@ -102,6 +102,8 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             req.setTaskTypeText (request.getTaskTypeText ( ));
             req.setSettlementPeriod (request.getSettlementPeriod ( ));
             req.setSettlementNum (request.getSettlementNum ( ));
+            req.setWorkerSettlementPeriod (request.getWorkerSettlementPeriod ());
+            req.setWorkerSettlementNum (request.getWorkerSettlementNum ());
             req.setNeedhrCompanys (request.getHrNeedWorkers ( ) + request.getNeedWorkers ( ));
             req.setHourlyPay (request.getHourlyPay ( ));
             req.setHrCompanySet (request.getHrCompanySet ( ));
@@ -130,9 +132,8 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
                     notice.setTaskId (task.getPid ( ));
                     notice.setTaskTypeText (request.getTaskTypeText ( ));
                     notice.setTaskTypeIcon (dictMapper.selectById (request.getTaskTypeCode ( )).getExtend ( ));
-                    if (notice.getNeedWorkers ( ) > 0) {
-                        noticeMapper.insert (notice);
-                    }
+                    noticeMapper.insert (notice);
+                    noticeServiceMapper.insert (notice.getPid ( ), request.getTaskTypeCode ( ));
                 }
 
             }
@@ -154,6 +155,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
                 notice.setTaskTypeText (request.getTaskTypeText ( ));
                 notice.setTaskTypeIcon (dictMapper.selectById (request.getTaskTypeCode ( )).getExtend ( ));
                 noticeMapper.insert (notice);
+                noticeServiceMapper.insert (notice.getPid ( ), request.getTaskTypeCode ( ));
                 //
                 List <TaskWorker> list = new ArrayList <> ( );
                 for (String id : request.getWorkerSet ()) {
@@ -176,8 +178,8 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
                     taskWorker.setDayStartTime (task.getDayStartTime ( ));
                     taskWorker.setDayEndTime (task.getDayEndTime ( ));
                     taskWorker.setHotelTaskId (task.getPid ( ));
-                    taskWorker.setSettlementPeriod (task.getSettlementPeriod ());
-                    taskWorker.setSettlementNum (task.getSettlementNum ());
+                    taskWorker.setSettlementPeriod (task.getWorkerSettlementPeriod ());
+                    taskWorker.setSettlementNum (task.getWorkerSettlementNum ());
                     taskWorker.setType (1);
                     taskWorkerMapper.insert (taskWorker);
                     list.add (taskWorker);
@@ -365,47 +367,47 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
         }
         if (notice.getType ( ) == 1) {
             if(notice.getFromDate ().isBefore (OffsetDateTime.now ())){
-                throw new ParamsException ("任务已开始，无法报名");
+                return ResultDO.buildError ("任务已开始，无法报名");
             }
             Map<String,Object> map = new HashMap();
             map.put ("task_id",notice.getTaskId ());
             map.put ("hr_company_id",request.getHrCompanyId ());
             List<TaskHrCompany> ts = taskHrCompanyMapper.selectByMap (map);
             if(ts.size ()>0){
-                throw new ParamsException ("已存在相应任务，无法报名");
+                return ResultDO.buildError ("已存在相应任务，无法报名");
             }
             return enrollService.hrApplyRegistration (request);
         } else if (notice.getType ( ) == 2) {
             if(notice.getFromDate ().isBefore (OffsetDateTime.now ())){
-                throw new ParamsException ("任务已开始，无法报名");
+                return ResultDO.buildError ("任务已开始，无法报名");
             }
             if(notice.getToDate ().isBefore (OffsetDateTime.now ())){
-                throw new ParamsException ("招聘已结束，无法报名");
+                return ResultDO.buildError ("招聘已结束，无法报名");
             }
             Map<String,Object> map = new HashMap();
             map.put ("hotel_task_id",notice.getTaskId ());
             map.put ("worker_id",request.getWorkerId ());
             List<TaskWorker> ts = taskWorkerMapper.selectByMap (map);
             if(ts.size ()>0){
-                throw new ParamsException ("已存在相应任务，无法报名");
+                return ResultDO.buildError ("已存在相应任务，无法报名");
             }
             return enrollService.workerApplyHotel (request);
         } else if (notice.getType ( ) == 3) {
             if(notice.getFromDate ().isBefore (OffsetDateTime.now ())){
-                throw new ParamsException ("任务已开始，无法报名");
+                return ResultDO.buildError ("任务已开始，无法报名");
             }
             Map<String,Object> map = new HashMap();
             map.put ("task_hr_id",notice.getTaskId ());
             map.put ("worker_id",request.getWorkerId ());
             List<TaskWorker> ts = taskWorkerMapper.selectByMap (map);
             if(ts.size ()>0){
-                throw new ParamsException ("已存在相应任务，无法报名");
+                return ResultDO.buildError ("已存在相应任务，无法报名");
             }
             return enrollService.workerApplyHr (request);
         } else {
             request.setHrCompanyId (notice.getHrCompanyId ());
             if(notice.getToDate ().isBefore (OffsetDateTime.now ())){
-                throw new ParamsException ("招聘已结束，无法报名");
+                return ResultDO.buildError ("招聘已结束，无法报名");
             }
             return enrollService.workerApplyRegistration (request);
         }

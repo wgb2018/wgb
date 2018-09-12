@@ -82,6 +82,8 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
                 param.put("sendType", 2);
             } else if (dto.getType() == 4) {
                 param.put("sendType", 4);
+            } else if (dto.getType() == 1) {
+                param.put("sendType", 1);
             } else {
                 throw new ParamsException("参数错误");
             }

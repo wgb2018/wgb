@@ -28,6 +28,8 @@ public interface UserCompanyMapper extends BaseMapper<UserCompany> {
 
 	List<User> getSelectableWorker(HrQueryWorkerDTO queryDTO);
 
+    List<User> getSelectableWorkerH(HrQueryWorkerDTO queryDTO);
+
     List<UserCompany> selectAllWorker(HrQueryWorkerDTO queryDTO);
 
     List<TaskWorker> getUnSelectableWorker(HrQueryWorkerDTO queryDTO);

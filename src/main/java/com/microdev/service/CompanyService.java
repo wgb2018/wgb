@@ -212,4 +212,16 @@ public interface CompanyService extends IService<Company> {
      * @return
      */
     List<HrInfo> queryInfo();
+    /**
+     * 处理小时工申请取消任务
+     * @return
+     */
+    ResultDO hotelCancelHandle(HotelCancelParam request);
+    /**
+     * 用人单位小时工拒绝任务并派发任务
+     * @param messageId
+     * @param workerId
+     * @return
+     */
+    ResultDO hotelAgreeWorkerRefuseAndPost(String messageId, String workerId);
 }

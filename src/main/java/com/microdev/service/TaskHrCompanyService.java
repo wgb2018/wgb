@@ -57,6 +57,11 @@ public interface TaskHrCompanyService extends IService<TaskHrCompany> {
      */
     ResultDO getWorkerBill(Paginator paginator,BillRequest request);
     /**
+     * 小时工按人力公司工查询账目
+     *
+     */
+    ResultDO getWorkerBillHotel(Paginator paginator,BillRequest request);
+    /**
      * 人力公司申请调配.
      * @param map
      * @return

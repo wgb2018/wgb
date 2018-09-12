@@ -140,6 +140,8 @@ public class TaskConverter {
         viewDTO.setDayEndTime (task.getDayEndTime ());
         viewDTO.setDayStartTime (task.getDayStartTime ());
         viewDTO.setPayStatus("未结算");
+        viewDTO.setWorkerSettlementNum (task.getWorkerSettlementNum ());
+        viewDTO.setWorkerSettlementPeriod (task.getWorkerSettlementPeriod ());
         if(task.getStatus()>=3){
             if(OffsetDateTime.now().isBefore(task.getToDate()) &&  OffsetDateTime.now().isAfter(task.getFromDate())){
                 task.setStatus(5);

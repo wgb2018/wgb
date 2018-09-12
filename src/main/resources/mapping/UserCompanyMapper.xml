@@ -40,6 +40,22 @@
         </if>
         </where>
     </select>
+    <select id="getSelectableWorkerH" resultType="com.microdev.model.User" parameterType="com.microdev.param.HrQueryWorkerDTO">
+        SELECT u.id AS pid, u.create_time AS createTime, u.modify_time AS modifyTime, u.activated, u.avatar, u.birthday, u.email, u.mobile, u.nickname, u.sex, u.user_type AS userType,
+        u.username, u.worker_id AS workerId, u.user_code AS userCode,u.age,uc.bind_protocol AS bindProtocol FROM USER u
+        INNER JOIN
+        (
+        SELECT user_id,bind_protocol
+        FROM  user_company WHERE STATUS = 1 AND
+        company_id = #{hotelId} AND user_id NOT IN (SELECT	IFNULL(u.id,'0') AS user_id FROM	task_worker t LEFT JOIN USER u ON t.worker_id = u.worker_id WHERE t.hotel_task_id = #{taskId} AND t.status IN(0,1))
+        ) uc
+        ON u.id = uc.user_id
+        <where>
+            <if test="userName !=null and userName !=''"  >
+                and u.nickname like concat('%', #{userName},'%')
+            </if>
+        </where>
+    </select>
     <select id="getUnSelectableWorker" resultType="com.microdev.model.TaskWorker" parameterType="com.microdev.param.HrQueryWorkerDTO">
         select <include refid="TaskWorker_Query_List"/> from task_worker where task_hr_id = #{taskId}
     </select>

@@ -393,7 +393,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      */
     @Override
     public List<Message> hrDistributeTask(List<Map<String, String>> list, String hrId, String hrName, String pattern, String taskId, String hrTaskId,boolean isStop) {
-        if (list == null || list.size() == 0 || StringUtils.isEmpty(hrId) || StringUtils.isEmpty(pattern)) {
+        if (list == null || list.size() == 0 || StringUtils.isEmpty(pattern)) {
             throw new ParamsException("参数不能为空");
         }
         MessageTemplate mess = messageTemplateMapper.findFirstByCode(pattern);
@@ -405,35 +405,37 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         Map<String, String> map = new HashMap<>();
         map.put("hrCompanyName", hrName);
         String c = StringKit.templateReplace(mess.getContent(), map);
-        for (Map<String, String> param : list) {
-            m = new Message();
-            m.setDeleted(false);
-            m.setMessageCode(mess.getCode());
-            m.setMessageTitle(mess.getTitle());
-            m.setStatus(0);
-            m.setMessageType(6);
-            m.setApplyType(0);
-            m.setApplicantType(2);
-            m.setHrCompanyId(hrId);
-            m.setWorkerId(param.get("workerId"));
-            m.setWorkerTaskId(param.get("workerTaskId"));
+        if(list != null){
+            for (Map<String, String> param : list) {
+                m = new Message();
+                m.setDeleted(false);
+                m.setMessageCode(mess.getCode());
+                m.setMessageTitle(mess.getTitle());
+                m.setStatus(0);
+                m.setMessageType(6);
+                m.setApplyType(0);
+                m.setApplicantType(2);
+                m.setHrCompanyId(hrId);
+                m.setWorkerId(param.get("workerId"));
+                m.setWorkerTaskId(param.get("workerTaskId"));
 
-            m.setTaskId(taskId);
-            m.setIsTask(0);
-            m.setHotelId(param.get("hotelId"));
-            m.setHrTaskId(hrTaskId);
-            m.setStop (isStop);
-            m.setMessageContent(c);
-            try {
-                jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (m.getWorkerId ()).getMobile ( ), m.getMessageContent ()));
-            } catch (APIConnectionException e) {
-                e.printStackTrace ( );
-            } catch (APIRequestException e) {
+                m.setTaskId(taskId);
+                m.setIsTask(0);
+                m.setHotelId(param.get("hotelId"));
+                m.setHrTaskId(hrTaskId);
+                m.setStop (isStop);
+                m.setMessageContent(c);
+                try {
+                    jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (m.getWorkerId ()).getMobile ( ), m.getMessageContent ()));
+                } catch (APIConnectionException e) {
+                    e.printStackTrace ( );
+                } catch (APIRequestException e) {
 
+                }
+                messageList.add(m);
             }
-            messageList.add(m);
+            messageMapper.saveBatch(messageList);
         }
-        messageMapper.saveBatch(messageList);
         return messageList;
     }
 
@@ -879,7 +881,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 }
 
             } else if ("hotel".equals(messagetype)) {
-                response = messageMapper.selectHotelApply(messageId);
+                if(message.getHrTaskId () == null){
+                    response = messageMapper.selectHotelApplyWorker(messageId);
+                }else{
+                    response = messageMapper.selectHotelApply(messageId);
+                }
                 if (response != null) {
                     response.setOriginator(response.getCompanyName());
                 }
@@ -938,7 +944,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 response = messageMapper.selectWorkerAwaitHandleTask(messageId);
             }
         } else if ("7".equals(type)) {
-            response = messageMapper.selectCancelApply(messageId);
+            if ("hotel".equals(messagetype)) {
+                response = messageMapper.selectCancelApplyHotel(messageId);
+            } else{
+                response = messageMapper.selectCancelApply(messageId);
+            }
+
         } else if ("8".equals(type)) {
             if ("hr".equals(messagetype)) {
                 response = messageMapper.selectHrHotelDetails(messageId);

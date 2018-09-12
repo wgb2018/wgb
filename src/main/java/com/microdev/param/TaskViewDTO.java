@@ -114,5 +114,9 @@ public class TaskViewDTO {
 
     private Integer settlementNum;
 
+    private Integer workerSettlementPeriod;
+
+    private Integer workerSettlementNum;
+
 
 }

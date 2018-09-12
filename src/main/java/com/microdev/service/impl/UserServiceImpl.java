@@ -159,7 +159,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             if(user.getUserType () == UserType.worker){
                 try {
                     jpushClient.jC.sendPush (JPushManage.buildPushObject_all_message (login.getMobile (),login.getUniqueId ()));
-                    System.out.println ("发送推送2");
                 } catch (APIConnectionException e) {
                     e.printStackTrace ( );
                 } catch (APIRequestException e) {

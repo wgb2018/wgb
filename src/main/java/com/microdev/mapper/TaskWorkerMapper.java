@@ -44,6 +44,8 @@ public interface TaskWorkerMapper extends BaseMapper<TaskWorker> {
 
     List<TaskHrCompany> queryWorkerBill(BillRequest request);
 
+    List<TaskWorker> queryWorkerBillHotel(BillRequest request);
+
     Map<String, Object> selectHrId(String taskWorkerId);
 
     WorkerCancelTask selectUserAndWorkerId(String id);

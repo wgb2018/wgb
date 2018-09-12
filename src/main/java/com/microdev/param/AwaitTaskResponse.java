@@ -35,9 +35,18 @@ public class AwaitTaskResponse {
     private String taskHrId;//人力任务id
     private String workerTaskId;//小时工任务id
     private String taskTypeCode;//任务码
+    private String taskTypeText;//任务类型
     private String settlementPeriod;
     private String settlementNum;
     private String workerSettlementPeriod;
     private String workerSettlementNum;
     private String billId;//账单id
+    private Integer type;//小时工任务类型
+    /*private String workerName;//小时工姓名
+    private String age;//年龄
+    private String sex;//性别
+    private String mobile;//电话
+    private String workerId;//小时工ID
+    private String reason;//原因
+    private OffsetDateTime createTime;//时间*/
 }

@@ -59,9 +59,17 @@ public class BillController {
      * 小时工按人力公司工查询账目
      *
      */
-    @PostMapping("/worker/bill")
+    @PostMapping("/worker/bill/hr")
     public ResultDO workerbill(@RequestBody PagingDO<BillRequest> paging) {
         return taskHrCompanyService.getWorkerBill(paging.getPaginator (),paging.getSelector ());
+    }
+    /**
+     * 小时工按用人单位工查询账目
+     *
+     */
+    @PostMapping("/worker/bill/hotel")
+    public ResultDO workerbillHotel(@RequestBody PagingDO<BillRequest> paging) {
+        return taskHrCompanyService.getWorkerBillHotel(paging.getPaginator (),paging.getSelector ());
     }
     /**
      * 查询用人单位支付人力公司记录
@@ -116,5 +124,14 @@ public class BillController {
 
         Map<String, Object> param = BillService.queryHrMoneyRecord(request);
         ExcelUtil.download(response, (List<PayRecord>)param.get("list"), ExcelUtil.payRecord, "支付记录", param.get("name").toString() + "收款记录");
+    }
+    /**
+     * 小时工账目统计/每月
+     * @param
+     */
+    @GetMapping("worker/account/statistics/{id}")
+    public ResultDO accountStatistics(@PathVariable String id) {
+        BillService.queryWorkerStatistics(id);
+        return null;
     }
 }

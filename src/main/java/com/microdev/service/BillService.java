@@ -22,4 +22,6 @@ public interface BillService extends IService<Bill> {
     Map<String, Object> queryWorkerMoneyRecord(HrCompanyPayWorkerRequest request);
 
     Map<String, Object> queryHrMoneyRecord(HotelPayHrCompanyRequest request);
+
+    ResultDO queryWorkerStatistics(String id);
 }

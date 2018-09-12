@@ -7,6 +7,7 @@ import com.microdev.common.utils.ExcelUtil;
 import com.microdev.model.Company;
 import com.microdev.param.*;
 import com.microdev.service.CompanyService;
+import com.microdev.service.TaskHrCompanyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class HotelController {
 
     @Autowired
     CompanyService companyService;
+
+    @Autowired
+    TaskHrCompanyService taskHrCompanyService;
     /**
      * 根据ID查找用人单位
      */
@@ -119,7 +123,7 @@ public class HotelController {
      */
     @PostMapping("/hotels/initiative/changeWorker")
     public ResultDO changeOwnWorker(@RequestBody ChangeWorkerParam param) {
-        return ResultDO.buildSuccess(companyService.changeOwnWorker(param));
+        return companyService.changeOwnWorker(param);
     }
     /**
      * 用人单位账目明细
@@ -256,5 +260,23 @@ public class HotelController {
     public void downloadHotelInfo(HttpServletResponse response) {
         List<EmployerInfo> list = companyService.queryHotelInfo();
         ExcelUtil.download(response, list, ExcelUtil.hotelInfo, "用人单位", "用人单位");
+    }
+   /**
+     * 用人单位同意小时工取消任务并派发新任务
+     * @return
+     */
+    @PostMapping("/hotel/cancel/handle")
+    public ResultDO hrAgreeWorkerCancelTask(@RequestBody HotelCancelParam request) {
+        return companyService.hotelCancelHandle(request);
+    }
+    /**
+     * 人力同意小时工拒绝任务并派发任务
+     * @param messageId
+     * @param workerId
+     * @return
+     */
+    @GetMapping("/hotel/agree/{messageId}/distribute/{workerId}")
+    public ResultDO hotelcompaniesAgreePost(@PathVariable String messageId,@PathVariable String workerId) {
+        return companyService.hotelAgreeWorkerRefuseAndPost(messageId, workerId);
     }
 }

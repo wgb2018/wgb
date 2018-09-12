@@ -80,6 +80,12 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         taskWorker.setUnConfirmedPay(messageMapper.selectUnConfirmePay (1,taskWorker.getTaskHrId (),taskWorker.getPid ()));
         taskWorker.setHrCompanyName (taskWorker.getHrCompany ().getName ());
         taskWorker.setHotelName (taskWorker.getHotel ().getName ());
+        if(taskWorker.getToDate ().isAfter (OffsetDateTime.now ()) && taskWorker.getFromDate ().isBefore (OffsetDateTime.now ()) && taskWorker.getStatus () == 1){
+            taskWorker.setStatus (4);
+        }
+        if(taskWorker.getToDate ().isBefore (OffsetDateTime.now ()) && taskWorker.getStatus () == 1 ){
+            taskWorker.setStatus (5);
+        }
         return ResultDO.buildSuccess(taskWorkerConverter.toViewModel(taskWorker));
     }
     /**
@@ -161,7 +167,6 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         }else{
             hotelTask.setStatus (3);
         }
-
         taskWorker.setRefusedReason("");
         taskWorkerMapper.updateById(taskWorker);
         taskMapper.updateById(hotelTask);

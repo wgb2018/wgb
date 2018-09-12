@@ -192,11 +192,11 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             //未找到小时工任务信息
             return "打卡失败";
         }
-        Company hotel = companyMapper.findCompanyById(taskHrCompanyMapper.queryByTaskId(taskWorkerMapper.findFirstById(taskWorkerId).getTaskHrId()).getHotelId());
+        Company hotel = companyMapper.findCompanyById(taskWorkerMapper.findFirstById(taskWorkerId).getHotelId ());
         Double m = LocationUtils.getDistance(hotel.getLatitude(), hotel.getLongitude(), measure.getLatitude(), measure.getLongitude());
-        if (m > 500) {
+        /*if (m > 500) {
             return "打卡地点距离工作地" + m + "米,超过500米";
-        }
+        }*/
         if (!taskWorker.getToDate().isAfter(OffsetDateTime.now().minusMinutes(30))) {
             return "超过打卡正常时间,打卡失败";
         }
@@ -413,7 +413,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             return "日期格式错误，请用yyyy/MM/dd HH:mm格式";
         }
         Message m = new Message();
-        m.setContent(info.getReason() + ",加班日期" + info.getTime() + ",加班时长" + info.getMinutes() + "分钟");
+        m.setContent(info.getReason());
         m.setSupplementTime(time);
         m.setMinutes(info.getMinutes() + "");
         TaskWorker taskWorker = taskWorkerMapper.findFirstById (info.getTaskWorkerId());
@@ -445,6 +445,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         String c = StringKit.templateReplace(mess.getContent(), param);
         m.setMessageContent(c);
         m.setApplyType(3);
+        m.setApplicantType (1);
         m.setStatus(0);
         m.setIsTask(0);
 
@@ -495,7 +496,13 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         param.put("taskContent", info.getReason());
         String c = StringKit.templateReplace(mess.getContent(), param);
         m.setMessageContent(c);
-        m.setApplyType(2);
+        if(tp.getTaskHrId() == null){
+            m.setApplicantType (1);
+            m.setApplyType(3);
+        }else{
+            m.setApplicantType (1);
+            m.setApplyType(2);
+        }
         m.setStatus(0);
         m.setIsTask(0);
         messageMapper.insert(m);
@@ -1348,6 +1355,8 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
                 //如果当天没有打卡记录
                 while (startDay.getDayOfYear() != time.getDayOfYear() && startDay.compareTo(nowDate) < 0) {
+                    detail = new WorkerDetail();
+                    workList = new ArrayList<>();
                     expire = (nowDate.toEpochSecond() - startDay.toEpochSecond()) / 3600 >= 168 ? true : false;
 
                     int[] minutes = judgeTime(startDay.getYear(), startDay.getDayOfYear(), dayStart, dayEnd, holidayList);
@@ -1408,7 +1417,6 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     }
                     detail.setWorkList(workList);
                     detailList.add(detail);
-                    workList = null;
 
                     hotelStatus = null;
                     sysStatus = null;

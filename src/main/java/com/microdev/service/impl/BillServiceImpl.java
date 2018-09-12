@@ -149,4 +149,10 @@ public class BillServiceImpl extends ServiceImpl<BillMapper,Bill> implements Bil
         result.put("name", taskHrCompany.getHrCompanyName());
         return result;
     }
+
+    @Override
+    public ResultDO queryWorkerStatistics(String id) {
+        //billMapper.select
+        return null;
+    }
 }

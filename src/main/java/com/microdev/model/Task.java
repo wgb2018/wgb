@@ -112,6 +112,10 @@ public class Task extends BaseEntity {
 
     private Integer settlementNum;
 
+    private Integer WorkerSettlementPeriod;
+
+    private Integer WorkerSettlementNum;
+
     public Integer getStatus() {
         return status;
     }
