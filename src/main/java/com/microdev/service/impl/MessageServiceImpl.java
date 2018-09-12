@@ -883,12 +883,16 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             } else if ("hotel".equals(messagetype)) {
                 if(message.getHrTaskId () == null){
                     response = messageMapper.selectHotelApplyWorker(messageId);
+                    if (response != null) {
+                        response.setOriginator(response.getName ());
+                    }
                 }else{
                     response = messageMapper.selectHotelApply(messageId);
+                    if (response != null) {
+                        response.setOriginator(response.getCompanyName());
+                    }
                 }
-                if (response != null) {
-                    response.setOriginator(response.getCompanyName());
-                }
+
 
             } else {
                 throw new ParamsException("用户类型错误");

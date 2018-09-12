@@ -178,8 +178,8 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
                     taskWorker.setDayStartTime (task.getDayStartTime ( ));
                     taskWorker.setDayEndTime (task.getDayEndTime ( ));
                     taskWorker.setHotelTaskId (task.getPid ( ));
-                    taskWorker.setSettlementPeriod (task.getWorkerSettlementPeriod ());
-                    taskWorker.setSettlementNum (task.getWorkerSettlementNum ());
+                    taskWorker.setSettlementPeriod (request.getWorkerSettlementPeriod ());
+                    taskWorker.setSettlementNum (request.getWorkerSettlementNum ());
                     taskWorker.setType (1);
                     taskWorkerMapper.insert (taskWorker);
                     list.add (taskWorker);
