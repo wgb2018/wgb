@@ -468,7 +468,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         inform.setSendType(3);
         inform.setStatus(0);
         inform.setReceiveId(oldMsg.getWorkerId());
-        Task task = taskMapper.selectById (oldMsg.getHotelId ());
+        Task task = taskMapper.selectById (oldMsg.getTaskId());
         if ("1".equals(status)) {
             List<PunchMessageDTO> punchList = messageMapper.selectPunchMessage(id);
             PunchMessageDTO punch = null;
@@ -506,7 +506,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                     shouldPayMoney_hrtoworker = (minutes / 60.00) * taskHrCompany.getHourlyPay();
                     shouldPayMoney_hoteltohr = (minutes / 60.00) * taskHrCompany.getHourlyPayHotel();
                 }else{
-                    if(task!=null){
+                    if(task ==null){
                         throw new ParamsException ("查询不到用人单位任务");
                     }
                     shouldPayMoney_hoteltohr = (minutes / 60.00) * task.getHourlyPay ();
@@ -525,7 +525,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 }else{
                     taskWorkerMapper.addMinutes(punch.getTaskWorkerId(),minutes,shouldPayMoney_hoteltohr);
                 }
-                taskMapper.addMinutes(punch.getTaskId(),minutes,shouldPayMoney_hoteltohr);
+                taskMapper.addMinutes(oldMsg.getTaskId() ,minutes,shouldPayMoney_hoteltohr);
             }
 
             inform.setTitle("申请补签成功");

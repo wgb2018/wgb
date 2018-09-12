@@ -99,14 +99,13 @@
         AS
         fromDate, wl.`to_date` AS toDate,
         wl.id AS id, wl.punch_date AS
-        punchDate, wl.task_id AS taskId,
+        punchDate,
         wl.task_worker_id AS taskWorkerId,
         IFNULL(wl.minutes,0) as minutes
         FROM (SELECT * FROM message WHERE id= #{id}) m
         INNER
         JOIN work_log wl
-        ON wl.`task_worker_id` = m.worker_task_id AND
-        m.`task_id` = wl.`task_id`
+        ON wl.`task_worker_id` = m.worker_task_id
         AND wl.`to_date` IS NULL
 
     </select>

@@ -192,7 +192,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             //未找到小时工任务信息
             return "打卡失败";
         }
-        Company hotel = companyMapper.findCompanyById(taskWorkerMapper.findFirstById(taskWorkerId).getHotelId ());
+        Company hotel = companyMapper.findCompanyById(taskWorker.getHotelId ());
         Double m = LocationUtils.getDistance(hotel.getLatitude(), hotel.getLongitude(), measure.getLatitude(), measure.getLongitude());
         /*if (m > 500) {
             return "打卡地点距离工作地" + m + "米,超过500米";
@@ -211,7 +211,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
             log.setMinutes(0);
             log.setRepastTimes(0);
             log.setPunchDate(OffsetDateTime.now());
-            log.setTaskId(taskMapper.selectTaskIdByTaskWorkerId(taskWorkerId));
+            log.setTaskId(taskWorker.getHotelTaskId());
             log.setStatus(0);
             log.setEmployerConfirmStatus(0);
             workLogMapper.insert(log);
