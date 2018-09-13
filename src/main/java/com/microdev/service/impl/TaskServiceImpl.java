@@ -198,7 +198,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         List<Map<String, Object>> confirmedList = new ArrayList<>();
         List<Map<String, Object>> refusedList = new ArrayList<>();
         List<Map<String, Object>> distributedList = new ArrayList<>();
-        for (Map<String, Object> m : list)  {     
+        for (Map<String, Object> m : list)  {
             if (m.get("taskStatus") == null)
                 continue;
             if ((Integer) m.get("taskStatus") == 1 || (Integer) m.get("taskStatus") == 3) {
@@ -215,7 +215,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
                 System.out.println (m.get("birthday"));
                 m.put("age", DateUtil.caculateAge((Timestamp) m.get("birthday")));
             }
-                    }
+        }
         TaskWorkerViewDTO listTaskWorker = taskViewDTO.getListTaskWorker ();
         listTaskWorker.setConfirmedList (confirmedList);
         listTaskWorker.setDistributedList (distributedList);
