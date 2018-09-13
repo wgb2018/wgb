@@ -199,16 +199,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
         List<Map<String, Object>> refusedList = new ArrayList<>();
         List<Map<String, Object>> distributedList = new ArrayList<>();
         for (Map<String, Object> m : list) {
-            if(taskViewDTO.getToDate ().isAfter (OffsetDateTime.now ()) && taskViewDTO.getFromDate ().isBefore (OffsetDateTime.now ()) && ((Integer) m.get("taskStatus")).intValue () == 1){
-                m.put ("taskStatus",4);
-            }
-            if(taskViewDTO.getToDate ().isBefore (OffsetDateTime.now ()) && ((Integer) m.get("taskStatus")).intValue () == 1 ){
-                m.put ("taskStatus",5);
-            }
-            if(m.get("birthday") != null){
-                System.out.println (m.get("birthday"));
-                m.put("age", DateUtil.caculateAge((Timestamp) m.get("birthday")));
-            }
+
             if((Integer) m.get("taskStatus") != 2){
                 distributedList.add(m);
             }
@@ -218,6 +209,16 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
                 confirmedList.add(m);
             } else if ((Integer) m.get("taskStatus") == 2) {
                 refusedList.add(m);
+            }
+            if(taskViewDTO.getToDate ().isAfter (OffsetDateTime.now ()) && taskViewDTO.getFromDate ().isBefore (OffsetDateTime.now ()) && ((Integer) m.get("taskStatus")).intValue () == 1){
+                m.put ("taskStatus",4);
+            }
+            if(taskViewDTO.getToDate ().isBefore (OffsetDateTime.now ()) && ((Integer) m.get("taskStatus")).intValue () == 1 ){
+                m.put ("taskStatus",5);
+            }
+            if(m.get("birthday") != null){
+                System.out.println (m.get("birthday"));
+                m.put("age", DateUtil.caculateAge((Timestamp) m.get("birthday")));
             }
         }
         TaskWorkerViewDTO listTaskWorker = taskViewDTO.getListTaskWorker ();

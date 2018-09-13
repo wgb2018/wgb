@@ -575,7 +575,7 @@ tc.hourly_pay,tc.task_type_text AS messageTitle,tc.worker_settlement_period as s
 task_hr_company tc ON m2.hr_task_id = tc.id INNER JOIN company c2
 ON c2.id = m2.hr_company_id
 ) k ON k.id = m.id
-Inner JOIN task_worker tw ON m.task_id = tw.hotel_task_id and m.worker_id = tw.worker_id
+Inner JOIN task_worker tw ON m.worker_task_id = tw.id
     </select>
 
     <select id="selectHrAwaitHandleTask" resultType="com.microdev.param.AwaitTaskResponse">

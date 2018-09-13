@@ -13,14 +13,12 @@ import com.microdev.converter.TaskWorkerConverter;
 import com.microdev.mapper.*;
 import com.microdev.model.*;
 import com.microdev.param.*;
-import com.microdev.service.InformService;
 import com.microdev.service.TaskWorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.text.DateFormat;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -387,7 +385,7 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
                 account.setTaskType(t.getTaskTypeText());
                 account.setWorkDate(t.getFromDate().format(df1) + " / " + t.getToDate().format(df1));
                 account.setStartEndTime(t.getDayStartTime().format(df2) + " / " + t.getDayEndTime().format(df2));
-                account.setHavePay(Maths.getTwoDecimal (t.getShouldPayMoney (),2));
+                account.setHavePay(Maths.getTwoDecimal (t.getHavePayMoney(),2));
                 account.setPaidPayMoney(Maths.getTwoDecimal (t.getPaidPayMoney (),2));
                 account.setShouldPay(Maths.getTwoDecimal (t.getShouldPayMoney (),2));
                 account.setUnConfirmedPay(Maths.getTwoDecimal (t.getUnConfirmedPay (),2));

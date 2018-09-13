@@ -922,7 +922,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
     /**
      * 查询消息明细---任务信息
      * @param messageId         消息id
-
      * @param messagetype       用户类型小时工worker,人力hr用人单位hotel
      * @param type              消息类型
      * @return

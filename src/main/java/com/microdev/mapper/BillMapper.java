@@ -5,6 +5,7 @@ import com.microdev.model.Bill;
 import com.microdev.param.HotelPayHrCompanyRequest;
 import com.microdev.param.HrCompanyPayWorkerRequest;
 import com.microdev.param.PayRecord;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,4 +25,8 @@ public interface BillMapper extends BaseMapper<Bill> {
     Integer selectHotelPayBillCount(HotelPayHrCompanyRequest request);
 
     List<PayRecord> selectHotelPayBillRecord(HotelPayHrCompanyRequest request);
+
+    Integer selectHotelPayBillWorkerCount(HotelPayHrCompanyRequest request);
+
+    List<PayRecord> selectHotelPayBillWorkerRecord(HotelPayHrCompanyRequest request);
 }
