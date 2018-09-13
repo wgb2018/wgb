@@ -23,6 +23,8 @@ public class HrTaskDistributeRequest {
     private Integer settlementPeriod;
 
     private Integer settlementNum;
+
+    private boolean noticeTask = false;
     /**
      * 指定的员工id
      */

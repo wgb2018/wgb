@@ -111,7 +111,11 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             ResultDO rs = taskService.createTask (req);
             task = (TaskViewDTO) rs.getData ( );
             if (request.getHrNeedWorkers ( ) > 0) {
-                if (request.getHrCompanySet ( ).size ( ) < request.getHrNeedWorkers ( )) {
+                int workerNum = 0;
+                for (TaskHrCompanyDTO t : request.getHrCompanySet ( )) {
+                    workerNum += t.getNeedWorkers ( );
+                }
+                if (workerNum < request.getHrNeedWorkers ( )) {
                     //发布用人单位派发人力任务公告
                     notice = new Notice ( );
                     notice.setCreateTime (OffsetDateTime.now ( ));
@@ -222,7 +226,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             }
             notice.setWeightDown (request.getWeightDown ( ));
             notice.setWeightUp (request.getWeightUp ( ));
-            notice.setSex (request.getSex ( ).toDBString());
+            notice.setSex (request.getSex ( ));
             notice.setHourPayRange (request.getHourPayRangeDown ( ) + " - " + request.getHourPayRangeUp ( ));
             notice.setHourlyPayDown (request.getHourPayRangeDown ( ));
             notice.setHourlyPayUp (request.getHourPayRangeUp ( ));
@@ -836,6 +840,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
                 //派发任务
                 req.setMessageId (null);
                 req.setHrTaskId (notice.getTaskId ( ));
+                req.setNoticeTask (true);
                 set.add (enroll.getWorkerId ( ));
             }
         }
@@ -864,8 +869,8 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
                 taskWorker.setDayStartTime (task.getDayStartTime ( ));
                 taskWorker.setDayEndTime (task.getDayEndTime ( ));
                 taskWorker.setHotelTaskId (task.getPid ( ));
-                taskWorker.setSettlementPeriod (task.getSettlementPeriod ());
-                taskWorker.setSettlementNum (task.getSettlementNum ());
+                taskWorker.setSettlementPeriod (task.getWorkerSettlementPeriod ());
+                taskWorker.setSettlementNum (task.getWorkerSettlementNum ());
                 taskWorker.setType (1);
                 taskWorkerMapper.insert (taskWorker);
                 list.add (taskWorker);
@@ -992,16 +997,18 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             taskHrCompany.setWorkerSettlementNum (0);
             taskHrCompanyMapper.insert(taskHrCompany);
             //生成一个待派发的消息
-            Map <String, Object> param = new HashMap <> ( );
-            param.put ("hrCompanyId", taskHrCompany.getHrCompanyId ( ));
-            param.put ("hotelId", taskHrCompany.getHotelId ( ));
-            param.put ("applicantType", 2);
-            param.put ("applyType", 2);
-            param.put ("hrTaskId", taskHrCompany.getPid ( ));
-            param.put ("taskId", taskHrCompany.getTaskId ( ));
-            param.put ("messageType", 11);
-            param.put ("messageCode", "awaitSendMessage");
-            messageService.sendMessageInfo (param);
+            if(!createTaskRequest.isNoticeTask ()){
+                Map <String, Object> param = new HashMap <> ( );
+                param.put ("hrCompanyId", taskHrCompany.getHrCompanyId ( ));
+                param.put ("hotelId", taskHrCompany.getHotelId ( ));
+                param.put ("applicantType", 2);
+                param.put ("applyType", 2);
+                param.put ("hrTaskId", taskHrCompany.getPid ( ));
+                param.put ("taskId", taskHrCompany.getTaskId ( ));
+                param.put ("messageType", 11);
+                param.put ("messageCode", "awaitSendMessage");
+                messageService.sendMessageInfo (param);
+            }
             setHrTask.add(taskHrCompany);
         }
         return setHrTask;

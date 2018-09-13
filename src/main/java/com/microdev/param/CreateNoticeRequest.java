@@ -67,7 +67,7 @@ public class CreateNoticeRequest {
     private Integer weightUp;//体重
     private Integer weightDown;//体重
     private int education;//学历
-    private UserSex sex;
+    private String sex;
     private Integer hourPayRangeUp;
     private Integer hourPayRangeDown;
     //0:需要健康证 1：不需要

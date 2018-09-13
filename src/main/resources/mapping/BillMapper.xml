@@ -58,7 +58,7 @@
     <select id="selectHotelPayBillWorker" resultType="com.microdev.model.Bill">
         select
         b.*,c.name as hotelName,c.logo as hotelLogo,u.nickname as workerName,u.avatar as avatar
-        FROM bill b inner join u on b.worker_id = u.worker_id left join company c on b.hotel_id = c.id
+        FROM bill b inner join user u on b.worker_id = u.worker_id left join company c on b.hotel_id = c.id
         WHERE
         b.task_id = #{hotelTaskID} and b.worker_id = #{workerId} and pay_type = 3
         order by b.create_time desc

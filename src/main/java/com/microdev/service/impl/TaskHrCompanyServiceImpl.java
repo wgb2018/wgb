@@ -224,13 +224,16 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             m = new HashMap <> ( );
             TaskWorker taskWorker = new TaskWorker ( );
             taskWorker.setTaskHrId (hrTask.getPid ( ));
-            ;
             userMapper.queryByWorkerId (id);
             User user = userMapper.queryByWorkerId (id);
             taskWorker.setUserId (user.getPid ( ));
             taskWorker.setWorkerId (user.getWorkerId ( ));
             taskWorker.setUserName (user.getUsername ( ));
-            taskWorker.setStatus (0);
+            if(hrTaskDis.isNoticeTask ()){
+                taskWorker.setStatus (1);
+            }else{
+                taskWorker.setStatus (0);
+            }
             taskWorker.setFromDate (hotelTask.getFromDate ( ));
             taskWorker.setToDate (hotelTask.getToDate ( ));
             taskWorker.setHourlyPay (hrTask.getHourlyPay ( ));
@@ -251,7 +254,9 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             m.put ("workerId", id);
             m.put ("workerTaskId", taskWorker.getPid ( ));
             m.put ("hotelId", taskWorker.getHotelId ( ));
-            list.add (m);
+            if(!hrTaskDis.isNoticeTask ()){
+                list.add (m);
+            }
         }
         hrTask.setDistributeWorkers (hrTask.getDistributeWorkers ( ) + hrTaskDis.getWorkerIds ( ).size ( ));
         taskMapper.updateById (hotelTask);
@@ -591,6 +596,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             should_pay_money = Maths.add (should_pay_money, item.getShouldPayMoney ( ));
             have_pay_money = Maths.add (item.getHavePayMoney ( ), have_pay_money);
             un_confirmed_pay = Maths.add (item.getUnConfirmedPay (), un_confirmed_pay);
+            item.setUser (userMapper.selectByWorkerId (item.getWorkerId ()));
         }
         map.put ("shouldPayMoney", should_pay_money);
         map.put ("havePayMoney", have_pay_money);
@@ -723,6 +729,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             have_pay_money = Maths.add (item.getHavePayMoney ( ), have_pay_money);
             Un_confirmed_pay = Maths.add (item.getUnConfirmedPay (), Un_confirmed_pay);
             item.setHrCompany (companyMapper.selectById (item.getHrCompanyId ( )));
+            item.setHotel (companyMapper.selectById (item.getHotelId ()));
         }
         map.put ("shouldPayMoney", should_pay_money);
         map.put ("havePayMoney", have_pay_money);
@@ -1973,4 +1980,3 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         return null;
     }
 }
-

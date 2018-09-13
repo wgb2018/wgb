@@ -270,13 +270,13 @@ public class HotelController {
         return companyService.hotelCancelHandle(request);
     }
     /**
-     * 人力同意小时工拒绝任务并派发任务
-     * @param messageId
-     * @param workerId
+     * 酒店处理小时工拒绝任务并派发任务
+     * @param
+     * @param
      * @return
      */
-    @GetMapping("/hotel/agree/{messageId}/distribute/{workerId}")
-    public ResultDO hotelcompaniesAgreePost(@PathVariable String messageId,@PathVariable String workerId) {
-        return companyService.hotelAgreeWorkerRefuseAndPost(messageId, workerId);
+    @PostMapping("/hotel/agree/distribute")
+    public ResultDO hotelcompaniesAgreePost(@RequestBody HotelCancelParam request) {
+        return companyService.hotelAgreeWorkerRefuseAndPost(request.getMessageId(), request.getWorkerId ());
     }
 }

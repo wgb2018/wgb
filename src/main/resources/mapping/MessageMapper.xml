@@ -474,7 +474,7 @@ ORDER BY createTime DESC
         ON m.task_id = t.id
         INNER JOIN company c
         ON c.id = t.hotel_id
-        WHERE m.apply_type=3 AND m.is_task = 0 AND m.status = 0 AND m.message_type IN (10,11) AND m.hotel_id= #{hotelId}
+        WHERE m.apply_type=3 AND m.is_task = 0 AND m.status = 0 AND m.message_type IN (10,11) AND m.hotel_id= #{hotelId} and m.hr_task_id is null
         )
 
         union
@@ -563,7 +563,7 @@ ON tc.id = m.hr_task_id
         SELECT tw.type as type,DATE_FORMAT(t.from_date,'%Y.%m.%d') AS fromDate, DATE_FORMAT(t.to_date,'%Y.%m.%d') AS toDate,DATE_FORMAT(t.day_start_time,'%H:%i') AS dayStartTime,DATE_FORMAT(t.day_end_time,'%H:%i') AS dayEndTime,t.task_content,c.id AS hotelId,c.area,
 c.name,c.address,c.leader,c.leader_mobile,m.message_type,t.id AS taskId,m.id AS messageId,IFNULL(k.need_workers,0) AS needWorkers,IFNULL(k.confirmed_workers,0) AS confirmedWorkers,
 k.hrName,k.hrId,k.hrLeader,IFNULL(k.hourly_pay,'') AS hourlyPay,t.task_type_text as messageTitle,k.hrLeaderMobile,k.messageCode,m.task_id AS taskHotelId,m.hr_task_id AS taskHrId,
-m.worker_task_id AS workerTaskId,t.hourly_pay AS hourlyPayHotel,t.`task_type_code` AS taskTypeCode,t.task_type_text as taskTypeText,t.settlement_period as settlementPeriod,t.settlement_num as settlementNum,t.worker_settlement_period as workerSettlementPeriod,t.worker_settlement_num as workerSettlementNum
+m.worker_task_id AS workerTaskId,t.hourly_pay AS hourlyPayHotel,t.`task_type_code` AS taskTypeCode,t.task_type_text as taskTypeText,IFNULL(k.settlementPeriod,t.worker_settlement_period) AS workerSettlementPeriod,IFNULL(k.settlementNum,t.worker_settlement_num) AS workerSettlementNum,t.settlement_num,t.settlement_period
   FROM (SELECT * FROM message WHERE id = #{messageId}) m INNER JOIN task t ON m.task_id = t.id
 INNER JOIN company c ON t.hotel_id = c.id
 
@@ -575,7 +575,7 @@ tc.hourly_pay,tc.task_type_text AS messageTitle,tc.worker_settlement_period as s
 task_hr_company tc ON m2.hr_task_id = tc.id INNER JOIN company c2
 ON c2.id = m2.hr_company_id
 ) k ON k.id = m.id
-Inner JOIN task_worker tw ON m.task_id = tw.hotel_task_id and m.worker_id = tw.worker_id
+left JOIN task_worker tw ON m.task_id = tw.hotel_task_id and m.worker_id = tw.worker_id and tw.status = 0
     </select>
 
     <select id="selectHrAwaitHandleTask" resultType="com.microdev.param.AwaitTaskResponse">
@@ -583,7 +583,7 @@ Inner JOIN task_worker tw ON m.task_id = tw.hotel_task_id and m.worker_id = tw.w
 DATE_FORMAT(t.day_end_time,'%H:%i') AS dayEndTime, t.task_content, c.name,IFNULL(c.address,'') AS address,c.leader,c.leader_mobile,IFNULL(t.hourly_pay,0) AS hourlyPayHotel,
 t.task_type_text AS messageTitle,m.message_type,c.id AS hotelId,c.area ,m.id AS messageId,IFNULL(hc.need_workers,0) AS needWorkers,IFNULL(hc.confirmed_workers,0) AS confirmedWorkers,
 IFNULL(tc.hourly_pay,'') AS hourlyPay,m.message_code,m.hr_company_id AS hrId ,m.task_id AS taskHotelId,m.hr_task_id AS taskHrId,
-m.worker_task_id AS workerTaskId,t.`task_type_code` AS taskTypeCode,t.settlement_period,t.settlement_num,t.worker_settlement_period,t.worker_settlement_num
+m.worker_task_id AS workerTaskId,t.`task_type_code` AS taskTypeCode,t.settlement_period,t.settlement_num,tc.settlement_period as workerSettlementPeriod,tc.settlement_num as workerSettlementNum
 FROM
 (SELECT * FROM message WHERE id = #{messageId}) m
 INNER JOIN task t ON m.task_id = t.id INNER JOIN company c ON t.hotel_id = c.id
@@ -623,7 +623,7 @@ ON u.`worker_id` = m.`worker_id`
     <select id="selectCancelApply" resultType="com.microdev.param.AwaitTaskResponse">
       SELECT IFNULL(tc.need_workers,0) AS needWorkers,IFNULL(tc.confirmed_workers,0) AS confirmedWorkers,IFNULL(tc.hourly_pay,'') AS hourlyPay,t.from_date, DATE_FORMAT(t.from_date,'%Y.%m.%d') AS fromDate, DATE_FORMAT(t.to_date,'%Y.%m.%d') AS toDate,
 DATE_FORMAT(t.day_start_time,'%H:%i') AS dayStartTime,
-DATE_FORMAT(t.day_end_time,'%H:%i') AS dayEndTime,t.task_content,t.settlement_period as settlementPeriod,t.settlement_num as settlementNum,t.worker_settlement_period as workerSettlementPeriod,t.worker_settlement_num as workerSettlementNum,
+DATE_FORMAT(t.day_end_time,'%H:%i') AS dayEndTime,t.task_content,t.settlement_period as settlementPeriod,t.settlement_num as settlementNum,tw.settlement_period as workerSettlementPeriod,tw.settlement_num as workerSettlementNum,
 c.name,c.address,c.leader,c.leader_mobile,m.message_title,m.message_type,c.id AS hotelId,c.area,t.id AS taskId,tc.task_type_text AS messageTitle,m.`hr_company_id` AS hrId,m.task_id AS taskHotelId,m.hr_task_id AS taskHrId,m.worker_task_id AS workerTaskId,t.hourly_pay AS hourlyPayHotel,t.`task_type_code` AS taskTypeCode
 FROM message m
 INNER JOIN task_hr_company tc
@@ -631,6 +631,7 @@ ON m.hr_task_id = tc.id
 INNER JOIN task t
 ON t.id = tc.task_id
 INNER JOIN company c ON t.hotel_id = c.id
+left join task_worker tw on m.worker_task_id = tw.id
 WHERE m.id = #{messageId}
     </select>
 
@@ -670,14 +671,15 @@ INNER JOIN company c ON (m.hr_company_id = c.id or m.hotel_id = c.id)
         m.hr_task_id AS taskHrId,
         m.worker_task_id AS workerTaskId,
         t.`task_type_code` AS taskTypeCode,
-        tc.settlement_period as settlementPeriod,
-        tc.settlement_num as settlement_num,
-        tc.worker_settlement_period as workerSettlementPeriod,
-        tc.worker_settlement_num as workerSettlementNum,m.request_id as billId
+        t.settlement_period as settlementPeriod,
+        t.settlement_num as settlement_num,
+        tw.settlement_period as workerSettlementPeriod,
+        tw.settlement_num as workerSettlementNum,m.request_id as billId
         FROM
 (SELECT * FROM message WHERE id= #{messageId}) m
 INNER JOIN task_hr_company tc
 ON m.`hr_task_id` = tc.id
+        left join task_worker tw on m.worker_task_id = tw.id
 INNER JOIN task t
 ON t.id = m.`task_id`
 LEFT JOIN
@@ -888,7 +890,7 @@ UNION (SELECT m2.is_task, m2.message_content as content, m2.id AS messageId, m2.
         ON m.task_id = t.id
         INNER JOIN company c
         ON c.id = t.hotel_id
-        WHERE m.apply_type=3 AND m.is_task = 0 AND m.status = 0 AND m.message_type IN (10,11) AND m.hotel_id= #{hotelId}
+        WHERE m.apply_type=3 AND m.is_task = 0 AND m.status = 0 AND m.message_type IN (10,11) AND m.hotel_id= #{hotelId} and m.hr_task_id is null
 
         )
         union
@@ -1270,12 +1272,13 @@ INNER JOIN company c ON <if test = "type == 'hr'"> m.hr_company_id = c.id</if>
     <select id="selectCancelApplyHotel" resultType="com.microdev.param.AwaitTaskResponse">
         SELECT IFNULL(t.need_workers,0) AS needWorkers,IFNULL(t.confirmed_workers,0) AS confirmedWorkers,IFNULL(t.hourly_pay,'') AS hourlyPay,t.from_date, DATE_FORMAT(t.from_date,'%Y.%m.%d') AS fromDate, DATE_FORMAT(t.to_date,'%Y.%m.%d') AS toDate,
         DATE_FORMAT(t.day_start_time,'%H:%i') AS dayStartTime,
-        DATE_FORMAT(t.day_end_time,'%H:%i') AS dayEndTime,t.task_content,t.worker_settlement_period as workerSettlementPeriod,t.worker_settlement_num as workerSettlementNum,t.settlement_period as settlementPeriod,t.settlement_num as settlementNum,
+        DATE_FORMAT(t.day_end_time,'%H:%i') AS dayEndTime,t.task_content,tw.settlement_period as workerSettlementPeriod,tw.settlement_num as workerSettlementNum,t.settlement_period as settlementPeriod,t.settlement_num as settlementNum,
         c.name,c.address,c.leader,c.leader_mobile,m.message_title,m.message_type,c.id AS hotelId,c.area,t.id AS taskId,t.task_type_text AS messageTitle,m.`hr_company_id` AS hrId,m.task_id AS taskHotelId,m.hr_task_id AS taskHrId,m.worker_task_id AS workerTaskId,t.hourly_pay AS hourlyPayHotel,t.`task_type_code` AS taskTypeCode
         FROM message m
         INNER JOIN task t
         ON m.task_id = t.id
         INNER JOIN company c ON t.hotel_id = c.id
+        left join task_worker tw on m.worker_task_id = tw.id
         WHERE m.id = #{messageId}
     </select>
     <select id="selectHotelApplyWorker" resultType="com.microdev.param.MessageDetailsResponse">
