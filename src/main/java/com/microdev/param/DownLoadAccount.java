@@ -12,6 +12,6 @@ public class DownLoadAccount {
     private String StartEndTime;
     private double shouldPay;
     private double havePay;
-    private double paidPayMoney;
     private double unConfirmedPay;
+    private double paidPayMoney;
 }

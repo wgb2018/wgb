@@ -8,8 +8,10 @@ import com.microdev.common.exception.ParamsException;
 import com.microdev.common.paging.Paginator;
 import com.microdev.mapper.BillMapper;
 import com.microdev.mapper.TaskHrCompanyMapper;
+import com.microdev.mapper.TaskMapper;
 import com.microdev.mapper.UserMapper;
 import com.microdev.model.Bill;
+import com.microdev.model.Task;
 import com.microdev.model.TaskHrCompany;
 import com.microdev.model.User;
 import com.microdev.param.HotelPayHrCompanyRequest;
@@ -35,6 +37,8 @@ public class BillServiceImpl extends ServiceImpl<BillMapper,Bill> implements Bil
     private UserMapper userMapper;
     @Autowired
     private TaskHrCompanyMapper taskHrCompanyMapper;
+    @Autowired
+    private TaskMapper taskMapper;
     /**
      * 用人单位按人力公司查询支付记录
      */
@@ -154,5 +158,33 @@ public class BillServiceImpl extends ServiceImpl<BillMapper,Bill> implements Bil
     public ResultDO queryWorkerStatistics(String id) {
         //billMapper.select
         return null;
+    }
+
+    /**
+     * 用人单位查询支付小时工记录
+     * @param request
+     * @return
+     */
+    @Override
+    public Map<String, Object> queryHotelPayWorkerRecord(HotelPayHrCompanyRequest request) {
+
+        Map<String, Object> result = new HashMap<>();
+        if (StringUtils.isEmpty(request.getHotelTaskID()) || StringUtils.isEmpty(request.getWorkerId())) {
+            result.put("list", new ArrayList<PayRecord>());
+            return result;
+        }
+        Task task = taskMapper.selectById(request.getHotelTaskID());
+        int count = billMapper.selectHotelPayBillWorkerCount(request);
+        List<PayRecord> list = null;
+        if (count > 0) {
+            PageHelper.startPage(1, count, true);
+            list = billMapper.selectHotelPayBillWorkerRecord(request);
+        }
+        if (list == null) {
+            list = new ArrayList<PayRecord>();
+        }
+        result.put("list", list);
+        result.put("name", task.getHotelName());
+        return result;
     }
 }
