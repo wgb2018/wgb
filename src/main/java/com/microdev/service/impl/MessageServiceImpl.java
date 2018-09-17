@@ -393,7 +393,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
      */
     @Override
     public List<Message> hrDistributeTask(List<Map<String, String>> list, String hrId, String hrName, String pattern, String taskId, String hrTaskId,boolean isStop) {
-        if (list == null || list.size() == 0 || StringUtils.isEmpty(pattern)) {
+        if (StringUtils.isEmpty(pattern)) {
             throw new ParamsException("参数不能为空");
         }
         MessageTemplate mess = messageTemplateMapper.findFirstByCode(pattern);
@@ -434,7 +434,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 }
                 messageList.add(m);
             }
-            messageMapper.saveBatch(messageList);
+            if(messageList.size ()>0){
+                messageMapper.saveBatch(messageList);
+            }
         }
         return messageList;
     }
@@ -938,7 +940,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             } else if ("hr".equals(messagetype)) {
                 response = messageMapper.selectHrAwaitHandleTask(messageId);
             }
-        } else if ("1".equals(type) || "2".equals(type) || "3".equals(type) || "4".equals(type) || "11".equals(type)) {
+        } else if ("1".equals(type) || "2".equals(type) || "3".equals(type) || "4".equals(type)) {
+            response = messageMapper.selectHrAwaitHandleHotelTask(messageId);
+        }else if ("11".equals(type)) {
             response = messageMapper.selectHrAwaitHandleTask(messageId);
         } else if ("10".equals(type)) {
             if ("hr".equals(messagetype)) {

@@ -1892,7 +1892,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
 
             //给取消任务的小时工发送通知
 
-            String content = taskWorker.getHrCompanyName ( ) + "同意了你的取消任务申请。";
+            String content = companyMapper.findCompanyById (taskWorker.getHotelId ()).getName () + "同意了你的取消任务申请。";
             informService.sendInformInfo (2, 1, content, message.getWorkerId ( ), "申请取消成功");
             try {
                 jpushClient.jC.sendPush (JPushManage.buildPushObject_all_alias_message (userMapper.queryByWorkerId (message.getWorkerId ( )).getMobile ( ), content));
