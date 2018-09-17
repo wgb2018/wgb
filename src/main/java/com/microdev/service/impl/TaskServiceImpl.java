@@ -215,7 +215,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
                 System.out.println (m.get("birthday"));
                 m.put("age", DateUtil.caculateAge((Timestamp) m.get("birthday")));
             }
-            if((Integer) m.get("taskStatus") != 2){
+			if((Integer) m.get("taskStatus") != 2){
                 distributedList.add(m);
             }
         }
