@@ -133,4 +133,6 @@ public interface MessageMapper extends BaseMapper<Message> {
     MessageDetailsResponse selectNoticeApply(String messageId);
 
     void updateAllBind(@Param("workerId") String workerId,@Param("hrId") String hrId);
+
+    AwaitTaskResponse selectHotelTaskDetails(@Param("messageId") String messageId);
 }

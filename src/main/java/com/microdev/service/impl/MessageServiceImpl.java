@@ -827,11 +827,18 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 throw new ParamsException("用户类型错误");
             }
         } else if ("8".equals(type)) {
+            Integer applicantType = message.getApplicantType();
+            String companyType = "2";
+            if (applicantType == 2) {
+                companyType = "2";
+            } else {
+                companyType = "1";
+            }
             if ("worker".equals(messagetype)) {
-                response = messageMapper.selectPayConfirm(messageId, "2");
+                response = messageMapper.selectPayConfirm(messageId, companyType);
 
             } else if ("hr".equals(messagetype)){
-                response = messageMapper.selectPayConfirm(messageId, "1");
+                response = messageMapper.selectPayConfirm(messageId, companyType);
             }
             if (response != null) {
                 response.setOriginator(response.getCompanyName());
@@ -954,10 +961,20 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             }
 
         } else if ("8".equals(type)) {
+
             if ("hr".equals(messagetype)) {
                 response = messageMapper.selectHrHotelDetails(messageId);
             } else if ("worker".equals(messagetype)) {
-                response = messageMapper.selectHrHotelDetails(messageId);
+                Message message = messageMapper.selectById(messageId);
+                if (message == null)
+                    throw new ParamsException("找不到数据");
+                Integer t = message.getApplicantType();
+                if (t == 2) {
+                    response = messageMapper.selectHrHotelDetails(messageId);
+                } else if (t == 3) {
+                    response = messageMapper.selectHotelTaskDetails(messageId);
+                }
+
             } else {
                 throw new ParamsException("参数错误");
             }

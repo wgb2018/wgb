@@ -1096,7 +1096,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
                 }
             }else{
-                Task task = taskMapper.selectById (bill.getHotelId ());
+                Task task = taskMapper.selectById (bill.getTaskId());
                 if(task == null){
                     throw new ParamsException ("查询不到用人单位任务");
                 }
@@ -1380,7 +1380,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                         workList.add(workLog);
                     } else {
                         //请假时间小于上班时间
-                        if (minutes[2] < (end - start)) {
+                        if (minutes[2] + 300 < (end - start)) {
                             workLog = new PunchInfo();
                             workLog.setEndTime("--");
                             workLog.setStartTime("--");
@@ -1730,16 +1730,28 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                     if (to.getYear() > year) {
                         result[1] = 0;
                         result[0] = 0;
+                        num += endTime.getLong(ChronoField.SECOND_OF_DAY) - startTime.getLong(ChronoField.SECOND_OF_DAY);
                     } else if (to.getDayOfYear() < day) {
 
                     } else {
-                        if (to.getDayOfYear() > day) result[1] = 0;
+                        if (to.getDayOfYear() > day) {
+                            result[1] = 0;
+                            num += endTime.getLong(ChronoField.SECOND_OF_DAY) - startTime.getLong(ChronoField.SECOND_OF_DAY);
+                        }
                         if (to.getDayOfYear() == day) {
-                            result[0] = 0;
-                            if (endTime.compareTo(to.toOffsetTime()) <= 0) {
-                                result[1] = 0;
 
+                            if (startTime.compareTo(to.toOffsetTime()) > 0) {
+                                continue;
+                            } else {
+                                result[0] = 0;
+                                if (endTime.compareTo(to.toOffsetTime()) <= 0) {
+                                    result[1] = 0;
+                                    num += endTime.getLong(ChronoField.SECOND_OF_DAY) - startTime.getLong(ChronoField.SECOND_OF_DAY);
+                                } else {
+                                    num += to.getLong(ChronoField.SECOND_OF_DAY) - startTime.getLong(ChronoField.SECOND_OF_DAY);
+                                }
                             }
+
                         }
                     }
                 } else {
