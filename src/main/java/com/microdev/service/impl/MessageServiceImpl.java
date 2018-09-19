@@ -943,7 +943,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         AwaitTaskResponse response = null;
         if ("6".equals(type)) {
             if ("worker".equals(messagetype)) {
-                response = messageMapper.selectWorkerAwaitHandleTask(messageId);
+                Message message = messageMapper.selectById(messageId);
+                if (message == null) {
+                    throw new ParamsException("参数错误");
+                }
+                Integer applicationType = message.getApplicantType();
+                response = messageMapper.selectWorkerAwaitHandleTask(messageId, applicationType);
             } else if ("hr".equals(messagetype)) {
                 response = messageMapper.selectHrAwaitHandleTask(messageId);
             }
@@ -955,7 +960,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             if ("hr".equals(messagetype)) {
                 response = messageMapper.selectHrAwaitHandleTask(messageId);
             } else if ("hotel".equals(messagetype)) {
-                response = messageMapper.selectWorkerAwaitHandleTask(messageId);
+                Message message = messageMapper.selectById(messageId);
+                if (message == null) {
+                    throw new ParamsException("参数错误");
+                }
+                Integer applicationType = message.getApplicantType();
+                response = messageMapper.selectWorkerAwaitHandleTask(messageId, applicationType);
             }
         } else if ("7".equals(type)) {
             if ("hotel".equals(messagetype)) {
