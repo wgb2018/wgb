@@ -1287,9 +1287,8 @@ INNER JOIN company c ON <if test = "type == 'hr'"> m.hr_company_id = c.id</if>
 
     </select>
     <select id="selectCancelApplyHotel" resultType="com.microdev.param.AwaitTaskResponse">
-        SELECT IFNULL(t.need_workers,0) AS needWorkers,IFNULL(t.confirmed_workers,0) AS confirmedWorkers,IFNULL(t.hourly_pay,'') AS hourlyPay,t.from_date, DATE_FORMAT(t.from_date,'%Y.%m.%d') AS fromDate, DATE_FORMAT(t.to_date,'%Y.%m.%d') AS toDate,
+        SELECT tw.type as type,IFNULL(t.need_workers,0) AS needWorkers,IFNULL(t.confirmed_workers,0) AS confirmedWorkers,IFNULL(t.hourly_pay,'') AS hourlyPay,t.from_date, DATE_FORMAT(t.from_date,'%Y.%m.%d') AS fromDate, DATE_FORMAT(t.to_date,'%Y.%m.%d') AS toDate,
         DATE_FORMAT(t.day_start_time,'%H:%i') AS dayStartTime,
-
         DATE_FORMAT(t.day_end_time,'%H:%i') AS dayEndTime,t.task_content,tw.settlement_period as workerSettlementPeriod,tw.settlement_num as workerSettlementNum,t.settlement_period as settlementPeriod,t.settlement_num as settlementNum,
         c.name,c.address,c.leader,c.leader_mobile,m.message_title,m.message_type,c.id AS hotelId,c.area,t.id AS taskId,t.task_type_text AS messageTitle,m.`hr_company_id` AS hrId,m.task_id AS taskHotelId,m.hr_task_id AS taskHrId,m.worker_task_id AS workerTaskId,t.hourly_pay AS hourlyPayHotel,t.`task_type_code` AS taskTypeCode
         FROM message m

@@ -438,7 +438,6 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         if (task.getStatus ( ) == 1) {
             taskMapper.updateStatus (taskHrCompany.getTaskId ( ), 2);
         }
-
         taskHrCompanyMapper.updateStatus (message.getHrTaskId ( ), 2);
 
         Inform inform = new Inform ( );

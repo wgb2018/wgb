@@ -8,11 +8,11 @@
         delete from evaluate where type = #{type} and level = #{level}
     </delete>
     <select id="queryList" resultType="com.microdev.model.Evaluate" parameterType="com.microdev.param.EvaluateParam">
-        select <include refid="Evaluate_Column_List"/> from evaluate
+        select level,type,GROUP_CONCAT(text SEPARATOR ',') text
+        from evaluate
+        group by level,type
+        order by type,level asc
         <where>
-            <if test="id != null and id != ''">
-                id = #{id}
-            </if>
             <if test="level != null">
                 and level = #{level}
             </if>

@@ -559,7 +559,6 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
         Inform inform = new Inform();
         String content;
         Task task = null;
-
         for (NoticeHandle param : request.getParam ( )) {
             enroll = enrollMapper.selectById (param.getEnrollId ( ));
             if (enroll == null) {
@@ -877,7 +876,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             }
             //messageService.hotelDistributeWorkerTask (list, task, false).getPid ( );
         }
-        CreateTaskRequest createTaskRequest = new CreateTaskRequest();
+        CreateTaskRequest createTaskRequest= new CreateTaskRequest();
         createTaskRequest.setNoticeTask (true);
         createTaskRequest.setHrCompanySet (sct);
         if(sct.size ()>0){
@@ -886,7 +885,6 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             }else{
                 throw new ParamsException ("公告数据异常");
             }
-
         }
         if(i>0){
             return ResultDO.buildSuccess ("报名已截止");
@@ -997,7 +995,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             taskHrCompany.setWorkerSettlementNum (0);
             taskHrCompanyMapper.insert(taskHrCompany);
             //生成一个待派发的消息
-            if(!createTaskRequest.isNoticeTask ()){
+            if(createTaskRequest.isNoticeTask ()){
                 Map <String, Object> param = new HashMap <> ( );
                 param.put ("hrCompanyId", taskHrCompany.getHrCompanyId ( ));
                 param.put ("hotelId", taskHrCompany.getHotelId ( ));
