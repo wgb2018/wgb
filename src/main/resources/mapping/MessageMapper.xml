@@ -570,18 +570,27 @@ c.name,c.address,c.leader,c.leader_mobile,m.message_type,t.id AS taskId,m.id AS 
 k.hrName,k.hrId,k.hrLeader,IFNULL(k.hourly_pay,'') AS hourlyPay,t.task_type_text as messageTitle,k.hrLeaderMobile,k.messageCode,m.task_id AS taskHotelId,m.hr_task_id AS taskHrId,
 
 m.worker_task_id AS workerTaskId,t.hourly_pay AS hourlyPayHotel,t.`task_type_code` AS taskTypeCode,t.task_type_text as taskTypeText,IFNULL(k.settlementPeriod,t.worker_settlement_period) AS workerSettlementPeriod,IFNULL(k.settlementNum,t.worker_settlement_num) AS workerSettlementNum,t.settlement_num,t.settlement_period
-  FROM (SELECT * FROM message WHERE id = #{messageId}) m INNER JOIN task t ON m.task_id = t.id
+  FROM (SELECT * FROM message WHERE id = #{messageId}
+        <if test="type != null and type != ''">
+            AND applicant_type = #{type}
+        </if>
+        ) m INNER JOIN task t ON m.task_id = t.id
 INNER JOIN company c ON t.hotel_id = c.id
 
 LEFT JOIN
 (
 SELECT tc.need_workers,confirmed_workers,c2.name AS hrName,c2.id AS hrId,c2.leader AS hrLeader,
 tc.hourly_pay,tc.task_type_text AS messageTitle,tc.worker_settlement_period as settlementPeriod,tc.worker_settlement_num as settlementNum
-,c2.leader_mobile AS hrLeaderMobile,m2.id AS id,tc.task_type_code AS messageCode FROM (SELECT * FROM message WHERE id = #{messageId}) m2 INNER JOIN
+,c2.leader_mobile AS hrLeaderMobile,m2.id AS id,tc.task_type_code AS messageCode FROM (SELECT * FROM message WHERE id = #{messageId}
+<if test="type != null and type != ''">
+    AND applicant_type = #{type}
+</if>
+) m2 INNER JOIN
 task_hr_company tc ON m2.hr_task_id = tc.id INNER JOIN company c2
 ON c2.id = m2.hr_company_id
 ) k ON k.id = m.id
-left JOIN task_worker tw ON m.task_id = tw.hotel_task_id and m.worker_id = tw.worker_id and tw.status = 0    </select>
+left JOIN task_worker tw ON m.worker_task_id = tw.id and tw.status = 0
+</select>
 
     <select id="selectHrAwaitHandleTask" resultType="com.microdev.param.AwaitTaskResponse">
         SELECT tc.type,DATE_FORMAT(t.from_date,'%Y.%m.%d') AS fromDate, DATE_FORMAT(t.to_date,'%Y.%m.%d') AS toDate,DATE_FORMAT(t.day_start_time,'%H:%i') AS dayStartTime,
