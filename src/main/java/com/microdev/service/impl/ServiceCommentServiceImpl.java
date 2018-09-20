@@ -103,7 +103,14 @@ public class ServiceCommentServiceImpl extends ServiceImpl<ServiceCommentMapper,
             inform.setContent(company.getName() + "已经对您的支付做了评价");
             inform.setReceiveId(bill.getHotelId());
         } else {
-            return ResultDO.buildSuccess("暂时不支持评论");
+            inform.setSendType(1);
+            inform.setAcceptType(3);
+            User user = userMapper.selectByWorkerId (bill.getWorkerId());
+            if (user == null) {
+                throw new ParamsException("查询不到工作者信息");
+            }
+            inform.setContent(user.getNickname() + "已经对您的支付做了评价");
+            inform.setReceiveId(bill.getHrCompanyId());
         }
         informMapper.insertInform(inform);
 
@@ -112,6 +119,8 @@ public class ServiceCommentServiceImpl extends ServiceImpl<ServiceCommentMapper,
         if ("worker".equals(roleType)) {
             roleId = bill.getHrCompanyId();
         } else if ("hr".equals(roleType)) {
+            roleId = bill.getHotelId();
+        }else{
             roleId = bill.getHotelId();
         }
         EvaluteGrade evaluteGrade = evaluteGradeMapper.selectByRoleId(roleId);

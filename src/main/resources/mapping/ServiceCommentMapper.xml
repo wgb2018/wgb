@@ -11,22 +11,22 @@
 
     <select id = "selectHotelCommentInfo" resultType="com.microdev.param.CommentResponse" parameterType="com.microdev.param.ApplyParamDTO">
         select * from (
-        SELECT c.name, c.logo,DATE_FORMAT(sc.`create_time`, '%Y/%m/%d') AS createTime,t.`task_type_text` AS taskTypeText,sc.`level`,sc.`comment`, sc.id AS commentId FROM
-        (SELECT * FROM bill WHERE `hotel_id` = #{id} AND pay_type = 1) b
+        SELECT IFNULL(c. NAME,u.nickname) as name,IFNULL(c.logo,u.avatar) as logo, DATE_FORMAT(sc.`create_time`, '%Y/%m/%d') AS createTime,t.`task_type_text` AS taskTypeText,sc.`level`,sc.`comment`, sc.id AS commentId FROM
+        (SELECT * FROM bill WHERE `hotel_id` = #{id} AND pay_type in(1,3)) b
         INNER JOIN service_comment sc
         ON b.id = sc.`bill_id`
         INNER JOIN task t
         ON t.id = b.`task_id`
-        INNER JOIN company c
-        ON c.id = b.`hr_company_id`
+        left JOIN company c ON c.id = b.`hr_company_id`
+        left JOIN user u on b.worker_id = u.worker_id
         <where>
-    <if test="name != null and name != ''">
-        and c.name like concat('%', #{name} , '%')
-    </if>
-    <if test = "taskTypeText != null and taskTypeText != ''">
-        and t.`task_type_text` like concat('%', #{taskTypeText} , '%')
-    </if>
-</where>
+        <if test="name != null and name != ''">
+            and c.name like concat('%', #{name} , '%')
+        </if>
+        <if test = "taskTypeText != null and taskTypeText != ''">
+            and t.`task_type_text` like concat('%', #{taskTypeText} , '%')
+        </if>
+       </where>
         )k
         LEFT JOIN (
         SELECT GROUP_CONCAT(e.`text`) AS STATUS, cr.service_comment_id FROM evaluate_comment_relation cr INNER JOIN
@@ -110,7 +110,7 @@ GROUP BY createTime desc,twId
         </if>
         <if test = "roleType == 'hotel'">
             SELECT c2.name AS targetName, c.name, c.logo,DATE_FORMAT(sc.`create_time`, '%Y/%m/%d') AS createTime,t.`task_type_text` AS taskTypeText,sc.`level`,sc.`comment`, sc.id AS commentId FROM
-            (SELECT * FROM bill WHERE pay_type = 1) b
+            (SELECT * FROM bill WHERE pay_type in(1,3)) b
             INNER JOIN service_comment sc
             ON b.id = sc.`bill_id`
             INNER JOIN task t

@@ -696,8 +696,8 @@ INNER JOIN company c ON (m.hr_company_id = c.id or m.hotel_id = c.id)
 
         t.settlement_period as settlementPeriod,
         t.settlement_num as settlement_num,
-        tw.settlement_period as workerSettlementPeriod,
-        tw.settlement_num as workerSettlementNum,m.request_id as billId
+        IFNULL(tw.settlement_period,tc.worker_settlement_period) as workerSettlementPeriod,
+        IFNULL(tw.settlement_num,tc.worker_settlement_num) as workerSettlementNum,m.request_id as billId
         FROM
 (SELECT * FROM message WHERE id= #{messageId}) m
 INNER JOIN task_hr_company tc

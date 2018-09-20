@@ -8,10 +8,8 @@
         delete from evaluate where type = #{type} and level = #{level}
     </delete>
     <select id="queryList" resultType="com.microdev.model.Evaluate" parameterType="com.microdev.param.EvaluateParam">
-        select level,type,GROUP_CONCAT(text SEPARATOR ',') text
+        select GROUP_CONCAT(CONCAT(id,':',text) SEPARATOR ',') pid,level,type,GROUP_CONCAT(text SEPARATOR ',') text
         from evaluate
-        group by level,type
-        order by type,level asc
         <where>
             <if test="level != null">
                 and level = #{level}
@@ -23,6 +21,9 @@
                 and type = #{type}
             </if>
         </where>
+        group by level,type
+        order by type,level asc
+
     </select>
 
     <select id = "selectLabelsInfo" resultType="java.lang.String">
