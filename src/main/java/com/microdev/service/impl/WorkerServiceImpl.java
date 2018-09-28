@@ -1042,7 +1042,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
 
                 }
             }else{
-                informService.sendInformInfo(1, 2, content, message.getHotelId (), "账目被拒绝");
+                informService.sendInformInfo(1, 3, content, message.getHotelId (), "账目被拒绝");
                 try {
                     jpushClient.jC.sendPush(JPushManage.buildPushObject_all_alias_message(companyMapper.findCompanyById(message.getHotelId()).getLeaderMobile(), content));
                 } catch (APIConnectionException e) {
@@ -1104,7 +1104,7 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
                 task.setHavePayMoney (task.getHourlyPay () + bill.getPayMoney());
                 taskMapper.updateById (task);
                 String content = "小时工" + user.getNickname() + "同意了你发起的一笔支付信息，金额为" + bill.getPayMoney();
-                informService.sendInformInfo(1, 2, content, bill.getHotelId (), "账目已同意");
+                informService.sendInformInfo(1, 3, content, bill.getHotelId (), "账目已同意");
                 try {
                     jpushClient.jC.sendPush(JPushManage.buildPushObject_all_alias_message(companyMapper.findCompanyById(bill.getHotelId ()).getLeaderMobile(), content));
                 } catch (APIConnectionException e) {
