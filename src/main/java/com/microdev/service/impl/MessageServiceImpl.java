@@ -1564,12 +1564,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 inform.setSendType(2);
                 inform.setAcceptType(3);
                 inform.setReceiveId(message.getHotelId());
-                inform.setContent("用人单位拒绝了您的解除合作申请");            } else if (applyType == 3) {
+                inform.setContent(hrCompany.getName() + "同意了您的解除合作申请");
+            } else if (applyType == 3) {
                 inform.setSendType(3);
                 inform.setAcceptType(2);
                 inform.setReceiveId(message.getHrCompanyId());
-
-                inform.setContent(company.getName() + "终止了和您的合作");            }
+                inform.setContent(company.getName() + "终止了和您的合作");
+            }
             inform.setTitle("解绑成功");
         } else if ("0".equals(status)) {
             hotelHrCompany.setStatus(0);
@@ -1591,7 +1592,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
             throw new ParamsException("参数值错误");
         }
 
-            informMapper.insertInform(inform);        return ResultDO.buildSuccess("处理成功");
+        informMapper.insertInform(inform);
+        return ResultDO.buildSuccess("处理成功");
     }
 
     @Override
