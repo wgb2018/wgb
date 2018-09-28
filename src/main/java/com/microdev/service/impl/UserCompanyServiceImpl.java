@@ -322,7 +322,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             }
             result.put("total",list.size ());
             int size = list.size();
-            int a = (paginator.getPage ()-1)*paginator.getPageSize ();
+            int a = (paginator.getPage ()-1)*paginator.getPageSize ()<size?(paginator.getPage ()-1)*paginator.getPageSize ():size-size%paginator.getPageSize ();
             int b = paginator.getPage ()*paginator.getPageSize ()<size?paginator.getPage ()*paginator.getPageSize ():size;
             list = list.subList (a,b);
             //list = list.subList (0,2);

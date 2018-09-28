@@ -127,10 +127,21 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
                 return ResultDO.buildSuccess("任务即将结束，无法接受");
             }
         }
+        if(taskWorker.getStatus() == 1){
+            RefusedTaskRequest refusedTaskReq = new RefusedTaskRequest();
+            refusedTaskReq.setMessageId (messageId);
+            refusedTaskReq.setRefusedReason ("已存在相同任务，无法接受");
+            refusedTask(refusedTaskReq);
+            return ResultDO.buildSuccess("已存在相同任务，无法接受");
+        }
                 List<TaskWorker> li = taskWorkerMapper.findByUserId (userMapper.selectByWorkerId (taskWorker.getWorkerId ()).getPid ());
                 for (TaskWorker ts:li) {
                     if(!(taskWorker.getDayStartTime ().isAfter (ts.getDayEndTime ()) || ts.getDayStartTime ().isAfter (taskWorker.getDayEndTime ()))){
                         if(!(taskWorker.getFromDate ().isAfter (ts.getToDate ()) || ts.getFromDate ().isAfter (taskWorker.getToDate ()))){
+                            RefusedTaskRequest refusedTaskReq = new RefusedTaskRequest();
+                            refusedTaskReq.setMessageId (messageId);
+                            refusedTaskReq.setRefusedReason ("任务存在时间冲突，无法接受");
+                            refusedTask(refusedTaskReq);
                             return ResultDO.buildSuccess("任务存在时间冲突，无法接受");
                         }
                     }
@@ -202,9 +213,8 @@ public class TaskWorkerServiceImpl extends ServiceImpl<TaskWorkerMapper,TaskWork
         }
         TaskWorker taskWorker = null;
         Message message = messageMapper.selectById(refusedTaskReq.getMessageId());
-
-            if (message == null || message.getStatus() == 1) {
-                throw new BusinessException("消息已处理");
+            if (message == null) {
+                throw new BusinessException("消息不存在");
             }
             message.setStatus(1);
             messageMapper.updateAllColumnById(message);

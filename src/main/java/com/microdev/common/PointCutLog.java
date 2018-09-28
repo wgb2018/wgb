@@ -40,10 +40,10 @@ public class PointCutLog {
     }*/
 
     @Around("pointCutMethod()")
-    public Object aroundMethod(ProceedingJoinPoint pjp) {
+    public Object aroundMethod(ProceedingJoinPoint pjp) throws Throwable{
         Object result = null;
         Object[] args = null;
-        try {
+
             long start = System.currentTimeMillis();
             args = pjp.getArgs();
             String className = pjp.getSignature().getDeclaringType().getName();
@@ -56,9 +56,7 @@ public class PointCutLog {
             result = pjp.proceed();
             long end = System.currentTimeMillis();
             logger.info("方法" + uri + "花费的时间(ms):" + (end - start));
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
+
         return result;
     }
 }

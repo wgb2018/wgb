@@ -188,7 +188,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
         if (StringUtils.isEmpty(id)) {
             throw new ParamsException("参数错误");
         }
-
         Company company = companyMapper.findCompanyById(id);
         if (company == null) {
             company = new Company();
@@ -204,8 +203,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 company.setGrade("3");
             }
             User u = userMapper.findByMobile(company.getLeaderMobile());
-            company.setPid(u.getPid());        }
-
+            company.setUserId (u.getPid ());
+        }
         return ResultDO.buildSuccess(company);
     }
     /**

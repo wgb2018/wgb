@@ -556,7 +556,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
         Set <TaskHrCompanyDTO> sct = new HashSet <> ( );
         int i = 0;
         TaskHrCompanyDTO tD = new TaskHrCompanyDTO();
-        Inform inform = new Inform();
+        Inform inform = null;
         String content;
         Task task = null;
         for (NoticeHandle param : request.getParam ( )) {
@@ -588,6 +588,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
                 }
             }
             if(i > 0){
+                inform = new Inform();
                 enroll.setStatus (2);
                 enroll.setAssign (0);
                 enrollMapper.updateById (enroll);
@@ -640,6 +641,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
                 enroll.setStatus (2);
                 enroll.setAssign (0);
                 enrollMapper.updateById (enroll);
+                inform = new Inform();
                 if(notice.getType ( ) == 1 ){
                     //发送拒绝通知
                     content = companyMapper.findCompanyById (notice.getHotelId ()).getName ()+"拒绝了你的报名申请：报名人数为"+param.getAllotWorkers ()+"人";
@@ -691,6 +693,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             enroll.setStatus (1);
             enroll.setAssign (param.getAllotWorkers ( ));
             enrollMapper.updateById (enroll);
+            inform = new Inform();
             //发送同意通知
             if(notice.getType ( ) == 1 ){
                 //发送拒绝通知
@@ -871,9 +874,11 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
                 taskWorker.setSettlementPeriod (task.getWorkerSettlementPeriod ());
                 taskWorker.setSettlementNum (task.getWorkerSettlementNum ());
                 taskWorker.setType (1);
+                task.setConfirmedWorkers (task.getConfirmedWorkers ()+1);
                 taskWorkerMapper.insert (taskWorker);
                 list.add (taskWorker);
             }
+            taskMapper.updateById (task);
             //messageService.hotelDistributeWorkerTask (list, task, false).getPid ( );
         }
         CreateTaskRequest createTaskRequest= new CreateTaskRequest();
@@ -934,18 +939,23 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
         WorkerQueryDTO workerQueryDTO = new WorkerQueryDTO();
         workerQueryDTO.setHotelId (id);
         List<Map<String, Object>> map = workerMapper.queryRecommendWorkers (workerQueryDTO);
-        for (Map<String, Object> mp:map) {
+        Iterator<Map<String, Object>> mp = map.iterator ();
+        Map<String, Object> m;
+        while(mp.hasNext ()){
             String str = "";
-            if (mp.get("birthday") != null) {
-                str = mp.get("birthday").toString().substring(0, 10);
+            m = mp.next ();
+            if (m.get("birthday") != null) {
+                str = m.get("birthday").toString().substring(0, 10);
             }
-            mp.put("birthday", str);
-            List l1 = dictService.findServiceArea(mp.get("workerId").toString ());
-            List l2 = dictMapper.queryTypeByUserId(mp.get("workerId").toString ());
-            mp.put("areaCode", l1 == null ? new ArrayList<>() : l1);
-            mp.put("serviceType", l2 == null ? new ArrayList<>() : l2);
+            m.put("birthday", str);
+            List l1 = dictService.findServiceArea(m.get("workerId").toString ());
+            List l2 = dictMapper.queryTypeByUserId(m.get("workerId").toString ());
+            m.put("areaCode", l1 == null ? new ArrayList<>() : l1);
+            m.put("serviceType", l2 == null ? new ArrayList<>() : l2);
+            if(l1.size () == 0 || l2.size () == 0){
+                mp.remove ();
+            }
         }
-
         return ResultDO.buildSuccess (map);
     }
 

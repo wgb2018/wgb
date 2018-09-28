@@ -76,6 +76,8 @@ public class InformServiceImpl extends ServiceImpl<InformMapper,Inform>  impleme
             param.put("sendType", 4);
             result.put("systemNum", informMapper.selectUnReadCount(param));
             //页查询type类型的消息
+            param.put("sendType", 1);
+            result.put("workerNum", informMapper.selectUnReadCount(param));
             param.remove("status");
 
             if (dto.getType() == 2) {

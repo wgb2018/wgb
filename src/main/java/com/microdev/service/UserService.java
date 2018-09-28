@@ -18,10 +18,10 @@ public interface UserService extends IService<User>{
 
        List<User> query(UserDTO user) throws Exception;
        //用户名+密码登录
-       TokenDTO login(UserDTO user) throws Exception;
+       ResultDO login(UserDTO user) throws Exception;
 
        //用户注册
-       TokenDTO register(UserDTO userDTO) throws Exception;
+       ResultDO register(UserDTO userDTO) throws Exception;
        /**
         * 退出登录
         */

@@ -132,17 +132,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     }
 
     @Override
-    public TokenDTO login(UserDTO login) throws Exception {
+    public ResultDO login(UserDTO login) throws Exception {
         System.out.println (login);
         User user = userMapper.findByMobile(login.getMobile());
         if(user == null){
-            throw new ParamsException("用户不存在");
+            return ResultDO.buildError ("用户不存在");
         }
 
         UserDTO userDTO = new UserDTO();
         if(login.getPlatform () == PlatformType.PC){
             if(user.getUserType () == UserType.worker){
-                throw new ParamsException("该用户为小时工，无权限登录");
+                return ResultDO.buildError ("该用户为小时工，无权限登录");
             }
         }
         userDTO.setId(user.getPid());
@@ -151,7 +151,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         userDTO.setUserType(user.getUserType());
 
         if (!PasswordHash.validatePassword(login.getPassword(), user.getPassword())){
-            throw new ParamsException("用户名或密码错误");
+            return ResultDO.buildError ("用户名或密码错误");
         }
         ValueOperations<String, String> operations = redisTemplate.opsForValue();
         String value = operations.get (login.getMobile ());
@@ -169,20 +169,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
         if (user != null && PasswordHash.validatePassword(login.getPassword(), user.getPassword())) {
             operations.set(user.getMobile (), login.getUniqueId ());
-            return tokenService.accessToken(userDTO, login.getPlatform().name());
+            return ResultDO.buildSuccess (tokenService.accessToken(userDTO, login.getPlatform().name()));
         }
-        return null;
+        return ResultDO.buildError ("用户不存在");
 
     }
 
     @Override
-    public TokenDTO register(UserDTO register) throws Exception{
+    public ResultDO register(UserDTO register) throws Exception{
         if (register.getUserType() == UserType.platform) {
-            throw new AuthorizationException("无权限注册该用户");
+            return ResultDO.buildError ("无权限注册该用户");
         }
-        /*smsFacade.checkSmsCode(register.getMobile(), SmsType.register.name(), register.getSmsCode());*/
+        smsFacade.checkSmsCode(register.getMobile(), SmsType.register.name(), register.getSmsCode());
         if (userMapper.findByMobile(register.getMobile()) != null) {
-            throw new ParamsException("手机号码已经存在");
+            return ResultDO.buildError ("手机号码已经存在");
         }
         File file;
         String fileURI = null;
@@ -228,7 +228,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                         pa.setLeader (register.getTgCode ().substring (0,4));
                     }catch(Exception e){
                         e.printStackTrace ();
-                        throw new ParamsException("邀请码无效");
+                        ResultDO.buildError ("邀请码无效");
                     }
                     propagandaMapper.insert (pa);
                 }else{
@@ -270,7 +270,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                         pa.setLeader (register.getTgCode ().substring (0,4));
                     }catch(Exception e){
                         e.printStackTrace ();
-                        throw new ParamsException("邀请码无效");
+                        return ResultDO.buildError ("邀请码无效");
                     }
                     propagandaMapper.insert (pa);
                 }else{
@@ -311,7 +311,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                         pa.setLeader (register.getTgCode ().substring (0,4));
                     }catch(Exception e){
                         e.printStackTrace ();
-                        throw new ParamsException("邀请码无效");
+                        return ResultDO.buildError ("邀请码无效");
                     }
                     propagandaMapper.insert (pa);
                 }else{
@@ -343,7 +343,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         RegisterUsers users = new RegisterUsers();
         users.add(user);
         iMUserService.createNewIMUserSingle(users);
-        return token;
+        return ResultDO.buildSuccess (token);
     }
     /**
      * 注销登录
