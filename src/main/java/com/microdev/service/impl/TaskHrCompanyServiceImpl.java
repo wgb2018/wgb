@@ -231,6 +231,8 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             taskWorker.setUserName (user.getUsername ( ));
             if(hrTaskDis.isNoticeTask ()){
                 taskWorker.setStatus (1);
+                hotelTask.setConfirmedWorkers (hotelTask.getConfirmedWorkers ()+1);
+                hrTask.setConfirmedWorkers (hrTask.getConfirmedWorkers ()+1);
             }else{
                 taskWorker.setStatus (0);
             }

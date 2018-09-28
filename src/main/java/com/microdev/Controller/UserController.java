@@ -79,7 +79,7 @@ public class UserController {
      */
     @PostMapping("/login")
     public ResultDO login(@RequestBody UserDTO user) throws Exception {
-        return ResultDO.buildSuccess(userService.login(user));
+        return userService.login(user);
     }
     /**
      * 查询用户
@@ -176,7 +176,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")
     public ResultDO register(@RequestBody UserDTO userDTO) throws Exception {
-        return ResultDO.buildSuccess(userService.register(userDTO));
+        return userService.register(userDTO);
     }
     /**
      * 子账号注册
@@ -314,7 +314,7 @@ public class UserController {
     }
     @GetMapping("/user/test")
     public ResultDO test() throws Exception{
-        User user = userService.selectById("0ffe5af3-21f2-4f87-bdec-c7bd1106db6f");
+        //User user = userService.selectById("0ffe5af3-21f2-4f87-bdec-c7bd1106db6f");
         //return ResultDO.buildSuccess(userService.selectList(new EntityWrapper<>(user)));
 //        Map map = new HashMap<>();
 //        map.put("id","0ffe5af3-21f2-4f87-bdec-c7bd1106db6f");
@@ -389,11 +389,11 @@ public class UserController {
             LOG.info("Error Code: " + e.getErrorCode());
             LOG.info("Error Message: " + e.getErrorMessage());*//*
         }*/
-        String  path = getClass().getResource("/").getFile();
+        /*String  path = getClass().getResource("/").getFile();
         path = URLDecoder.decode(path,  "utf-8");
         File f = null;
         
-        HtmlUtil.convert2Html (path+File.separator + "static" + File.separator +  "12.docx",path+File.separator + "static" + File.separator,"12.html");
+        HtmlUtil.convert2Html (path+File.separator + "static" + File.separator +  "12.docx",path+File.separator + "static" + File.separator,"12.html");*/
 
         /*String str = "wgba001";
         System.out.println (str.substring (0,4));
@@ -402,7 +402,7 @@ public class UserController {
         System.out.println (of);
         OffsetDateTime of1 = OffsetDateTime.ofInstant (Instant.ofEpochSecond (of.toEpochSecond () - of.toOffsetTime ().getLong (ChronoField.SECOND_OF_DAY)),ZoneId.systemDefault ());
         System.out.println (of1);*/
-        return ResultDO.buildSuccess("");
+        throw new Exception ("test");
     }
 	@GetMapping("/{mobile}/verifyMobile/{smsCode}")
     public ResultDO verifyMobile(@PathVariable String mobile, @PathVariable String smsCode) {
@@ -416,10 +416,10 @@ public class UserController {
     public void fileDownload(@PathVariable String param, HttpServletResponse response) throws IOException {
         OutputStream out = response.getOutputStream();
         File f = null;
-        String  path = getClass().getResource("/").getFile();
+        /*String  path = getClass().getResource("/").getFile();
         path = URLDecoder.decode(path,  "utf-8");
-        path = path + File.separator + "static" + File.separator;
-        /*String  path =  "/home/micro-worker/wgb/static/";*/
+        path = path + File.separator + "static" + File.separator;*/
+        String  path =  "/home/micro-worker/wgb/static/";
         System.out.println (param);
 
         if ("1".equals(param)) {//微工宝用户使用协议及隐私条款

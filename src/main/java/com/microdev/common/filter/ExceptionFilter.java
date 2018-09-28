@@ -86,13 +86,23 @@ public class ExceptionFilter implements Filter {
 }
 
 @ControllerAdvice
-class GlobalExceptionHandler{
+@ResponseBody
+class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     @ExceptionHandler(Exception.class)
-    @ResponseBody
-    public ResultDO handleExceptionInternal(Exception e) {
-        log.error(e.getMessage(), e);
-        return ResultDO.buildError(e.getMessage());
+    @Override
+    protected ResponseEntity<Object> handleExceptionInternal(Exception e, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        if (e instanceof ParamsException) {
+            log.error(e.getMessage(), e);
+            status = HttpStatus.BAD_REQUEST;//400
+        } else if (e instanceof AuthenticationException) {
+            log.debug(e.getMessage(), e);
+            status = HttpStatus.UNAUTHORIZED;//401
+        } else if (e instanceof AuthorizationException) {
+            log.debug(e.getMessage(), e);
+            status = HttpStatus.FORBIDDEN;//403
+        }
+        return new ResponseEntity<>(ResultDO.buildError(e.getMessage()), status);
     }
 }
