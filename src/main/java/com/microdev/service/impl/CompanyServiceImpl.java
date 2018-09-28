@@ -482,17 +482,18 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             param.put("punchDate", OffsetDateTime.now());
             param.put("modifyTime", OffsetDateTime.now(Clock.system(ZoneId.of("Asia/Shanghai"))));
             Long minutes = 0L;
+            Duration duration = null;
             if (punch.getToDate() == null) {
                 if (punch.getFromDate().compareTo(punch.getSupplement()) < 0) {
                     param.put("toDate", punch.getSupplement());
-                    long seconds = punch.getSupplement().getLong(ChronoField.SECOND_OF_DAY) - punch.getFromDate().getLong(ChronoField.SECOND_OF_DAY);
-                    minutes = seconds / 60;
+                    duration = Duration.between(punch.getFromDate().toOffsetTime().isBefore(task.getDayStartTime()) ? task.getDayStartTime() : punch.getFromDate().toOffsetTime(), punch.getSupplement().toOffsetTime().isBefore(task.getDayEndTime()) ? punch.getSupplement().toOffsetTime() : task.getDayEndTime());
                 } else {
                     param.put("toDate", punch.getFromDate());
                     param.put("fromDate", punch.getSupplement());
-                    long seconds = punch.getFromDate().getLong(ChronoField.SECOND_OF_DAY) - punch.getSupplement().getLong(ChronoField.SECOND_OF_DAY);
-                    minutes = seconds / 60;
+                    duration = Duration.between(punch.getSupplement().toOffsetTime().isBefore(task.getDayStartTime()) ? task.getDayStartTime() : punch.getSupplement().toOffsetTime(), punch.getFromDate().toOffsetTime().isBefore(task.getDayEndTime()) ? punch.getFromDate().toOffsetTime() : task.getDayEndTime());
                 }
+                long seconds = duration.getSeconds();
+                minutes = seconds / 60;
                 param.put("punchDate", OffsetDateTime.now());
                 param.put("minutes", minutes + punch.getMinutes());
                 workLogMapper.updateByMapId(param);
