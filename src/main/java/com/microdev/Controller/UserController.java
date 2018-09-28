@@ -88,6 +88,9 @@ public class UserController {
     public ResultDO queryUser(@PathVariable String id) throws Exception {
         User u = userMapper.selectById (id);
         UserResponse user = new UserResponse ();
+        if(u == null){
+            return ResultDO.buildError ("未查到该用户");
+        }
         if(u.getUserType ().equals (UserType.worker)){
             user.setLogo (u.getAvatar ());
             user.setMobile (u.getMobile ());

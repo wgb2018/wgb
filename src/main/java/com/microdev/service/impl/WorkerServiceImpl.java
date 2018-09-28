@@ -952,11 +952,11 @@ public class WorkerServiceImpl extends ServiceImpl<WorkerMapper, Worker> impleme
         Integer maxNum = Integer.parseInt(dict.getText());
         int nowNum = userCompanyMapper.selectWorkerBindCount(user.getPid());
         if (nowNum >= maxNum || (nowNum + set.size()) > maxNum) {
-            throw new BusinessException("绑定人数达到上限");
+            return "绑定人数达到上限";
         }
         int bindNum = userCompanyMapper.selectIsBindUserId(user.getPid(), set);
         if (bindNum > 0) {
-            throw new BusinessException("已提交绑定申请");
+            return "已提交绑定申请";
         }
         List<UserCompany> userCompanyList = new ArrayList<>();
         UserCompany userCompany = null;

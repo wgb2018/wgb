@@ -1021,16 +1021,17 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 }
             }
             company = companyMapper.selectById(dto.getHotelId());
-            if(company.getStatus () == 0) throw new ParamsException("公司状态为未审核，添加失败");
+            if(company.getStatus () == 0)
+                return ResultDO.buildError ("公司状态为未审核，添加失败");
         } else if (type == 2) {
 
             //人力加用人单位
             if (StringUtils.isEmpty(dto.getHrId())) {
-                throw new ParamsException("参数hrId为空");
+                return ResultDO.buildError ("参数hrId为空");
             }
             int num = hotelHrCompanyMapper.selectBindCountByHrId(dto);
             if (num > 0) {
-                throw new BusinessException("您已提交过绑定申请,请勿重复申请");
+                return ResultDO.buildError ("您已提交过绑定申请,请勿重复申请");
             }
             num = hotelHrCompanyMapper.selectIsBIndByCompanyId(dto);
             if (num > 0) {
@@ -1064,7 +1065,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
                 }
             }
             company = companyMapper.selectById(dto.getHrId());
-            if(company.getStatus () == 0) throw new ParamsException("公司状态为未审核，添加失败");
+            if(company.getStatus () == 0)
+                return ResultDO.buildError ("公司状态为未审核，添加失败");
         }
         if (list.size() > 0) {
             try{
@@ -1072,10 +1074,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper,Company> imple
             }catch(Exception e){
                 HotelHrCompany hh = hotelHrCompanyMapper.selectByHrHotelId (list.get (0).getHrId (),list.get (0).getHotelId ());
                 if(hh.getStatus () == 0){
-                    throw new ParamsException ("绑定申请已提交，请勿重复提交");
+                    return ResultDO.buildError ("绑定申请已提交，请勿重复提交");
                 }else{
-
-                    throw new ParamsException ("您已合作，请勿重复申请");
+                    return ResultDO.buildError ("您已合作，请勿重复申请");
                 }
 
             }

@@ -228,7 +228,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
                         pa.setLeader (register.getTgCode ().substring (0,4));
                     }catch(Exception e){
                         e.printStackTrace ();
-                        ResultDO.buildError ("邀请码无效");
+                        return ResultDO.buildError ("邀请码无效");
                     }
                     propagandaMapper.insert (pa);
                 }else{

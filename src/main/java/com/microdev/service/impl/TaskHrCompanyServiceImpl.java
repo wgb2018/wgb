@@ -161,7 +161,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             System.out.println ("param:"+hrTaskDis.getMessageId ( ));
             message = messageMapper.selectById (hrTaskDis.getMessageId ( ));
             if (message == null || message.getStatus() == 1) {
-                throw new ParamsException("已处理");
+                return ResultDO.buildSuccess ("已处理");
             }
             message.setStatus (1);
             messageMapper.updateAllColumnById (message);
@@ -173,21 +173,21 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
             hrTask = taskHrCompanyMapper.queryByTaskId(hrTaskDis.getHrTaskId());
             if(hrTask.getHourlyPay () == 0){
                 if(hrTaskDis.getHourlyPay () == 0){
-                    throw new ParamsException ("人力公司每小时工钱不能为空");
+                    return ResultDO.buildError ("人力公司每小时工钱不能为空");
                 }else{
                     hrTask.setHourlyPay (hrTaskDis.getHourlyPay ());
                 }
             }
             if(hrTask.getWorkerSettlementPeriod () == null){
                 if(hrTaskDis.getSettlementPeriod () == null){
-                    throw new ParamsException ("结算周期不能为空");
+                    return ResultDO.buildError  ("结算周期不能为空");
                 }else{
                     hrTask.setWorkerSettlementPeriod (hrTaskDis.getSettlementPeriod ());
                 }
             }
             if(hrTask.getWorkerSettlementNum () == null || hrTask.getWorkerSettlementNum () == 0){
                 if(hrTaskDis.getSettlementNum () == null || hrTaskDis.getSettlementNum () == 0){
-                    throw new ParamsException ("结算时间不能为空");
+                    return ResultDO.buildError  ("结算时间不能为空");
                 }else{
                     hrTask.setWorkerSettlementNum (hrTaskDis.getSettlementNum ());
                 }
@@ -213,7 +213,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         hrTask.setStatus (4);
         Task hotelTask = taskMapper.getFirstById (hrTask.getTaskId ( ));
         if (hotelTask == null) {
-            throw new BusinessException ("任务派发失败：未获取用人单位到任务");
+            return ResultDO.buildError  ("任务派发失败：未获取用人单位到任务");
         }
         hotelTask.setStatus (3);
         // Company hotel=companyMapper.findCompanyById(hrTask.getHotelId());
@@ -422,7 +422,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
     public String TaskHraccept(String messageId) {
         Message message = messageMapper.selectById (messageId);
         if (message == null || message.getStatus ( ) == 1) {
-            throw new BusinessException ("消息已处理");
+            return "消息已处理";
         }
         message.setStatus (1);
         messageMapper.updateById (message);
@@ -479,7 +479,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
 
         Message message = messageMapper.selectById (messageId);
         if (message == null || message.getStatus ( ) == 1) {
-            throw new BusinessException ("消息已处理");
+            return;
         }
         message.setStatus (1);
         messageMapper.updateById (message);
@@ -835,7 +835,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         }
         Message message = messageMapper.selectByHrId (id);
         if (message == null || message.getStatus ( ) == 1) {
-            throw new BusinessException ("消息已处理");
+            return  "消息已处理";
         }
         messageMapper.updateStatus (message.getPid ( ));
         TaskHrCompany taskHrCompany = taskHrCompanyMapper.queryByTaskId (id);
@@ -1125,7 +1125,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
                 }
                 Message message = messageMapper.selectById (messageId);
                 if (message == null || message.getStatus ( ) == 1) {
-                    throw new ParamsException ("已处理");
+                    return ResultDO.buildError ("已处理");
                 }
                 message.setStatus (1);
                 messageMapper.updateById (message);
@@ -1160,7 +1160,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         }
         Message message = messageMapper.selectById(messageId);
         if (message == null || message.getStatus() == 1) {
-            throw new ParamsException("已处理");
+            return ResultDO.buildError ("已处理");
         }
         message.setStatus(1);
         messageMapper.updateById(message);
@@ -1195,7 +1195,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
         }
         Message message = messageMapper.selectById(messageId);
         if (message == null || message.getStatus() == 1) {
-            throw new ParamsException("已处理");
+            return ResultDO.buildError ("已处理");
         }
         message.setStatus(1);
         messageMapper.updateById(message);

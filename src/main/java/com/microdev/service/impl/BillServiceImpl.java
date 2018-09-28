@@ -95,11 +95,11 @@ public class BillServiceImpl extends ServiceImpl<BillMapper,Bill> implements Bil
     @Override
     public ResultDO updateCommentStatus(String id) {
         if (StringUtils.isEmpty(id)) {
-            throw new ParamsException("参数不能为空");
+            return ResultDO.buildError ("参数不能为空");
         }
         Bill bill = billMapper.selectById(id);
         if (bill == null) {
-            throw new ParamsException("查询不到支付信息");
+            return ResultDO.buildError ("查询不到支付信息");
         }
         bill.setStatus(1);
         billMapper.updateById(bill);
