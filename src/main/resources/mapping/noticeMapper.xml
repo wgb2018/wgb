@@ -42,7 +42,13 @@
                     and n.type in (3,4)
                 </if>
             </if>
+            <if test = "type == 4">
+                AND n.to_date >= DATE_FORMAT(NOW(), '%Y-%m-%d')
+            </if>
+            <if test = "type != null and type != '' and type != 4">
                 and n.to_date &gt;= now()
+            </if>
+
         </where>
         order by n.create_time desc
     </select>

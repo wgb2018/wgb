@@ -1618,7 +1618,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         inform.setSendType(3);
         inform.setAcceptType(1);
         inform.setReceiveId(message.getWorkerId ());
-        inform.setReceiveId(message.getHrCompanyId());
         inform.setContent(company.getName() + "终止了和您的合作");
         inform.setTitle("解绑成功");
         UserCompany userCompany = userCompanyMapper.selectByWorkerIdHrId (message.getHotelId (),message.getWorkerId ());
