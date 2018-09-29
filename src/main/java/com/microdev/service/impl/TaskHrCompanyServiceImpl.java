@@ -1320,7 +1320,7 @@ public class TaskHrCompanyServiceImpl extends ServiceImpl<TaskHrCompanyMapper, T
                 return ResultDO.buildError ("未查到相关支付记录");
             }
             if ("0".equals (status)) {
-                String content = taskHrCompany.getHrCompanyName ( ) + "拒绝了你发起的一笔支付信息，金额为" + message.getMinutes ( ) + "，拒绝理由为" + message.getContent ( );
+                String content = taskHrCompany.getHrCompanyName ( ) + "拒绝了你发起的一笔支付信息，金额为" + message.getMinutes ( ) + "，拒绝理由为" + (message.getContent() == null ? "" : message.getContent());
                 taskHrCompany.setUnConfirmedPay (taskHrCompany.getUnConfirmedPay ( ) - bill.getPayMoney ( ));
                 taskHrCompanyMapper.updateAllColumnById (taskHrCompany);
                 //确认收入
