@@ -74,7 +74,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         }
         Message message = messageMapper.selectById(messageId);
         if (message == null || message.getStatus() == 1) {
-            throw new ParamsException("消息已被处理");
+            return ResultDO.buildError ("消息已被处理");
         }
         message.setStatus(1);
         messageMapper.updateById(message);
@@ -144,7 +144,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                     inform.setTitle("绑定被拒绝");
                     inform.setContent(user.getNickname ()+"已达到可绑定公司的个数上限");
                     informMapper.insertInform(inform);
-                    ResultDO.buildSuccess ("超出小时工绑定公司数目上限");
+                    return ResultDO.buildSuccess ("超出小时工绑定公司数目上限");
                 }
                 worker.setActiveCompanys (worker.getActiveCompanys ()+1);
                 if(worker.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("WorkerBindHrMaxNum","7").getText ())){
@@ -160,7 +160,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                     inform.setTitle("绑定被拒绝");
                     inform.setContent("已达到可绑定小时工的个数上限");
                     informMapper.insertInform(inform);
-                    ResultDO.buildSuccess ("超出公司绑定小时工数目上限");
+                    return ResultDO.buildSuccess ("超出公司绑定小时工数目上限");
                 }
                 company.setActiveWorkers (company.getActiveWorkers ()+1);
                 if(company.getActiveWorkers () == Integer.parseInt (dictMapper.findByNameAndCode ("HrBindWorkerMaxNum","10").getText ())){
@@ -182,7 +182,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
                     userCompanyMapper.insert(userCompany);
                 }catch (Exception e){
                     e.printStackTrace ();
-                    ResultDO.buildSuccess ("添加成功");
+                    return ResultDO.buildSuccess ("添加成功");
                 }
 
             }
@@ -431,7 +431,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
 
         int count = userCompanyMapper.selectIsbind(hrId, userList);
         if (count > 0) {
-            throw new BusinessException("提交过申请");
+            return "申请提交重复";
         }
         UserCompany userCompany = null;
         List<UserCompany> userCompanyList = new ArrayList<>();
@@ -467,7 +467,7 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
             try {
                 userCompanyMapper.saveBatch (userCompanyList);
             }catch (Exception e){
-                throw new ParamsException ("申请提交重复");
+                return  "申请提交重复";
             }
         }
         messageService.bindUserHrCompany(c.getName(), hrId, list, 2);

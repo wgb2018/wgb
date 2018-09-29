@@ -661,7 +661,7 @@ WHERE m.id = #{messageId}
       SELECT c.name AS companyName,c.leader AS NAME,c.leader_mobile AS mobile,c.address,c.area,m.message_type,DATE_FORMAT(m.create_time,'%Y/%m/%d %H:%i') AS createTime,c.logo,
 c.id AS pid,m.worker_task_id as workerTaskId,m.hr_task_id as taskHrId,m.task_id AS taskHotelId FROM
 (SELECT * FROM message WHERE id = #{messageId}) m
-INNER JOIN company c ON (m.hr_company_id = c.id or m.hotel_id = c.id)
+INNER JOIN company c ON (m.hr_company_id = c.id)
     </select>
 
     <select id="selectHrHotelDetails" resultType="com.microdev.param.AwaitTaskResponse">
