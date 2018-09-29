@@ -206,7 +206,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper,Notice> implemen
             notice = new Notice ( );
             notice.setCreateTime (OffsetDateTime.now ( ));
             notice.setFromDate (OffsetDateTime.ofInstant (Instant.ofEpochMilli (request.getFromDateL ( )), ZoneId.systemDefault ( )));
-            notice.setToDate (OffsetDateTime.ofInstant (Instant.ofEpochMilli (request.getToDateL ( )+86400000), ZoneId.systemDefault ( )));
+            notice.setToDate (OffsetDateTime.ofInstant (Instant.ofEpochMilli (request.getToDateL ( )+86399000), ZoneId.systemDefault ( )));
             notice.setHrCompanyId (request.getHrCompanyId ( ));
             notice.setNeedWorkers (request.getHrNeedWorkers ( ));
             notice.setType (4);
