@@ -151,7 +151,6 @@ public class ServiceCommentServiceImpl extends ServiceImpl<ServiceCommentMapper,
         if (param == null || StringUtils.isEmpty(param.getRoleType()) || StringUtils.isEmpty(param.getId())) {
             throw new ParamsException("参数不能为空");
         }
-
         PageHelper.startPage(paginator.getPage(), paginator.getPageSize(), true);
         Map<String, Object> result = new HashMap<>();
         List<CommentResponse> responseList = null;

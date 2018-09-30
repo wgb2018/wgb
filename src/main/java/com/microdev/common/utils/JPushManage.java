@@ -42,7 +42,13 @@ public class JPushManage {
                             .setSound ("default")
                             .build ())
                         .build ())
+                .setOptions (
+                        Options.newBuilder()
+                                .setApnsProduction(true)
+                                .build()
+                )
                 .build();
+
     }
     public static PushPayload buildPushObject_all_message(String alias,String message)  {
        /* User u = userMapper.findByMobile (alias);

@@ -595,6 +595,82 @@ public class UserCompanyServiceImpl extends ServiceImpl<UserCompanyMapper,UserCo
         informMapper.insertInform(inform);
         return ResultDO.buildSuccess("处理成功");
     }
+    /**
+     * 用人单位处理小时工绑定申请
+     * @param messageId
+     * @param status        0拒绝1同意
+     * @return
+     */
+    @Override
+    public ResultDO hotelRespondWorkerBind(String messageId, String status) {
+        if (StringUtils.isEmpty(messageId) || (!"0".equals(status) && !"1".equals(status))) {
+            return ResultDO.buildError("参数错误");
+        }
+        Message message = messageMapper.selectById(messageId);
+        if (message == null) {
+            return ResultDO.buildError("消息id错误");
+        }
+        if (message.getStatus() == 1) {
+            return ResultDO.buildError("消息已处理");
+        }
+        message.setStatus(1);
+        messageMapper.updateById(message);
+        Inform inform = new Inform();
+        inform.setCreateTime(OffsetDateTime.now());
+        inform.setModifyTime(OffsetDateTime.now());
+        inform.setReceiveId(message.getWorkerId());
+        inform.setSendType(3);
+        inform.setAcceptType(1);
+        UserCompany userCompany = userCompanyMapper.selectByWorkerIdHrId(message.getHotelId (), message.getWorkerId());
+        if (userCompany == null) {
+            throw new ParamsException("查询不到小时工和用人单位的关联信息");
+        }
+        Company company = companyMapper.selectById(userCompany.getCompanyId());
+        if ("1".equals(status)) {
+            if(company.getActiveWorkers () == null){
+                company.setActiveWorkers (0);
+            }
+            if(company.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HrBindWorkerMaxNum","10").getText ())){
+                userCompany.setStatus(2);
+                userCompanyMapper.update(userCompany);
+                inform.setTitle("绑定被拒绝");
+                inform.setContent(company.getName() + "用人单位超出了绑定小时工数目上限");
+                return ResultDO.buildSuccess ("超过用人单位绑定小时工数目上限");
+            }
+            Worker worker = workerMapper.queryById (userMapper.queryByUserId (userCompany.getUserId ()).getWorkerId ());
+            if(worker.getActiveCompanys () == null){
+                worker.setActiveCompanys (0);
+            }
+            if(worker.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("WorkerBindHrMaxNum","7").getText ())){
+                userCompany.setStatus(2);
+                userCompanyMapper.update(userCompany);
+                inform.setTitle("绑定被拒绝");
+                inform.setContent("超过小时工绑定用人单位数目上限");
+                return ResultDO.buildSuccess ("超过小时工绑定用人单位数目上限");
+            }
+            worker.setActiveCompanys (worker.getActiveCompanys ()+ 1);
+            if(worker.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("WorkerBindHrMaxNum","7").getText ())){
+                worker.setBindCompanys (false);
+            }
+            company.setActiveWorkers (company.getActiveWorkers ()+1);
+            if(company.getActiveCompanys () == Integer.parseInt (dictMapper.findByNameAndCode ("HrBindWorkerMaxNum","10").getText ())){
+                company.setBindWorkers (false);
+            }
+            workerMapper.updateById (worker);
+            companyMapper.updateById (company);
+            userCompany.setStatus(1);
+            userCompanyMapper.update(userCompany);
+            inform.setTitle("绑定成功");
+            inform.setContent(company.getName() + "同意了你的绑定申请，成功添加为合作用人单位，添加用人单位代表同意劳务合作协议。合作的用人单位可以向你派发任务，认真完成能获得相应的报酬。");
+        } else {
+            userCompany.setStatus(2);
+            userCompanyMapper.update(userCompany);
+            inform.setTitle("绑定被拒绝");
+            inform.setContent(company.getName() + "拒绝了你的绑定申请，等以后有机会希望可以再合作。");
+        }
+        informMapper.insertInform(inform);
+        return ResultDO.buildSuccess("处理成功");
+    }
 
     /**
      * 工作者申请解绑人力

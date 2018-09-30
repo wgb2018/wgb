@@ -80,6 +80,8 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     MessageDetailsResponse hotelHrApplyCooperate(@Param("messageId") String messageId);
 
+    MessageDetailsResponse hotelApplyCooperate(@Param("messageId") String messageId);
+
     AwaitTaskResponse selectHrHotelDetails(@Param("messageId") String messageId);
 
     Message selectByHrId(String id);

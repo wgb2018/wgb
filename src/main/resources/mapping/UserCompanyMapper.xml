@@ -135,7 +135,7 @@ SELECT id FROM USER WHERE worker_id = #{workerId}
            <if test="status !=null and status !=''"  >
                and c.status = #{status}
            </if>
-           <if test="status ==null"  >
+           <if test="status == null"  >
                and c.status in (1,3)
            </if>
            <if test="hrId !=null and hrId !=''"  >

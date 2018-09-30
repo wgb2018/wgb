@@ -118,6 +118,17 @@ public class WorkerCompanyController {
     }
 
     /**
+     * 用人单位处理小时工绑定申请
+     * @param messageId   消息id
+     * @param status      0拒绝1同意
+     * @return
+     */
+    @GetMapping("/hotel/{messageId}/bind/{status}")
+    public ResultDO hotelBindWorker(@PathVariable String messageId,@PathVariable String status) {
+        return userCompanyService.hotelRespondWorkerBind(messageId, status);
+    }
+
+    /**
      * 工作者申请解绑人力
      * @param param
      * @return

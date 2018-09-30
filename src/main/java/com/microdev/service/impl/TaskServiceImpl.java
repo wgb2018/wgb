@@ -253,6 +253,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper,Task> implements Tas
 
         List<TaskViewDTO> data = new ArrayList<>();
         for (Task task:list) {
+            if(task.getConfirmedWorkers () == task.getNeedWorkers ()){
+                task.setStatus (4);
+            }
             data.add(taskConverter.toViewDTOWithOutSet(task));
         }
         PageInfo<Task> pageInfo = new PageInfo<>(list);

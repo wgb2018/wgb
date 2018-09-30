@@ -822,10 +822,18 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
                 }
             } else if ("worker".equals(messagetype)) {
                 response = messageMapper.hotelHrApplyCooperate(messageId);
+                if(response == null){
+                response = messageMapper.hotelApplyCooperate(messageId);
+                }
                 if (response != null) {
                     response.setOriginator(response.getCompanyName());
                 }
-            } else {
+            } else if ("hotel".equals(messagetype)) {
+                response = messageMapper.selectWorkerApply(messageId);
+                if (response != null) {
+                    response.setOriginator(response.getName());
+                }
+            }else {
                 throw new ParamsException("用户类型错误");
             }
         } else if ("8".equals(type)) {
@@ -1620,6 +1628,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper,Message> imple
         inform.setReceiveId(message.getWorkerId ());
         inform.setContent(company.getName() + "终止了和您的合作");
         inform.setTitle("解绑成功");
+        informMapper.insertInform (inform);
         UserCompany userCompany = userCompanyMapper.selectByWorkerIdHrId (message.getHotelId (),message.getWorkerId ());
         if(userCompany == null){
             throw new ParamsException("绑定关系不存在");
